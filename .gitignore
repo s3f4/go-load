@@ -1,3 +1,4 @@
 infra/base/.terraform
 infra/base/terraform.tfstate
 infra/base/.terraform.tfstate.lock.info
+infra/base/terraform.tfstate.backup

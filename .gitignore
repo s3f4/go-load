@@ -1,0 +1,3 @@
+infra/base/.terraform
+infra/base/terraform.tfstate
+infra/base/.terraform.tfstate.lock.info

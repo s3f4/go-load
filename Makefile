@@ -25,15 +25,19 @@ clean: down
 
 up-instances:
 	@echo "=============instances spinning up============="
-	cd infra/base && ls && terraform apply -auto-approve -var "public_key=$$HOME/.ssh/id_rsa.pub" \
+	cd infra/base && terraform apply -auto-approve -var "public_key=$$HOME/.ssh/id_rsa.pub" \
   														 -var "private_key=$$HOME/.ssh/id_rsa" \
   														 -var "ssh_fingerprint=$(SSH_FINGERPRINT)"
 
 destroy:
-	cd infra/base && ls && terraform destroy -auto-approve -var "public_key=$$HOME/.ssh/id_rsa.pub" \
+	cd infra/base && terraform destroy -auto-approve -var "public_key=$$HOME/.ssh/id_rsa.pub" \
   														   -var "private_key=$$HOME/.ssh/id_rsa" \
   														   -var "ssh_fingerprint=$(SSH_FINGERPRINT)"
 
 finger:
 	@echo this is my fingerprint $(SSH_FINGERPRINT)
+
+output:
+	cd infra/base && terraform output
+
 	

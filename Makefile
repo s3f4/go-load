@@ -6,13 +6,13 @@ default:
 
 up: default
 	@echo "=============Compose Up============="
-	docker-compose -f docker-compose.yml up -d  --build
+	docker-compose -f docker-compose.dev.yml up -d  --build
 
 logs:
 	docker-compose logs -f
 
 down:
-	docker-compose down
+	docker-compose -f docker-compose.dev.yml down
 
 test:
 	go test -v -cover ./...

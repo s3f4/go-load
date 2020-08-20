@@ -3,4 +3,4 @@ build
 .dockerignore
 Dockerfile
 Dockerfile.dev
-nginx
+README.md

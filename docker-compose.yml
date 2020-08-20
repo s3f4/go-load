@@ -1,0 +1,24 @@
+version: "3.8"
+services:
+  web:
+    image: web
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+  worker:
+    build:
+      context: ./worker
+      dockerfile: Dockerfile.dev
+    image: worker
+    volumes:
+      - ./worker:/go/src/github.com/s3f4/go-load/worker
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure

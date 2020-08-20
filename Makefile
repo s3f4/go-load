@@ -2,11 +2,11 @@ SSH_FINGERPRINT=$(shell fp=`ssh-keygen -E md5 -lf ~/.ssh/id_rsa.pub | awk '{prin
 
 default:
 	@echo "=============Building============="
-	docker build -f worker/Dockerfile.dev -t worker .
+	#docker build -f worker/Dockerfile.dev -t worker .
 
 up: default
 	@echo "=============Compose Up============="
-	docker-compose up -d
+	docker-compose -f docker-compose.yml up -d  --build
 
 logs:
 	docker-compose logs -f
@@ -19,7 +19,9 @@ test:
 
 clean: down
 	@echo "=============cleaning up============="
-	rm -f api
+	rm -rf web/build
+	rm -rf web/node_modules
+	rm -rf worker/worker
 	docker system prune -f
 	docker volume prune -f
 

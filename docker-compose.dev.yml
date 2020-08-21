@@ -14,6 +14,7 @@ services:
       - "./web:/app"
       - "/app/node_modules"
     stdin_open: true
+
   worker:
     image: worker
     restart: always
@@ -22,20 +23,42 @@ services:
       dockerfile: Dockerfile.dev
     volumes:
       - ./worker:/go/src/github.com/s3f4/go-load/worker
+
   timeDB:
     image: timescale/timescaledb:latest-pg12
     restart: always
     environment:
-      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=timescaledb_example
     ports:
       - 5432:5432
+
   queue:
     image: rabbitmq:3
     restart: "no"
 
   queueAdmin:
     image: rabbitmq:3-management
-    environment:
+    restart: always
+    ports:
       - 8080:15672
+    environment:
       - RABBITMQ_DEFAULT_USER=user
       - RABBITMQ_DEFAULT_PASS=password
+      - RABBITMQ_DEFAULT_VHOST=queue
+
+  pgAdmin:
+    image: dpage/pgadmin4
+    restart: always
+    ports:
+      - 8081:80
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=test@test.com
+      - PGADMIN_DEFAULT_PASSWORD=123456
+
+  mysql:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: mysql_example

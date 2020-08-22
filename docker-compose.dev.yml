@@ -1,5 +1,12 @@
 version: "2.3"
 services:
+  api-gateway:
+    image: api-gateway
+    restart: always
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile.dev
+      
   web:
     image: web
     restart: always

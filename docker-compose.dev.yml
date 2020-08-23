@@ -6,7 +6,14 @@ services:
     build:
       context: ./api-gateway
       dockerfile: Dockerfile.dev
-      
+
+  event-handler:
+    image: event-handler
+    restart: always
+    build:
+      context: ./event-handler
+      dockerfile: Dockerfile.dev
+
   web:
     image: web
     restart: always
@@ -41,10 +48,6 @@ services:
       - 5432:5432
 
   queue:
-    image: rabbitmq:3
-    restart: "no"
-
-  queueAdmin:
     image: rabbitmq:3-management
     restart: always
     ports:
@@ -52,7 +55,6 @@ services:
     environment:
       - RABBITMQ_DEFAULT_USER=user
       - RABBITMQ_DEFAULT_PASS=password
-      - RABBITMQ_DEFAULT_VHOST=queue
 
   pgAdmin:
     image: dpage/pgadmin4

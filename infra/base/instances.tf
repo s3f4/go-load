@@ -29,3 +29,22 @@ resource "digitalocean_droplet" "master" {
     ]
   }
 }
+
+# Data instance for docker swarm
+resource "digitalocean_droplet" "data" {
+  image  = var.os
+  name   = "Data"
+  region = var.region
+  size   = var.size
+  ssh_keys = [
+    var.ssh_fingerprint
+  ]
+
+  connection {
+    host        = self.ipv4_address
+    user        = "root"
+    type        = "ssh"
+    private_key = file(var.private_key)
+    timeout     = "2m"
+  }
+}

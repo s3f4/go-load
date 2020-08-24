@@ -4,13 +4,13 @@ import "./App.css";
 import { initInstances } from "./api";
 
 const App: React.FC = () => {
-  const [count, setCount] = useState(0);
-  const [region, setRegion] = useState("AMS3");
+  const [count, setCount] = useState<number>(0);
+  const [region, setRegion] = useState<string>("AMS3");
 
   const handleChange = (e: any) => {
     switch (e.target.name) {
       case "count":
-        setCount(e.target.value);
+        setCount(parseInt(e.target.value));
         break;
       case "region":
         setRegion(e.target.value);
@@ -25,12 +25,21 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="App">
-      <form>
-        <input type="number" name="count" onChange={handleChange} />
-        <input type="text" name="region" onChange={handleChange} />
-        <button onClick={sendRequest}>Send</button>
-      </form>
+    <div>
+      <div className="container">
+        <nav className="navbar navbar-expand-lg navbar-light">
+          <a className="navbar-brand" href="/">
+            go-load
+          </a>
+        </nav>
+        <div className="container">
+          <div className="row">
+            <div className="col-sm">Form 1</div>
+            <div className="col-sm">Form 2</div>
+          </div>
+          Node list
+        </div>
+      </div>
     </div>
   );
 };

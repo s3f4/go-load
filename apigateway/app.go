@@ -23,7 +23,7 @@ func Run() {
 		gh.AllowCredentials(),
 	)
 	router = mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/instances", handlers.InstanceHandler.InitInstances).Methods("POST")
+	initHandlers()
 
 	router.Use(cors)
 
@@ -33,6 +33,14 @@ func Run() {
 	if err := http.ListenAndServe(":"+*port, router); err != nil {
 		panic(err)
 	}
+}
+
+func initHandlers() {
+	router.HandleFunc("/instances", handlers.InstanceHandler.Init).Methods("POST")
+	router.HandleFunc("/instances", handlers.InstanceHandler.List).Methods("GET")
+	router.HandleFunc("/instances", handlers.InstanceHandler.Destroy).Methods("DELETE")
+	router.HandleFunc("/workers", handlers.WorkerHandler.List).Methods("GET")
+	router.HandleFunc("/stats", handlers.StatsHandler.Get).Method("GET")
 }
 
 //Down downs service when kill SIGINT came.

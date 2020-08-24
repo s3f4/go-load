@@ -9,9 +9,9 @@ import (
 )
 
 type instanceHandlerInterface interface {
-	InitInstances(w http.ResponseWriter, r *http.Request)
-	DestroyInstances(w http.ResponseWriter, r *http.Request)
-	ListInstances(w http.ResponseWriter, r *http.Request)
+	Init(w http.ResponseWriter, r *http.Request)
+	Destroy(w http.ResponseWriter, r *http.Request)
+	List(w http.ResponseWriter, r *http.Request)
 }
 
 func respondWithError(w http.ResponseWriter, code int, message string) {
@@ -33,17 +33,21 @@ var (
 	InstanceHandler instanceHandlerInterface = &instanceHandler{}
 )
 
-func (ih *instanceHandler) InitInstances(w http.ResponseWriter, r *http.Request) {
+func (ih *instanceHandler) Init(w http.ResponseWriter, r *http.Request) {
 	var instanceRequest models.InstanceRequest
+
 	if err := json.NewDecoder(r.Body).Decode(&instanceRequest); err != nil {
 		fmt.Println(err)
 		respondWithError(w, http.StatusBadRequest, "JSON error")
 	}
+
 	respondWithJSON(w, http.StatusOK, instanceRequest)
 }
 
-func (ih *instanceHandler) DestroyInstances(w http.ResponseWriter, r *http.Request) {}
+func (ih *instanceHandler) Destroy(w http.ResponseWriter, r *http.Request) {
 
-func (ih *instanceHandler) ListInstances(w http.ResponseWriter, r *http.Request) {
+}
+
+func (ih *instanceHandler) List(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, []byte("OK"))
 }

@@ -1,19 +1,23 @@
 version: "2.3"
 services:
-  api-gateway:
-    image: api-gateway
-    container_name: api-gateway
+  apigateway:
+    image: apigateway
+    container_name: apigateway
     restart: always
     build:
-      context: ./api-gateway
+      context: ./apigateway
       dockerfile: Dockerfile.dev
+    ports:
+      - 3001:3001
+    volumes:
+      - ./apigateway:/go/src/github.com/s3f4/go-load/apigateway
 
-  event-handler:
-    image: event-handler
-    container_name: event-handler
+  eventhandler:
+    image: eventhandler
+    container_name: eventhandler
     restart: always
     build:
-      context: ./event-handler
+      context: ./eventhandler
       dockerfile: Dockerfile.dev
 
   web:

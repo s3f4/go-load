@@ -6,10 +6,10 @@ WORKDIR /build
 
 RUN go mod download
 RUN go mod verify
-RUN GO111MODULE=on CGO_ENABLED=0 GOOS=linux go build -o api-gateway
+RUN GO111MODULE=on CGO_ENABLED=0 GOOS=linux go build -o apigateway
 
 FROM scratch
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-COPY --from=builder /build/api-gateway /app/
+COPY --from=builder /build/apigateway /app/
 WORKDIR /app/
-CMD [ "./api-gateway" ]
+CMD [ "./apigateway" ]

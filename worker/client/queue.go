@@ -56,7 +56,7 @@ func (r *rabbitMQService) Send(queue string, message interface{}) error {
 		false,  // mandatory
 		false,  // immediate
 		amqp.Publishing{
-			ContentType: "text/plain",
+			ContentType: "text/json",
 			Body:        message.([]byte),
 		},
 	)

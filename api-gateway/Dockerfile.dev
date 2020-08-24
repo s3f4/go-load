@@ -1,9 +1,0 @@
-FROM golang:latest
-
-WORKDIR /go/src/github.com/s3f4/go-load/worker
-
-COPY . .
-
-RUN ["go", "get", "github.com/githubnemo/CompileDaemon"]
-
-ENTRYPOINT CompileDaemon -log-prefix=false -build="go build -o api-gateway" -command="./api-gateway"

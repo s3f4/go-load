@@ -1,0 +1,9 @@
+FROM golang:latest
+
+WORKDIR /go/src/github.com/s3f4/go-load/eventhandler
+
+COPY . .
+
+RUN ["go", "get", "github.com/githubnemo/CompileDaemon"]
+
+ENTRYPOINT CompileDaemon -directory=cmd/. -log-prefix=false -build="go build -o eventhandler" -command="./cmd/eventhandler"

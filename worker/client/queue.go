@@ -12,8 +12,7 @@ import (
 // those messages.
 type QueueService interface {
 	Send(queue string, message interface{}) error
-	Receive(queue string) (interface{}, error)
-	Listen(msgs <-chan amqp.Delivery, channel *amqp.Channel)
+	Listen(queue string)
 }
 
 type rabbitMQService struct {
@@ -63,29 +62,20 @@ func (r *rabbitMQService) Send(queue string, message interface{}) error {
 	)
 
 	return err
-
 }
-func (r *rabbitMQService) Receive(queue string) (message interface{}, err error) {
+
+func (r *rabbitMQService) Listen(queue string) {
 	conn, err := amqp.Dial(r.uri)
 	if err != nil {
-		return nil, err
+		log.Fatalf("%v failed to connect queue", err)
 	}
 	defer conn.Close()
 
 	ch, err := conn.Channel()
 	defer ch.Close()
 
-	q, err := ch.QueueDeclare(
-		queue, // name
-		false, // durable
-		false, // delete when unused
-		false, // exclusive
-		false, // no-wait
-		nil,   // arguments
-	)
-
 	msgs, err := ch.Consume(
-		q.Name,   // queue
+		queue,    // queue
 		"worker", // consumer
 		false,    // auto-ack
 		false,    // exclusive
@@ -93,22 +83,19 @@ func (r *rabbitMQService) Receive(queue string) (message interface{}, err error)
 		false,    // no-wait
 		nil,      // args
 	)
+
 	if err != nil {
-		return nil, fmt.Errorf("%v failed to register a consumer", err)
+		log.Fatalf("%v failed to register a consumer", err)
 	}
 
-	r.Listen(msgs, ch)
-
-	return nil, nil
-}
-
-func (r *rabbitMQService) Listen(msgs <-chan amqp.Delivery, ch *amqp.Channel) {
+	block := make(chan struct{})
 	go func() {
-		for {
-			for d := range msgs {
-				log.Printf("Received a message: %s", d.Body)
-				ch.Ack(d.DeliveryTag, d.Redelivered)
-			}
+		for d := range msgs {
+			log.Printf("Received a message: %s", d.Body)
+			ch.Ack(d.DeliveryTag, d.Redelivered)
 		}
+		fmt.Println("test")
 	}()
+	fmt.Println("finishing...")
+	<-block
 }

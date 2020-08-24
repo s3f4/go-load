@@ -2,6 +2,7 @@ version: "2.3"
 services:
   api-gateway:
     image: api-gateway
+    container_name: api-gateway
     restart: always
     build:
       context: ./api-gateway
@@ -9,6 +10,7 @@ services:
 
   event-handler:
     image: event-handler
+    container_name: event-handler
     restart: always
     build:
       context: ./event-handler
@@ -16,6 +18,7 @@ services:
 
   web:
     image: web
+    container_name: web
     restart: always
     build:
       context: ./web
@@ -31,6 +34,7 @@ services:
 
   worker:
     image: worker
+    container_name: worker
     restart: always
     build:
       context: ./worker
@@ -40,6 +44,7 @@ services:
 
   timeDB:
     image: timescale/timescaledb:latest-pg12
+    container_name: timeDB
     restart: always
     environment:
       - POSTGRES_USER=root
@@ -49,6 +54,7 @@ services:
 
   queue:
     image: rabbitmq:3-management
+    container_name: queue
     restart: always
     ports:
       - 8080:15672
@@ -58,6 +64,7 @@ services:
 
   pgAdmin:
     image: dpage/pgadmin4
+    container_name: pgAdmin
     restart: always
     ports:
       - 8081:80
@@ -67,6 +74,7 @@ services:
 
   mysql:
     image: mysql
+    container_name: mysql
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     environment:

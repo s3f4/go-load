@@ -2,5 +2,5 @@ infra/base/.terraform
 infra/base/terraform.tfstate
 infra/base/.terraform.tfstate.lock.info
 infra/base/terraform.tfstate.backup
-worker/worker
+worker/cmd/worker
 infra/base/terraform.tfvars

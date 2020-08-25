@@ -65,7 +65,6 @@ func (r *rabbitMQService) Send(queue string, message interface{}) error {
 }
 
 func (r *rabbitMQService) Listen(queue string) {
-	fmt.Println("Listening...")
 	conn, err := amqp.Dial(r.uri)
 	if err != nil {
 		log.Fatalf("%v failed to connect queue", err)

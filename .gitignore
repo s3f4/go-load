@@ -5,3 +5,4 @@ infra/base/terraform.tfstate.backup
 infra/base/terraform.tfvars
 worker/cmd/worker
 apigateway/cmd/apigateway
+eventhandler/cmd/eventhandler

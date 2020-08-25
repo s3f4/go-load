@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-
-import "./App.css";
 import { initInstances } from "./api";
+import Header from "./components/layouts/Header";
 
 const App: React.FC = () => {
   const [count, setCount] = useState<number>(0);
@@ -27,11 +26,7 @@ const App: React.FC = () => {
   return (
     <div>
       <div className="container">
-        <nav className="navbar navbar-expand-lg navbar-light">
-          <a className="navbar-brand" href="/">
-            go-load
-          </a>
-        </nav>
+        <Header />
         <div className="container">
           <div className="row">
             <div className="col-sm">Form 1</div>

@@ -9,6 +9,7 @@ type statsHandlersInterface interface {
 type statsHandler struct{}
 
 var (
+	// StatsHandler ...
 	StatsHandler statsHandlersInterface = &statsHandler{}
 )
 

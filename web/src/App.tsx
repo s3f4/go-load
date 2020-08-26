@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { initInstances } from "./api";
 import Header from "./components/layouts/Header";
+import MainLayout from "./components/layouts/MainLayout";
 
 const App: React.FC = () => {
   const [count, setCount] = useState<number>(0);
@@ -24,18 +25,9 @@ const App: React.FC = () => {
   };
 
   return (
-    <div>
-      <div className="container">
-        <Header />
-        <div className="container">
-          <div className="row">
-            <div className="col-sm">Form 1</div>
-            <div className="col-sm">Form 2</div>
-          </div>
-          Node list
-        </div>
-      </div>
-    </div>
+    <React.Fragment>
+      <MainLayout />
+    </React.Fragment>
   );
 };
 

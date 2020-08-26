@@ -25,14 +25,15 @@ export enum Sizes {
   buttonWidth = '10rem',
   buttonFontSize = '1.2rem',
 
-  inputHeight = '2rem',
+  inputHeight = '2.5rem',
   textAreaHeight = '20rem',
   fontSizePrimary = '1.6rem',
   borderRadius1 = '0.5rem',
   buttonBorderRadius = '0.5rem',
-  smallText = '1.1rem',
+  smallText = '1.4rem',
 
-  label = '0.8rem',
+  textInputFontSize = '1.4rem',
+  label = '1.4rem',
 }
 
 export class Borders {
@@ -48,7 +49,7 @@ export enum Box {
                 box-shadow: 0.3rem 0.3rem 0.2rem 0px rgba(0,0,0,0.25);`,
 }
 
-export const html = css`
+export const html = `
   *,
   *::after,
   *::before {
@@ -59,7 +60,6 @@ export const html = css`
   html {
     font-size: 62.5%;
     font-family: "Roboto", Arial, Helvetica, sans-serif;
-    background-color: red;
   }
 
   body {

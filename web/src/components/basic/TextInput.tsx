@@ -20,7 +20,8 @@ const TextInput: React.FC<Props> = (props: Props) => {
 };
 
 const inputDiv = css`
-  margin-top: 0.3rem;
+  margin: 0.9rem auto;
+  padding: 0.9rem auto;
 `;
 
 const label = css`
@@ -34,6 +35,8 @@ const textInput = css`
   height: ${Sizes.inputHeight};
   width: 100%;
   border-radius: ${Sizes.borderRadius1};
+  font-size: ${Sizes.textInputFontSize};
+  padding: 0.8rem 0.5rem;
 `;
 
 export default TextInput;

@@ -14,6 +14,7 @@ const Content = () => {
 const content = css`
   width: 100%;
   min-height: 20rem;
+  padding: 2rem 0;
 `;
 
 export default Content;

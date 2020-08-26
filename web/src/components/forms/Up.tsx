@@ -3,7 +3,6 @@ import React from "react";
 import { jsx, css } from "@emotion/core";
 import TextInput from "../basic/TextInput";
 import Button from "../basic/Button";
-import { Sizes } from "../style";
 
 const Up = () => {
   return (
@@ -23,7 +22,6 @@ const Up = () => {
     </div>
   );
 };
-
 
 const formDiv = css`
   margin: 0 auto;

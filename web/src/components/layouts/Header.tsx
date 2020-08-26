@@ -28,7 +28,7 @@ const Header: React.FC<Props> = (props: Props) => {
 const header = css`
   background-color: #007d9c;
   width: 100%;
-  height: 4rem;
+  height: 5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -46,14 +46,14 @@ const logoDiv = css`
 `;
 
 const logo = css`
-  height: 80%;
-  width: 20%;
+  height: 100%;
+  width: 10%;
 `;
 
 const logoFont = css`
-  height: 70%;
-  width: 80%;
-  font-size: 2.5rem;
+  height: 80%;
+  width: 90%;
+  font-size: 2.7rem;
 `;
 
 const headerLink = css`
@@ -66,7 +66,7 @@ const headerLink = css`
 const headerDiv = css`
   width: 70%;
   height: 70%;
-  font-size: 2rem;
+  font-size: 2.3rem;
   display: flex;
   align-items: center;
   & a {

@@ -21,7 +21,7 @@ const MainLayout: React.FC<Props> = (props: Props) => {
         <title>
           {props.title ? props.title : "Go-Load Load Testing Helper"}
         </title>
-        <Global styles={html} />
+        <style>{html}</style>
       </Helmet>
       <div css={container}>
         <Header />

@@ -8,7 +8,7 @@ export enum Colors {
 
   buttonPrimary = 'rgba(240, 243, 91, 0.863)',
 
-  borderPrimary = '#ddd',
+  borderPrimary = '#abb',
   borderLight = '#e5e5e5',
   borderInvalid = 'red',
 
@@ -18,7 +18,7 @@ export enum Colors {
 }
 
 export enum Sizes {
-  inputHeight = '4rem',
+  inputHeight = '2rem',
   textAreaHeight = '20rem',
   fontSizePrimary = '1.6rem',
   borderRadius1 = '0.5rem',
@@ -26,6 +26,7 @@ export enum Sizes {
 }
 
 export class Borders {
+  public static buttonBorder = `0.1rem solid black`;
   public static border1 = `0.1rem solid ${Colors.borderPrimary}`;
   public static textInputBorder = (valid: boolean) =>
       `0.1rem solid ${valid ? Colors.borderPrimary : 'red'}`;

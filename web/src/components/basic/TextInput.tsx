@@ -20,6 +20,7 @@ const textInput = css`
   border: ${Borders.textInputBorder(true)};
   height: ${Sizes.inputHeight};
   width: 100%;
+  border-radius: ${Sizes.borderRadius1};
 `;
 
 export default TextInput;

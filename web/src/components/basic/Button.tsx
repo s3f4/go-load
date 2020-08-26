@@ -1,7 +1,7 @@
 /** @jsx jsx */
 import React from "react";
 import { jsx, css } from "@emotion/core";
-import { Sizes, Borders } from "../style";
+import { Sizes, Borders, Colors } from "../style";
 
 interface Props {
   text: string;
@@ -19,12 +19,14 @@ const Button = (props: Props) => {
 
 const button = css`
   border: ${Borders.buttonBorder};
-  border-radius: ${Sizes.borderRadius1};
-  margin: 0.2rem;
-  min-width: 2rem;
+  border-radius: ${Sizes.buttonBorderRadius};
+  margin-top: 0.9rem;
+  width: ${Sizes.buttonWidth};
   height: ${Sizes.inputHeight};
-  color: white;
-  background-color: #007d9c;
+  color: ${Colors.buttonTextColor};
+  background-color: ${Colors.buttonColor};
+  font-weight: ${Sizes.buttonFontWeight};
+  font-size: ${Sizes.buttonFontSize};
 `;
 
 export default Button;

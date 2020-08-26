@@ -1,34 +1,34 @@
-import { css } from "@emotion/core";
+import {css} from '@emotion/core';
 
 export enum Colors {
-  textPrimary = "#000",
-  textSecondary = "#ddd",
-  textTertiary = "#ddd",
-  textQuaternary = "#ddd",
+  textPrimary = '#000',
+  textSecondary = '#ddd',
+  textTertiary = '#ddd',
+  textQuaternary = '#ddd',
 
-  buttonPrimary = "rgba(240, 243, 91, 0.863)",
+  buttonPrimary = 'rgba(240, 243, 91, 0.863)',
 
-  borderPrimary = "#ddd",
-  borderLight = "#e5e5e5",
-  borderInvalid = "red",
+  borderPrimary = '#ddd',
+  borderLight = '#e5e5e5',
+  borderInvalid = 'red',
 
-  mainBackgroundColor = "#fff",
-  qBoxBackgroundColor = "#faf9f9",
-  inputFocus = "#ddd",
+  mainBackgroundColor = '#fff',
+  qBoxBackgroundColor = '#faf9f9',
+  inputFocus = '#ddd',
 }
 
 export enum Sizes {
-  inputHeight = "4rem",
-  textAreaHeight = "20rem",
-  fontSizePrimary = "1.6rem",
-  borderRadius1 = "0.5rem",
-  smallText = "1.1rem",
+  inputHeight = '4rem',
+  textAreaHeight = '20rem',
+  fontSizePrimary = '1.6rem',
+  borderRadius1 = '0.5rem',
+  smallText = '1.1rem',
 }
 
 export class Borders {
   public static border1 = `0.1rem solid ${Colors.borderPrimary}`;
   public static textInputBorder = (valid: boolean) =>
-    `0.1rem solid ${valid ? Colors.borderPrimary : "red"}`;
+      `0.1rem solid ${valid ? Colors.borderPrimary : 'red'}`;
 }
 
 export enum Box {

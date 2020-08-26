@@ -1,12 +1,17 @@
+/** @jsx jsx */
 import React from "react";
+import { jsx, css } from "@emotion/core";
+import TextInput from "../basic/TextInput";
+import Button from "../basic/Button";
 
 const Up = () => {
   return (
     <div>
       <label>Request Count</label>
-      <input type="text" name="requestCount" />
+      <TextInput type="text " name="requestCount" />
       <label>Instance Count</label>
-      <input type="text" name="instanceCount" />
+      <TextInput type="text " name="requestCount" />
+      <Button text="Up" />
     </div>
   );
 };

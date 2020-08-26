@@ -28,7 +28,7 @@ const Header: React.FC<Props> = (props: Props) => {
 const header = css`
   background-color: #007d9c;
   width: 100%;
-  height: 4.5rem;
+  height: 4rem;
   display: flex;
   justify-content: space-between;
   align-items: center;

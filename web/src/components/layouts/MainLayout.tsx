@@ -4,6 +4,8 @@ import { Helmet } from "react-helmet";
 import { jsx, Global, css } from "@emotion/core";
 import { html } from "../style";
 import Header from "./Header";
+import Content from "./Content";
+import Footer from "./Footer";
 
 interface Props {
   title?: string;
@@ -23,6 +25,8 @@ const MainLayout: React.FC<Props> = (props: Props) => {
       </Helmet>
       <div css={container}>
         <Header />
+        <Content />
+        <Footer />
       </div>
     </React.Fragment>
   );

@@ -37,15 +37,11 @@ var (
 func (ih *instanceHandler) Init(w http.ResponseWriter, r *http.Request) {
 	var instanceRequest models.InstanceRequest
 
-	var item map[string]interface{}
-	_ = json.NewDecoder(r.Body).Decode(&item)
-	fmt.Println(item)
-
 	if err := json.NewDecoder(r.Body).Decode(&instanceRequest); err != nil {
-		fmt.Println(err)
 		respondWithError(w, http.StatusBadRequest, "JSON error")
+		return
 	}
-
+	
 	t := template.NewInfraBuilder("", "", 0)
 	t.Write()
 

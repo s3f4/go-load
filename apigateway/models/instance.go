@@ -2,7 +2,8 @@ package models
 
 // InstanceRequest is used for handlers and request
 type InstanceRequest struct {
-	Count  int    `json:"count"`
-	Region string `json:"region"`
+	RequestCount     int    `json:"requestCount"`
+	InstanceCount    int    `json:"instanceCount"`
+	Region           string `json:"region"`
+	MaxWorkingPeriod int    `json:"maxWorkingPeriod"`
 }
-

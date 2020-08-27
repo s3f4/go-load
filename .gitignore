@@ -6,3 +6,4 @@ infra/base/terraform.tfvars
 worker/cmd/worker
 apigateway/cmd/apigateway
 eventhandler/cmd/eventhandler
+test

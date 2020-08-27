@@ -6,6 +6,7 @@ import BasicProps from "./basicProps";
 
 interface Props extends BasicProps {
   label?: string;
+  onChange?: (e: React.FormEvent) => void;
 }
 
 const TextInput: React.FC<Props> = (props: Props) => {
@@ -13,7 +14,12 @@ const TextInput: React.FC<Props> = (props: Props) => {
     <React.Fragment>
       <div css={inputDiv}>
         {props.label ? <label css={label}>{props.label}</label> : ""}
-        <input css={textInput} type="text" value={props.value} />
+        <input
+          css={textInput}
+          type="text"
+          value={props.value}
+          onChange={props.onChange}
+        />
       </div>
     </React.Fragment>
   );

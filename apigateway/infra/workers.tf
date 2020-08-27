@@ -1,8 +1,8 @@
 resource "digitalocean_droplet" "workers" {
   image  = var.os
-  name   = "Worker-{{.Index}}"
-  region = {{.Region}}
-  size   = {{.Size}}
+  name   = "Worker-22"
+  region = "AMS3"
+  size   = "1GB"
 
   ssh_keys = [
     var.ssh_fingerprint

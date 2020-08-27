@@ -5,12 +5,13 @@ import { Sizes, Borders, Colors } from "../style";
 
 interface Props {
   text: string;
+  onClick: (e: any) => any;
 }
 
 const Button = (props: Props) => {
   return (
     <React.Fragment>
-      <button css={button} type="submit">
+      <button css={button} type="submit" onClick={props.onClick}>
         {props.text}
       </button>
     </React.Fragment>

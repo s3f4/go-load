@@ -3,7 +3,9 @@ import React from "react";
 import { jsx, css } from "@emotion/core";
 import { Sizes } from "../style";
 
-const Footer = () => {
+interface Props {}
+
+const Footer: React.FC<Props> = () => {
   return (
     <div css={footer}>
       <div css={footerContent}>2020 go-load</div>

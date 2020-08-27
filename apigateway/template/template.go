@@ -1,4 +1,4 @@
-package apigateway
+package template
 
 import (
 	"bufio"
@@ -23,12 +23,16 @@ type infraBuilder struct {
 }
 
 // NewInfraBuilder returns a new infraBuilder instance
-func NewInfraBuilder() InfraBuilderService {
-	return &infraBuilder{}
+func NewInfraBuilder(region, size string, count int) InfraBuilderService {
+	return &infraBuilder{
+		region: region,
+		size:   size,
+		count:  count,
+	}
 }
 
 // Parse template file
-func Parse(path string) *bytes.Buffer {
+func (*infraBuilder) Parse(path string) *bytes.Buffer {
 	t, err := template.ParseFiles(path)
 	if err != nil {
 		log.Print(err)
@@ -52,9 +56,9 @@ func Parse(path string) *bytes.Buffer {
 }
 
 // Write to template file
-func Write() {
+func (ib *infraBuilder) Write() {
 	f, _ := os.Create("infra/workers.tf")
-	tpl := Parse("template/instance.tpl")
+	tpl := ib.Parse("template/workers.tpl")
 	reader := bufio.NewReader(tpl)
 	io.Copy(f, reader)
 	f.Close()

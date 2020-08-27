@@ -1,7 +1,5 @@
-import {css} from '@emotion/core';
-
 export enum Colors {
-  textPrimary = '#000',
+  textPrimary = '#3e4042',
   textSecondary = '#ddd',
   textTertiary = '#ddd',
   textQuaternary = '#ddd',

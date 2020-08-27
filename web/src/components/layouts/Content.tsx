@@ -3,7 +3,8 @@ import React from "react";
 import { jsx, css } from "@emotion/core";
 import Up from "../forms/Up";
 
-const Content = () => {
+interface Props {}
+const Content: React.FC<Props> = () => {
   return (
     <div css={content}>
       <Up />

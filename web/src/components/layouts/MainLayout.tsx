@@ -1,7 +1,7 @@
 /** @jsx jsx */
 import React from "react";
 import { Helmet } from "react-helmet";
-import { jsx, Global, css } from "@emotion/core";
+import { jsx, css } from "@emotion/core";
 import { html } from "../style";
 import Header from "./Header";
 import Content from "./Content";

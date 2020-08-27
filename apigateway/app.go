@@ -40,7 +40,7 @@ func initHandlers() {
 	router.HandleFunc("/instances", handlers.InstanceHandler.List).Methods("GET")
 	router.HandleFunc("/instances", handlers.InstanceHandler.Destroy).Methods("DELETE")
 	router.HandleFunc("/workers", handlers.WorkerHandler.List).Methods("GET")
-	router.HandleFunc("/stats", handlers.StatsHandler.Get).Method("GET")
+	router.HandleFunc("/stats", handlers.StatsHandler.Get).Methods("GET")
 }
 
 //Down downs service when kill SIGINT came.

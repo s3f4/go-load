@@ -10,6 +10,7 @@ interface Props {}
 const Up: React.FC<Props> = () => {
   const [requestCount, setRequestCount] = useState<number>(0);
   const [instanceCount, setInstanceCount] = useState<number>(0);
+  const [instanceSize, setInstanceSize] = useState<string>("");
   const [maxWorkingPeriod, setMaxWorkingPeriod] = useState<number>(0);
   const [region, setRegion] = useState<string>("AMS3");
 
@@ -38,6 +39,7 @@ const Up: React.FC<Props> = () => {
 
   return (
     <div css={formDiv}>
+      <h2 css={formTitle}>Set up Testing Infrastructure</h2>
       <TextInput
         label={"Request Count"}
         type="text"
@@ -45,7 +47,6 @@ const Up: React.FC<Props> = () => {
         onChange={handleChange("requestCount")}
         value={requestCount}
       />
-
       <TextInput
         label={"Instance Count"}
         type="text"
@@ -53,7 +54,13 @@ const Up: React.FC<Props> = () => {
         onChange={handleChange("instanceCount")}
         value={instanceCount}
       />
-
+      <TextInput
+        label={"Instance Size"}
+        type="text"
+        name="instanceSize"
+        onChange={handleChange("instanceSize")}
+        value={instanceCount}
+      />
       <TextInput
         label={"Region"}
         type="text"
@@ -61,7 +68,6 @@ const Up: React.FC<Props> = () => {
         value={region}
         onChange={handleChange("region")}
       />
-
       <TextInput
         label={"Max working period(minutes)"}
         type="text"
@@ -77,6 +83,12 @@ const Up: React.FC<Props> = () => {
 const formDiv = css`
   margin: 0 auto;
   width: 50%;
+`;
+
+const formTitle = css`
+  font-size: 2.3rem;
+  text-decoration: none;
+  text-align: center;
 `;
 
 export default Up;

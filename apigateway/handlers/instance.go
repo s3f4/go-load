@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/s3f4/go-load/apigateway/models"
@@ -41,9 +40,16 @@ func (ih *instanceHandler) Init(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusBadRequest, "JSON error")
 		return
 	}
-	
-	t := template.NewInfraBuilder("", "", 0)
-	t.Write()
+
+	t := template.NewInfraBuilder(
+		instanceRequest.Region,
+		instanceRequest.InstanceSize,
+		instanceRequest.InstanceCount,
+	)
+
+	if err := t.Write(); err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+	}
 
 	respondWithJSON(w, http.StatusOK, instanceRequest)
 }

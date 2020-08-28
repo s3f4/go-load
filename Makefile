@@ -25,7 +25,10 @@ clean: down
 	docker system prune -f
 	docker volume prune -f
 
-up-instances:
+init:
+	cd infra/base && terraform init
+
+up-instances: init
 	@echo "=============instances spinning up============="
 	cd infra/base && terraform apply -auto-approve -var "public_key=$$HOME/.ssh/id_rsa.pub" \
   														 -var "private_key=$$HOME/.ssh/id_rsa" \

@@ -12,14 +12,20 @@ import (
 // InfraBuilderService is used to build new
 // terraform files to create new digitalocean droplets
 type InfraBuilderService interface {
-	Parse(path string) *bytes.Buffer
-	Write()
+	Parse(path string) (*bytes.Buffer, error)
+	Write() error
 }
 
 type infraBuilder struct {
 	region string
 	size   string
 	count  int
+}
+
+type templateStruct struct {
+	Region string
+	Size   string
+	Count  []int
 }
 
 // NewInfraBuilder returns a new infraBuilder instance
@@ -32,34 +38,42 @@ func NewInfraBuilder(region, size string, count int) InfraBuilderService {
 }
 
 // Parse template file
-func (*infraBuilder) Parse(path string) *bytes.Buffer {
+func (ib *infraBuilder) Parse(path string) (*bytes.Buffer, error) {
 	t, err := template.ParseFiles(path)
 	if err != nil {
 		log.Print(err)
-		return nil
+		return nil, nil
 	}
 
-	config := map[string]string{
-		"region": "AMS3",
-		"size":   "1GB",
-		"index":  "22",
-	}
+	var ts templateStruct
+	ts.Size = ib.size
+	ts.Region = ib.region
+	ts.Count = make([]int, ib.count)
 
 	var tpl bytes.Buffer
-
-	err = t.Execute(&tpl, config)
+	err = t.Execute(&tpl, ts)
 	if err != nil {
 		log.Print("execute: ", err)
-		return nil
+		return nil, err
 	}
-	return &tpl
+	return &tpl, nil
 }
 
 // Write to template file
-func (ib *infraBuilder) Write() {
-	f, _ := os.Create("infra/workers.tf")
-	tpl := ib.Parse("template/workers.tpl")
+func (ib *infraBuilder) Write() error {
+	f, err := os.Create("infra/workers.tf")
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	tpl, err := ib.Parse("template/workers.tpl")
+	if err != nil {
+		return err
+	}
+
 	reader := bufio.NewReader(tpl)
 	io.Copy(f, reader)
-	f.Close()
+
+	return nil
 }

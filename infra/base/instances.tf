@@ -16,7 +16,7 @@ resource "digitalocean_droplet" "master" {
     timeout     = "2m"
   }
 
-  ## Install ansbile to master instance
+  ## Install ansible to master instance
   provisioner "file" {
     source      = "../scripts/install-ansible.sh"
     destination = "/tmp/install-ansible.sh"
@@ -26,6 +26,19 @@ resource "digitalocean_droplet" "master" {
     inline = [
       "chmod +x /tmp/install-ansible.sh",
       "/tmp/install-ansible.sh",
+    ]
+  }
+
+  ## Install terraform to master instance
+  provisioner "file" {
+    source      = "../scripts/install-terraform.sh"
+    destination = "/tmp/install-terraform.sh"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "chmod +x /tmp/install-terraform.sh",
+      "/tmp/install-terraform.sh",
     ]
   }
 }

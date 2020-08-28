@@ -7,3 +7,4 @@ worker/cmd/worker
 apigateway/cmd/apigateway
 eventhandler/cmd/eventhandler
 test
+apigateway/infra/workers.tf

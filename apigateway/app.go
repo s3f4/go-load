@@ -7,25 +7,34 @@ import (
 	"os"
 	"os/signal"
 
-	gh "github.com/gorilla/handlers"
-	"github.com/gorilla/mux"
+	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/cors"
 	"github.com/s3f4/go-load/apigateway/handlers"
 )
 
-var router *mux.Router
+var router *chi.Mux
 
 // Run apigateway Service
 func Run() {
 	go Down()
-	cors := gh.CORS(
-		gh.AllowedHeaders([]string{"content-type"}),
-		gh.AllowedOrigins([]string{"*"}),
-		gh.AllowCredentials(),
-	)
-	router = mux.NewRouter().StrictSlash(true)
-	initHandlers()
+	router = chi.NewRouter()
 
-	router.Use(cors)
+	router.Use(middleware.RequestID)
+	router.Use(middleware.RealIP)
+	router.Use(middleware.Logger)
+	router.Use(middleware.Recoverer)
+
+	cors := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: true,
+		MaxAge:           300, // Maximum value not ignored by any of major browsers
+	})
+	router.Use(cors.Handler)
+	initHandlers()
 
 	port := flag.String("port", "3001", " default port is 3001")
 	flag.Parse()
@@ -36,11 +45,11 @@ func Run() {
 }
 
 func initHandlers() {
-	router.HandleFunc("/instances", handlers.InstanceHandler.Init).Methods("POST")
-	router.HandleFunc("/instances", handlers.InstanceHandler.List).Methods("GET")
-	router.HandleFunc("/instances", handlers.InstanceHandler.Destroy).Methods("DELETE")
-	router.HandleFunc("/workers", handlers.WorkerHandler.List).Methods("GET")
-	router.HandleFunc("/stats", handlers.StatsHandler.Get).Methods("GET")
+	router.Post("/instances", handlers.InstanceHandler.Init)
+	router.Get("/instances", handlers.InstanceHandler.List)
+	router.Delete("/instances", handlers.InstanceHandler.Destroy)
+	router.Get("/workers", handlers.WorkerHandler.List)
+	router.Get("/stats", handlers.StatsHandler.Get)
 }
 
 //Down downs service when kill SIGINT came.

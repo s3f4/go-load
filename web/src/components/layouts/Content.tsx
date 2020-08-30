@@ -1,7 +1,7 @@
 /** @jsx jsx */
 import React from "react";
 import { jsx, css } from "@emotion/core";
-import Up from "../forms/Up";
+import Up from "../forms/init";
 
 interface Props {}
 const Content: React.FC<Props> = () => {

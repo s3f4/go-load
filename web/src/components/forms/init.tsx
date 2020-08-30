@@ -10,9 +10,7 @@ interface Props {}
 const Up: React.FC<Props> = () => {
   const [requestCount, setRequestCount] = useState<number>(0);
   const [instanceCount, setInstanceCount] = useState<number>(0);
-  const [instanceSize, setInstanceSize] = useState<string>("");
   const [maxWorkingPeriod, setMaxWorkingPeriod] = useState<number>(0);
-  const [region, setRegion] = useState<string>("AMS3");
 
   const handleChange = (name?: string) => (e: any) => {
     switch (name) {
@@ -21,9 +19,6 @@ const Up: React.FC<Props> = () => {
         break;
       case "requestCount":
         setRequestCount(parseInt(e.target.value));
-        break;
-      case "region":
-        setRegion(e.target.value);
         break;
       case "maxWorkingPeriod":
         setMaxWorkingPeriod(parseInt(e.target.value));
@@ -53,20 +48,6 @@ const Up: React.FC<Props> = () => {
         name="instanceCount"
         onChange={handleChange("instanceCount")}
         value={instanceCount}
-      />
-      <TextInput
-        label={"Instance Size"}
-        type="text"
-        name="instanceSize"
-        onChange={handleChange("instanceSize")}
-        value={instanceCount}
-      />
-      <TextInput
-        label={"Region"}
-        type="text"
-        name="region"
-        value={region}
-        onChange={handleChange("region")}
       />
       <TextInput
         label={"Max working period(minutes)"}

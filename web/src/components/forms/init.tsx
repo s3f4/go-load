@@ -28,7 +28,7 @@ const Up: React.FC<Props> = () => {
 
   const sendRequest = (e: any) => {
     e.preventDefault();
-    const instances = { requestCount, instanceCount, region, maxWorkingPeriod };
+    const instances = { requestCount, instanceCount, maxWorkingPeriod };
     initInstances(instances).then((data) => console.log(data));
   };
 

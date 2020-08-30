@@ -2,7 +2,7 @@
 import React from "react";
 import { jsx, css } from "@emotion/core";
 import { ReactComponent as ReactLogo } from "../img/gopher.svg";
-
+import { Link } from "react-router-dom";
 interface Props {}
 
 const Header: React.FC<Props> = (props: Props) => {
@@ -16,9 +16,9 @@ const Header: React.FC<Props> = (props: Props) => {
           </a>
         </div>
         <div css={headerDiv}>
-          <a href="content">Instances</a>
-          <a href="content">Workers</a>
-          <a href="content">Stats</a>
+          <Link to="/instances">Instances</Link>
+          <Link to="/workers">Instances</Link>
+          <Link to="/stats">Instances</Link>
         </div>
       </div>
     </React.Fragment>

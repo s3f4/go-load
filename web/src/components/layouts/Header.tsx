@@ -17,8 +17,8 @@ const Header: React.FC<Props> = (props: Props) => {
         </div>
         <div css={headerDiv}>
           <Link to="/instances">Instances</Link>
-          <Link to="/workers">Instances</Link>
-          <Link to="/stats">Instances</Link>
+          <Link to="/workers">Workers</Link>
+          <Link to="/stats">Stats</Link>
         </div>
       </div>
     </React.Fragment>

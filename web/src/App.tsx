@@ -6,7 +6,7 @@ import Stats from "./pages/stats";
 
 const App: React.FC = () => {
   return (
-    <React.Fragment>
+    <Router>
       <Switch>
         <Route exact path="/instances">
           <Instances />
@@ -18,7 +18,7 @@ const App: React.FC = () => {
           <Stats />
         </Route>
       </Switch>
-    </React.Fragment>
+    </Router>
   );
 };
 

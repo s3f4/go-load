@@ -1,9 +1,10 @@
 # Master instance for docker swarm
 resource "digitalocean_droplet" "master" {
-  image  = var.os
-  name   = "Master"
-  region = var.region
-  size   = var.size
+  image     = var.os
+  name      = "Master"
+  region    = var.region
+  size      = var.size
+
   ssh_keys = [
     var.ssh_fingerprint
   ]
@@ -28,6 +29,12 @@ resource "digitalocean_droplet" "master" {
       "/tmp/install-ansible.sh",
     ]
   }
+
+  ## Upload inventory file to master instance
+  # provisioner "file" {
+  #   source      = file(local_file.inventory.filename)
+  #   destination = "/etc/inventory.txt"
+  # }
 
   ## Install terraform to master instance
   provisioner "file" {

@@ -3,13 +3,11 @@ import React from "react";
 import { jsx, css } from "@emotion/core";
 import Up from "../forms/init";
 
-interface Props {}
-const Content: React.FC<Props> = () => {
-  return (
-    <div css={content}>
-      <Up />
-    </div>
-  );
+interface Props {
+  content?: React.ReactNode;
+}
+const Content: React.FC<Props> = (props: Props) => {
+  return <div css={content}>{props.content ? props.content : <Up />}</div>;
 };
 
 const content = css`

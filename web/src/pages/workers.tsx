@@ -8,14 +8,19 @@ interface Props {}
 const Workers = (props: Props) => {
   return (
     <React.Fragment>
-      {/* <MainLayout /> */}
-      <div css={workers}>
-        <div css={workerCard}>Worker1</div>
-        <div css={workerCard}>Worker2</div>
-        <div css={workerCard}>Worker3</div>
-        <div css={workerCard}>Worker4</div>
-      </div>
+      <MainLayout content={<WorkerContent />} />
     </React.Fragment>
+  );
+};
+
+const WorkerContent: React.FC = () => {
+  return (
+    <div css={workers}>
+      <div css={workerCard}>Worker1</div>
+      <div css={workerCard}>Worker2</div>
+      <div css={workerCard}>Worker3</div>
+      <div css={workerCard}>Worker4</div>
+    </div>
   );
 };
 

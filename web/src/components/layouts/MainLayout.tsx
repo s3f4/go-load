@@ -10,7 +10,7 @@ import Footer from "./Footer";
 interface Props {
   title?: string;
   header?: string;
-  content?: string;
+  content?: React.ReactNode;
   footer?: string;
 }
 
@@ -25,7 +25,7 @@ const MainLayout: React.FC<Props> = (props: Props) => {
       </Helmet>
       <div css={container}>
         <Header />
-        <Content />
+        <Content content={props.content} />
         <Footer />
       </div>
     </React.Fragment>

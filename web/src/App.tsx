@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Instances from "./pages/instaces";
-import Workers from "./pages/instaces";
+import Workers from "./pages/workers";
 import Stats from "./pages/stats";
 import Index from "./pages";
 
@@ -9,17 +9,17 @@ const App: React.FC = () => {
   return (
     <Router>
       <Switch>
-        <Route exact path="/">
-          <Index />
-        </Route>
         <Route exact path="/instances">
           <Instances />
         </Route>
-        <Route path="/workers">
+        <Route exact path="/workers">
           <Workers />
         </Route>
-        <Route path="/stats">
+        <Route exact path="/stats">
           <Stats />
+        </Route>
+        <Route exact path="/">
+          <Index />
         </Route>
       </Switch>
     </Router>

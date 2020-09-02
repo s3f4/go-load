@@ -24,10 +24,8 @@ var (
 
 func (ih *instanceHandler) Init(w http.ResponseWriter, r *http.Request) {
 	var instanceRequest models.InstanceRequest
-	R404()
-	return
 	if err := json.NewDecoder(r.Body).Decode(&instanceRequest); err != nil {
-
+		R400(w, err.Error())
 		return
 	}
 
@@ -38,10 +36,12 @@ func (ih *instanceHandler) Init(w http.ResponseWriter, r *http.Request) {
 	)
 
 	if err := t.Write(); err != nil {
-		respondWithError(w, http.StatusBadRequest, err.Error())
+		R500(w, err.Error())
 	}
 
-	respondWithJSON(w, http.StatusOK, instanceRequest)
+	R200(w, map[string]interface{}{
+		"data": instanceRequest,
+	})
 }
 
 func (ih *instanceHandler) Destroy(w http.ResponseWriter, r *http.Request) {
@@ -49,5 +49,7 @@ func (ih *instanceHandler) Destroy(w http.ResponseWriter, r *http.Request) {
 }
 
 func (ih *instanceHandler) List(w http.ResponseWriter, r *http.Request) {
-	respondWithJSON(w, http.StatusOK, []byte("OK"))
+	R200(w, Response{Data: map[string]interface{}{
+		"ok": "ok",
+	}})
 }

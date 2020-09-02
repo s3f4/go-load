@@ -34,6 +34,9 @@ up-instances: init
   														 -var "private_key=$$HOME/.ssh/id_rsa" \
   														 -var "ssh_fingerprint=$(SSH_FINGERPRINT)"
 
+upload-inventory:
+	cd infra/base && master=$$(terraform output master_ipv4_address) && scp inventory.txt root@$$master:/etc/ansible/inventory.txt
+
 destroy:
 	cd infra/base && terraform destroy -auto-approve -var "public_key=$$HOME/.ssh/id_rsa.pub" \
   														   -var "private_key=$$HOME/.ssh/id_rsa" \

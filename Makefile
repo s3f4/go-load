@@ -40,6 +40,10 @@ upload-inventory:
 ansible-exec: upload-inventory
 	cd infra/base && master=$$(terraform output master_ipv4_address) && ssh -t root@$$master 'cd /etc/ansible && ansible-playbook -i inventory.txt docker-playbook.yml'
 
+ssh-copy:
+	@echo this command creates ssh key and copy the key other instances
+	cd infra/base && master=$$(terraform output master_ipv4_address) && ssh -t root@$$master 'ssh-keygen' 
+
 destroy:
 	cd infra/base && terraform destroy -auto-approve -var "public_key=$$HOME/.ssh/id_rsa.pub" \
   														   -var "private_key=$$HOME/.ssh/id_rsa" \

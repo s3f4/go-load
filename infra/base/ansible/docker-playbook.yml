@@ -43,6 +43,7 @@
     - name: Install Docker Module for Python
       pip:
         name: docker
+        executable: pip3
 
     # Pull image specified by variable default_image from the Docker Hub
     - name: Pull default Docker image

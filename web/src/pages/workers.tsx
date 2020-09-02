@@ -2,20 +2,32 @@
 import React from "react";
 import { jsx, css } from "@emotion/core";
 import MainLayout from "../components/layouts/MainLayout";
+import { listWorkers } from "../api/api";
 
 interface Props {}
 
 const Workers = (props: Props) => {
+  const [workerContainers, setWorkerContainers] = React.useState();
+
+  React.useEffect(() => {
+    listWorkers().then((response) => setWorkerContainers(response));
+    return () => {};
+  }, []);
+
   return (
     <React.Fragment>
-      <MainLayout content={<WorkerContent />} />
+      <MainLayout content={<WorkerContent content={workerContainers} />} />
     </React.Fragment>
   );
 };
 
-const WorkerContent: React.FC = () => {
+interface WorkerContentProps {
+  content: string;
+}
+const WorkerContent: React.FC = (props: WorkerContentProps) => {
   return (
     <div css={workers}>
+      {JSON.stringify(props.content)}
       <div css={workerCard}>Worker1</div>
       <div css={workerCard}>Worker2</div>
       <div css={workerCard}>Worker3</div>

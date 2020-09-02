@@ -1,9 +1,9 @@
 # Master instance for docker swarm
 resource "digitalocean_droplet" "master" {
-  image     = var.os
-  name      = "Master"
-  region    = var.region
-  size      = var.size
+  image  = var.os
+  name   = "Master"
+  region = var.region
+  size   = var.size
 
   ssh_keys = [
     var.ssh_fingerprint
@@ -47,6 +47,12 @@ resource "digitalocean_droplet" "master" {
       "chmod +x /tmp/install-terraform.sh",
       "/tmp/install-terraform.sh",
     ]
+  }
+
+  // upload playbook
+  provisioner "file" {
+    source      = "ansible/docker-playbook.yml"
+    destination = "/etc/ansible/docker-playbook.yml"
   }
 }
 

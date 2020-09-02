@@ -9,12 +9,9 @@ services:
       dockerfile: Dockerfile.dev
     ports:
       - 3001:3001
-      - 2376:2376
     volumes:
       - ./apigateway:/go/src/github.com/s3f4/go-load/apigateway
-    environment:
-      - DOCKER_HOST="tcp://0.0.0.0:2376"
-
+      - /var/run/docker.sock:/var/run/docker.sock
   eventhandler:
     image: eventhandler
     container_name: eventhandler

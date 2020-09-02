@@ -32,7 +32,12 @@ func (wh *workerHandler) List(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
+	names := ""
+	for _, container := range containers {
+		names += container.Names[0] + "\n"
+	}
+
 	R200(w, map[string]interface{}{
-		"containers": containers,
+		"containers": names,
 	})
 }

@@ -1,6 +1,9 @@
 ---
 - hosts: all
   become: true
+  connection: ssh
+  gather_facts: yes
+  become_method: sudo
   vars:
     create_containers: 4
     default_container_name: docker

@@ -5,7 +5,7 @@ import MainLayout from "../components/layouts/MainLayout";
 
 interface Props {}
 
-const Stats = (props: Props) => {
+const Stats: React.FC<Props> = (props: Props) => {
   return (
     <React.Fragment>
       <MainLayout />

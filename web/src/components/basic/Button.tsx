@@ -8,7 +8,7 @@ interface Props {
   onClick: (e: any) => any;
 }
 
-const Button = (props: Props) => {
+const Button: React.FC<Props> = (props: Props) => {
   return (
     <React.Fragment>
       <button css={button} type="submit" onClick={props.onClick}>

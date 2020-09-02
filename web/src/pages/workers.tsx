@@ -6,11 +6,14 @@ import { listWorkers } from "../api/api";
 
 interface Props {}
 
-const Workers = (props: Props) => {
-  const [workerContainers, setWorkerContainers] = React.useState();
+const Workers: React.FC<Props> = (props: Props) => {
+  const [workerContainers, setWorkerContainers] = React.useState<string>();
 
   React.useEffect(() => {
-    listWorkers().then((response) => setWorkerContainers(response));
+    listWorkers().then((response) => {
+      setWorkerContainers(response);
+      console.log(response);
+    });
     return () => {};
   }, []);
 
@@ -22,9 +25,12 @@ const Workers = (props: Props) => {
 };
 
 interface WorkerContentProps {
-  content: string;
+  content?: string;
 }
-const WorkerContent: React.FC = (props: WorkerContentProps) => {
+
+const WorkerContent: React.FC<WorkerContentProps> = (
+  props: WorkerContentProps,
+) => {
   return (
     <div css={workers}>
       {JSON.stringify(props.content)}

@@ -5,7 +5,7 @@ import MainLayout from "../components/layouts/MainLayout";
 
 interface Props {}
 
-const Index = (props: Props) => {
+const Index: React.FC<Props> = (props: Props) => {
   return (
     <React.Fragment>
       <MainLayout />

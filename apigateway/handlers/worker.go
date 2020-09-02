@@ -21,16 +21,18 @@ var (
 )
 
 func (wh *workerHandler) List(w http.ResponseWriter, r *http.Request) {
-	ctx := context.Background()
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	cli, err := client.NewEnvClient()
 	if err != nil {
 		panic(err)
 	}
 
-	containers, err := cli.ContainerList(ctx, types.ContainerListOptions{})
+	//Retrieve a list of containers
+	containers, err := cli.ContainerList(context.Background(), types.ContainerListOptions{})
 	if err != nil {
 		panic(err)
 	}
 
-	R200(w, containers)
+	R200(w, map[string]interface{}{
+		"containers": containers,
+	})
 }

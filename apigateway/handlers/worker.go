@@ -34,7 +34,7 @@ func (wh *workerHandler) Stop(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	err = cli.ContainerStop(context.Background(), worker.Id, nil)
+	err = cli.ContainerStop(context.Background(), worker.ID, nil)
 	if err != nil {
 		R500(w, "internal server error")
 		return

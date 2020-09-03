@@ -49,6 +49,7 @@ func initHandlers() {
 	router.Get("/instances", handlers.InstanceHandler.List)
 	router.Delete("/instances", handlers.InstanceHandler.Destroy)
 	router.Get("/workers", handlers.WorkerHandler.List)
+	router.Put("/workers", handlers.WorkerHandler.Stop)
 	router.Get("/stats", handlers.StatsHandler.Get)
 }
 

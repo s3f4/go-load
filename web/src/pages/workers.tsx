@@ -3,29 +3,33 @@ import React from "react";
 import { jsx, css } from "@emotion/core";
 import MainLayout from "../components/layouts/MainLayout";
 import { listWorkers } from "../api/api";
+import { Worker as WorkerModel } from "../api/entity/worker";
 
 interface Props {}
 
 const Workers: React.FC<Props> = (props: Props) => {
-  const [workerContainers, setWorkerContainers] = React.useState<string>();
+  const [workerContainers, setWorkerContainers] = React.useState<WorkerModel[]>(
+    [],
+  );
 
   React.useEffect(() => {
-    listWorkers().then((response) => {
-      setWorkerContainers(response);
-      console.log(response);
-    });
+    listWorkers()
+      .then((response) => {
+        setWorkerContainers(response.data.containers);
+      })
+      .catch((err) => console.log(err));
     return () => {};
   }, []);
 
   return (
     <React.Fragment>
-      <MainLayout content={<WorkerContent content={workerContainers} />} />
+      <MainLayout content={<WorkerContent workers={workerContainers} />} />
     </React.Fragment>
   );
 };
 
 interface WorkerContentProps {
-  content?: string;
+  workers?: WorkerModel[];
 }
 
 const WorkerContent: React.FC<WorkerContentProps> = (
@@ -33,11 +37,19 @@ const WorkerContent: React.FC<WorkerContentProps> = (
 ) => {
   return (
     <div css={workers}>
-      {JSON.stringify(props.content)}
-      <div css={workerCard}>Worker1</div>
-      <div css={workerCard}>Worker2</div>
-      <div css={workerCard}>Worker3</div>
-      <div css={workerCard}>Worker4</div>
+      {props.workers
+        ? props.workers.map((worker: WorkerModel) => {
+            console.log(worker);
+            return (
+              <div css={workerCard} key={worker.Id}>
+                {worker.Id.substr(0, 7)} <br />
+                {worker.Status} <br />
+                {worker.State}
+                <br />
+              </div>
+            );
+          })
+        : ""}
     </div>
   );
 };

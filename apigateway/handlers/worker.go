@@ -2,11 +2,13 @@ package handlers
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
-	"github.com/go-chi/chi"
+	"github.com/s3f4/go-load/apigateway/models"
 	. "github.com/s3f4/mu"
 )
 
@@ -23,17 +25,21 @@ var (
 )
 
 func (wh *workerHandler) Stop(w http.ResponseWriter, r *http.Request) {
-	containerID := chi.URLParam(r, "ID")
+	var worker models.Worker
+	err := json.NewDecoder(r.Body).Decode(&worker)
+	fmt.Println(worker)
 
 	cli, err := client.NewEnvClient()
 	if err != nil {
 		panic(err)
 	}
 
-	err = cli.ContainerStop(context.Background(), containerID, nil)
+	err = cli.ContainerStop(context.Background(), worker.Id, nil)
 	if err != nil {
-		panic(err)
+		R500(w, "internal server error")
+		return
 	}
+	R200(w, "Container was stopped")
 }
 
 func (wh *workerHandler) List(w http.ResponseWriter, r *http.Request) {

@@ -4,7 +4,7 @@ import { jsx, css } from "@emotion/core";
 import MainLayout from "../components/layouts/MainLayout";
 import { listWorkers, stopWorker } from "../api/api";
 import { Worker as WorkerModel } from "../api/entity/worker";
-import ClipLoader from "react-spinners/ClipLoader";
+import Loader from "../components/basic/Loader";
 
 interface Props {}
 
@@ -76,25 +76,22 @@ const WorkerContent: React.FC<WorkerContentProps> = (
       </div>
     ));
 
-  return (
-    <div css={workers}>
-      {props.loader.toString()}
-      {!props.loader ? (
-        workersDiv()
-      ) : (
-        <ClipLoader size={50} color={"#000"} loading={props.loader} />
-      )}
-    </div>
-  );
+  return <div css={workers}>{!props.loader ? workersDiv() : <Loader />}</div>;
 };
 
 const workers = css`
   display: flex;
+  flex-wrap: wrap;
+  height: 100%;
 `;
 
 const workerCard = css`
-  width: 25rem;
+  width: 28rem;
   height: 25rem;
+  margin: 1rem 1rem;
+  padding: 1rem 1rem;
+  border: 1px solid black;
+  text-align: center;
 `;
 
 export default Workers;

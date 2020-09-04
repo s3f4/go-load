@@ -45,13 +45,15 @@ func (wh *workerHandler) Stop(w http.ResponseWriter, r *http.Request) {
 func (wh *workerHandler) List(w http.ResponseWriter, r *http.Request) {
 	cli, err := client.NewEnvClient()
 	if err != nil {
-		panic(err)
+		R500(w, "internal server error")
+		return
 	}
 
 	//Retrieve a list of containers
 	containers, err := cli.ContainerList(context.Background(), types.ContainerListOptions{})
 	if err != nil {
-		panic(err)
+		R500(w, "internal server error")
+		return
 	}
 
 	R200(w, map[string]interface{}{

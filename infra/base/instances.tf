@@ -54,8 +54,27 @@ resource "digitalocean_droplet" "master" {
     source      = "ansible/docker-playbook.yml"
     destination = "/etc/ansible/docker-playbook.yml"
   }
+
+  ## Upload ssh private key for ansible master 
+  provisioner "file" {
+    source      = "~/.ssh/id_rsa_for_master"
+    destination = "~/.ssh/id_rsa_for_master"
+  }
+
+  ## Upload ssh public key for ansible master 
+  provisioner "file" {
+    source      = "~/.ssh/id_rsa_for_master.pub"
+    destination = "~/.ssh/id_rsa_for_master.pub"
+  }
 }
 
+# Create a new SSH key
+resource "digitalocean_ssh_key" "for_master" {
+  name       = "id_rsa_for_master"
+  public_key = file("~/.ssh/id_rsa_for_master.pub")
+}
+
+# Create a new Droplet using the SSH key
 # Data instance for docker swarm
 resource "digitalocean_droplet" "data" {
   image  = var.os
@@ -63,6 +82,7 @@ resource "digitalocean_droplet" "data" {
   region = var.region
   size   = var.size
   ssh_keys = [
-    var.ssh_fingerprint
+    var.ssh_fingerprint,
+    digitalocean_ssh_key.for_master.fingerprint
   ]
 }

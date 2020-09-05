@@ -27,7 +27,11 @@ clean: down
 	docker system prune -f
 	docker volume prune -f
 
-init:
+
+create_ssh_for_master:
+	ssh-keygen -t rsa -b 4096 -N '' -C "sefa@dehaa.com" -f ~/.ssh/id_rsa_for_master
+
+init :create_ssh_for_master
 	cd infra/base && terraform init
 
 up-instances: init
@@ -41,6 +45,9 @@ upload-inventory:
 
 ansible-exec: upload-inventory
 	cd infra/base && master=$$(terraform output master_ipv4_address) && ssh -t root@$$master 'cd /etc/ansible && ansible-playbook -i inventory.txt docker-playbook.yml'
+
+ansible-ping: upload-inventory
+	cd infra/base && master=$$(terraform output master_ipv4_address) && ssh -t root@$$master 'cd /etc/ansible && ansible all -i inventory.txt -m ping'
 
 ssh-copy:
 	@echo this command creates ssh key and copy the key other instances

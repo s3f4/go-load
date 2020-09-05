@@ -72,7 +72,11 @@ const WorkerContent: React.FC<WorkerContentProps> = (
         {worker.Status} <br />
         {worker.State}
         <br />
-        <button onClick={props.handleStop(worker)}>Stop Container</button>
+        {worker.Names[0].startsWith("/worker") ? (
+          <button onClick={props.handleStop(worker)}>Stop Container</button>
+        ) : (
+          ""
+        )}
       </div>
     ));
 

@@ -21,7 +21,9 @@ clean: down
 	@echo "=============cleaning up============="
 	rm -rf web/build
 	rm -rf web/node_modules
-	rm -rf worker/worker
+	rm -rf worker/cmd/worker
+	rm -rf apigateway/cmd/apigateway
+	rm -rf eventhandler/cmd/eventhandler
 	docker system prune -f
 	docker volume prune -f
 

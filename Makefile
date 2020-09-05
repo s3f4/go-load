@@ -29,7 +29,7 @@ clean: down
 
 
 create_ssh_for_master:
-	ssh-keygen -t rsa -b 4096 -N '' -C "sefa@dehaa.com" -f ~/.ssh/id_rsa_for_master
+	ssh-keygen -t rsa -b 4096 -N '' -C "sefa@dehaa.com" -f ~/.ssh/id_rsa_for_master 
 
 init :create_ssh_for_master
 	cd infra/base && terraform init

@@ -1,4 +1,11 @@
 # Master instance for docker swarm
+
+# Create a new SSH key
+resource "digitalocean_ssh_key" "for_master" {
+  name       = "id_rsa_for_master"
+  public_key = file("~/.ssh/id_rsa_for_master.pub")
+}
+
 resource "digitalocean_droplet" "master" {
   image  = var.os
   name   = "Master"
@@ -6,7 +13,8 @@ resource "digitalocean_droplet" "master" {
   size   = var.size
 
   ssh_keys = [
-    var.ssh_fingerprint
+    var.ssh_fingerprint,
+    digitalocean_ssh_key.for_master.fingerprint
   ]
 
   connection {
@@ -58,21 +66,24 @@ resource "digitalocean_droplet" "master" {
   ## Upload ssh private key for ansible master 
   provisioner "file" {
     source      = "~/.ssh/id_rsa_for_master"
-    destination = "~/.ssh/id_rsa_for_master"
+    destination = "~/.ssh/id_rsa"
   }
 
   ## Upload ssh public key for ansible master 
   provisioner "file" {
     source      = "~/.ssh/id_rsa_for_master.pub"
-    destination = "~/.ssh/id_rsa_for_master.pub"
+    destination = "~/.ssh/id_rsa.pub"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "chmod 600 ~/.ssh/id_rsa",
+      "chmod 644 ~/.ssh/id_rsa.pub",
+    ]
   }
 }
 
-# Create a new SSH key
-resource "digitalocean_ssh_key" "for_master" {
-  name       = "id_rsa_for_master"
-  public_key = file("~/.ssh/id_rsa_for_master.pub")
-}
+
 
 # Create a new Droplet using the SSH key
 # Data instance for docker swarm

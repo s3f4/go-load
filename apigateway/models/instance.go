@@ -1,7 +1,8 @@
 package models
 
-// InstanceRequest is used for handlers and request
-type InstanceRequest struct {
+// Instance is used for handlers and request
+type Instance struct {
+	ID               uint   `json:"id" gorm:"primary_key"`
 	InstanceCount    int    `json:"instanceCount"`
 	InstanceSize     string `json:"size"`
 	InstanceOS       string `json:"os"`

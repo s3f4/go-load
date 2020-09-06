@@ -13,6 +13,7 @@ type instanceHandlerInterface interface {
 	Init(w http.ResponseWriter, r *http.Request)
 	Destroy(w http.ResponseWriter, r *http.Request)
 	List(w http.ResponseWriter, r *http.Request)
+	Run(w http.ResponseWriter, r *http.Request)
 }
 
 type instanceHandler struct{}
@@ -23,7 +24,7 @@ var (
 )
 
 func (ih *instanceHandler) Init(w http.ResponseWriter, r *http.Request) {
-	var instanceRequest models.InstanceRequest
+	var instanceRequest models.Instance
 	if err := json.NewDecoder(r.Body).Decode(&instanceRequest); err != nil {
 		R400(w, err.Error())
 		return
@@ -52,4 +53,8 @@ func (ih *instanceHandler) List(w http.ResponseWriter, r *http.Request) {
 	R200(w, Response{Data: map[string]interface{}{
 		"ok": "ok",
 	}})
+}
+
+func (ih *instanceHandler) Run(w http.ResponseWriter, r *http.Request) {
+
 }

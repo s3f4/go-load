@@ -3,7 +3,6 @@ package handlers
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/docker/docker/api/types"
@@ -24,10 +23,10 @@ var (
 	WorkerHandler workerHandlerInterface = &workerHandler{}
 )
 
+
 func (wh *workerHandler) Stop(w http.ResponseWriter, r *http.Request) {
 	var worker models.Worker
 	err := json.NewDecoder(r.Body).Decode(&worker)
-	fmt.Println(worker)
 
 	cli, err := client.NewEnvClient()
 	if err != nil {

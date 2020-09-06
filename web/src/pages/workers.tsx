@@ -64,21 +64,21 @@ const WorkerContent: React.FC<WorkerContentProps> = (
   props: WorkerContentProps,
 ) => {
   const workersDiv = () =>
-    props.workers?.map((worker: WorkerModel) => (
-      <div css={workerCard} key={worker.Id}>
-        {worker.Names[0]}
-        <br />
-        {worker.Id.substr(0, 7)} <br />
-        {worker.Status} <br />
-        {worker.State}
-        <br />
-        {worker.Names[0].startsWith("/worker") ? (
-          <button onClick={props.handleStop(worker)}>Stop Container</button>
-        ) : (
-          ""
-        )}
-      </div>
-    ));
+    props.workers?.map((worker: WorkerModel) => {
+      if (worker.Names[0].startsWith("/worker")) {
+        return (
+          <div css={workerCard} key={worker.Id}>
+            {worker.Names[0]}
+            <br />
+            {worker.Id.substr(0, 7)} <br />
+            {worker.Status} <br />
+            {worker.State}
+            <br />
+            <button onClick={props.handleStop(worker)}>Stop Container</button>
+          </div>
+        );
+      }
+    });
 
   return <div css={workers}>{!props.loader ? workersDiv() : <Loader />}</div>;
 };

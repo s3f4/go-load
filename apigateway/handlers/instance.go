@@ -46,7 +46,7 @@ func (ih *instanceHandler) Init(w http.ResponseWriter, r *http.Request) {
 }
 
 func (ih *instanceHandler) Destroy(w http.ResponseWriter, r *http.Request) {
-
+	
 }
 
 func (ih *instanceHandler) List(w http.ResponseWriter, r *http.Request) {

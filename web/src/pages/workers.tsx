@@ -5,6 +5,7 @@ import MainLayout from "../components/layouts/MainLayout";
 import { listWorkers, stopWorker } from "../api/api";
 import { Worker as WorkerModel } from "../api/entity/worker";
 import Loader from "../components/basic/Loader";
+import { Box, Sizes } from "../components/style";
 
 interface Props {}
 
@@ -68,7 +69,7 @@ const WorkerContent: React.FC<WorkerContentProps> = (
       if (worker.Names[0].startsWith("/worker")) {
         return (
           <div css={workerCard} key={worker.Id}>
-            {worker.Names[0]}
+            <h1 css={workerTitle}>{worker.Names[0].substr(1)}</h1>
             <br />
             {worker.Id.substr(0, 7)} <br />
             {worker.Status} <br />
@@ -93,9 +94,18 @@ const workerCard = css`
   width: 28rem;
   height: 25rem;
   margin: 1rem 1rem;
-  padding: 1rem 1rem;
   border: 1px solid black;
   text-align: center;
+  ${Box.boxShadow1}
+  border-radius: ${Sizes.borderRadius1}
+`;
+
+const workerTitle = css`
+  background-color: #007d9c;
+  color: white;
+  width: 100%;
+  height: 100;
+  padding: 0.5rem;
 `;
 
 export default Workers;

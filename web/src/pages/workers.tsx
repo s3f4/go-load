@@ -5,7 +5,7 @@ import MainLayout from "../components/layouts/MainLayout";
 import { listWorkers, stopWorker } from "../api/api";
 import { Worker as WorkerModel } from "../api/entity/worker";
 import Loader from "../components/basic/Loader";
-import { Box, Sizes } from "../components/style";
+import { Box, Sizes, Borders } from "../components/style";
 
 interface Props {}
 
@@ -75,7 +75,9 @@ const WorkerContent: React.FC<WorkerContentProps> = (
             {worker.Status} <br />
             {worker.State}
             <br />
-            <button onClick={props.handleStop(worker)}>Stop Container</button>
+            <button css={btn} onClick={props.handleStop(worker)}>
+              Stop Container
+            </button>
           </div>
         );
       }
@@ -106,6 +108,17 @@ const workerTitle = css`
   width: 100%;
   height: 100;
   padding: 0.5rem;
+`;
+
+const btn = css`
+  border: ${Borders.border1};
+  color: white;
+  background-color: #007d9c;
+  border-radius: ${Sizes.borderRadius1};
+  padding: 1rem;
+  margin: 0.5rem auto;
+  font-size: 1.7rem;
+  font-weight: 600;
 `;
 
 export default Workers;

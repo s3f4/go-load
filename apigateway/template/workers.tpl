@@ -1,6 +1,6 @@
 resource "digitalocean_droplet" "workers" {
   count  = {{.Count}}
-  image  = var.os
+  image  = {{.Image}}
   name   = "Worker-${count.index + 1}"
 
   region = "{{.Region}}"

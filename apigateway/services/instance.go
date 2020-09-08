@@ -33,6 +33,7 @@ func (is *instanceService) BuildTemplate(iReq models.Instance) error {
 	t := template.NewInfraBuilder(
 		iReq.Region,
 		iReq.InstanceSize,
+		iReq.InstanceOS,
 		iReq.InstanceCount,
 	)
 
@@ -45,16 +46,13 @@ func (is *instanceService) BuildTemplate(iReq models.Instance) error {
 func (is *instanceService) SpinUp() error {
 	executable := exec.Command("/bin/sh", "-c", "cd infra;terraform init;terraform apply")
 	executable.Stdout = os.Stdout
-	// terraformCmd := &exec.Cmd{
-	// 	Path:   executable,
-	// 	Stdout: os.Stdout,
-	// 	Stdin:  os.Stdin,
-	// 	Stderr: os.Stderr,
-	// }
+	executable.Stderr = os.Stderr
 
-	if err := executable.Run(); err != nil {
+	if err := executable.Start(); err != nil {
 		return err
 	}
+
+	executable.Wait()
 	return nil
 }
 func (is *instanceService) Run() error {

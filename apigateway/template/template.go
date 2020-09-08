@@ -19,20 +19,23 @@ type InfraBuilderService interface {
 type infraBuilder struct {
 	region string
 	size   string
+	image  string
 	count  int
 }
 
 type templateStruct struct {
 	Region string
 	Size   string
+	Image  string
 	Count  int
 }
 
 // NewInfraBuilder returns a new infraBuilder instance
-func NewInfraBuilder(region, size string, count int) InfraBuilderService {
+func NewInfraBuilder(region, size, image string, count int) InfraBuilderService {
 	return &infraBuilder{
 		region: region,
 		size:   size,
+		image:  image,
 		count:  count,
 	}
 }
@@ -49,6 +52,7 @@ func (ib *infraBuilder) Parse(path string) (*bytes.Buffer, error) {
 	ts.Size = ib.size
 	ts.Region = ib.region
 	ts.Count = ib.count
+	ts.Image = ib.image
 
 	var tpl bytes.Buffer
 	err = t.Execute(&tpl, ts)

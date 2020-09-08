@@ -44,7 +44,22 @@ func (is *instanceService) BuildTemplate(iReq models.Instance) error {
 }
 
 func (is *instanceService) SpinUp() error {
-	executable := exec.Command("/bin/sh", "-c", "cd infra;terraform init;terraform apply")
+	exists := dirExists("./infra/.terraform")
+	if exists {
+		command("terraform apply")
+	} else {
+		command("terraform init;terraform apply")
+	}
+
+	return nil
+}
+func (is *instanceService) Run() error {
+	return nil
+}
+func (is *instanceService) Destroy() error { return nil }
+
+func command(command string) error {
+	executable := exec.Command("/bin/sh", "-c", "cd infra;"+command)
 	executable.Stdout = os.Stdout
 	executable.Stderr = os.Stderr
 
@@ -55,7 +70,8 @@ func (is *instanceService) SpinUp() error {
 	executable.Wait()
 	return nil
 }
-func (is *instanceService) Run() error {
-	return nil
+
+func dirExists(dir string) bool {
+	_, err := os.Stat(dir)
+	return !os.IsNotExist(err)
 }
-func (is *instanceService) Destroy() error { return nil }

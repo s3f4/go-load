@@ -29,6 +29,7 @@ var (
 
 func (ih *instanceHandler) Init(w http.ResponseWriter, r *http.Request) {
 	var instanceRequest models.Instance
+	
 	if err := json.NewDecoder(r.Body).Decode(&instanceRequest); err != nil {
 		R400(w, err.Error())
 		return
@@ -36,6 +37,12 @@ func (ih *instanceHandler) Init(w http.ResponseWriter, r *http.Request) {
 
 	if err := ih.service.BuildTemplate(instanceRequest); err != nil {
 		R500(w, err.Error())
+		return
+	}
+
+	if err := ih.service.SpinUp(); err != nil {
+		R500(w, err.Error())
+		return
 	}
 
 	R200(w, map[string]interface{}{

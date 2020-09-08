@@ -3,6 +3,13 @@ infra/base/terraform.tfstate
 infra/base/.terraform.tfstate.lock.info
 infra/base/terraform.tfstate.backup
 infra/base/terraform.tfvars
+
+apigateway/infra/.terraform
+apigateway/infra/terraform.tfstate
+apigateway/infra/.terraform.tfstate.lock.info
+apigateway/infra/terraform.tfstate.backup
+
+
 worker/cmd/worker
 apigateway/cmd/apigateway
 eventhandler/cmd/eventhandler

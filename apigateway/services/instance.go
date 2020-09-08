@@ -1,6 +1,9 @@
 package services
 
 import (
+	"os"
+	"os/exec"
+
 	"github.com/s3f4/go-load/apigateway/models"
 	"github.com/s3f4/go-load/apigateway/template"
 )
@@ -38,7 +41,20 @@ func (is *instanceService) BuildTemplate(iReq models.Instance) error {
 	}
 	return nil
 }
+
 func (is *instanceService) SpinUp() error {
+	executable := exec.Command("/bin/sh", "-c", "cd infra;terraform init;terraform apply")
+	executable.Stdout = os.Stdout
+	// terraformCmd := &exec.Cmd{
+	// 	Path:   executable,
+	// 	Stdout: os.Stdout,
+	// 	Stdin:  os.Stdin,
+	// 	Stderr: os.Stderr,
+	// }
+
+	if err := executable.Run(); err != nil {
+		return err
+	}
 	return nil
 }
 func (is *instanceService) Run() error {

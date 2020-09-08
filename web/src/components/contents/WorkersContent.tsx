@@ -3,7 +3,8 @@ import React from "react";
 import { jsx, css } from "@emotion/core";
 import { Worker } from "../../api/entity/worker";
 import Loader from "../basic/Loader";
-import { Box, Sizes, Borders } from "../style";
+import { Box, Sizes } from "../style";
+import Button from "../basic/Button";
 
 interface Props {
   workers?: Worker[];
@@ -23,9 +24,10 @@ const WorkersContent: React.FC<Props> = (props: Props) => {
             {worker.Status} <br />
             {worker.State}
             <br />
-            <button css={btn} onClick={props.handleStop(worker)}>
-              Stop Container
-            </button>
+            <Button
+              onClick={props.handleStop(worker)}
+              text={"Stop Container"}
+            />
           </div>
         );
       }
@@ -58,14 +60,4 @@ const workerTitle = css`
   padding: 0.5rem;
 `;
 
-const btn = css`
-  border: ${Borders.border1};
-  color: white;
-  background-color: #007d9c;
-  border-radius: ${Sizes.borderRadius1};
-  padding: 1rem;
-  margin: 0.5rem auto;
-  font-size: 1.7rem;
-  font-weight: 600;
-`;
 export default WorkersContent;

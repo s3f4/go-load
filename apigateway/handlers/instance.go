@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/s3f4/go-load/apigateway/models"
-	template "github.com/s3f4/go-load/apigateway/template"
+	"github.com/s3f4/go-load/apigateway/services"
 	. "github.com/s3f4/mu"
 )
 
@@ -16,11 +16,15 @@ type instanceHandlerInterface interface {
 	Run(w http.ResponseWriter, r *http.Request)
 }
 
-type instanceHandler struct{}
+type instanceHandler struct {
+	service services.InstanceServiceInterface
+}
 
 var (
 	// InstanceHandler to use methods of handler.
-	InstanceHandler instanceHandlerInterface = &instanceHandler{}
+	InstanceHandler instanceHandlerInterface = &instanceHandler{
+		services.InstanceService,
+	}
 )
 
 func (ih *instanceHandler) Init(w http.ResponseWriter, r *http.Request) {
@@ -30,13 +34,7 @@ func (ih *instanceHandler) Init(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	t := template.NewInfraBuilder(
-		instanceRequest.Region,
-		instanceRequest.InstanceSize,
-		instanceRequest.InstanceCount,
-	)
-
-	if err := t.Write(); err != nil {
+	if err := ih.service.BuildTemplate(instanceRequest); err != nil {
 		R500(w, err.Error())
 	}
 
@@ -46,7 +44,7 @@ func (ih *instanceHandler) Init(w http.ResponseWriter, r *http.Request) {
 }
 
 func (ih *instanceHandler) Destroy(w http.ResponseWriter, r *http.Request) {
-	
+
 }
 
 func (ih *instanceHandler) List(w http.ResponseWriter, r *http.Request) {

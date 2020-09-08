@@ -22,6 +22,11 @@ var (
 )
 
 func (is *instanceService) BuildTemplate(iReq models.Instance) error {
+	// todo defaults...
+	iReq.Region = "AMS3"
+	iReq.InstanceOS = "ubuntu-18-04-x64"
+	iReq.InstanceSize = "s-1vcpu-1gb"
+
 	t := template.NewInfraBuilder(
 		iReq.Region,
 		iReq.InstanceSize,

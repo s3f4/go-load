@@ -25,7 +25,7 @@ type infraBuilder struct {
 type templateStruct struct {
 	Region string
 	Size   string
-	Count  []int
+	Count  int
 }
 
 // NewInfraBuilder returns a new infraBuilder instance
@@ -48,7 +48,7 @@ func (ib *infraBuilder) Parse(path string) (*bytes.Buffer, error) {
 	var ts templateStruct
 	ts.Size = ib.size
 	ts.Region = ib.region
-	ts.Count = make([]int, ib.count)
+	ts.Count = ib.count
 
 	var tpl bytes.Buffer
 	err = t.Execute(&tpl, ts)

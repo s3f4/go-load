@@ -1,15 +1,13 @@
 package services
 
 import (
-	"os"
-	"os/exec"
-
 	"github.com/s3f4/go-load/apigateway/models"
 	"github.com/s3f4/go-load/apigateway/repository"
 	"github.com/s3f4/go-load/apigateway/template"
+	"github.com/s3f4/mu"
 )
 
-// InstanceServiceInterface ...
+// InstanceService ...
 type InstanceService interface {
 	BuildTemplate(iReq models.Instance) error
 	SpinUp() error
@@ -49,34 +47,18 @@ func (is *instanceService) BuildTemplate(iReq models.Instance) error {
 }
 
 func (is *instanceService) SpinUp() error {
-	exists := dirExists("./infra/.terraform")
+	exists := mu.DirExists("./infra/.terraform")
 	if exists {
-		command("terraform apply")
+		mu.RunCommands("cd infra;terraform apply")
 	} else {
-		command("terraform init;terraform apply")
+		mu.RunCommands("cd infra;terraform init;terraform apply")
 	}
 
 	return nil
 }
+
 func (is *instanceService) Run() error {
 	return nil
 }
+
 func (is *instanceService) Destroy() error { return nil }
-
-func command(command string) error {
-	executable := exec.Command("/bin/sh", "-c", "cd infra;"+command)
-	executable.Stdout = os.Stdout
-	executable.Stderr = os.Stderr
-
-	if err := executable.Start(); err != nil {
-		return err
-	}
-
-	executable.Wait()
-	return nil
-}
-
-func dirExists(dir string) bool {
-	_, err := os.Stat(dir)
-	return !os.IsNotExist(err)
-}

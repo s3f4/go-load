@@ -2,74 +2,68 @@ package repository
 
 import (
 	"fmt"
-	"time"
 
-	"github.com/jinzhu/gorm"
-	"github.com/qor/validations"
 	"github.com/s3f4/go-load/apigateway/models"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
 
 // BaseRepository an interface that uses sql
 type BaseRepository interface {
-	Init()
+	Insert(model interface{}) error
+	Update(model interface{}) error
+	Delete(model interface{}) error
+	Get(model interface{}) error
+	GetAll() error
+	Migrate()
 }
 
 type baseRepository struct {
-	db *gorm.DB
+	*gorm.DB
 }
 
 // NewBaseRepository instance of baseRepository
 func NewBaseRepository() BaseRepository {
-	return &baseRepository{db: nil}
+	return &baseRepository{}
 }
 
 //InitDatabase initializes a global database instance
-func (br *baseRepository) Init() {
-	connectionString := fmt.Sprintf(
-		"%s:%s@/%s?charset=utf8&parseTime=True&loc=Local",
-		"root",
-		"password",
-		"go_load")
+func (br *baseRepository) connect() {
+	dsn := "goload:go-load12345@tcp(mysql:3306)/go-load?charset=utf8mb4&parseTime=True&loc=Local"
 
-	var err error
-	db, err := gorm.Open("mysql", connectionString)
-	validations.RegisterCallbacks(db)
-	// db.SetLogger(library.GetLogger())
-	// db.LogMode(config.GetBool("database.log_mode"))
-
-	db.Set("gorm:association_autoupdate", false)
-	db.Set("gorm:association_autocreate", false)
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	br.DB = db
+	// validations.RegisterCallbacks(br.DB)
+	// br.DB.SetLogger(library.GetLogger())
+	// br.DB.LogMode(config.GetBool("database.log_mode"))
 
 	if err != nil {
+		fmt.Println(err)
 		panic("failed to connect database")
 	}
 
-	// SetMaxIdleConns sets the maximum number of connections in the idle connection pool.
-	db.DB().SetMaxIdleConns(20)
-
-	// SetMaxOpenConns sets the maximum number of open connections to the database.
-	db.DB().SetMaxOpenConns(100)
-
-	// SetConnMaxLifetime sets the maximum amount of time a connection may be reused.
-	db.DB().SetConnMaxLifetime(time.Minute * 5)
-
 	//defer db.Close()
-	br.db = db
-}
-
-func (br *baseRepository) DropTableIfExists() {
-	br.db.DropTableIfExists(&models.Instance{})
 }
 
 //Migrate migrates db
 func (br *baseRepository) Migrate() {
-	br.db.AutoMigrate(&models.Instance{})
+	br.GetDB().AutoMigrate(&models.Instance{})
 }
 
 //GetDB return *gorm.DB instance
 func (br *baseRepository) GetDB() *gorm.DB {
-	if br.db == nil || br == nil {
-		br.Init()
+	if br.DB == nil {
+		br.connect()
 	}
-	return br.db
+	return br.DB
 }
+
+// Insert method
+func (br *baseRepository) Insert(model interface{}) error {
+	return br.GetDB().Create(model).Error
+}
+
+func (br *baseRepository) Update(model interface{}) error { return nil }
+func (br *baseRepository) Delete(model interface{}) error { return nil }
+func (br *baseRepository) Get(model interface{}) error    { return nil }
+func (br *baseRepository) GetAll() error                  { return nil }

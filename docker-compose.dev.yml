@@ -12,6 +12,8 @@ services:
     volumes:
       - ./apigateway:/go/src/github.com/s3f4/go-load/apigateway
       - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - mysql
   eventhandler:
     image: eventhandler
     container_name: eventhandler
@@ -81,7 +83,11 @@ services:
   mysql:
     image: mysql
     container_name: mysql
-    command: --default-authentication-plugin=mysql_native_password
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: mysql_example
+      MYSQL_ROOT_PASSWORD: p123456
+      MYSQL_DATABASE: go-load
+      MYSQL_USER: goload
+      MYSQL_PASSWORD: go-load12345
+    ports:
+      - 3306:3306

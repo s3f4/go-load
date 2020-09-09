@@ -1,6 +1,8 @@
 package services
 
 import (
+	"fmt"
+
 	"github.com/s3f4/go-load/apigateway/models"
 	"github.com/s3f4/go-load/apigateway/repository"
 	"github.com/s3f4/go-load/apigateway/template"
@@ -22,7 +24,7 @@ type instanceService struct {
 // NewInstanceService returns an InstanceService object
 func NewInstanceService() InstanceService {
 	return &instanceService{
-		repository: repository.NewInstanceRepository(nil),
+		repository: repository.NewInstanceRepository(),
 	}
 }
 
@@ -40,6 +42,12 @@ func (is *instanceService) BuildTemplate(iReq models.Instance) error {
 	)
 
 	if err := t.Write(); err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	if err := is.repository.Insert(&iReq); err != nil {
+		fmt.Println(err)
 		return err
 	}
 

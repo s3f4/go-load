@@ -4,18 +4,17 @@ const URL = 'http://localhost';
 
 export const initInstances =
     async (item: any) => {
-  try {
-    const response = await fetch(`${URL}:3001/instances`, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-      },
-      body: JSON.stringify(item)
-    });
-    return response.json();
-  } catch (err) {
-    return {error: err};
-  }
+  const response = await fetch(`${URL}:3001/instances`, {
+                     method: 'POST',
+                     headers: {
+                       Accept: 'application/json',
+                     },
+                     body: JSON.stringify(item)
+                   })
+                       .then(response => response.json())
+                       .catch(error => console.log(error))
+
+  return response;
 }
 
 export const listWorkers =
@@ -27,6 +26,7 @@ export const listWorkers =
         Accept: 'application/json',
       },
     })
+
     return response.json();
   } catch (err) {
     return {error: err};

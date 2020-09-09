@@ -11,17 +11,20 @@ import (
 
 // BaseRepository an interface that uses sql
 type BaseRepository interface {
-	Insert()
-	Update()
-	Delete()
-	Read()
-	ReadAll()
+	Init()
 }
 
-var db *gorm.DB
+type baseRepository struct {
+	db *gorm.DB
+}
+
+// NewBaseRepository instance of baseRepository
+func NewBaseRepository() BaseRepository {
+	return &baseRepository{db: nil}
+}
 
 //InitDatabase initializes a global database instance
-func InitDatabase() {
+func (br *baseRepository) Init() {
 	connectionString := fmt.Sprintf(
 		"%s:%s@/%s?charset=utf8&parseTime=True&loc=Local",
 		"root",
@@ -29,7 +32,7 @@ func InitDatabase() {
 		"go_load")
 
 	var err error
-	db, err = gorm.Open("mysql", connectionString)
+	db, err := gorm.Open("mysql", connectionString)
 	validations.RegisterCallbacks(db)
 	// db.SetLogger(library.GetLogger())
 	// db.LogMode(config.GetBool("database.log_mode"))
@@ -51,18 +54,22 @@ func InitDatabase() {
 	db.DB().SetConnMaxLifetime(time.Minute * 5)
 
 	//defer db.Close()
+	br.db = db
+}
+
+func (br *baseRepository) DropTableIfExists() {
+	br.db.DropTableIfExists(&models.Instance{})
 }
 
 //Migrate migrates db
-func Migrate() {
-	db.DropTableIfExists(&models.Instance{})
-	db.AutoMigrate(&models.Instance{})
+func (br *baseRepository) Migrate() {
+	br.db.AutoMigrate(&models.Instance{})
 }
 
 //GetDB return *gorm.DB instance
-func GetDB() *gorm.DB {
-	if db == nil {
-		InitDatabase()
+func (br *baseRepository) GetDB() *gorm.DB {
+	if br.db == nil || br == nil {
+		br.Init()
 	}
-	return db
+	return br.db
 }

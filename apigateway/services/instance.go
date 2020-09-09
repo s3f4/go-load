@@ -5,11 +5,12 @@ import (
 	"os/exec"
 
 	"github.com/s3f4/go-load/apigateway/models"
+	"github.com/s3f4/go-load/apigateway/repository"
 	"github.com/s3f4/go-load/apigateway/template"
 )
 
 // InstanceServiceInterface ...
-type InstanceServiceInterface interface {
+type InstanceService interface {
 	BuildTemplate(iReq models.Instance) error
 	SpinUp() error
 	Run() error
@@ -17,12 +18,15 @@ type InstanceServiceInterface interface {
 }
 
 type instanceService struct {
+	repository repository.InstanceRepository
 }
 
-var (
-	// InstanceService handles all operations of instance handler
-	InstanceService InstanceServiceInterface = &instanceService{}
-)
+// NewInstanceService returns an InstanceService object
+func NewInstanceService() InstanceService {
+	return &instanceService{
+		repository: repository.NewInstanceRepository(nil),
+	}
+}
 
 func (is *instanceService) BuildTemplate(iReq models.Instance) error {
 	// todo defaults...
@@ -40,6 +44,7 @@ func (is *instanceService) BuildTemplate(iReq models.Instance) error {
 	if err := t.Write(); err != nil {
 		return err
 	}
+
 	return nil
 }
 

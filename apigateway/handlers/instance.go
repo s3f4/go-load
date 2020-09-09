@@ -17,19 +17,19 @@ type instanceHandlerInterface interface {
 }
 
 type instanceHandler struct {
-	service services.InstanceServiceInterface
+	service services.InstanceService
 }
 
 var (
 	// InstanceHandler to use methods of handler.
 	InstanceHandler instanceHandlerInterface = &instanceHandler{
-		services.InstanceService,
+		services.NewInstanceService(),
 	}
 )
 
 func (ih *instanceHandler) Init(w http.ResponseWriter, r *http.Request) {
 	var instanceRequest models.Instance
-	
+
 	if err := json.NewDecoder(r.Body).Decode(&instanceRequest); err != nil {
 		R400(w, err.Error())
 		return

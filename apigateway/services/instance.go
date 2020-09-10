@@ -84,4 +84,7 @@ func (s *instanceService) Run() error {
 	return nil
 }
 
-func (s *instanceService) Destroy() error { return nil }
+func (s *instanceService) Destroy() error {
+	mu.RunCommands("cd infra;terraform destroy -auto-approve")
+	return nil
+}

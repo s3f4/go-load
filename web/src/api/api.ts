@@ -17,6 +17,22 @@ export const initInstances =
   return response;
 }
 
+export const destroy =
+    async () => {
+  try {
+    const response = await fetch(`${URL}:3001/instances`, {
+      method: 'DELETE',
+      headers: {
+        Accept: 'application/json',
+      },
+    })
+
+    return response.json();
+  } catch (err) {
+    return {error: err};
+  }
+}
+
 export const listWorkers =
     async () => {
   try {

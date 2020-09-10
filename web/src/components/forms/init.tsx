@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { jsx, css } from "@emotion/core";
 import TextInput from "../basic/TextInput";
 import Button from "../basic/Button";
-import { initInstances } from "../../api/api";
+import { destroy, initInstances } from "../../api/api";
 
 interface Props {}
 
@@ -32,6 +32,11 @@ const Up: React.FC<Props> = () => {
     initInstances(instances).then((data) => console.log(data));
   };
 
+  const destroyRequest = (e: any) => {
+    e.preventDefault();
+    destroy().then((data) => console.log(data));
+  };
+
   return (
     <div css={formDiv}>
       <h2 css={formTitle}>Set up Testing Infrastructure</h2>
@@ -57,6 +62,7 @@ const Up: React.FC<Props> = () => {
         onChange={handleChange("maxWorkingPeriod")}
       />
       <Button text="Up" onClick={sendRequest} />
+      <Button text="Destroy" onClick={destroyRequest} />
     </div>
   );
 };

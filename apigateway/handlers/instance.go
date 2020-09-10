@@ -51,7 +51,10 @@ func (ih *instanceHandler) Init(w http.ResponseWriter, r *http.Request) {
 }
 
 func (ih *instanceHandler) Destroy(w http.ResponseWriter, r *http.Request) {
-
+	if err := ih.service.Destroy(); err != nil {
+		R500(w, err.Error())
+		return
+	}
 }
 
 func (ih *instanceHandler) List(w http.ResponseWriter, r *http.Request) {

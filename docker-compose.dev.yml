@@ -12,7 +12,8 @@ services:
     volumes:
       - ./apigateway:/go/src/github.com/s3f4/go-load/apigateway
       - /var/run/docker.sock:/var/run/docker.sock
-      - ~/.ssh/id_rsa:/root/id_rsa
+      - ~/.ssh/id_rsa_for_master:/root/.ssh/id_rsa
+      - ~/.ssh/id_rsa_for_master.pub:/root/.ssh/id_rsa.pub
     depends_on:
       - mysql
   eventhandler:

@@ -1,3 +1,9 @@
+# Create a new SSH key
+resource "digitalocean_ssh_key" "master" {
+  name       = "Master instance ssh key"
+  public_key = file("~/.ssh/id_rsa.pub")
+}
+
 resource "digitalocean_droplet" "workers" {
   count  = {{.Count}}
   image  = "{{.Image}}"
@@ -7,6 +13,6 @@ resource "digitalocean_droplet" "workers" {
   size   = "{{.Size}}"
 
   ssh_keys = [
-    "abc"
+    digitalocean_ssh_key.master.fingerprint
   ]
 }

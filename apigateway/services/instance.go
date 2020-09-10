@@ -57,9 +57,9 @@ func (s *instanceService) BuildTemplate(iReq models.Instance) error {
 func (s *instanceService) SpinUp() error {
 	exists := mu.DirExists("./infra/.terraform")
 	if exists {
-		mu.RunCommands("cd infra;terraform apply")
+		mu.RunCommands("cd infra;terraform init;terraform apply -auto-approve")
 	} else {
-		mu.RunCommands("cd infra;terraform init;terraform apply")
+		mu.RunCommands("cd infra;terraform init;terraform apply -auto-approve")
 	}
 
 	return nil

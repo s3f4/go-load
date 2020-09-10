@@ -13,6 +13,8 @@ import (
 type InstanceService interface {
 	BuildTemplate(iReq models.Instance) error
 	SpinUp() error
+	InstallDocker() error
+	JoinToSwarm() error
 	Run() error
 	Destroy() error
 }
@@ -28,7 +30,7 @@ func NewInstanceService() InstanceService {
 	}
 }
 
-func (is *instanceService) BuildTemplate(iReq models.Instance) error {
+func (s *instanceService) BuildTemplate(iReq models.Instance) error {
 	// todo defaults...
 	iReq.Region = "AMS3"
 	iReq.InstanceOS = "ubuntu-18-04-x64"
@@ -46,7 +48,7 @@ func (is *instanceService) BuildTemplate(iReq models.Instance) error {
 		return err
 	}
 
-	if err := is.repository.Insert(&iReq); err != nil {
+	if err := s.repository.Insert(&iReq); err != nil {
 		fmt.Println(err)
 		return err
 	}
@@ -54,7 +56,7 @@ func (is *instanceService) BuildTemplate(iReq models.Instance) error {
 	return nil
 }
 
-func (is *instanceService) SpinUp() error {
+func (s *instanceService) SpinUp() error {
 	exists := mu.DirExists("./infra/.terraform")
 	if exists {
 		mu.RunCommands("cd infra;terraform apply")
@@ -65,8 +67,18 @@ func (is *instanceService) SpinUp() error {
 	return nil
 }
 
-func (is *instanceService) Run() error {
+func (s *instanceService) InstallDocker() error {
+	// todo run ansible here
 	return nil
 }
 
-func (is *instanceService) Destroy() error { return nil }
+func (s *instanceService) JoinToSwarm() error {
+	// todo join docker swarm here
+	return nil
+}
+
+func (s *instanceService) Run() error {
+	return nil
+}
+
+func (s *instanceService) Destroy() error { return nil }

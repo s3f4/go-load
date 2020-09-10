@@ -8,7 +8,7 @@ resource "digitalocean_ssh_key" "for_master" {
 
 resource "digitalocean_droplet" "master" {
   image  = var.os
-  name   = "Master"
+  name   = "DO-Master-1"
   region = var.region
   size   = var.size
 
@@ -89,7 +89,7 @@ resource "digitalocean_droplet" "master" {
 # Data instance for docker swarm
 resource "digitalocean_droplet" "data" {
   image  = var.os
-  name   = "Data"
+  name   = "DO-Data-1"
   region = var.region
   size   = var.size
   ssh_keys = [

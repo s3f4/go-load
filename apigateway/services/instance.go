@@ -67,17 +67,22 @@ func (s *instanceService) SpinUp() error {
 	return nil
 }
 
-func (s *instanceService) InstallDocker() error {
-	// todo run ansible here
+func (s *instanceService) addIpsToInventory() {
+	mu.RunCommands("cd infra;terraform output")
+}
+
+func (s *instanceService) installDockerToWNodes() error {
+	mu.RunCommands("cd /etc/ansible && ansible-playbook -i inventory.txt docker-playbook.yml")
 	return nil
 }
 
-func (s *instanceService) JoinToSwarm() error {
+func (s *instanceService) joinWNodesToSwarm() error {
 	// todo join docker swarm here
 	return nil
 }
 
 func (s *instanceService) Run() error {
+
 	return nil
 }
 

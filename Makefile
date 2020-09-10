@@ -34,6 +34,12 @@ create_ssh_for_master:
 init :create_ssh_for_master
 	cd infra/base && terraform init
 
+apply: 
+	@echo "=============instances spinning up============="
+	cd infra/base && terraform apply -auto-approve -var "public_key=$$HOME/.ssh/id_rsa.pub" \
+  														 -var "private_key=$$HOME/.ssh/id_rsa" \
+  														 -var "ssh_fingerprint=$(SSH_FINGERPRINT)"
+
 up-instances: init
 	@echo "=============instances spinning up============="
 	cd infra/base && terraform apply -auto-approve -var "public_key=$$HOME/.ssh/id_rsa.pub" \

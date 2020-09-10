@@ -16,3 +16,6 @@ eventhandler/cmd/eventhandler
 test
 apigateway/infra/workers.tf
 infra/base/inventory.txt
+
+*.tfvars
+*.tfstate

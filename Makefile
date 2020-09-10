@@ -34,18 +34,17 @@ create_ssh_for_master:
 init :create_ssh_for_master
 	cd infra/base && terraform init
 
-apply: 
-	@echo "=============instances spinning up============="
+apply:
 	cd infra/base && terraform apply -auto-approve -var "public_key=$$HOME/.ssh/id_rsa.pub" \
   														 -var "private_key=$$HOME/.ssh/id_rsa" \
-  														 -var "ssh_fingerprint=$(SSH_FINGERPRINT)"
+  														 -var "ssh_fingerprint=$(SSH_FINGERPRINT)" 
+cpInventory:
+	cd infra/base && cp inventory.txt ../../apigateway/infra/inventory.tmpl \
+	&& echo "\n[workers]\n\$${workers}" >> ../../apigateway/infra/inventory.tmpl
 
-up-instances: init
+up-instances: init apply cpInventory
 	@echo "=============instances spinning up============="
-	cd infra/base && terraform apply -auto-approve -var "public_key=$$HOME/.ssh/id_rsa.pub" \
-  														 -var "private_key=$$HOME/.ssh/id_rsa" \
-  														 -var "ssh_fingerprint=$(SSH_FINGERPRINT)"
-
+	 
 upload-inventory:
 	cd infra/base && master=$$(terraform output master_ipv4_address) && scp inventory.txt root@$$master:/etc/ansible/inventory.txt
 
@@ -68,6 +67,6 @@ finger:
 	@echo this is my fingerprint $(SSH_FINGERPRINT)
 
 output:
-	cd infra/base && terraform output
+	cd infra/base && terraform output regions
 
 	

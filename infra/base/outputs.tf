@@ -7,5 +7,5 @@ output "data_ipv4_address"{
 }
 
 output "regions"{
-  value = "${data.digitalocean_regions.available}"
+  value = data.digitalocean_regions.available
 }

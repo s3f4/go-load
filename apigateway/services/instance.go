@@ -13,8 +13,6 @@ import (
 type InstanceService interface {
 	BuildTemplate(iReq models.Instance) error
 	SpinUp() error
-	InstallDocker() error
-	JoinToSwarm() error
 	Run() error
 	Destroy() error
 }

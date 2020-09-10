@@ -2,6 +2,7 @@ package repository
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/s3f4/go-load/apigateway/models"
 	"gorm.io/driver/mysql"
@@ -29,7 +30,16 @@ func NewBaseRepository() BaseRepository {
 
 //InitDatabase initializes a global database instance
 func (br *baseRepository) connect() {
-	dsn := "goload:go-load12345@tcp(mysql:3306)/go-load?charset=utf8mb4&parseTime=True&loc=Local"
+	dsn := fmt.Sprintf(
+		"%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+		os.Getenv("MYSQL_USER"),
+		os.Getenv("MYSQL_PASSWORD"),
+		os.Getenv("MYSQL_HOST"),
+		os.Getenv("MYSQL_PORT"),
+		os.Getenv("MYSQL_DATABASE"),
+	)
+
+	fmt.Println(dsn)
 
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	br.DB = db

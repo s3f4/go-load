@@ -16,6 +16,13 @@ services:
       - ~/.ssh/id_rsa_for_master.pub:/root/.ssh/id_rsa.pub
     depends_on:
       - mysql
+    environment:
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=go-load
+      - MYSQL_USER=goload
+      - MYSQL_PASSWORD=go-load12345
+
   eventhandler:
     image: eventhandler
     container_name: eventhandler

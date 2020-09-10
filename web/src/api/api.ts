@@ -19,18 +19,16 @@ export const initInstances =
 
 export const destroy =
     async () => {
-  try {
-    const response = await fetch(`${URL}:3001/instances`, {
-      method: 'DELETE',
-      headers: {
-        Accept: 'application/json',
-      },
-    })
+  const response = await fetch(`${URL}:3001/instances`, {
+                     method: 'DELETE',
+                     headers: {
+                       Accept: 'application/json',
+                     },
+                   })
 
-    return response.json();
-  } catch (err) {
-    return {error: err};
-  }
+                       .then(response => response.json())
+                       .catch(error => console.log(error))
+  return response;
 }
 
 export const listWorkers =

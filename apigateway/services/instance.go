@@ -3,6 +3,8 @@ package services
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
+	"strings"
 
 	"github.com/docker/docker/api/types/swarm"
 	"github.com/docker/docker/client"
@@ -70,7 +72,8 @@ func (s *instanceService) SpinUp() error {
 		return err
 	}
 
-	err = s.swarmInit()
+	// err = s.swarmInit()
+	s.ReadInventoryFile()
 	s.swarmInspect()
 	return err
 }
@@ -124,4 +127,15 @@ func (s *instanceService) Run() error {
 func (s *instanceService) Destroy() error {
 	mu.RunCommands("cd infra;terraform destroy -auto-approve")
 	return nil
+}
+
+// Returns master's ip address
+func (s *instanceService) parseInventoryFile() (string, error) {
+	data, err := ioutil.ReadFile("./infra/inventory.tmpl")
+	if err != nil {
+		return "", err
+	}
+
+	datas := strings.Split(string(data), "\n")
+	return datas[1], err
 }

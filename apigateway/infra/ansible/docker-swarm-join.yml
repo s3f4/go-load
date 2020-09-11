@@ -1,0 +1,11 @@
+- hosts: workers
+  become: true
+  vars:
+    token: "{{ token }}"
+    addr: "{{ addr }}"
+  tasks:
+    - name: join worker nodes to cluster
+      shell: >
+        docker swarm join
+        --advertise-addr={{ addr }}:2377
+        --token={{ token }}

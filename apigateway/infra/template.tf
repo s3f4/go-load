@@ -1,6 +1,6 @@
 resource "local_file" "inventory" {
   content = templatefile("inventory.tmpl", {
-    workers = join("\n",digitalocean_droplet.workers.*.ipv4_address)
+    workers = join("\n", digitalocean_droplet.workers.*.ipv4_address)
   })
-  filename = "inventory.txt"
+  filename = "./ansible/inventory.txt"
 }

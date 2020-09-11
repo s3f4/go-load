@@ -39,8 +39,8 @@ apply:
   														 -var "private_key=$$HOME/.ssh/id_rsa" \
   														 -var "ssh_fingerprint=$(SSH_FINGERPRINT)" 
 cpInventory:
-	cd infra/base && cp inventory.txt ../../apigateway/infra/inventory.tmpl \
-	&& echo "\n[workers]\n\$${workers}" >> ../../apigateway/infra/inventory.tmpl
+	cd infra/base && cp inventory.txt ../../apigateway/infra/ansible/inventory.tmpl \
+	&& echo "\n[workers]\n\$${workers}" >> ../../apigateway/infra/ansible/inventory.tmpl
 
 up-instances: init apply cpInventory
 	@echo "=============instances spinning up============="

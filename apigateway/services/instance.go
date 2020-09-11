@@ -77,7 +77,7 @@ func (s *instanceService) SpinUp() error {
 }
 
 func (s *instanceService) installDockerToWNodes() error {
-	return mu.RunCommands("cd /etc/ansible && ansible-playbook -i inventory.txt docker-playbook.yml")
+	return mu.RunCommands("cd ./infra/ansible; ansible-playbook -i inventory.txt docker-playbook.yml")
 }
 
 func (s *instanceService) swarmInit() error {
@@ -117,7 +117,7 @@ func (s *instanceService) swarmInspect() (swarm.Swarm, error) {
 	context := context.Background()
 	cli, err := client.NewEnvClient()
 	if err != nil {
-		panic(err)
+		return swarm.Swarm{}, err
 	}
 
 	return cli.SwarmInspect(context)
@@ -127,7 +127,7 @@ func (s *instanceService) swarmInspect() (swarm.Swarm, error) {
 func (s *instanceService) joinWNodesToSwarm(token, addr string) error {
 
 	joinCommand := fmt.Sprintf(
-		"ansible-playbook -i ./infra/ansible/inventory.txt ./infra/ansible/docker-swarm-init.yml "+
+		"cd ./infra/ansible; ansible-playbook -i inventory.txt docker-swarm-init.yml "+
 			"--extra-vars \"{token:%s,addr: %s}\"",
 		token,
 		addr,

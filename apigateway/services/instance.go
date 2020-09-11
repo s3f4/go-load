@@ -150,7 +150,7 @@ func (s *instanceService) Destroy() error {
 
 // Returns master's ip address
 func (s *instanceService) parseInventoryFile() (string, error) {
-	data, err := ioutil.ReadFile("./infra/inventory.tmpl")
+	data, err := ioutil.ReadFile("./infra/ansible/inventory.tmpl")
 	if err != nil {
 		return "", err
 	}

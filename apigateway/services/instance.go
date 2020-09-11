@@ -1,8 +1,11 @@
 package services
 
 import (
+	"context"
 	"fmt"
 
+	"github.com/docker/docker/api/types/swarm"
+	"github.com/docker/docker/client"
 	"github.com/s3f4/go-load/apigateway/models"
 	"github.com/s3f4/go-load/apigateway/repository"
 	"github.com/s3f4/go-load/apigateway/template"
@@ -56,26 +59,53 @@ func (s *instanceService) BuildTemplate(iReq models.Instance) error {
 
 func (s *instanceService) SpinUp() error {
 	exists := mu.DirExists("./infra/.terraform")
+	var err error
 	if exists {
-		mu.RunCommands("cd infra;terraform init;terraform apply -auto-approve")
+		// err = mu.RunCommands("cd infra;terraform init;terraform apply -auto-approve")
 	} else {
-		mu.RunCommands("cd infra;terraform init;terraform apply -auto-approve")
+		// err = mu.RunCommands("cd infra;terraform init;terraform apply -auto-approve")
 	}
 
-	return nil
-}
+	if err != nil {
+		return err
+	}
 
-func (s *instanceService) addIpsToInventory() {
-	mu.RunCommands("cd infra;terraform output")
+	err = s.swarmInit()
+	return err
 }
 
 func (s *instanceService) installDockerToWNodes() error {
-	mu.RunCommands("cd /etc/ansible && ansible-playbook -i inventory.txt docker-playbook.yml")
+	return mu.RunCommands("cd /etc/ansible && ansible-playbook -i inventory.txt docker-playbook.yml")
+}
+
+func (s *instanceService) swarmInit() error {
+	fmt.Println("swarm init")
+	context := context.Background()
+
+	cli, err := client.NewEnvClient()
+
+	if err != nil {
+		panic(err)
+	}
+
+	req := swarm.InitRequest{
+		ListenAddr: "eth0:2377",
+	}
+
+	res, err := cli.SwarmInit(context, req)
+	fmt.Println(res)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	swarm, err := cli.SwarmInspect(context)
+	fmt.Println(swarm)
+	fmt.Println(err)
 	return nil
 }
 
 func (s *instanceService) joinWNodesToSwarm() error {
-	// todo join docker swarm here
 	return nil
 }
 

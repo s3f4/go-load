@@ -39,8 +39,6 @@ func (br *baseRepository) connect() {
 		os.Getenv("MYSQL_DATABASE"),
 	)
 
-	fmt.Println(dsn)
-
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	br.DB = db
 	// validations.RegisterCallbacks(br.DB)

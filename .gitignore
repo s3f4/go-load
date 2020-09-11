@@ -19,3 +19,4 @@ infra/base/inventory.txt
 
 *.tfvars
 *.tfstate
+*vendor

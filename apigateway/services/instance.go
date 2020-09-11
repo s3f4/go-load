@@ -61,9 +61,9 @@ func (s *instanceService) SpinUp() error {
 	exists := mu.DirExists("./infra/.terraform")
 	var err error
 	if exists {
-		// err = mu.RunCommands("cd infra;terraform init;terraform apply -auto-approve")
+		err = mu.RunCommands("cd infra;terraform init;terraform apply -auto-approve")
 	} else {
-		// err = mu.RunCommands("cd infra;terraform init;terraform apply -auto-approve")
+		err = mu.RunCommands("cd infra;terraform init;terraform apply -auto-approve")
 	}
 
 	if err != nil {
@@ -71,6 +71,7 @@ func (s *instanceService) SpinUp() error {
 	}
 
 	err = s.swarmInit()
+	s.swarmInspect()
 	return err
 }
 
@@ -79,9 +80,7 @@ func (s *instanceService) installDockerToWNodes() error {
 }
 
 func (s *instanceService) swarmInit() error {
-	fmt.Println("swarm init")
 	context := context.Background()
-
 	cli, err := client.NewEnvClient()
 
 	if err != nil {
@@ -92,20 +91,28 @@ func (s *instanceService) swarmInit() error {
 		ListenAddr: "eth0:2377",
 	}
 
-	res, err := cli.SwarmInit(context, req)
-	fmt.Println(res)
+	_, err = cli.SwarmInit(context, req)
+
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 
-	swarm, err := cli.SwarmInspect(context)
-	fmt.Println(swarm)
-	fmt.Println(err)
 	return nil
 }
 
+// Swarm nodes
+func (s *instanceService) swarmInspect() (swarm.Swarm, error) {
+	context := context.Background()
+	cli, err := client.NewEnvClient()
+	if err != nil {
+		panic(err)
+	}
+
+	return cli.SwarmInspect(context)
+}
+
 func (s *instanceService) joinWNodesToSwarm() error {
+	// todo ansible
 	return nil
 }
 

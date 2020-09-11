@@ -68,14 +68,12 @@ func (s *instanceService) SpinUp() error {
 		err = mu.RunCommands("cd infra;terraform init;terraform apply -auto-approve")
 	}
 
+	err = s.swarmInit()
+
 	if err != nil {
 		return err
 	}
-
-	// err = s.swarmInit()
-	s.ReadInventoryFile()
-	s.swarmInspect()
-	return err
+	return nil
 }
 
 func (s *instanceService) installDockerToWNodes() error {
@@ -83,15 +81,20 @@ func (s *instanceService) installDockerToWNodes() error {
 }
 
 func (s *instanceService) swarmInit() error {
+	masterIP, err := s.parseInventoryFile()
+	if err != nil {
+		return err
+	}
+
 	context := context.Background()
 	cli, err := client.NewEnvClient()
 
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	req := swarm.InitRequest{
-		ListenAddr: "eth0:2377",
+		AdvertiseAddr: masterIP,
 	}
 
 	_, err = cli.SwarmInit(context, req)
@@ -100,7 +103,13 @@ func (s *instanceService) swarmInit() error {
 		return err
 	}
 
-	return nil
+	swarmIns, err := s.swarmInspect()
+	if err != nil {
+		return err
+	}
+
+	token := swarmIns.JoinTokens.Worker
+	return s.joinWNodesToSwarm(token, masterIP)
 }
 
 // Swarm nodes
@@ -114,8 +123,18 @@ func (s *instanceService) swarmInspect() (swarm.Swarm, error) {
 	return cli.SwarmInspect(context)
 }
 
-func (s *instanceService) joinWNodesToSwarm() error {
-	// todo ansible
+// joinWNodesToSwarm command runs ansible to join all workers to swarm
+func (s *instanceService) joinWNodesToSwarm(token, addr string) error {
+
+	joinCommand := fmt.Sprintf(
+		"ansible-playbook -i ./infra/ansible/inventory.txt ./infra/ansible/docker-swarm-init.yml "+
+			"--extra-vars \"{token:%s,addr: %s}\"",
+		token,
+		addr,
+	)
+
+	mu.RunCommands(joinCommand)
+
 	return nil
 }
 

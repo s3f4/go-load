@@ -20,6 +20,7 @@ type InstanceService interface {
 	SpinUp() error
 	Run() error
 	Destroy() error
+	ShowRegions() (string, error)
 }
 
 type instanceService struct {
@@ -63,9 +64,9 @@ func (s *instanceService) SpinUp() error {
 	exists := mu.DirExists("./infra/.terraform")
 	var err error
 	if exists {
-		err = mu.RunCommands("cd infra;terraform init;terraform apply -auto-approve")
+		_, err = mu.RunCommands("cd infra;terraform init;terraform apply -auto-approve")
 	} else {
-		err = mu.RunCommands("cd infra;terraform init;terraform apply -auto-approve")
+		_, err = mu.RunCommands("cd infra;terraform init;terraform apply -auto-approve")
 	}
 
 	err = s.swarmInit()
@@ -77,7 +78,8 @@ func (s *instanceService) SpinUp() error {
 }
 
 func (s *instanceService) installDockerToWNodes() error {
-	return mu.RunCommands("cd ./infra/ansible; ansible-playbook -i inventory.txt docker-playbook.yml")
+	_, err := mu.RunCommands("cd ./infra/ansible; ansible-playbook -i inventory.txt docker-playbook.yml")
+	return err
 }
 
 func (s *instanceService) swarmInit() error {
@@ -157,4 +159,10 @@ func (s *instanceService) parseInventoryFile() (string, error) {
 
 	datas := strings.Split(string(data), "\n")
 	return datas[1], err
+}
+
+// Terraform shows available regions
+func (s *instanceService) ShowRegions() (string, error) {
+	output, err := mu.RunCommands("cd infra;terraform output regions")
+	return string(output), err
 }

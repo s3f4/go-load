@@ -51,6 +51,7 @@ func Run() {
 func initHandlers() {
 	router.Post("/instances", handlers.InstanceHandler.Init)
 	router.Get("/instances", handlers.InstanceHandler.List)
+	router.Get("/instances/regions", handlers.InstanceHandler.ShowRegions)
 	router.Delete("/instances", handlers.InstanceHandler.Destroy)
 	router.Get("/workers", handlers.WorkerHandler.List)
 	router.Post("/workers", handlers.WorkerHandler.Stop)

@@ -14,6 +14,7 @@ type instanceHandlerInterface interface {
 	Destroy(w http.ResponseWriter, r *http.Request)
 	List(w http.ResponseWriter, r *http.Request)
 	Run(w http.ResponseWriter, r *http.Request)
+	ShowRegions(w http.ResponseWriter, r *http.Request)
 }
 
 type instanceHandler struct {
@@ -27,7 +28,7 @@ var (
 	}
 )
 
-func (ih *instanceHandler) Init(w http.ResponseWriter, r *http.Request) {
+func (h *instanceHandler) Init(w http.ResponseWriter, r *http.Request) {
 	var instanceRequest models.Instance
 
 	if err := json.NewDecoder(r.Body).Decode(&instanceRequest); err != nil {
@@ -35,12 +36,12 @@ func (ih *instanceHandler) Init(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := ih.service.BuildTemplate(instanceRequest); err != nil {
+	if err := h.service.BuildTemplate(instanceRequest); err != nil {
 		R500(w, err.Error())
 		return
 	}
 
-	if err := ih.service.SpinUp(); err != nil {
+	if err := h.service.SpinUp(); err != nil {
 		R500(w, err.Error())
 		return
 	}
@@ -50,19 +51,28 @@ func (ih *instanceHandler) Init(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func (ih *instanceHandler) Destroy(w http.ResponseWriter, r *http.Request) {
-	if err := ih.service.Destroy(); err != nil {
+func (h *instanceHandler) Destroy(w http.ResponseWriter, r *http.Request) {
+	if err := h.service.Destroy(); err != nil {
 		R500(w, err.Error())
 		return
 	}
 }
 
-func (ih *instanceHandler) List(w http.ResponseWriter, r *http.Request) {
+func (h *instanceHandler) List(w http.ResponseWriter, r *http.Request) {
 	R200(w, Response{Data: map[string]interface{}{
 		"ok": "ok",
 	}})
 }
 
-func (ih *instanceHandler) Run(w http.ResponseWriter, r *http.Request) {
+func (h *instanceHandler) Run(w http.ResponseWriter, r *http.Request) {
 
+}
+
+func (h *instanceHandler) ShowRegions(w http.ResponseWriter, r *http.Request) {
+	output, err := h.service.ShowRegions()
+	if err != nil {
+		R500(w, err)
+		return
+	}
+	R200(w, output)
 }

@@ -106,6 +106,7 @@ func (s *instanceService) swarmInit() error {
 	}
 
 	swarmIns, err := s.swarmInspect()
+
 	if err != nil {
 		return err
 	}
@@ -165,4 +166,10 @@ func (s *instanceService) parseInventoryFile() (string, error) {
 func (s *instanceService) ShowRegions() (string, error) {
 	output, err := mu.RunCommands("cd infra;terraform output regions")
 	return string(output), err
+}
+
+// Shows swarm nodes
+
+func (s *instanceService) ShowSwarmNodes() (string, error) {
+	return "", nil
 }

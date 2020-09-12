@@ -15,6 +15,7 @@ type instanceHandlerInterface interface {
 	List(w http.ResponseWriter, r *http.Request)
 	Run(w http.ResponseWriter, r *http.Request)
 	ShowRegions(w http.ResponseWriter, r *http.Request)
+	ShowSwarmNodes(w http.ResponseWriter, r *http.Request)
 }
 
 type instanceHandler struct {
@@ -75,4 +76,8 @@ func (h *instanceHandler) ShowRegions(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	R200(w, output)
+}
+
+func (h *instanceHandler) ShowSwarmNodes(w http.ResponseWriter, r *http.Request){
+	
 }

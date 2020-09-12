@@ -1,6 +1,4 @@
-/** @jsx jsx */
 import React from "react";
-import { jsx, css } from "@emotion/core";
 import MainLayout from "../components/layouts/MainLayout";
 import { listWorkers, stopWorker } from "../api/api";
 import { Worker } from "../api/entity/worker";

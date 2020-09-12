@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"strings"
 
+	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/swarm"
 	"github.com/docker/docker/client"
 	"github.com/s3f4/go-load/apigateway/models"
@@ -21,6 +22,7 @@ type InstanceService interface {
 	Run() error
 	Destroy() error
 	ShowRegions() (string, error)
+	ShowSwarmNodes() ([]swarm.Node, error)
 }
 
 type instanceService struct {
@@ -170,6 +172,15 @@ func (s *instanceService) ShowRegions() (string, error) {
 
 // Shows swarm nodes
 
-func (s *instanceService) ShowSwarmNodes() (string, error) {
-	return "", nil
+func (s *instanceService) ShowSwarmNodes() ([]swarm.Node, error) {
+	context := context.Background()
+	cli, err := client.NewEnvClient()
+	if err != nil {
+		return nil, err
+	}
+
+	var options types.NodeListOptions
+	nodes, err := cli.NodeList(context, options)
+
+	return nodes, nil
 }

@@ -78,6 +78,11 @@ func (h *instanceHandler) ShowRegions(w http.ResponseWriter, r *http.Request) {
 	R200(w, output)
 }
 
-func (h *instanceHandler) ShowSwarmNodes(w http.ResponseWriter, r *http.Request){
-	
+func (h *instanceHandler) ShowSwarmNodes(w http.ResponseWriter, r *http.Request) {
+	nodes, err := h.service.ShowSwarmNodes()
+	if err != nil {
+		R500(w, err)
+		return
+	}
+	R200(w, nodes)
 }

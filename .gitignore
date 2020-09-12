@@ -15,7 +15,7 @@ apigateway/cmd/apigateway
 eventhandler/cmd/eventhandler
 test
 apigateway/infra/workers.tf
-apigateway/infra/inventory.tmpl
+apigateway/infra/ansible/inventory.tmpl
 apigateway/infra/ansible/inventory.txt
 infra/base/inventory.txt
 

@@ -4,6 +4,7 @@ import { jsx, css } from "@emotion/core";
 import TextInput from "../basic/TextInput";
 import Button from "../basic/Button";
 import { destroy, initInstances } from "../../api/api";
+import SelectBox from "../basic/SelectBox";
 
 interface Props {}
 
@@ -61,6 +62,12 @@ const Up: React.FC<Props> = () => {
         value={maxWorkingPeriod}
         onChange={handleChange("maxWorkingPeriod")}
       />
+
+      <SelectBox
+        label={"Pick the region"}
+        options={[{ text: "abc", value: "abc" }]}
+      />
+      
       <Button text="Up" onClick={sendRequest} />
       <Button text="Destroy" onClick={destroyRequest} />
     </div>

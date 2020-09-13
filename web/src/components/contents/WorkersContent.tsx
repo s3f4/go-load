@@ -33,7 +33,15 @@ const WorkersContent: React.FC<Props> = (props: Props) => {
       }
     });
 
-  return <div css={workers}>{!props.loader ? workersDiv() : <Loader />}</div>;
+  return (
+    <div css={workers}>
+      {!props.loader ? (
+        workersDiv()
+      ) : (
+        <Loader message={"workers is loading..."} />
+      )}
+    </div>
+  );
 };
 
 const workers = css`

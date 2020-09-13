@@ -43,7 +43,7 @@ const Up: React.FC<Props> = () => {
   };
 
   const regionsRequest = () => {
-    listAvailableRegions().then((data) => console.log(data));
+    listAvailableRegions().then((response) => console.log(response.message));
   };
 
   return (
@@ -56,6 +56,7 @@ const Up: React.FC<Props> = () => {
         onChange={handleChange("requestCount")}
         value={requestCount}
       />
+
       <TextInput
         label={"Instance Count"}
         type="text"
@@ -63,6 +64,7 @@ const Up: React.FC<Props> = () => {
         onChange={handleChange("instanceCount")}
         value={instanceCount}
       />
+
       <TextInput
         label={"Max working period(minutes)"}
         type="text"

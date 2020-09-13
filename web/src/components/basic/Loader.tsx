@@ -21,8 +21,10 @@ const Loader = (props: Props) => {
 };
 
 const loaderContainer = css`
+  display: block;
+  min-width: 10rem;
+  min-height: 10rem;
   position: relative;
-  margin-top: 10rem;
   width: 100%;
   height: 100%;
 `;
@@ -33,8 +35,6 @@ const loaderCss = css`
   flex-direction: column;
   top: 50%;
   left: 50%;
-  min-width: 10rem;
-  min-height: 10rem;
   transform: translate(-50%, -50%);
 `;
 

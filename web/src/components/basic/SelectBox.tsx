@@ -19,7 +19,9 @@ const SelectBox = (props: Props) => {
       {props.label ? <label css={label}>{props.label}</label> : ""}
       <select name={props.name} css={selectBox}>
         {props.options.map((option) => (
-          <option value={option.value}>{option.text}</option>
+          <option key={option.value} value={option.value}>
+            {option.text}
+          </option>
         ))}
       </select>
     </React.Fragment>

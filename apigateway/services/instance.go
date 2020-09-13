@@ -166,7 +166,7 @@ func (s *instanceService) parseInventoryFile() (string, error) {
 
 // Terraform shows available regions
 func (s *instanceService) ShowRegions() (string, error) {
-	output, err := mu.RunCommands("cd infra;terraform output regions")
+	output, err := mu.RunCommands("cd infra;terraform output -json regions")
 	return string(output), err
 }
 

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"strings"
 
 	"github.com/docker/docker/api/types"
@@ -150,6 +151,28 @@ func (s *instanceService) Run() error {
 
 func (s *instanceService) Destroy() error {
 	mu.RunCommands("cd infra;terraform destroy -auto-approve")
+	var err error
+
+	err = os.Remove("./infra/terraform.tfstate")
+	if err != nil {
+		return err
+	}
+
+	err = os.Remove("./infra/terraform.tfstate.backup")
+	if err != nil {
+		return err
+	}
+
+	err = os.Remove("./infra/workers.tf")
+	if err != nil {
+		return err
+	}
+
+	err = os.RemoveAll("./infra/.terraform")
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 

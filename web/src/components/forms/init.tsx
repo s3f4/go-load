@@ -12,6 +12,7 @@ const Up: React.FC<Props> = () => {
   const [requestCount, setRequestCount] = useState<number>(0);
   const [instanceCount, setInstanceCount] = useState<number>(0);
   const [maxWorkingPeriod, setMaxWorkingPeriod] = useState<number>(0);
+  const [region, setRegion] = useState<string>("");
   const [regions, setRegions] = useState<any>([]);
 
   React.useEffect(() => {
@@ -29,12 +30,15 @@ const Up: React.FC<Props> = () => {
       case "maxWorkingPeriod":
         setMaxWorkingPeriod(parseInt(e.target.value));
         break;
+      case "regions":
+        setRegion(e.target.value);
+        break;
     }
   };
 
   const sendRequest = (e: any) => {
     e.preventDefault();
-    const instances = { requestCount, instanceCount, maxWorkingPeriod };
+    const instances = { requestCount, instanceCount, maxWorkingPeriod, region };
     initInstances(instances).then((data) => console.log(data));
   };
 
@@ -45,16 +49,18 @@ const Up: React.FC<Props> = () => {
 
   const regionsRequest = () => {
     listAvailableRegions().then((response) => {
-      const jsonRes = JSON.parse(response.message);
-      const regions = jsonRes.regions;
-      const regionSelectBox: any = [];
-      regions.map((region: any) => {
-        regionSelectBox.push({
-          text: region.name,
-          value: region.slug,
+      if (response.status) {
+        const jsonRes = JSON.parse(response.message);
+        const regions = jsonRes.regions;
+        const regionSelectBox: any = [];
+        regions.map((region: any) => {
+          regionSelectBox.push({
+            text: region.name,
+            value: region.slug,
+          });
         });
-      });
-      setRegions(regionSelectBox);
+        setRegions(regionSelectBox);
+      }
     });
   };
 

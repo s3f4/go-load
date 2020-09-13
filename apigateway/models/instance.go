@@ -5,7 +5,7 @@ type Instance struct {
 	ID               uint   `json:"id" gorm:"primary_key"`
 	InstanceCount    int    `json:"instanceCount"`
 	InstanceSize     string `json:"size"`
-	InstanceOS       string `json:"os"`
+	Image            string `json:"image"`
 	Region           string `json:"region"`
 	MaxWorkingPeriod int    `json:"maxWorkingPeriod"`
 }

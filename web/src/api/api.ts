@@ -4,77 +4,63 @@ const URL = 'http://localhost';
 
 export const initInstances =
     async (item: any) => {
-  const response = await fetch(`${URL}:3001/instances`, {
-                     method: 'POST',
-                     headers: {
-                       Accept: 'application/json',
-                     },
-                     body: JSON.stringify(item)
-                   })
-                       .then(response => response.json())
-                       .catch(error => console.log(error))
-
-  return response;
+  return await fetch(`${URL}:3001/instances`, {
+           method: 'POST',
+           headers: {
+             Accept: 'application/json',
+           },
+           body: JSON.stringify(item)
+         })
+      .then(response => response.json())
+      .catch(error => console.log(error))
 }
 
 export const destroy =
     async () => {
-  const response = await fetch(`${URL}:3001/instances`, {
-                     method: 'DELETE',
-                     headers: {
-                       Accept: 'application/json',
-                     },
-                   })
+  return await fetch(`${URL}:3001/instances`, {
+           method: 'DELETE',
+           headers: {
+             Accept: 'application/json',
+           },
+         })
 
-                       .then(response => response.json())
-                       .catch(error => console.log(error))
-  return response;
+      .then(response => response.json())
+      .catch(error => console.log(error))
 }
 
 export const listWorkers =
     async () => {
-  try {
-    const response = await fetch(`${URL}:3001/workers`, {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-      },
-    })
-
-    return response.json();
-  } catch (err) {
-    return {error: err};
-  }
+  return await fetch(`${URL}:3001/workers`, {
+           method: 'GET',
+           headers: {
+             Accept: 'application/json',
+           },
+         })
+      .then(response => response.json())
+      .catch(error => console.log(error))
 }
 
 export const stopWorker =
     async (worker: Worker) => {
-  try {
-    const response = await fetch(`${URL}:3001/workers`, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-      },
-      body: JSON.stringify(worker)
-    })
-    return response.json();
-  } catch (err) {
-    return {error: err};
-  }
+  return await fetch(`${URL}:3001/workers`, {
+           method: 'POST',
+           headers: {
+             Accept: 'application/json',
+           },
+           body: JSON.stringify(worker)
+         })
+      .then(response => response.json())
+      .catch(error => console.log(error))
 }
 
 
 export const listAvailableRegions = async () => {
-  try {
-    const response = await fetch(`${URL}:3001/instances/regions`, {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-      },
-    })
-
-    return response.json();
-  } catch (err) {
-    return {error: err};
-  }
+  return await fetch(`${URL}:3001/instances/regions`, {
+           method: 'GET',
+           headers: {
+             Accept: 'application/json',
+           },
+         })
+      .then(response => response.json())
+      .catch(error => console.log(error))
 }

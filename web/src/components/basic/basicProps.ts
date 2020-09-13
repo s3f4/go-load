@@ -4,4 +4,5 @@ export default interface BasicProps {
   value?: any;
   id?: string;
   className?: string;
+  label?: string;
 }

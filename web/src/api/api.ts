@@ -47,7 +47,8 @@ export const listWorkers =
   }
 }
 
-export const stopWorker = async (worker: Worker) => {
+export const stopWorker =
+    async (worker: Worker) => {
   try {
     const response = await fetch(`${URL}:3001/workers`, {
       method: 'POST',
@@ -56,6 +57,22 @@ export const stopWorker = async (worker: Worker) => {
       },
       body: JSON.stringify(worker)
     })
+    return response.json();
+  } catch (err) {
+    return {error: err};
+  }
+}
+
+
+export const listAvailableRegions = async () => {
+  try {
+    const response = await fetch(`${URL}:3001/instances/regions`, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+      },
+    })
+
     return response.json();
   } catch (err) {
     return {error: err};

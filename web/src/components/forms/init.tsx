@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { jsx, css } from "@emotion/core";
 import TextInput from "../basic/TextInput";
 import Button from "../basic/Button";
-import { destroy, initInstances } from "../../api/api";
+import { destroy, initInstances, listAvailableRegions } from "../../api/api";
 import SelectBox from "../basic/SelectBox";
 
 interface Props {}
@@ -12,6 +12,10 @@ const Up: React.FC<Props> = () => {
   const [requestCount, setRequestCount] = useState<number>(0);
   const [instanceCount, setInstanceCount] = useState<number>(0);
   const [maxWorkingPeriod, setMaxWorkingPeriod] = useState<number>(0);
+
+  React.useEffect(() => {
+    regionsRequest();
+  }, []);
 
   const handleChange = (name?: string) => (e: any) => {
     switch (name) {
@@ -36,6 +40,10 @@ const Up: React.FC<Props> = () => {
   const destroyRequest = (e: any) => {
     e.preventDefault();
     destroy().then((data) => console.log(data));
+  };
+
+  const regionsRequest = () => {
+    listAvailableRegions().then((data) => console.log(data));
   };
 
   return (
@@ -64,10 +72,11 @@ const Up: React.FC<Props> = () => {
       />
 
       <SelectBox
+        name={"regions"}
         label={"Pick the region"}
         options={[{ text: "abc", value: "abc" }]}
       />
-      
+
       <Button text="Up" onClick={sendRequest} />
       <Button text="Destroy" onClick={destroyRequest} />
     </div>

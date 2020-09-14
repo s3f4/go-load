@@ -31,6 +31,13 @@ clean: down
 create_ssh_for_master:
 	ssh-keygen -t rsa -b 4096 -N '' -C "sefa@dehaa.com" -f ~/.ssh/id_rsa_for_master 
 
+rm-files:
+	rm apigateway/cmd/apigateway && \
+	rm worker/cmd/worker && \
+	rm eventhandler/cmd/eventhandler && \
+	rm -rf web/node_modules && \
+	rm infra/base/inventory.txt 
+
 init :create_ssh_for_master
 	cd infra/base && terraform init
 
@@ -42,7 +49,7 @@ cpInventory:
 	cd infra/base && cp inventory.txt ../../apigateway/infra/ansible/inventory.tmpl \
 	&& echo "\n[workers]\n\$${workers}" >> ../../apigateway/infra/ansible/inventory.tmpl
 
-up-instances: init apply cpInventory
+up-instances: rm-files init apply cpInventory
 	@echo "=============instances spinning up============="
 	 
 upload-inventory:

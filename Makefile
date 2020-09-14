@@ -32,11 +32,11 @@ create_ssh_for_master:
 	ssh-keygen -t rsa -b 4096 -N '' -C "sefa@dehaa.com" -f ~/.ssh/id_rsa_for_master 
 
 rm-files:
-	rm apigateway/cmd/apigateway && \
-	rm worker/cmd/worker && \
-	rm eventhandler/cmd/eventhandler && \
+	rm -f apigateway/cmd/apigateway && \
+	rm -f worker/cmd/worker && \
+	rm -f eventhandler/cmd/eventhandler && \
 	rm -rf web/node_modules && \
-	rm infra/base/inventory.txt 
+	rm -f infra/base/inventory.txt 
 
 init :create_ssh_for_master
 	cd infra/base && terraform init

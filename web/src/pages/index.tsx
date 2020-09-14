@@ -1,6 +1,4 @@
-/** @jsx jsx */
 import React from "react";
-import { jsx, css } from "@emotion/core";
 import MainLayout from "../components/layouts/MainLayout";
 
 interface Props {}
@@ -12,7 +10,5 @@ const Index: React.FC<Props> = (props: Props) => {
     </React.Fragment>
   );
 };
-
-const index = css``;
 
 export default Index;

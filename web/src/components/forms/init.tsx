@@ -31,7 +31,7 @@ const Up: React.FC<Props> = () => {
         setMaxWorkingPeriod(parseInt(e.target.value));
         break;
       case "regions":
-        setRegion(e.target.value);
+        setRegion(e.target.value.toUpperCase());
         break;
     }
   };
@@ -52,12 +52,11 @@ const Up: React.FC<Props> = () => {
       if (response.status) {
         const jsonRes = JSON.parse(response.message);
         const regions = jsonRes.regions;
-        const regionSelectBox: any = [];
-        regions.map((region: any) => {
-          regionSelectBox.push({
+        const regionSelectBox = regions.map((region: any) => {
+          return {
             text: region.name,
             value: region.slug,
-          });
+          };
         });
         setRegions(regionSelectBox);
       }
@@ -91,7 +90,13 @@ const Up: React.FC<Props> = () => {
         onChange={handleChange("maxWorkingPeriod")}
       />
 
-      <SelectBox name={"regions"} label={"Pick the region"} options={regions} />
+      <SelectBox
+        name={"regions"}
+        label={"Pick the region"}
+        onChange={handleChange("regions")}
+        options={regions}
+        value={region}
+      />
 
       <Button text="Up" onClick={sendRequest} />
       <Button text="Destroy" onClick={destroyRequest} />

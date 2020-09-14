@@ -11,13 +11,20 @@ interface SelectBoxData {
 
 interface Props extends BasicProps {
   options: SelectBoxData[];
+  value: string;
+  onChange?: (e: any) => void;
 }
 
 const SelectBox = (props: Props) => {
   return (
     <React.Fragment>
       {props.label ? <label css={label}>{props.label}</label> : ""}
-      <select name={props.name} css={selectBox}>
+      <select
+        css={selectBox}
+        onChange={props.onChange}
+        name={props.name}
+        value={props.value}
+      >
         {props.options.map((option) => (
           <option key={option.value} value={option.value}>
             {option.text}

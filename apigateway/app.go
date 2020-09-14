@@ -12,12 +12,14 @@ import (
 	"github.com/go-chi/cors"
 	"github.com/s3f4/go-load/apigateway/handlers"
 	"github.com/s3f4/go-load/apigateway/repository"
+	"github.com/s3f4/mu/log"
 )
 
 var router *chi.Mux
 
 // Run apigateway Service
 func Run() {
+	log.Init()
 	go Down()
 	router = chi.NewRouter()
 

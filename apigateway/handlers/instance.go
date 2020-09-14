@@ -4,11 +4,10 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/apex/log"
 	"github.com/s3f4/go-load/apigateway/models"
 	"github.com/s3f4/go-load/apigateway/services"
 	. "github.com/s3f4/mu"
-	"go.uber.org/zap"
+	"github.com/s3f4/mu/log"
 )
 
 type instanceHandlerInterface interface {
@@ -31,26 +30,22 @@ var (
 	}
 )
 
-var logger *zap.Logger
-
 func (h *instanceHandler) Init(w http.ResponseWriter, r *http.Request) {
-	logger, _ = zap.NewProduction()
-	log := logger.Sugar()
 	var instanceRequest models.Instance
 	if err := json.NewDecoder(r.Body).Decode(&instanceRequest); err != nil {
-		log.Errorf("%s", err)
+		log.Errorf(err.Error())
 		R400(w, err.Error())
 		return
 	}
 
 	if err := h.service.BuildTemplate(instanceRequest); err != nil {
-		log.Errorf("%s", err)
+		log.Errorf(err.Error())
 		R500(w, err.Error())
 		return
 	}
 
 	if err := h.service.SpinUp(); err != nil {
-		log.Errorf("%s", err)
+		log.Errorf(err.Error())
 		R500(w, err.Error())
 		return
 	}
@@ -62,7 +57,7 @@ func (h *instanceHandler) Init(w http.ResponseWriter, r *http.Request) {
 
 func (h *instanceHandler) Destroy(w http.ResponseWriter, r *http.Request) {
 	if err := h.service.Destroy(); err != nil {
-		log.Errorf("%s", err)
+		log.Errorf(err.Error())
 		R500(w, err.Error())
 		return
 	}
@@ -81,7 +76,7 @@ func (h *instanceHandler) Run(w http.ResponseWriter, r *http.Request) {
 func (h *instanceHandler) ShowRegions(w http.ResponseWriter, r *http.Request) {
 	output, err := h.service.ShowRegions()
 	if err != nil {
-		log.Errorf("%s", err)
+		log.Errorf(err.Error())
 		R500(w, err)
 		return
 	}
@@ -91,7 +86,7 @@ func (h *instanceHandler) ShowRegions(w http.ResponseWriter, r *http.Request) {
 func (h *instanceHandler) ShowSwarmNodes(w http.ResponseWriter, r *http.Request) {
 	nodes, err := h.service.ShowSwarmNodes()
 	if err != nil {
-		log.Errorf("%s", err)
+		log.Errorf(err.Error())
 		R500(w, err)
 		return
 	}

@@ -36,7 +36,10 @@ rm-files:
 	rm -f worker/cmd/worker && \
 	rm -f eventhandler/cmd/eventhandler && \
 	rm -rf web/node_modules && \
-	rm -f infra/base/inventory.txt 
+	rm -f infra/base/inventory.txt && \
+	rm -f apigateway/log && \
+	rm -f worker/log && \
+	rm -f eventhandler/log  \
 
 init :create_ssh_for_master
 	cd infra/base && terraform init

@@ -31,7 +31,7 @@ const Up: React.FC<Props> = () => {
         setMaxWorkingPeriod(parseInt(e.target.value));
         break;
       case "regions":
-        setRegion(e.target.value.toUpperCase());
+        setRegion(e.target.value);
         break;
     }
   };

@@ -7,7 +7,7 @@ resource "digitalocean_ssh_key" "for_master" {
 }
 
 resource "digitalocean_droplet" "master" {
-  image  = var.os
+  image  = var.image
   name   = "DO-Master-1"
   region = var.region
   size   = var.size
@@ -79,7 +79,35 @@ resource "digitalocean_droplet" "master" {
     inline = [
       "chmod 600 ~/.ssh/id_rsa",
       "chmod 644 ~/.ssh/id_rsa.pub",
+      "mkdir ~/app"
     ]
+  }
+
+  provisioner "file" {
+    source      = abspath("../../apigateway")
+    destination = "~/app/apigateway"
+  }
+
+  provisioner "file" {
+    source      = abspath("../../eventhandler")
+    destination = "~/app/eventhandler"
+  }
+
+
+  provisioner "file" {
+    source      = abspath("../../web")
+    destination = "~/app/web"
+  }
+
+
+  provisioner "file" {
+    source      = abspath("../../worker")
+    destination = "~/app/worker"
+  }
+
+  provisioner "file" {
+    source      = abspath("../../docker-compose.prod.yml")
+    destination = "~/app/docker-compose.prod.yml"
   }
 }
 
@@ -88,7 +116,7 @@ resource "digitalocean_droplet" "master" {
 # Create a new Droplet using the SSH key
 # Data instance for docker swarm
 resource "digitalocean_droplet" "data" {
-  image  = var.os
+  image  = var.image
   name   = "DO-Data-1"
   region = var.region
   size   = var.size

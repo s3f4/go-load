@@ -35,7 +35,7 @@ init :create_ssh_for_master
 	cd infra/base && terraform init
 
 apply:
-	cd infra/base && terraform apply -auto-approve -var "public_key=$$HOME/.ssh/id_rsa.pub" \
+	cd infra/base && export TF_LOG=true && terraform apply -auto-approve -var "public_key=$$HOME/.ssh/id_rsa.pub" \
   														 -var "private_key=$$HOME/.ssh/id_rsa" \
   														 -var "ssh_fingerprint=$(SSH_FINGERPRINT)" 
 cpInventory:
@@ -60,6 +60,11 @@ ssh-copy:
 
 destroy:
 	cd infra/base && terraform destroy -auto-approve -var "public_key=$$HOME/.ssh/id_rsa.pub" \
+  														   -var "private_key=$$HOME/.ssh/id_rsa" \
+  														   -var "ssh_fingerprint=$(SSH_FINGERPRINT)"
+
+plan:
+	cd infra/base && terraform plan -var "public_key=$$HOME/.ssh/id_rsa.pub" \
   														   -var "private_key=$$HOME/.ssh/id_rsa" \
   														   -var "ssh_fingerprint=$(SSH_FINGERPRINT)"
 

@@ -3,4 +3,4 @@ data "digitalocean_regions" "available" {
     key    = "available"
     values = ["true"]
   }
-} 
+}

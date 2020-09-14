@@ -6,8 +6,8 @@ variable "do_token" {
   description = "This is digitalocean apikey that will be given in runtime with terraform apply -var \"do_token=abc..\""
 }
 
-variable "os" {
-  description = "OS of instance(droplet)"
+variable "image" {
+  description = "Image of instance(droplet)"
   default     = "ubuntu-18-04-x64"
 }
 

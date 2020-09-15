@@ -1,5 +1,5 @@
-export const toInt = (val: any): number => {
-  let intVal = parseInt(val)
+export const toNum = (val: any): number => {
+  let intVal = Number(val)
 
   if (isNaN(intVal)) {
     return 0;

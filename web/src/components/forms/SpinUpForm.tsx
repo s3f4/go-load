@@ -5,11 +5,11 @@ import TextInput from "../basic/TextInput";
 import Button from "../basic/Button";
 import { destroy, initInstances, listAvailableRegions } from "../../api/api";
 import SelectBox from "../basic/SelectBox";
-import { toInt } from "../basic/helper";
+import { toNum } from "../basic/helper";
 
 interface Props {}
 
-const Up: React.FC<Props> = () => {
+const SpinUp: React.FC<Props> = () => {
   const [instanceCount, setInstanceCount] = useState<number>(0);
   const [maxWorkingPeriod, setMaxWorkingPeriod] = useState<number>(0);
   const [region, setRegion] = useState<string>("");
@@ -22,10 +22,10 @@ const Up: React.FC<Props> = () => {
   const handleChange = (name?: string) => (e: any) => {
     switch (name) {
       case "instanceCount":
-        setInstanceCount(toInt(e.target.value));
+        setInstanceCount(toNum(e.target.value));
         break;
       case "maxWorkingPeriod":
-        setMaxWorkingPeriod(toInt(e.target.value));
+        setMaxWorkingPeriod(toNum(e.target.value));
         break;
       case "regions":
         setRegion(e.target.value);
@@ -87,7 +87,7 @@ const Up: React.FC<Props> = () => {
         value={region}
       />
 
-      <Button text="Up" onClick={sendRequest} />
+      <Button text="Spin Up" onClick={sendRequest} />
       <Button text="Destroy" onClick={destroyRequest} />
     </div>
   );
@@ -104,4 +104,4 @@ const formTitle = css`
   text-align: center;
 `;
 
-export default Up;
+export default SpinUp;

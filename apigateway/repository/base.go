@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/s3f4/mu/log"
+
 	"github.com/s3f4/go-load/apigateway/models"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -46,8 +48,7 @@ func (br *baseRepository) connect() {
 	// br.DB.LogMode(config.GetBool("database.log_mode"))
 
 	if err != nil {
-		fmt.Println(err)
-		panic("failed to connect database")
+		log.Panicf("failed to connect database: %s", err)
 	}
 
 	//defer db.Close()

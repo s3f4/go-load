@@ -5,11 +5,11 @@ import TextInput from "../basic/TextInput";
 import Button from "../basic/Button";
 import { destroy, initInstances, listAvailableRegions } from "../../api/api";
 import SelectBox from "../basic/SelectBox";
+import { toInt } from "../basic/helper";
 
 interface Props {}
 
 const Up: React.FC<Props> = () => {
-  const [requestCount, setRequestCount] = useState<number>(0);
   const [instanceCount, setInstanceCount] = useState<number>(0);
   const [maxWorkingPeriod, setMaxWorkingPeriod] = useState<number>(0);
   const [region, setRegion] = useState<string>("");
@@ -22,13 +22,10 @@ const Up: React.FC<Props> = () => {
   const handleChange = (name?: string) => (e: any) => {
     switch (name) {
       case "instanceCount":
-        setInstanceCount(parseInt(e.target.value));
-        break;
-      case "requestCount":
-        setRequestCount(parseInt(e.target.value));
+        setInstanceCount(toInt(e.target.value));
         break;
       case "maxWorkingPeriod":
-        setMaxWorkingPeriod(parseInt(e.target.value));
+        setMaxWorkingPeriod(toInt(e.target.value));
         break;
       case "regions":
         setRegion(e.target.value);
@@ -38,7 +35,7 @@ const Up: React.FC<Props> = () => {
 
   const sendRequest = (e: any) => {
     e.preventDefault();
-    const instances = { requestCount, instanceCount, maxWorkingPeriod, region };
+    const instances = { instanceCount, maxWorkingPeriod, region };
     initInstances(instances).then((data) => console.log(data));
   };
 
@@ -66,14 +63,6 @@ const Up: React.FC<Props> = () => {
   return (
     <div css={formDiv}>
       <h2 css={formTitle}>Set up Testing Infrastructure</h2>
-      <TextInput
-        label={"Request Count"}
-        type="text"
-        name="requestCount"
-        onChange={handleChange("requestCount")}
-        value={requestCount}
-      />
-
       <TextInput
         label={"Instance Count"}
         type="text"

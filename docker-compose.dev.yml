@@ -17,6 +17,7 @@ services:
     depends_on:
       - mysql
     environment:
+      - APP_ENV=development
       - MYSQL_HOST=mysql
       - MYSQL_PORT=3306
       - MYSQL_DATABASE=go-load

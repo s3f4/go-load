@@ -5,9 +5,10 @@ import SpinUpForm from "../components/forms/SpinUpForm";
 interface Props {}
 
 const Instances: React.FC<Props> = (props: Props) => {
+
   return (
     <React.Fragment>
-      <MainLayout content={<SpinUpForm />} />
+    <MainLayout content={<SpinUpForm />} />
     </React.Fragment>
   );
 };

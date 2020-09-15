@@ -46,7 +46,7 @@ const SpinUp: React.FC<Props> = () => {
 
   const regionsRequest = () => {
     listAvailableRegions().then((response) => {
-      if (response.status) {
+      if (response && response.status) {
         const jsonRes = JSON.parse(response.message);
         const regions = jsonRes.regions;
         const regionSelectBox = regions.map((region: any) => {

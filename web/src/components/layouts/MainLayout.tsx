@@ -25,7 +25,11 @@ const MainLayout: React.FC<Props> = (props: Props) => {
       </Helmet>
       <div css={container}>
         <Header />
-        <Content content={props.content} />
+        <Content
+          content={
+            typeof props.content == "function" ? props.content() : props.content
+          }
+        />
         <Footer />
       </div>
     </React.Fragment>

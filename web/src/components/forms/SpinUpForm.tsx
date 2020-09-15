@@ -6,14 +6,18 @@ import Button from "../basic/Button";
 import { destroy, initInstances, listAvailableRegions } from "../../api/api";
 import SelectBox from "../basic/SelectBox";
 import { toNum } from "../basic/helper";
+import Loader from "../basic/Loader";
 
-interface Props {}
+interface Props {
+  afterHandle?: () => void;
+}
 
-const SpinUp: React.FC<Props> = () => {
+const SpinUp: React.FC<Props> = (props: Props) => {
   const [instanceCount, setInstanceCount] = useState<number>(0);
   const [maxWorkingPeriod, setMaxWorkingPeriod] = useState<number>(0);
   const [region, setRegion] = useState<string>("");
   const [regions, setRegions] = useState<any>([]);
+  const [loading, setLoading] = useState<boolean>(false);
 
   React.useEffect(() => {
     regionsRequest();
@@ -35,8 +39,13 @@ const SpinUp: React.FC<Props> = () => {
 
   const sendRequest = (e: any) => {
     e.preventDefault();
+    setLoading(true);
     const instances = { instanceCount, maxWorkingPeriod, region };
-    initInstances(instances).then((data) => console.log(data));
+    initInstances(instances).then((data) => {
+      setLoading(false);
+      console.log(data);
+      props.afterHandle?.();
+    });
   };
 
   const destroyRequest = (e: any) => {
@@ -45,51 +54,64 @@ const SpinUp: React.FC<Props> = () => {
   };
 
   const regionsRequest = () => {
-    listAvailableRegions().then((response) => {
-      if (response && response.status) {
-        const jsonRes = JSON.parse(response.message);
-        const regions = jsonRes.regions;
-        const regionSelectBox = regions.map((region: any) => {
-          return {
-            text: region.name,
-            value: region.slug,
-          };
-        });
-        setRegions(regionSelectBox);
-      }
-    });
+    listAvailableRegions()
+      .then((response) => {
+        if (response && response.status) {
+          const jsonRes = JSON.parse(response.message);
+          const regions = jsonRes.regions;
+          const regionSelectBox = regions.map((region: any) => {
+            return {
+              text: region.name,
+              value: region.slug,
+            };
+          });
+          setRegions(regionSelectBox);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        setLoading(false);
+      });
   };
 
-  return (
-    <div css={formDiv}>
-      <h2 css={formTitle}>Set up Testing Infrastructure</h2>
-      <TextInput
-        label={"Instance Count"}
-        type="text"
-        name="instanceCount"
-        onChange={handleChange("instanceCount")}
-        value={instanceCount}
-      />
+  const formContent = () => {
+    return (
+      <div css={formDiv}>
+        <h2 css={formTitle}>Set up Testing Infrastructure</h2>
+        <TextInput
+          label={"Instance Count"}
+          type="text"
+          name="instanceCount"
+          onChange={handleChange("instanceCount")}
+          value={instanceCount}
+        />
 
-      <TextInput
-        label={"Max working period(minutes)"}
-        type="text"
-        name="maxWorkingPeriod"
-        value={maxWorkingPeriod}
-        onChange={handleChange("maxWorkingPeriod")}
-      />
+        <TextInput
+          label={"Max working period(minutes)"}
+          type="text"
+          name="maxWorkingPeriod"
+          value={maxWorkingPeriod}
+          onChange={handleChange("maxWorkingPeriod")}
+        />
 
-      <SelectBox
-        name={"regions"}
-        label={"Pick the region"}
-        onChange={handleChange("regions")}
-        options={regions}
-        value={region}
-      />
+        <SelectBox
+          name={"regions"}
+          label={"Pick the region"}
+          onChange={handleChange("regions")}
+          options={regions}
+          value={region}
+        />
 
-      <Button text="Spin Up" onClick={sendRequest} />
-      <Button text="Destroy" onClick={destroyRequest} />
-    </div>
+        <Button text="Spin Up" onClick={sendRequest} />
+        <Button text="Destroy" onClick={destroyRequest} />
+      </div>
+    );
+  };
+
+  return loading ? (
+    <Loader message="Instances will be created in a few minutes.." />
+  ) : (
+    formContent()
   );
 };
 

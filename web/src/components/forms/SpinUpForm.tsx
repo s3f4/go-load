@@ -7,10 +7,9 @@ import { destroy, initInstances, listAvailableRegions } from "../../api/api";
 import SelectBox from "../basic/SelectBox";
 import { toNum } from "../basic/helper";
 import Loader from "../basic/Loader";
+import { BaseForm } from "./BaseForm";
 
-interface Props {
-  afterHandle?: () => void;
-}
+interface Props extends BaseForm {}
 
 const SpinUp: React.FC<Props> = (props: Props) => {
   const [instanceCount, setInstanceCount] = useState<number>(0);
@@ -23,8 +22,8 @@ const SpinUp: React.FC<Props> = (props: Props) => {
     regionsRequest();
   }, []);
 
-  const handleChange = (name?: string) => (e: any) => {
-    switch (name) {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    switch (e.target.name) {
       case "instanceCount":
         setInstanceCount(toNum(e.target.value));
         break;
@@ -54,24 +53,19 @@ const SpinUp: React.FC<Props> = (props: Props) => {
   };
 
   const regionsRequest = () => {
-    listAvailableRegions()
-      .then((response) => {
-        if (response && response.status) {
-          const jsonRes = JSON.parse(response.message);
-          const regions = jsonRes.regions;
-          const regionSelectBox = regions.map((region: any) => {
-            return {
-              text: region.name,
-              value: region.slug,
-            };
-          });
-          setRegions(regionSelectBox);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-        setLoading(false);
-      });
+    listAvailableRegions().then((response) => {
+      if (response && response.status) {
+        const jsonRes = JSON.parse(response.message);
+        const regions = jsonRes.regions;
+        const regionSelectBox = regions.map((region: any) => {
+          return {
+            text: region.name,
+            value: region.slug,
+          };
+        });
+        setRegions(regionSelectBox);
+      }
+    });
   };
 
   const formContent = () => {
@@ -79,25 +73,25 @@ const SpinUp: React.FC<Props> = (props: Props) => {
       <div css={formDiv}>
         <h2 css={formTitle}>Set up Testing Infrastructure</h2>
         <TextInput
+          name="instanceCount"
           label={"Instance Count"}
           type="text"
-          name="instanceCount"
-          onChange={handleChange("instanceCount")}
+          onChange={handleChange}
           value={instanceCount}
         />
 
         <TextInput
+          name="maxWorkingPeriod"
           label={"Max working period(minutes)"}
           type="text"
-          name="maxWorkingPeriod"
           value={maxWorkingPeriod}
-          onChange={handleChange("maxWorkingPeriod")}
+          onChange={handleChange}
         />
 
         <SelectBox
           name={"regions"}
           label={"Pick the region"}
-          onChange={handleChange("regions")}
+          onChange={handleChange}
           options={regions}
           value={region}
         />

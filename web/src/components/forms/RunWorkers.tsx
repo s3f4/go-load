@@ -4,14 +4,15 @@ import { jsx, css } from "@emotion/core";
 import TextInput from "../basic/TextInput";
 import Button from "../basic/Button";
 import { toNum } from "../basic/helper";
+import { BaseForm } from "./BaseForm";
 
-interface Props {}
+interface Props extends BaseForm {}
 
 const RunWorkers = (props: Props) => {
   const [requestCount, setRequestCount] = React.useState<number>(0);
   const [goroutineCount, setGoroutineCount] = React.useState<number>(0);
 
-  const handleChange = (e: any) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     switch (e.target.name) {
       case "requestCount":
         setRequestCount(toNum(e.target.value));
@@ -22,12 +23,14 @@ const RunWorkers = (props: Props) => {
     }
   };
 
-  const run = (e: Event) => {
-    console.log(e);
+  const run = (e: React.FormEvent) => {
+    e.preventDefault();
+    
   };
 
   return (
-    <div css={runWorkersForm}>
+    <div css={formDiv}>
+      <h2 css={formTitle}>Run Workers</h2>
       <TextInput
         onChange={handleChange}
         label="Total Request"
@@ -46,6 +49,14 @@ const RunWorkers = (props: Props) => {
   );
 };
 
-const runWorkersForm = css``;
+const formDiv = css`
+  margin: 0 auto;
+  width: 50%;
+`;
 
+const formTitle = css`
+  font-size: 2.3rem;
+  text-decoration: none;
+  text-align: center;
+`;
 export default RunWorkers;

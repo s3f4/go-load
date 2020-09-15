@@ -6,8 +6,10 @@ import RunWorkers from "../components/forms/RunWorkers";
 interface Props {}
 
 const Instances: React.FC<Props> = (props: Props) => {
+  const [showRunWorkerForm, setShowRunWorkerForm] = React.useState<boolean>();
+
   const spinUpAfterHandle = () => {
-    console.log("handled");
+    setShowRunWorkerForm(true);
   };
 
   // spinUpForm
@@ -19,7 +21,7 @@ const Instances: React.FC<Props> = (props: Props) => {
 
   return (
     <React.Fragment>
-      <MainLayout content={spinUpForm} />
+      <MainLayout content={showRunWorkerForm ? runWorkersForm : spinUpForm} />
     </React.Fragment>
   );
 };

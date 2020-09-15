@@ -6,7 +6,7 @@ import BasicProps from "./basicProps";
 
 interface Props extends BasicProps {
   label?: string;
-  onChange?: (e: React.FormEvent) => void;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const TextInput: React.FC<Props> = (props: Props) => {
@@ -15,6 +15,7 @@ const TextInput: React.FC<Props> = (props: Props) => {
       <div css={inputDiv}>
         {props.label ? <label css={label}>{props.label}</label> : ""}
         <input
+          name={props.name}
           css={textInput}
           type="text"
           value={props.value}

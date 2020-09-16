@@ -1,7 +1,6 @@
 import React from "react";
 import MainLayout from "../components/layouts/MainLayout";
-import { listWorkers, stopWorker } from "../api/api";
-import { Worker } from "../api/entity/worker";
+import { Worker, list, stop } from "../api/entity/worker";
 import WorkersContent from "../components/contents/WorkersContent";
 
 interface Props {}
@@ -13,7 +12,7 @@ const Workers: React.FC<Props> = (props: Props) => {
   const handleStop = (worker: Worker) => (e: any) => {
     e.preventDefault();
     setLoader(true);
-    stopWorker(worker)
+    stop(worker)
       .then(() => {
         const newWorkers = workerContainers.filter(
           (workerContainer) => workerContainer.Id !== worker.Id,
@@ -26,7 +25,7 @@ const Workers: React.FC<Props> = (props: Props) => {
 
   React.useEffect(() => {
     setLoader(true);
-    listWorkers()
+    list()
       .then((response) => {
         setWorkerContainers(response.data.containers);
         setLoader(false);

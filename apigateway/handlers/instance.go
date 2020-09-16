@@ -14,7 +14,6 @@ type instanceHandlerInterface interface {
 	Init(w http.ResponseWriter, r *http.Request)
 	Destroy(w http.ResponseWriter, r *http.Request)
 	List(w http.ResponseWriter, r *http.Request)
-	Run(w http.ResponseWriter, r *http.Request)
 	ShowRegions(w http.ResponseWriter, r *http.Request)
 	ShowSwarmNodes(w http.ResponseWriter, r *http.Request)
 }
@@ -67,10 +66,6 @@ func (h *instanceHandler) List(w http.ResponseWriter, r *http.Request) {
 	R200(w, Response{Data: map[string]interface{}{
 		"ok": "ok",
 	}})
-}
-
-func (h *instanceHandler) Run(w http.ResponseWriter, r *http.Request) {
-
 }
 
 func (h *instanceHandler) ShowRegions(w http.ResponseWriter, r *http.Request) {

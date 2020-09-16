@@ -3,6 +3,7 @@ import React from "react";
 import { jsx, css } from "@emotion/core";
 import { ReactComponent as ReactLogo } from "../img/gopher.svg";
 import { Link } from "react-router-dom";
+
 interface Props {}
 
 const Header: React.FC<Props> = (props: Props) => {
@@ -17,7 +18,8 @@ const Header: React.FC<Props> = (props: Props) => {
         </div>
         <div css={headerDiv}>
           <Link to="/instances">Instances</Link>
-          <Link to="/workers">Workers</Link>
+          <Link to="/workers">Worker Containers</Link>
+          <Link to="/swarm">Swarm</Link>
           <Link to="/stats">Stats</Link>
         </div>
       </div>

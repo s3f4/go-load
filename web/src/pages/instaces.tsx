@@ -8,6 +8,8 @@ interface Props {}
 const Instances: React.FC<Props> = (props: Props) => {
   const [showRunWorkerForm, setShowRunWorkerForm] = React.useState<boolean>();
 
+  const listInstances = () => {};
+
   const spinUpAfterHandle = () => {
     setShowRunWorkerForm(true);
   };

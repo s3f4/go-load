@@ -3,11 +3,15 @@ import React, { useState } from "react";
 import { jsx, css } from "@emotion/core";
 import TextInput from "../basic/TextInput";
 import Button from "../basic/Button";
-import { destroy, initInstances, listAvailableRegions } from "../../api/api";
 import SelectBox from "../basic/SelectBox";
 import { toNum } from "../basic/helper";
 import Loader from "../basic/Loader";
 import { BaseForm } from "./BaseForm";
+import {
+  spinUp,
+  destroyAll,
+  listAvailableRegions,
+} from "../../api/entity/instance";
 
 interface Props extends BaseForm {}
 
@@ -40,16 +44,21 @@ const SpinUp: React.FC<Props> = (props: Props) => {
     e.preventDefault();
     setLoading(true);
     const instances = { instanceCount, maxWorkingPeriod, region };
-    initInstances(instances).then((data) => {
-      setLoading(false);
-      console.log(data);
-      props.afterHandle?.();
-    });
+    spinUp(instances)
+      .then(() => {
+        setLoading(false);
+        props.afterHandle?.();
+      })
+      .catch((error) => {
+        setLoading(false);
+        console.log(error);
+        props.afterHandle?.();
+      });
   };
 
   const destroyRequest = (e: any) => {
     e.preventDefault();
-    destroy().then((data) => console.log(data));
+    destroyAll().then((data) => console.log(data));
   };
 
   const regionsRequest = () => {

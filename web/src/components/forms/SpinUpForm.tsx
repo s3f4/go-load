@@ -53,19 +53,21 @@ const SpinUp: React.FC<Props> = (props: Props) => {
   };
 
   const regionsRequest = () => {
-    listAvailableRegions().then((response) => {
-      if (response && response.status) {
-        const jsonRes = JSON.parse(response.message);
-        const regions = jsonRes.regions;
-        const regionSelectBox = regions.map((region: any) => {
-          return {
-            text: region.name,
-            value: region.slug,
-          };
-        });
-        setRegions(regionSelectBox);
-      }
-    });
+    listAvailableRegions()
+      .then((response) => {
+        if (response && response.status) {
+          const jsonRes = JSON.parse(response.message);
+          const regions = jsonRes.regions;
+          const regionSelectBox = regions.map((region: any) => {
+            return {
+              text: region.name,
+              value: region.slug,
+            };
+          });
+          setRegions(regionSelectBox);
+        }
+      })
+      .catch((error) => console.log(error));
   };
 
   const formContent = () => {

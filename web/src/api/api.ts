@@ -1,9 +1,10 @@
+import { EROFS } from "constants";
 import { Worker } from "./entity/worker";
 
 const URL = "http://localhost";
 
 // fetcher
-const makeReq = (url: any, method?: any, body?: any): Promise<Response> => {
+const makeReq = async (url: any, method?: any, body?: any) => {
   const request = {
     url: `${URL}:3001${url}`,
     config: {
@@ -18,35 +19,35 @@ const makeReq = (url: any, method?: any, body?: any): Promise<Response> => {
     (request.config as any).body = JSON.stringify(body);
   }
 
-  return fetch(request.url, request.config);
+  return await fetch(request.url, request.config).then((response) => {
+    debugger;
+    if (response.ok) {
+      return response.json();
+    } else {
+      return Promise.reject({
+        status: response.status,
+        statusText: response.statusText,
+      });
+    }
+  });
 };
 
 export const initInstances = async (item: any) => {
-  return await makeReq("/instances", "POST", item)
-    .then((response) => response.json())
-    .catch((error) => console.log(error));
+  return await makeReq("/instances", "POST", item);
 };
 
 export const destroy = async () => {
-  return await makeReq(`/instances`, "DELETE")
-    .then((response) => response.json())
-    .catch((error) => console.log(error));
+  return await makeReq(`/instances`, "DELETE");
 };
 
 export const listWorkers = async () => {
-  return await makeReq(`/workers`)
-    .then((response) => response.json())
-    .catch((error) => console.log(error));
+  return await makeReq(`/workers`);
 };
 
 export const stopWorker = async (worker: Worker) => {
-  return await makeReq(`/workers`, "POST", worker)
-    .then((response) => response.json())
-    .catch((error) => console.log(error));
+  return await makeReq(`/workers`, "POST", worker);
 };
 
 export const listAvailableRegions = async () => {
-  return await makeReq(`/instances/regions`)
-    .then((response) => response.json())
-    .catch((error) => console.log(error));
+  return await makeReq(`/instances/regions`);
 };

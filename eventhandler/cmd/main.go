@@ -5,8 +5,7 @@ import (
 )
 
 func main() {
-	uri := "amqp://user:password@queue:5672/"
-	queues := []string{"worker"}
-	service := eventhandler.NewListener(uri)
+	queues := []string{"eventhandler"}
+	service := eventhandler.NewListener()
 	service.Start(queues...)
 }

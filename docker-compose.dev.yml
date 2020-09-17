@@ -26,7 +26,7 @@ services:
       - RABBITMQ_USER=user
       - RABBITMQ_PASSWORD=password
       - RABBITMQ_HOST=queue
-      - RABBITMQ_PORT=5732
+      - RABBITMQ_PORT=5672
 
   eventhandler:
     image: eventhandler
@@ -41,7 +41,7 @@ services:
       - RABBITMQ_USER=user
       - RABBITMQ_PASSWORD=password
       - RABBITMQ_HOST=queue
-      - RABBITMQ_PORT=5732
+      - RABBITMQ_PORT=5672
 
   web:
     image: web
@@ -72,7 +72,7 @@ services:
       - RABBITMQ_USER=user
       - RABBITMQ_PASSWORD=password
       - RABBITMQ_HOST=queue
-      - RABBITMQ_PORT=5732
+      - RABBITMQ_PORT=5672
 
   timeDB:
     image: timescale/timescaledb:latest-pg12

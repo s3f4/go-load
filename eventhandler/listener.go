@@ -11,7 +11,7 @@ type listener struct {
 }
 
 // NewListener returns new listener
-func NewListener(uri string) ListenerService {
+func NewListener() ListenerService {
 	return &listener{service: NewRabbitMQService().(*rabbitMQService)}
 }
 

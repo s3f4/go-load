@@ -12,7 +12,7 @@ type listener struct {
 
 // NewListener returns new listener
 func NewListener(uri string) ListenerService {
-	return &listener{service: NewRabbitMQService(uri).(*rabbitMQService)}
+	return &listener{service: NewRabbitMQService().(*rabbitMQService)}
 }
 
 // Start starts listening all queues.

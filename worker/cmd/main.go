@@ -7,8 +7,7 @@ import (
 )
 
 func main() {
-	queueURI := "amqp://user:password@queue:5672/"
-	q := client.NewRabbitMQService(queueURI)
+	q := client.NewRabbitMQService()
 
 	message := "hello there !"
 	if err := q.Send("worker", []byte(message)); err != nil {

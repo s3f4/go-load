@@ -23,6 +23,10 @@ services:
       - MYSQL_DATABASE=go-load
       - MYSQL_USER=goload
       - MYSQL_PASSWORD=go-load12345
+      - RABBITMQ_USER=user
+      - RABBITMQ_PASSWORD=password
+      - RABBITMQ_HOST=queue
+      - RABBITMQ_PORT=5732
 
   eventhandler:
     image: eventhandler
@@ -33,6 +37,11 @@ services:
       dockerfile: Dockerfile.dev
     volumes:
       - ./eventhandler:/go/src/github.com/s3f4/go-load/eventhandler
+    environment:
+      - RABBITMQ_USER=user
+      - RABBITMQ_PASSWORD=password
+      - RABBITMQ_HOST=queue
+      - RABBITMQ_PORT=5732
 
   web:
     image: web
@@ -59,6 +68,11 @@ services:
       dockerfile: Dockerfile.dev
     volumes:
       - ./worker:/go/src/github.com/s3f4/go-load/worker
+    environment:
+      - RABBITMQ_USER=user
+      - RABBITMQ_PASSWORD=password
+      - RABBITMQ_HOST=queue
+      - RABBITMQ_PORT=5732
 
   timeDB:
     image: timescale/timescaledb:latest-pg12

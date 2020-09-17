@@ -22,8 +22,9 @@ type workerService struct {
 
 // NewWorkerService returns new worker service object
 func NewWorkerService() WorkerService {
+
 	return &workerService{
-		queueService: NewRabbitMQService("amqp://user:password@queue:5672/"),
+		queueService: NewRabbitMQService(),
 		ir:           repository.NewInstanceRepository(),
 	}
 }

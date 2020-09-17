@@ -8,6 +8,7 @@ import (
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
 	"github.com/s3f4/go-load/apigateway/models"
+	"github.com/s3f4/go-load/apigateway/services"
 	. "github.com/s3f4/mu"
 	"github.com/s3f4/mu/log"
 )
@@ -18,11 +19,15 @@ type workerHandlerInterface interface {
 	Stop(w http.ResponseWriter, r *http.Request)
 }
 
-type workerHandler struct{}
+type workerHandler struct {
+	service services.WorkerService
+}
 
 var (
 	//WorkerHandler is handler.
-	WorkerHandler workerHandlerInterface = &workerHandler{}
+	WorkerHandler workerHandlerInterface = &workerHandler{
+		service: services.NewWorkerService(),
+	}
 )
 
 func (h *workerHandler) Run(w http.ResponseWriter, r *http.Request) {
@@ -32,6 +37,13 @@ func (h *workerHandler) Run(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if err := h.service.Run(run); err != nil {
+		log.Errorf("Worker Service Error: %s", err)
+		R500(w, "worker service error")
+		return
+	}
+
+	R200(w, "Workers started.")
 }
 
 func (h *workerHandler) Stop(w http.ResponseWriter, r *http.Request) {

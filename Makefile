@@ -6,7 +6,7 @@ default:
 
 up: default
 	@echo "=============Compose Up============="
-	docker-compose -f docker-compose.dev.yml up -d  --build
+	docker-compose -f docker-compose.dev.yml up -d  --build --remove-orphans
 
 logs:
 	docker-compose logs -f

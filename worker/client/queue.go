@@ -2,8 +2,10 @@ package client
 
 import (
 	"fmt"
-	"log"
 	"os"
+	"time"
+
+	"github.com/s3f4/mu/log"
 
 	"github.com/streadway/amqp"
 )
@@ -35,12 +37,14 @@ func NewRabbitMQService() QueueService {
 func (r *rabbitMQService) Send(queue string, message interface{}) error {
 	conn, err := amqp.Dial(r.uri)
 	if err != nil {
+		log.Error(err)
 		return err
 	}
 	defer conn.Close()
 
 	ch, err := conn.Channel()
 	if err != nil {
+		log.Error(err)
 		return err
 	}
 	defer ch.Close()
@@ -55,6 +59,7 @@ func (r *rabbitMQService) Send(queue string, message interface{}) error {
 	)
 
 	if err != nil {
+		log.Error(err)
 		return err
 	}
 
@@ -69,6 +74,7 @@ func (r *rabbitMQService) Send(queue string, message interface{}) error {
 		},
 	)
 
+	log.Error(err)
 	return err
 }
 
@@ -99,10 +105,10 @@ func (r *rabbitMQService) Listen(queue string) {
 	block := make(chan struct{})
 	go func() {
 		for d := range msgs {
-			log.Printf("Received a message: %s", d.Body)
+			log.Infof("Received a message: %s", d.Body)
+			time.Sleep(time.Second * 3)
 			ch.Ack(d.DeliveryTag, d.Redelivered)
 		}
-		fmt.Println("test")
 	}()
 	fmt.Println("finishing...")
 	<-block

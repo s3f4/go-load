@@ -73,7 +73,9 @@ func (r *baseRepository) Insert(model interface{}) error {
 }
 
 func (r *baseRepository) Update(model interface{}) error { return nil }
+
 func (r *baseRepository) Delete(model interface{}) error { return nil }
+
 func (r *baseRepository) Get(model interface{}, query ...interface{}) error {
 	if query == nil {
 		return r.GetDB().Last(model).Error

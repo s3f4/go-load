@@ -1,4 +1,4 @@
-version: "2.3"
+version: "3"
 services:
   apigateway:
     image: apigateway
@@ -16,6 +16,7 @@ services:
       - ~/.ssh/id_rsa_for_master.pub:/root/.ssh/id_rsa.pub
     depends_on:
       - mysql
+      - queue
     environment:
       - APP_ENV=development
       - MYSQL_HOST=mysql
@@ -42,6 +43,8 @@ services:
       - RABBITMQ_PASSWORD=password
       - RABBITMQ_HOST=queue
       - RABBITMQ_PORT=5672
+    depends_on:
+      - queue
 
   web:
     image: web
@@ -58,10 +61,14 @@ services:
       - "./web:/app"
       - "/app/node_modules"
     stdin_open: true
+    depends_on:
+      - apigateway
+      - mysql
+      - timeDB
+      - queue
 
   worker:
     image: worker
-    container_name: worker
     restart: always
     build:
       context: ./worker
@@ -73,6 +80,9 @@ services:
       - RABBITMQ_PASSWORD=password
       - RABBITMQ_HOST=queue
       - RABBITMQ_PORT=5672
+    scale: 5
+    depends_on:
+      - queue
 
   timeDB:
     image: timescale/timescaledb:latest-pg12
@@ -93,6 +103,11 @@ services:
     environment:
       - RABBITMQ_DEFAULT_USER=user
       - RABBITMQ_DEFAULT_PASS=password
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "5672"]
+      interval: 5s
+      timeout: 15s
+      retries: 1
 
   pgAdmin:
     image: dpage/pgadmin4

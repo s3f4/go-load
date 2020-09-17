@@ -11,7 +11,7 @@ import (
 )
 
 type instanceHandlerInterface interface {
-	Init(w http.ResponseWriter, r *http.Request)
+	SpinUp(w http.ResponseWriter, r *http.Request)
 	Destroy(w http.ResponseWriter, r *http.Request)
 	ShowRegions(w http.ResponseWriter, r *http.Request)
 	ShowSwarmNodes(w http.ResponseWriter, r *http.Request)
@@ -28,7 +28,7 @@ var (
 	}
 )
 
-func (h *instanceHandler) Init(w http.ResponseWriter, r *http.Request) {
+func (h *instanceHandler) SpinUp(w http.ResponseWriter, r *http.Request) {
 	var instanceRequest models.Instance
 	if err := json.NewDecoder(r.Body).Decode(&instanceRequest); err != nil {
 		log.Errorf(err.Error())

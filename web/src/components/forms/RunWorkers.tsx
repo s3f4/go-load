@@ -5,6 +5,7 @@ import TextInput from "../basic/TextInput";
 import Button from "../basic/Button";
 import { toNum } from "../basic/helper";
 import { BaseForm } from "./BaseForm";
+import { runWorkers } from "../../api/entity/worker";
 
 interface Props extends BaseForm {}
 
@@ -25,7 +26,12 @@ const RunWorkers = (props: Props) => {
 
   const run = (e: React.FormEvent) => {
     e.preventDefault();
-    
+    runWorkers({
+      requestCount,
+      goroutineCount,
+    })
+      .then((response) => console.log(response))
+      .catch((error) => console.log(error));
   };
 
   return (

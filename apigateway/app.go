@@ -49,13 +49,13 @@ func Run() {
 }
 
 func initHandlers() {
-	router.Post("/instances", handlers.InstanceHandler.Init)
-	router.Get("/instances", handlers.InstanceHandler.List)
+	router.Post("/instances", handlers.InstanceHandler.SpinUp)
 	router.Get("/instances/regions", handlers.InstanceHandler.ShowRegions)
 	router.Get("/instances/swarm-nodes", handlers.InstanceHandler.ShowSwarmNodes)
 	router.Delete("/instances", handlers.InstanceHandler.Destroy)
 	router.Get("/workers", handlers.WorkerHandler.List)
 	router.Post("/workers", handlers.WorkerHandler.Stop)
+	router.Post("/workers/run", handlers.WorkerHandler.Run)
 	router.Get("/stats", handlers.StatsHandler.Get)
 }
 

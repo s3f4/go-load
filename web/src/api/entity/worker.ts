@@ -1,4 +1,4 @@
-import { makeReq } from "../api";
+import {makeReq} from '../api';
 export interface Worker {
   Id: string;
   Status: string;
@@ -7,9 +7,13 @@ export interface Worker {
 }
 
 export const list = async () => {
-  return await makeReq(`/workers`);
+  return await makeReq('/workers');
 };
 
 export const stop = async (worker: Worker) => {
-  return await makeReq(`/workers`, "POST", worker);
+  return await makeReq('/workers', 'POST', worker);
 };
+
+export const runWorkers = async (runConfig: any) => {
+  return await makeReq('/workers/run', 'POST', runConfig)
+}

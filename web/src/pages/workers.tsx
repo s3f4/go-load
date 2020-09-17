@@ -30,7 +30,10 @@ const Workers: React.FC<Props> = (props: Props) => {
         setWorkerContainers(response.data.containers);
         setLoader(false);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        setLoader(false);
+        console.log(err);
+      });
     return () => {};
   }, []);
 

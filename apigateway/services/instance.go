@@ -20,7 +20,6 @@ import (
 type InstanceService interface {
 	BuildTemplate(iReq models.Instance) error
 	SpinUp() error
-	Run() error
 	Destroy() error
 	ShowRegions() (string, error)
 	ShowSwarmNodes() ([]swarm.Node, error)
@@ -38,7 +37,6 @@ func NewInstanceService() InstanceService {
 }
 
 func (s *instanceService) BuildTemplate(iReq models.Instance) error {
-	// todo defaults...
 	iReq.Image = "ubuntu-18-04-x64"
 	iReq.InstanceSize = "s-1vcpu-1gb"
 
@@ -50,12 +48,10 @@ func (s *instanceService) BuildTemplate(iReq models.Instance) error {
 	)
 
 	if err := t.Write(); err != nil {
-		fmt.Println(err)
 		return err
 	}
 
 	if err := s.repository.Insert(&iReq); err != nil {
-		fmt.Println(err)
 		return err
 	}
 
@@ -63,19 +59,16 @@ func (s *instanceService) BuildTemplate(iReq models.Instance) error {
 }
 
 func (s *instanceService) SpinUp() error {
-	exists := mu.DirExists("./infra/.terraform")
-	var err error
-	if exists {
-		_, err = mu.RunCommands("cd infra;terraform init;terraform apply -auto-approve")
-	} else {
-		_, err = mu.RunCommands("cd infra;terraform init;terraform apply -auto-approve")
-	}
-
-	err = s.swarmInit()
+	_, err := mu.RunCommands("cd infra;terraform init;terraform apply -auto-approve")
 
 	if err != nil {
 		return err
 	}
+
+	if err := s.swarmInit(); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -143,32 +136,22 @@ func (s *instanceService) joinWNodesToSwarm(token, addr string) error {
 	return nil
 }
 
-func (s *instanceService) Run() error {
-
-	return nil
-}
-
 func (s *instanceService) Destroy() error {
 	mu.RunCommands("cd infra;terraform destroy -auto-approve")
-	var err error
 
-	err = os.Remove("./infra/terraform.tfstate")
-	if err != nil {
+	if err := os.Remove("./infra/terraform.tfstate"); err != nil {
 		return err
 	}
 
-	err = os.Remove("./infra/terraform.tfstate.backup")
-	if err != nil {
+	if err := os.Remove("./infra/terraform.tfstate.backup"); err != nil {
 		return err
 	}
 
-	err = os.Remove("./infra/workers.tf")
-	if err != nil {
+	if err := os.Remove("./infra/workers.tf"); err != nil {
 		return err
 	}
 
-	err = os.RemoveAll("./infra/.terraform")
-	if err != nil {
+	if err := os.RemoveAll("./infra/.terraform"); err != nil {
 		return err
 	}
 
@@ -193,7 +176,6 @@ func (s *instanceService) ShowRegions() (string, error) {
 }
 
 // Shows swarm nodes
-
 func (s *instanceService) ShowSwarmNodes() ([]swarm.Node, error) {
 	context := context.Background()
 	cli, err := client.NewEnvClient()

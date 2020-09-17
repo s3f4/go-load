@@ -21,18 +21,18 @@ func NewInstanceRepository() InstanceRepository {
 	}
 }
 
-func (ir *instanceRepository) Insert(instance *models.Instance) error {
-	return ir.base.Insert(instance)
+func (r *instanceRepository) Insert(instance *models.Instance) error {
+	return r.base.Insert(instance)
 }
 
-func (ir *instanceRepository) Update(*models.Instance) error {
+func (r *instanceRepository) Update(*models.Instance) error {
 	return nil
 }
 
-func (ir *instanceRepository) Delete(*models.Instance) error {
+func (r *instanceRepository) Delete(*models.Instance) error {
 	return nil
 }
 
-func (ir *instanceRepository) Get(id int) error {
+func (r *instanceRepository) Get(id int) error {
 	return nil
 }

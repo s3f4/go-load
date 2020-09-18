@@ -2,4 +2,8 @@ FROM golang:alpine
 WORKDIR /go/src/github.com/s3f4/go-load/worker
 COPY . .
 RUN ["go", "get", "github.com/githubnemo/CompileDaemon"]
-ENTRYPOINT CompileDaemon -directory=cmd/.  -build="go build -o worker" -command="./cmd/worker"
+
+ADD https://github.com/ufoscout/docker-compose-wait/releases/download/2.7.3/wait /wait
+RUN chmod +x /wait
+
+CMD /wait && CompileDaemon -directory=cmd/.  -build="go build -o worker" -command="./cmd/worker"

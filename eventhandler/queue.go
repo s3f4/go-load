@@ -2,8 +2,9 @@ package eventhandler
 
 import (
 	"fmt"
-	"log"
 	"os"
+
+	"github.com/s3f4/mu/log"
 
 	"github.com/streadway/amqp"
 )
@@ -14,6 +15,7 @@ import (
 type QueueService interface {
 	Send(queue string, message interface{}) error
 	Listen(queue string)
+	QueueDeclare(queue string) error
 }
 
 type rabbitMQService struct {
@@ -96,15 +98,45 @@ func (r *rabbitMQService) Listen(queue string) {
 		log.Fatalf("%v failed to register a consumer", err)
 	}
 
-	log.Printf("listening: %s", queue)
-
 	block := make(chan struct{})
 	go func() {
 		for d := range msgs {
-			log.Printf("Received a message: %s", d.Body)
+			log.Infof("Received a message: %s", d.Body)
 			ch.Ack(d.DeliveryTag, d.Redelivered)
 		}
 	}()
 	fmt.Println("finishing...")
 	<-block
+}
+
+func (r *rabbitMQService) QueueDeclare(queue string) error {
+	conn, err := amqp.Dial(r.uri)
+	if err != nil {
+		log.Debugf("QueueDeclare amqp dial: %s", err)
+		return err
+	}
+	defer conn.Close()
+
+	ch, err := conn.Channel()
+	if err != nil {
+		log.Debugf("QueueDeclare: conn.Channel: %s", err)
+		return err
+	}
+	defer ch.Close()
+
+	_, err = ch.QueueDeclare(
+		queue, // name
+		false, // durable
+		false, // delete when unused
+		false, // exclusive
+		false, // no-wait
+		nil,   // arguments
+	)
+
+	if err != nil {
+		log.Debugf("QueueDeclare: queue declare: %s", err)
+		return err
+	}
+
+	return nil
 }

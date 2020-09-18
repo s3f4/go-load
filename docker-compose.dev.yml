@@ -16,6 +16,7 @@ services:
       - ~/.ssh/id_rsa_for_master.pub:/root/.ssh/id_rsa.pub
     depends_on:
       - mysql
+      - eventhandler
       - queue
     environment:
       - APP_ENV=development
@@ -28,6 +29,7 @@ services:
       - RABBITMQ_PASSWORD=password
       - RABBITMQ_HOST=queue
       - RABBITMQ_PORT=5672
+      - WAIT_HOSTS=queue:5672,mysql:3306,timeDB:5432
 
   eventhandler:
     image: eventhandler
@@ -43,9 +45,10 @@ services:
       - RABBITMQ_PASSWORD=password
       - RABBITMQ_HOST=queue
       - RABBITMQ_PORT=5672
+      - WAIT_HOSTS=queue:5672,mysql:3306,timeDB:5432
     depends_on:
       - queue
-
+      - timeDB
   web:
     image: web
     container_name: web
@@ -80,8 +83,10 @@ services:
       - RABBITMQ_PASSWORD=password
       - RABBITMQ_HOST=queue
       - RABBITMQ_PORT=5672
+      - WAIT_HOSTS=queue:5672,mysql:3306,timeDB:5432,apigateway:3001
     scale: 5
     depends_on:
+      - eventhandler
       - queue
 
   timeDB:
@@ -103,11 +108,6 @@ services:
     environment:
       - RABBITMQ_DEFAULT_USER=user
       - RABBITMQ_DEFAULT_PASS=password
-    healthcheck:
-      test: ["CMD", "nc", "-z", "localhost", "5672"]
-      interval: 5s
-      timeout: 15s
-      retries: 1
 
   pgAdmin:
     image: dpage/pgadmin4

@@ -11,10 +11,14 @@ interface Props extends BaseForm {}
 
 const RunWorkers = (props: Props) => {
   const [requestCount, setRequestCount] = React.useState<number>(0);
+  const [url, setUrl] = React.useState<string>("");
   const [goroutineCount, setGoroutineCount] = React.useState<number>(0);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     switch (e.target.name) {
+      case "url":
+        setUrl(e.target.value);
+        break;
       case "requestCount":
         setRequestCount(toNum(e.target.value));
         break;
@@ -37,6 +41,13 @@ const RunWorkers = (props: Props) => {
   return (
     <div css={formDiv}>
       <h2 css={formTitle}>Run Workers</h2>
+      <TextInput
+        onChange={handleChange}
+        label="Target URL"
+        name="url"
+        value={url}
+      />
+
       <TextInput
         onChange={handleChange}
         label="Total Request"

@@ -14,9 +14,16 @@ import (
 // Client is a HTTP client that will be used for sending
 // HTTP requests.
 type Client struct {
-	client     *http.Client
 	workerName string
 	url        string
+}
+
+// NewClient returns new Client instance
+func NewClient(url, workerName string) *Client {
+	return &Client{
+		url:        url,
+		workerName: workerName,
+	}
 }
 
 // HTTPTrace load testing with HTTPTrace tool of golang.

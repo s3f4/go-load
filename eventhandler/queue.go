@@ -105,8 +105,8 @@ func (r *rabbitMQService) Listen(queue string) {
 			ch.Ack(d.DeliveryTag, d.Redelivered)
 		}
 	}()
-	fmt.Println("finishing...")
 	<-block
+	log.Infof("finished listening the queue of %s")
 }
 
 func (r *rabbitMQService) QueueDeclare(queue string) error {

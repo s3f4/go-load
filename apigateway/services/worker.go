@@ -47,8 +47,9 @@ func (s *workerService) Run(runConfig models.RunConfig) error {
 	}
 
 	queueObj := map[string]interface{}{
-		"request": requestPerInstance,
-		"url":     runConfig.URL,
+		"request":        requestPerInstance,
+		"url":            runConfig.URL,
+		"goroutineCount": runConfig.GoroutineCount,
 	}
 
 	message, err := json.Marshal(queueObj)

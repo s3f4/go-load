@@ -1,12 +1,13 @@
-package client
+package services
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"time"
 
+	"github.com/s3f4/go-load/worker/models"
 	"github.com/s3f4/mu/log"
-
 	"github.com/streadway/amqp"
 )
 
@@ -105,11 +106,17 @@ func (r *rabbitMQService) Listen(queue string) {
 	block := make(chan struct{})
 	go func() {
 		for d := range msgs {
-			log.Infof("Received a message: %s", d.Body)
 			time.Sleep(time.Second * 3)
+			log.Infof("Received a message: %s", d.Body)
+
+			var msg models.Worker
+			if err := json.Unmarshal(d.Body, &msg); err != nil {
+				log.Errorf("worker json error: %s", err)
+			}
+
+			// Done
 			ch.Ack(d.DeliveryTag, d.Redelivered)
 		}
 	}()
-	fmt.Println("finishing...")
 	<-block
 }

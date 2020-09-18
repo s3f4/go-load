@@ -6,8 +6,7 @@ import (
 )
 
 func main() {
-	queues := []string{"eventhandler", "worker"}
-
+	queues := []string{"eventhandler"}
 	s := eventhandler.NewRabbitMQService()
 	for _, queue := range queues {
 		log.Info(queue)

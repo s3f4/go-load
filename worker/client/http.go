@@ -3,10 +3,11 @@ package client
 import (
 	"crypto/tls"
 	"fmt"
-	"log"
 	"net/http"
 	"net/http/httptrace"
 	"time"
+
+	"github.com/s3f4/mu/log"
 
 	"github.com/s3f4/go-load/worker"
 )
@@ -30,9 +31,11 @@ func NewClient(url, workerName string) *Client {
 func (c *Client) HTTPTrace() {
 	req, err := http.NewRequest("GET", c.url, nil)
 	if err != nil {
-		log.Printf("HTTPTrace Error: %v\n", err)
+		log.Errorf("HTTPTrace Error: %v\n", err)
 		return
 	}
+
+	log.Infof("%#v\n", c)
 
 	var res worker.Response
 	var start time.Time
@@ -52,5 +55,6 @@ func (c *Client) HTTPTrace() {
 	if _, err := http.DefaultTransport.RoundTrip(req); err != nil {
 		log.Fatal(err)
 	}
+	log.Info(res)
 	fmt.Printf("Total time: %v\n", time.Since(start))
 }

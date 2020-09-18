@@ -114,6 +114,8 @@ func (r *rabbitMQService) Listen(queue string) {
 				log.Errorf("worker json error: %s", err)
 			}
 
+			s := NewWorkerService()
+			s.Start(&msg)
 			// Done
 			ch.Ack(d.DeliveryTag, d.Redelivered)
 		}

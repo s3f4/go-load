@@ -4,11 +4,13 @@ import (
 	"strconv"
 
 	"github.com/s3f4/go-load/worker/client"
+	"github.com/s3f4/go-load/worker/models"
+	"github.com/s3f4/mu/log"
 )
 
 // WorkerService makes the load testing job.
 type WorkerService interface {
-	Start(config interface{}) error
+	Start(config *models.Worker) error
 	Done() error
 }
 
@@ -19,11 +21,11 @@ func NewWorkerService() WorkerService {
 	return &workerService{}
 }
 
-func (s *workerService) Start(config interface{}) error {
-	goRoutineCount := 10
+func (s *workerService) Start(config *models.Worker) error {
 	i := 0
-	for i <= goRoutineCount {
-		go s.Run("https://s3f4.com", "worker_"+strconv.Itoa(i))
+	for i < config.GoroutineCount {
+		log.Info("%+v", config)
+		go s.Run(config.URL, "worker_"+strconv.Itoa(i))
 		i++
 	}
 	return nil

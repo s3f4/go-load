@@ -2,7 +2,6 @@ package client
 
 import (
 	"crypto/tls"
-	"fmt"
 	"net/http"
 	"net/http/httptrace"
 	"time"
@@ -28,11 +27,11 @@ func NewClient(url, workerName string) *Client {
 }
 
 // HTTPTrace load testing with HTTPTrace tool of golang.
-func (c *Client) HTTPTrace() {
+func (c *Client) HTTPTrace() *worker.Response {
 	req, err := http.NewRequest("GET", c.url, nil)
 	if err != nil {
 		log.Errorf("HTTPTrace Error: %v\n", err)
-		return
+		return nil
 	}
 
 	log.Infof("%#v\n", c)
@@ -41,7 +40,7 @@ func (c *Client) HTTPTrace() {
 	var start time.Time
 
 	trace := &httptrace.ClientTrace{
-		DNSStart:             func(dsi httptrace.DNSStartInfo) { res.DNSStart = time.Now() },
+		DNSStart:             func(dsi httptrace.DNSStartInfo) { res.DNSStart = time.Now().UTC() },
 		DNSDone:              func(ddi httptrace.DNSDoneInfo) { res.DNSDone = time.Now() },
 		TLSHandshakeStart:    func() { res.TLSStart = time.Now() },
 		TLSHandshakeDone:     func(cs tls.ConnectionState, err error) { res.TLSDone = time.Now() },
@@ -55,6 +54,6 @@ func (c *Client) HTTPTrace() {
 	if _, err := http.DefaultTransport.RoundTrip(req); err != nil {
 		log.Fatal(err)
 	}
-	log.Info(res)
-	fmt.Printf("Total time: %v\n", time.Since(start))
+	res.TotalTime = int64(time.Since(start))
+	return &res
 }

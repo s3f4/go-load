@@ -15,7 +15,7 @@ interface Props {
 const WorkersContent: React.FC<Props> = (props: Props) => {
   const workersDiv = () =>
     props.workers?.map((worker: Worker) => {
-      if (worker.Names[0].startsWith("/worker")) {
+      if (worker.Names[0].includes("worker")) {
         return (
           <div css={workerCard} key={worker.Id}>
             <h1 css={workerTitle}>{worker.Names[0].substr(1)}</h1>

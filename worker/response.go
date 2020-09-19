@@ -4,7 +4,7 @@ import "time"
 
 // Response model
 type Response struct {
-	TotalTime    time.Time
+	TotalTime    int64
 	FirstByte    time.Time
 	DNSStart     time.Time
 	DNSDone      time.Time

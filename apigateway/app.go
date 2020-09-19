@@ -40,7 +40,7 @@ func Run() {
 	port := flag.String("port", "3001", " default port is 3001")
 	flag.Parse()
 
-	baseRepo := repository.NewBaseRepository()
+	baseRepo := repository.NewBaseRepository(repository.MYSQL)
 	baseRepo.Migrate()
 
 	if err := http.ListenAndServe(":"+*port, router); err != nil {

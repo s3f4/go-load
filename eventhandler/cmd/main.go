@@ -1,15 +1,13 @@
 package main
 
-import (
-	"github.com/s3f4/go-load/eventhandler"
-)
+import "github.com/s3f4/go-load/eventhandler/services"
 
 func main() {
 	queues := []string{"eventhandler"}
-	s := eventhandler.NewRabbitMQService()
+	s := services.NewRabbitMQService()
 	s.QueueDeclare(queues[0])
 	s.QueueDeclare("worker")
 
-	service := eventhandler.NewListener()
+	service := services.NewListener()
 	service.Start(queues...)
 }

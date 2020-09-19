@@ -5,7 +5,6 @@ import (
 	"log"
 	"os"
 
-	"github.com/s3f4/go-load/apigateway/models"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -103,7 +102,6 @@ func (r *baseRepository) connect() {
 
 //Migrate migrates db
 func (r *baseRepository) Migrate() {
-	r.GetDB().AutoMigrate(&models.Instance{})
 }
 
 //GetDB return *gorm.DB instance

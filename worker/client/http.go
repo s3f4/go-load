@@ -6,9 +6,8 @@ import (
 	"net/http/httptrace"
 	"time"
 
+	"github.com/s3f4/go-load/worker/models"
 	"github.com/s3f4/mu/log"
-
-	"github.com/s3f4/go-load/worker"
 )
 
 // Client is a HTTP client that will be used for sending
@@ -27,7 +26,7 @@ func NewClient(url, workerName string) *Client {
 }
 
 // HTTPTrace load testing with HTTPTrace tool of golang.
-func (c *Client) HTTPTrace() *worker.Response {
+func (c *Client) HTTPTrace() *models.Response {
 	req, err := http.NewRequest("GET", c.url, nil)
 	if err != nil {
 		log.Errorf("HTTPTrace Error: %v\n", err)
@@ -36,12 +35,12 @@ func (c *Client) HTTPTrace() *worker.Response {
 
 	log.Infof("%#v\n", c)
 
-	var res worker.Response
+	var res models.Response
 	var start time.Time
 
 	trace := &httptrace.ClientTrace{
 		DNSStart:             func(dsi httptrace.DNSStartInfo) { res.DNSStart = time.Now().UTC() },
-		DNSDone:              func(ddi httptrace.DNSDoneInfo) {  res.DNSDone = time.Now() },
+		DNSDone:              func(ddi httptrace.DNSDoneInfo) { res.DNSDone = time.Now() },
 		TLSHandshakeStart:    func() { res.TLSStart = time.Now() },
 		TLSHandshakeDone:     func(cs tls.ConnectionState, err error) { res.TLSDone = time.Now() },
 		ConnectStart:         func(network, addr string) { res.ConnectStart = time.Now() },

@@ -1,4 +1,4 @@
-package eventhandler
+package services
 
 // ListenerService is used to listen all queues
 type ListenerService interface {

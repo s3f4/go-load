@@ -1,4 +1,4 @@
-package eventhandler
+package services
 
 import (
 	"fmt"

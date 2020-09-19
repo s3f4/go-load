@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"strconv"
 
-	"github.com/s3f4/go-load/worker"
 	"github.com/s3f4/go-load/worker/client"
 	"github.com/s3f4/go-load/worker/models"
 	"github.com/s3f4/mu/log"
@@ -37,7 +36,7 @@ func (s *workerService) Start(config *models.Worker) error {
 }
 
 func (s *workerService) run(url, workerName string, request int) {
-	dataBuf := make(chan worker.Response, 100)
+	dataBuf := make(chan models.Response, 100)
 	defer close(dataBuf)
 	client := client.NewClient(
 		url,
@@ -47,14 +46,14 @@ func (s *workerService) run(url, workerName string, request int) {
 	s.sendToEventHandler(dataBuf)
 }
 
-func (s *workerService) makeReq(client *client.Client, request int, dataBuf chan<- worker.Response) {
+func (s *workerService) makeReq(client *client.Client, request int, dataBuf chan<- models.Response) {
 	for i := 0; i < request; i++ {
 		res := client.HTTPTrace()
 		dataBuf <- *res
 	}
 }
 
-func (s *workerService) sendToEventHandler(dataBuf <-chan worker.Response) error {
+func (s *workerService) sendToEventHandler(dataBuf <-chan models.Response) error {
 	for data := range dataBuf {
 		jsonData, err := json.Marshal(data)
 		if err != nil {

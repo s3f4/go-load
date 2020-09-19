@@ -64,7 +64,7 @@ func (r *rabbitMQService) Send(queue string, message interface{}) error {
 		return err
 	}
 
-	err = ch.Publish(
+	if err := ch.Publish(
 		"",     // exchange
 		q.Name, // routing key
 		false,  // mandatory
@@ -73,10 +73,12 @@ func (r *rabbitMQService) Send(queue string, message interface{}) error {
 			ContentType: "text/json",
 			Body:        message.([]byte),
 		},
-	)
+	); err != nil {
+		log.Error(err)
+		return err
+	}
 
-	log.Error(err)
-	return err
+	return nil
 }
 
 func (r *rabbitMQService) Listen(queue string) {

@@ -41,7 +41,7 @@ func (c *Client) HTTPTrace() *worker.Response {
 
 	trace := &httptrace.ClientTrace{
 		DNSStart:             func(dsi httptrace.DNSStartInfo) { res.DNSStart = time.Now().UTC() },
-		DNSDone:              func(ddi httptrace.DNSDoneInfo) { res.DNSDone = time.Now() },
+		DNSDone:              func(ddi httptrace.DNSDoneInfo) {  res.DNSDone = time.Now() },
 		TLSHandshakeStart:    func() { res.TLSStart = time.Now() },
 		TLSHandshakeDone:     func(cs tls.ConnectionState, err error) { res.TLSDone = time.Now() },
 		ConnectStart:         func(network, addr string) { res.ConnectStart = time.Now() },
@@ -51,9 +51,11 @@ func (c *Client) HTTPTrace() *worker.Response {
 
 	req = req.WithContext(httptrace.WithClientTrace(req.Context(), trace))
 	start = time.Now()
-	if _, err := http.DefaultTransport.RoundTrip(req); err != nil {
+	response, err := http.DefaultTransport.RoundTrip(req)
+	if err != nil {
 		log.Fatal(err)
 	}
 	res.TotalTime = int64(time.Since(start))
+	res.StatusCode = response.StatusCode
 	return &res
 }

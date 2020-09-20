@@ -1,9 +1,12 @@
 package services
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 
+	"github.com/s3f4/go-load/eventhandler/models"
+	"github.com/s3f4/go-load/eventhandler/repository"
 	"github.com/s3f4/mu/log"
 
 	"github.com/streadway/amqp"
@@ -99,9 +102,15 @@ func (r *rabbitMQService) Listen(queue string) {
 	}
 
 	block := make(chan struct{})
+	responseRepository := repository.NewResponseRepository()
 	go func() {
 		for d := range msgs {
 			log.Infof("Received a message: %s", d.Body)
+			var resp models.Response
+			if err := json.Unmarshal(d.Body, &resp); err != nil {
+				log.Error(err)
+			}
+			responseRepository.Insert(&resp)
 			ch.Ack(d.DeliveryTag, d.Redelivered)
 		}
 	}()

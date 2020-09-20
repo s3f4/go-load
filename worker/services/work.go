@@ -9,23 +9,23 @@ import (
 	"github.com/s3f4/mu/log"
 )
 
-// WorkerService makes the load testing job.
-type WorkerService interface {
-	Start(config *models.Worker) error
+// WorkService makes the load testing job.
+type WorkService interface {
+	Start(config *models.Work) error
 }
 
 type workerService struct {
 	qs QueueService
 }
 
-// NewWorkerService returns new workerService instance
-func NewWorkerService() WorkerService {
+// NewWorkService returns new workerService instance
+func NewWorkService() WorkService {
 	return &workerService{
 		qs: NewRabbitMQService(),
 	}
 }
 
-func (s *workerService) Start(config *models.Worker) error {
+func (s *workerService) Start(config *models.Work) error {
 	i := 0
 	for i < config.GoroutineCount {
 		log.Info("%+v", config)

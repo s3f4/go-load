@@ -7,6 +7,7 @@ import (
 
 // InstanceRepository ..
 type InstanceRepository interface {
+	DB() *gorm.DB
 	Insert(*models.Instance) error
 	Update(*models.Instance) error
 	Delete(*models.Instance) error

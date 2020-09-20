@@ -1,7 +1,7 @@
 package models
 
-// Worker model
-type Worker struct {
+// Work model
+type Work struct {
 	Request        int    `json:"request"`
 	URL            string `json:"url"`
 	GoroutineCount int    `json:"goroutineCount"`

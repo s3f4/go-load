@@ -1,9 +1,14 @@
 package handlers
 
-import "net/http"
+import (
+	"net/http"
+
+	"github.com/s3f4/go-load/apigateway/repository"
+	. "github.com/s3f4/mu"
+)
 
 type statsHandlersInterface interface {
-	Get(w http.ResponseWriter, r *http.Request)
+	List(w http.ResponseWriter, r *http.Request)
 }
 
 type statsHandler struct{}
@@ -13,6 +18,12 @@ var (
 	StatsHandler statsHandlersInterface = &statsHandler{}
 )
 
-func (sh *statsHandler) Get(w http.ResponseWriter, r *http.Request) {
-	// todo Get
+func (sh *statsHandler) List(w http.ResponseWriter, r *http.Request) {
+	rr := repository.NewResponseRepository()
+	responses, err := rr.List(nil)
+	if err != nil {
+		R500(w, err)
+		return
+	}
+	R200(w, responses)
 }

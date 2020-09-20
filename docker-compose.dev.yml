@@ -25,6 +25,11 @@ services:
       - MYSQL_DATABASE=go-load
       - MYSQL_USER=goload
       - MYSQL_PASSWORD=go-load12345
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=timescaledb_example
+      - POSTGRES_HOST=timeDB
+      - POSTGRES_PORT=5432
+      - POSTGRES_DATABASE=data
       - RABBITMQ_USER=user
       - RABBITMQ_PASSWORD=password
       - RABBITMQ_HOST=queue

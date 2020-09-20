@@ -11,19 +11,22 @@ type statsHandlersInterface interface {
 	List(w http.ResponseWriter, r *http.Request)
 }
 
-type statsHandler struct{}
+type statsHandler struct {
+	repository repository.ResponseRepository
+}
 
 var (
 	// StatsHandler ...
-	StatsHandler statsHandlersInterface = &statsHandler{}
+	StatsHandler statsHandlersInterface = &statsHandler{
+		repository: repository.NewResponseRepository(),
+	}
 )
 
-func (sh *statsHandler) List(w http.ResponseWriter, r *http.Request) {
-	rr := repository.NewResponseRepository()
-	responses, err := rr.List(nil)
+func (h *statsHandler) List(w http.ResponseWriter, r *http.Request) {
+	responses, err := h.repository.List(nil)
 	if err != nil {
 		R500(w, err)
 		return
 	}
-	R200(w, responses)
+	R200(w, map[string]interface{}{"data": responses})
 }

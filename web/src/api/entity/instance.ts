@@ -1,11 +1,15 @@
-import { makeReq } from "../api";
+import {makeReq} from '../api';
 
 export const spinUp = async (item: any) => {
-  return await makeReq("/instances", "POST", item);
+  return await makeReq('/instances', 'POST', item);
+};
+
+export const getInstanceInfo = async () => {
+  return await makeReq(`/instances`);
 };
 
 export const destroyAll = async () => {
-  return await makeReq(`/instances`, "DELETE");
+  return await makeReq(`/instances`, 'DELETE');
 };
 
 export const listAvailableRegions = async () => {

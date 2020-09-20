@@ -17,7 +17,9 @@ type responseRepository struct {
 
 // NewResponseRepository returns new ResponseRepository instance
 func NewResponseRepository() ResponseRepository {
-	return &responseRepository{}
+	return &responseRepository{
+		base: NewBaseRepository(POSTGRES),
+	}
 }
 
 func (r *responseRepository) DB() *gorm.DB {
@@ -26,8 +28,7 @@ func (r *responseRepository) DB() *gorm.DB {
 
 func (r *responseRepository) List(query interface{}) ([]*models.Response, error) {
 	var responses []*models.Response
-
-	if err := r.DB().Find(responses).Error; err != nil {
+	if err := r.DB().Find(&responses).Error; err != nil {
 		return nil, err
 	}
 

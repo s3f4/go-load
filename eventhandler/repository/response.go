@@ -19,7 +19,9 @@ type responseRepository struct {
 
 // NewResponseRepository returns new ResponseRepository instance
 func NewResponseRepository() ResponseRepository {
-	return &responseRepository{}
+	return &responseRepository{
+		base: NewBaseRepository(POSTGRES),
+	}
 }
 
 func (r *responseRepository) DB() *gorm.DB {

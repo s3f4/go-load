@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/s3f4/go-load/apigateway/models"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 // DBType database type for connection different types of databases
@@ -34,6 +36,18 @@ func newConnection() *connect {
 	}
 }
 
+func (c *connect) getLogger() logger.Interface {
+	newLogger := logger.New(
+		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
+		logger.Config{
+			SlowThreshold: time.Second,   // Slow SQL threshold
+			LogLevel:      logger.Silent, // Log level
+			Colorful:      false,         // Disable color
+		},
+	)
+	return newLogger
+}
+
 func (c *connect) connectMYSQL(r *baseRepository) {
 	dsn := fmt.Sprintf(c.MySQLDSN,
 		os.Getenv("MYSQL_USER"),
@@ -43,7 +57,9 @@ func (c *connect) connectMYSQL(r *baseRepository) {
 		os.Getenv("MYSQL_DATABASE"),
 	)
 
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
+		Logger: c.getLogger(),
+	})
 	r.DB = db
 	if err != nil {
 		log.Panicf("failed to connect database: %s", err)
@@ -59,7 +75,9 @@ func (c *connect) connectPOSTGRES(r *baseRepository) {
 		os.Getenv("POSTGRES_PORT"),
 	)
 
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+		Logger: c.getLogger(),
+	})
 	r.DB = db
 	if err != nil {
 		log.Panicf("failed to connect database: %s", err)

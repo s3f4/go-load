@@ -28,7 +28,7 @@ type connect struct {
 // newConnection config
 func newConnection() *connect {
 	return &connect{
-		PostgresDSN: "user=%s password=%s host=%s dbname=%s port=%s sslmode=disable TimeZone=UTC",
+		PostgresDSN: "user=%s password=%s host=%s port=%s dbname=%s sslmode=disable TimeZone=UTC",
 		MySQLDSN:    "%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 	}
 }
@@ -54,8 +54,8 @@ func (c *connect) connectPOSTGRES(r *baseRepository) {
 		os.Getenv("POSTGRES_USER"),
 		os.Getenv("POSTGRES_PASSWORD"),
 		os.Getenv("POSTGRES_HOST"),
-		os.Getenv("POSTGRES_DATABASE"),
 		os.Getenv("POSTGRES_PORT"),
+		os.Getenv("POSTGRES_DATABASE"),
 	)
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
@@ -67,7 +67,7 @@ func (c *connect) connectPOSTGRES(r *baseRepository) {
 
 // BaseRepository an interface that uses sql
 type BaseRepository interface {
-	Migrate()
+	Migrate(models ...interface{}) error
 	GetDB() *gorm.DB
 }
 
@@ -101,7 +101,14 @@ func (r *baseRepository) connect() {
 }
 
 //Migrate migrates db
-func (r *baseRepository) Migrate() {
+func (r *baseRepository) Migrate(models ...interface{}) error {
+	for _, model := range models {
+		err := r.GetDB().AutoMigrate(model)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 //GetDB return *gorm.DB instance

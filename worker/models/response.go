@@ -13,4 +13,5 @@ type Response struct {
 	ConnectStart time.Time
 	ConnectDone  time.Time
 	StatusCode   int
+	Body         string
 }

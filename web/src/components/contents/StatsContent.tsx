@@ -16,35 +16,46 @@ const StatsContent: React.FC<Props> = (props: Props) => {
     stats()
       .then((response) => {
         setResponses(response.data.data);
-        console.log(responses);
+        console.log(response.data);
       })
       .catch((error) => console.log(error));
   };
 
   return (
     <div css={statsContainer}>
-      {responses &&
-        responses.map((response: Response, key: number) => {
-          return (
-            <div key={key}>
-              ConnectStart: {response.ConnectStart} <br />
-              ConnectDone:{response.ConnectDone}
-              <br />
-              DNSStart: {response.DNSStart}
-              <br />
-              DNSDone: {response.DNSDone}
-              <br />
-              TLSStart: {response.TLSStart}
-              <br />
-              TLSDone:{response.TLSDone}
-              <br />
-              StatusCode:{response.StatusCode}
-              <br />
-              Total Time:{response.TotalTime / 1000000}
-              <br />
-            </div>
-          );
-        })}
+      <table>
+        <thead>
+          <th>FirstByte</th>
+          <th>ConnectStart</th>
+          <th>ConnectDone</th>
+          <th>DNSStart</th>
+          <th>DNSDone</th>
+          <th>TLSStart</th>
+          <th>TLSDone</th>
+          <th>StatusCode</th>
+          <th>TotalTime</th>
+          <th>Body</th>
+        </thead>
+        <tbody>
+          {responses &&
+            responses.map((response: Response, key: number) => {
+              return (
+                <tr>
+                  <td>{response.FirstByte}</td>
+                  <td>{response.ConnectStart}</td>
+                  <td>{response.ConnectDone}</td>
+                  <td>{response.DNSStart}</td>
+                  <td>{response.DNSDone}</td>
+                  <td>{response.TLSStart}</td>
+                  <td>{response.TLSDone}</td>
+                  <td>{response.StatusCode}</td>
+                  <td>{response.TotalTime / 1000000}</td>
+                  <td>{response.Body}</td>
+                </tr>
+              );
+            })}
+        </tbody>
+      </table>
       {responses.length}
     </div>
   );

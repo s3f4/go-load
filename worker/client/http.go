@@ -2,6 +2,7 @@ package client
 
 import (
 	"crypto/tls"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptrace"
 	"time"
@@ -51,10 +52,17 @@ func (c *Client) HTTPTrace() *models.Response {
 	req = req.WithContext(httptrace.WithClientTrace(req.Context(), trace))
 	start = time.Now()
 	response, err := http.DefaultTransport.RoundTrip(req)
+	defer response.Body.Close()
 	if err != nil {
 		log.Fatal(err)
 	}
 	res.TotalTime = int64(time.Since(start))
 	res.StatusCode = response.StatusCode
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		log.Panic(err)
+		return nil
+	}
+	res.Body = string(body)
 	return &res
 }

@@ -1,4 +1,4 @@
-import {makeReq} from '../api'
+import { makeReq } from "../api";
 
 export interface Response {
   TotalTime: number;
@@ -10,8 +10,9 @@ export interface Response {
   ConnectStart: Date;
   ConnectDone: Date;
   StatusCode: number;
+  Body: string;
 }
 
 export const stats = async () => {
-  return await makeReq('/stats')
-}
+  return await makeReq("/stats");
+};

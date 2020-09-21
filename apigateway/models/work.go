@@ -7,8 +7,3 @@ type Work struct {
 	GoroutineCount  int             `json:"goroutineCount"`
 	TransportConfig TransportConfig `json:"transportConfig"`
 }
-
-// TransportConfig is used to specify how to make requests
-type TransportConfig struct {
-	TLSHandshakeTimeout int64 `json:"TLSHandshakeTimeout"`
-}

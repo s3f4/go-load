@@ -49,7 +49,7 @@ const StatsContent: React.FC<Props> = (props: Props) => {
           {responses &&
             responses.map((response: Response, key: number) => {
               return (
-                <tr>
+                <tr key={key}>
                   <td>{moment(response.FirstByte).format(format())}</td>
                   <td>{moment(response.ConnectStart).format(format())}</td>
                   <td>{moment(response.ConnectDone).format(format())}</td>

@@ -16,6 +16,7 @@ import (
 type Client struct {
 	WorkerName string
 	URL        string
+	tc         models.TransportConfig
 }
 
 // HTTPTrace load testing with HTTPTrace tool of golang.
@@ -33,8 +34,7 @@ func (c *Client) HTTPTrace() *models.Response {
 	var start time.Time
 
 	transport := http.DefaultTransport.(*http.Transport)
-	transport.MaxIdleConnsPerHost = 1024
-	transport.TLSHandshakeTimeout = 0 * time.Second
+	transport.TLSHandshakeTimeout = time.Duration(c.tc.TLSHandshakeTimeout) * time.Second
 
 	trace := &httptrace.ClientTrace{
 		DNSStart:             func(dsi httptrace.DNSStartInfo) { res.DNSStart = time.Now().UTC() },

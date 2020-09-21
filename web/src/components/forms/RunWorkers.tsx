@@ -7,14 +7,20 @@ import { toNum } from "../basic/helper";
 import { BaseForm } from "./BaseForm";
 import { runWorkers } from "../../api/entity/worker";
 import Loader from "../basic/Loader";
+import { RunConfig, TransportConfig } from "../../api/entity/run_config";
 
 interface Props extends BaseForm {}
 
 const RunWorkers = (props: Props) => {
   const [requestCount, setRequestCount] = React.useState<number>(0);
   const [url, setUrl] = React.useState<string>("");
-  const [goroutineCount, setGoroutineCount] = React.useState<number>(0);
+  const [goroutineCount, setGoroutineCount] = React.useState<number>(1);
   const [loading, setLoading] = React.useState<boolean>(false);
+  const [transportConfig, setTransportConfig] = React.useState<TransportConfig>(
+    {
+      TLSHandshakeTimeout: 30,
+    },
+  );
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     switch (e.target.name) {
@@ -25,7 +31,15 @@ const RunWorkers = (props: Props) => {
         setRequestCount(toNum(e.target.value));
         break;
       case "goroutineCount":
-        setGoroutineCount(toNum(e.target.value));
+        let val = toNum(e.target.value);
+        if (val <= 0) val = 1;
+        setGoroutineCount(val);
+        break;
+      case "TLSHandshakeTimeout":
+        setTransportConfig({
+          ...transportConfig,
+          TLSHandshakeTimeout: toNum(e.target.value),
+        });
         break;
     }
   };
@@ -33,18 +47,22 @@ const RunWorkers = (props: Props) => {
   const run = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    runWorkers({
+
+    const runConfig: RunConfig = {
       requestCount,
       goroutineCount,
       url,
-    })
+      transportConfig,
+    };
+
+    runWorkers(runConfig)
       .then((response) => {
         setLoading(false);
-        props.afterHandle?.();
+        // props.afterHandle?.();
       })
       .catch((error) => {
         setLoading(false);
-        props.afterHandle?.();
+        // props.afterHandle?.();
       });
   };
 
@@ -58,19 +76,25 @@ const RunWorkers = (props: Props) => {
           name="url"
           value={url}
         />
-
         <TextInput
           onChange={handleChange}
           label="Total Request"
           name="requestCount"
           value={requestCount}
         />
-
         <TextInput
           onChange={handleChange}
           label="Goroutine per worker (up to 10)"
           name="goroutineCount"
           value={goroutineCount}
+        />
+        <hr />
+        Transport Config:
+        <TextInput
+          onChange={handleChange}
+          label="TLSHandshakeTimeout (default 30 seconds)"
+          name="TLSHandshakeTimeout"
+          value={transportConfig.TLSHandshakeTimeout}
         />
         <Button text="run" onClick={run} />
       </div>

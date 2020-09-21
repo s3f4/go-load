@@ -14,21 +14,14 @@ import (
 // Client is a HTTP client that will be used for sending
 // HTTP requests.
 type Client struct {
-	workerName string
-	url        string
-}
-
-// NewClient returns new Client instance
-func NewClient(url, workerName string) *Client {
-	return &Client{
-		url:        url,
-		workerName: workerName,
-	}
+	WorkerName string
+	URL        string
 }
 
 // HTTPTrace load testing with HTTPTrace tool of golang.
 func (c *Client) HTTPTrace() *models.Response {
-	req, err := http.NewRequest("GET", c.url, nil)
+	req, err := http.NewRequest("GET", c.URL, nil)
+
 	if err != nil {
 		log.Errorf("HTTPTrace Error: %v\n", err)
 		return nil
@@ -38,6 +31,10 @@ func (c *Client) HTTPTrace() *models.Response {
 
 	var res models.Response
 	var start time.Time
+
+	transport := http.DefaultTransport.(*http.Transport)
+	transport.MaxIdleConnsPerHost = 1024
+	transport.TLSHandshakeTimeout = 0 * time.Second
 
 	trace := &httptrace.ClientTrace{
 		DNSStart:             func(dsi httptrace.DNSStartInfo) { res.DNSStart = time.Now().UTC() },
@@ -51,7 +48,7 @@ func (c *Client) HTTPTrace() *models.Response {
 
 	req = req.WithContext(httptrace.WithClientTrace(req.Context(), trace))
 	start = time.Now()
-	response, err := http.DefaultTransport.RoundTrip(req)
+	response, err := transport.RoundTrip(req)
 	defer response.Body.Close()
 	if err != nil {
 		log.Fatal(err)

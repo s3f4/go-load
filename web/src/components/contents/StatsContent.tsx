@@ -57,7 +57,7 @@ const StatsContent: React.FC<Props> = (props: Props) => {
                   <td>{moment(response.DNSDone).format(format())}</td>
                   <td>{moment(response.TLSStart).format(format())}</td>
                   <td>{moment(response.TLSDone).format(format())}</td>
-                  <td>{moment(response.StatusCode).format(format())}</td>
+                  <td>{response.StatusCode}</td>
                   <td>{response.TotalTime / 1000000}</td>
                   <td>{byteSize(response.Body)}</td>
                 </tr>

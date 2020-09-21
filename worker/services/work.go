@@ -6,6 +6,7 @@ import (
 
 	"github.com/s3f4/go-load/worker/client"
 	"github.com/s3f4/go-load/worker/models"
+	"github.com/s3f4/mu"
 	"github.com/s3f4/mu/log"
 )
 
@@ -38,16 +39,18 @@ func (s *workerService) Start(config *models.Work) error {
 func (s *workerService) run(url, workerName string, request int) {
 	dataBuf := make(chan models.Response, 100)
 	defer close(dataBuf)
-	client := client.NewClient(
-		url,
-		workerName,
-	)
+	client := &client.Client{
+		URL:        url,
+		WorkerName: workerName,
+	}
 	go s.makeReq(client, request, dataBuf)
 	s.sendToEventHandler(dataBuf)
 }
 
 func (s *workerService) makeReq(client *client.Client, request int, dataBuf chan<- models.Response) {
+	url := client.URL
 	for i := 0; i < request; i++ {
+		client.URL = url + "/?reqRef=" + mu.RandomString(5)
 		res := client.HTTPTrace()
 		dataBuf <- *res
 	}

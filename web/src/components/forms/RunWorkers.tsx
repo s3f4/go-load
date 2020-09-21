@@ -56,13 +56,13 @@ const RunWorkers = (props: Props) => {
     };
 
     runWorkers(runConfig)
-      .then((response) => {
+      .then(() => {
         setLoading(false);
-        // props.afterHandle?.();
+        props.afterHandle?.();
       })
-      .catch((error) => {
+      .catch(() => {
         setLoading(false);
-        // props.afterHandle?.();
+        props.afterHandle?.();
       });
   };
 

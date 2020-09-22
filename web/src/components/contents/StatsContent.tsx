@@ -3,6 +3,7 @@ import React from "react";
 import { jsx, css } from "@emotion/core";
 import { stats, Response } from "../../api/entity/stats";
 import moment from "moment";
+import { Polar } from "react-chartjs-2";
 
 interface Props {}
 
@@ -28,8 +29,30 @@ const StatsContent: React.FC<Props> = (props: Props) => {
 
   const byteSize = (str: string) => new Blob([str]).size;
 
+  const data = {
+    datasets: [
+      {
+        data: [11, 16, 7, 3, 14],
+        backgroundColor: [
+          "#FF6384",
+          "#4BC0C0",
+          "#FFCE56",
+          "#E7E9ED",
+          "#36A2EB",
+        ],
+        label: "My dataset", // for legend
+      },
+    ],
+    labels: ["Red", "Green", "Yellow", "Grey", "Blue"],
+  };
+
+  const graph = () => {
+    return <Polar data={data} />;
+  };
+
   return (
     <div css={statsContainer}>
+      {graph()}
       <table css={table}>
         <thead>
           <tr>

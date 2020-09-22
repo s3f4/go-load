@@ -31,7 +31,7 @@ func NewWorkerService() WorkerService {
 
 func (s *workerService) Run(runConfig models.RunConfig) error {
 	iReq, err := s.ir.Get()
-	log.Info(fmt.Sprintf("%+v", iReq))
+	log.Debug(fmt.Sprintf("%+v", iReq))
 
 	if err != nil {
 		return err

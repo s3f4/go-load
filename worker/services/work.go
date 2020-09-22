@@ -30,18 +30,21 @@ func (s *workerService) Start(config *models.Work) error {
 	i := 0
 	for i < config.GoroutineCount {
 		log.Info("%+v", config)
-		go s.run(config.URL, "worker_"+strconv.Itoa(i), config.Request)
+		go s.run(config.URL, "worker_"+strconv.Itoa(i), config.Request, config.TransportConfig.TLSHandshakeTimeout)
 		i++
 	}
 	return nil
 }
 
-func (s *workerService) run(url, workerName string, request int) {
+func (s *workerService) run(url, workerName string, request int, transportConfig int64) {
 	dataBuf := make(chan models.Response, 100)
 	defer close(dataBuf)
 	client := &client.Client{
 		URL:        url,
 		WorkerName: workerName,
+		TransportConfig: models.TransportConfig{
+			TLSHandshakeTimeout: transportConfig,
+		},
 	}
 	go s.makeReq(client, request, dataBuf)
 	s.sendToEventHandler(dataBuf)

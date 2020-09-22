@@ -14,9 +14,9 @@ import (
 // Client is a HTTP client that will be used for sending
 // HTTP requests.
 type Client struct {
-	WorkerName string
-	URL        string
-	tc         models.TransportConfig
+	WorkerName      string
+	URL             string
+	TransportConfig models.TransportConfig
 }
 
 // HTTPTrace load testing with HTTPTrace tool of golang.
@@ -34,10 +34,11 @@ func (c *Client) HTTPTrace() *models.Response {
 	var start time.Time
 
 	transport := http.DefaultTransport.(*http.Transport)
-	transport.TLSHandshakeTimeout = time.Duration(c.tc.TLSHandshakeTimeout) * time.Second
+	transport.MaxIdleConnsPerHost = 1024
+	transport.TLSHandshakeTimeout = time.Duration(c.TransportConfig.TLSHandshakeTimeout) * time.Second
 
 	trace := &httptrace.ClientTrace{
-		DNSStart:             func(dsi httptrace.DNSStartInfo) { res.DNSStart = time.Now().UTC() },
+		DNSStart:             func(dsi httptrace.DNSStartInfo) { res.DNSStart = time.Now() },
 		DNSDone:              func(ddi httptrace.DNSDoneInfo) { res.DNSDone = time.Now() },
 		TLSHandshakeStart:    func() { res.TLSStart = time.Now() },
 		TLSHandshakeDone:     func(cs tls.ConnectionState, err error) { res.TLSDone = time.Now() },
@@ -51,13 +52,13 @@ func (c *Client) HTTPTrace() *models.Response {
 	response, err := transport.RoundTrip(req)
 	defer response.Body.Close()
 	if err != nil {
-		log.Fatal(err)
+		log.Error(err)
 	}
 	res.TotalTime = int64(time.Since(start))
 	res.StatusCode = response.StatusCode
 	body, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		log.Panic(err)
+		log.Error(err)
 		return nil
 	}
 	res.Body = string(body)

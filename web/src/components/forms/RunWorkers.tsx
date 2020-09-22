@@ -8,6 +8,7 @@ import { BaseForm } from "./BaseForm";
 import { runWorkers } from "../../api/entity/worker";
 import Loader from "../basic/Loader";
 import { RunConfig, TransportConfig } from "../../api/entity/run_config";
+import SelectBox from "../basic/SelectBox";
 
 interface Props extends BaseForm {}
 
@@ -18,7 +19,7 @@ const RunWorkers = (props: Props) => {
   const [loading, setLoading] = React.useState<boolean>(false);
   const [transportConfig, setTransportConfig] = React.useState<TransportConfig>(
     {
-      TLSHandshakeTimeout: 30,
+      DisableKeepAlives: true,
     },
   );
 
@@ -38,7 +39,7 @@ const RunWorkers = (props: Props) => {
       case "TLSHandshakeTimeout":
         setTransportConfig({
           ...transportConfig,
-          TLSHandshakeTimeout: toNum(e.target.value),
+          DisableKeepAlives: e.target.value === "true",
         });
         break;
     }
@@ -88,13 +89,15 @@ const RunWorkers = (props: Props) => {
           name="goroutineCount"
           value={goroutineCount}
         />
-        <hr />
-        Transport Config:
-        <TextInput
+        <SelectBox
+          name={"disableKeepAlives"}
+          label={"Disable Keep-alive connections"}
           onChange={handleChange}
-          label="TLSHandshakeTimeout (default 30 seconds)"
-          name="TLSHandshakeTimeout"
-          value={transportConfig.TLSHandshakeTimeout}
+          options={[
+            { value: "true", text: "True" },
+            { value: "false", text: "False" },
+          ]}
+          value={transportConfig.DisableKeepAlives ? "true" : "false"}
         />
         <Button text="run" onClick={run} />
       </div>

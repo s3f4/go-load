@@ -6,5 +6,5 @@ export interface RunConfig {
 }
 
 export interface TransportConfig {
-  TLSHandshakeTimeout: number;
+  DisableKeepAlives: boolean;
 }

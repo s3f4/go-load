@@ -10,5 +10,5 @@ type Work struct {
 
 // TransportConfig is used to specify how to make requests
 type TransportConfig struct {
-	TLSHandshakeTimeout int64 `json:"TLSHandshakeTimeout"`
+	DisableKeepAlives bool `json:"DisableKeepAlives"`
 }

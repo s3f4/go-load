@@ -28,14 +28,13 @@ func (c *Client) HTTPTrace() *models.Response {
 		return nil
 	}
 
-	log.Infof("%#v\n", c)
+	log.Debugf("%#v\n", c)
 
 	var res models.Response
 	var start time.Time
 
 	transport := http.DefaultTransport.(*http.Transport)
-	transport.MaxIdleConnsPerHost = 1024
-	transport.TLSHandshakeTimeout = time.Duration(c.TransportConfig.TLSHandshakeTimeout) * time.Second
+	transport.DisableKeepAlives = true
 
 	trace := &httptrace.ClientTrace{
 		DNSStart:             func(dsi httptrace.DNSStartInfo) { res.DNSStart = time.Now() },
@@ -51,8 +50,10 @@ func (c *Client) HTTPTrace() *models.Response {
 	start = time.Now()
 	response, err := transport.RoundTrip(req)
 	defer response.Body.Close()
+
 	if err != nil {
 		log.Error(err)
+		return nil
 	}
 	res.TotalTime = int64(time.Since(start))
 	res.StatusCode = response.StatusCode

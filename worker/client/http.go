@@ -34,7 +34,7 @@ func (c *Client) HTTPTrace() *models.Response {
 	var start time.Time
 
 	transport := http.DefaultTransport.(*http.Transport)
-	transport.DisableKeepAlives = true
+	transport.DisableKeepAlives = c.TransportConfig.DisableKeepAlives
 
 	trace := &httptrace.ClientTrace{
 		DNSStart:             func(dsi httptrace.DNSStartInfo) { res.DNSStart = time.Now() },

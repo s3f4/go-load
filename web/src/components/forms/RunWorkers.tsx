@@ -36,7 +36,7 @@ const RunWorkers = (props: Props) => {
         if (val <= 0) val = 1;
         setGoroutineCount(val);
         break;
-      case "TLSHandshakeTimeout":
+      case "disableKeepAlives":
         setTransportConfig({
           ...transportConfig,
           DisableKeepAlives: e.target.value === "true",

@@ -37,19 +37,38 @@ func (c *Client) HTTPTrace() *models.Response {
 	transport.DisableKeepAlives = c.TransportConfig.DisableKeepAlives
 
 	trace := &httptrace.ClientTrace{
-		DNSStart:             func(dsi httptrace.DNSStartInfo) { res.DNSStart = time.Now() },
-		DNSDone:              func(ddi httptrace.DNSDoneInfo) { res.DNSDone = time.Now() },
-		TLSHandshakeStart:    func() { res.TLSStart = time.Now() },
-		TLSHandshakeDone:     func(cs tls.ConnectionState, err error) { res.TLSDone = time.Now() },
-		ConnectStart:         func(network, addr string) { res.ConnectStart = time.Now() },
-		ConnectDone:          func(network, addr string, err error) { res.ConnectDone = time.Now() },
-		GotFirstResponseByte: func() { res.FirstByte = time.Now() },
+		DNSStart: func(dsi httptrace.DNSStartInfo) {
+			res.DNSStart = time.Now()
+		},
+		DNSDone: func(ddi httptrace.DNSDoneInfo) {
+			res.DNSDone = time.Now()
+		},
+		TLSHandshakeStart: func() {
+			res.TLSStart = time.Now()
+		},
+		TLSHandshakeDone: func(cs tls.ConnectionState, err error) {
+			res.TLSDone = time.Now()
+		},
+		ConnectStart: func(network, addr string) {
+			res.ConnectStart = time.Now()
+		},
+		ConnectDone: func(network, addr string, err error) {
+			res.ConnectDone = time.Now()
+		},
+		GotFirstResponseByte: func() {
+			res.FirstByte = time.Now()
+		},
 	}
 
 	req = req.WithContext(httptrace.WithClientTrace(req.Context(), trace))
 	start = time.Now()
 	response, err := transport.RoundTrip(req)
 	defer response.Body.Close()
+
+	res.FirstByteTime = int64(res.FirstByte.Sub(start))
+	res.DNSTime = int64(res.DNSDone.Sub(res.DNSStart))
+	res.TLSTime = int64(res.TLSDone.Sub(res.TLSDone))
+	res.ConnectTime = int64(res.ConnectDone.Sub(res.ConnectStart))
 
 	if err != nil {
 		log.Error(err)

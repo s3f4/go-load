@@ -9,8 +9,11 @@ import { runWorkers } from "../../api/entity/worker";
 import Loader from "../basic/Loader";
 import { RunConfig, TransportConfig } from "../../api/entity/run_config";
 import SelectBox from "../basic/SelectBox";
+import { InstanceInfo } from "../../api/entity/instance";
 
-interface Props extends BaseForm {}
+interface Props extends BaseForm {
+  instanceInfo: InstanceInfo;
+}
 
 const RunWorkers = (props: Props) => {
   const [requestCount, setRequestCount] = React.useState<number>(0);
@@ -59,11 +62,11 @@ const RunWorkers = (props: Props) => {
     runWorkers(runConfig)
       .then(() => {
         setLoading(false);
-        props.afterHandle?.();
+        props.afterSubmit?.();
       })
       .catch(() => {
         setLoading(false);
-        props.afterHandle?.();
+        props.afterSubmit?.();
       });
   };
 
@@ -71,6 +74,7 @@ const RunWorkers = (props: Props) => {
     return (
       <div css={formDiv}>
         <h2 css={formTitle}>Run Workers</h2>
+        InstanceInfo: {JSON.stringify(props.instanceInfo)}
         <TextInput
           onChange={handleChange}
           label="Target URL"

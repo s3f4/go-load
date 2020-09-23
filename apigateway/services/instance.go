@@ -23,6 +23,7 @@ type InstanceService interface {
 	Destroy() error
 	ShowRegions() (string, error)
 	ShowSwarmNodes() ([]swarm.Node, error)
+	GetInstanceInfo() (*models.Instance, error)
 }
 
 type instanceService struct {
@@ -187,4 +188,8 @@ func (s *instanceService) ShowSwarmNodes() ([]swarm.Node, error) {
 	nodes, err := cli.NodeList(context, options)
 
 	return nodes, nil
+}
+
+func (s *instanceService) GetInstanceInfo() (*models.Instance, error) {
+	return s.repository.Get()
 }

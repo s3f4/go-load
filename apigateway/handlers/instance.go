@@ -15,6 +15,7 @@ type instanceHandlerInterface interface {
 	Destroy(w http.ResponseWriter, r *http.Request)
 	ShowRegions(w http.ResponseWriter, r *http.Request)
 	ShowSwarmNodes(w http.ResponseWriter, r *http.Request)
+	GetInstanceInfo(w http.ResponseWriter, r *http.Request)
 }
 
 type instanceHandler struct {
@@ -79,4 +80,15 @@ func (h *instanceHandler) ShowSwarmNodes(w http.ResponseWriter, r *http.Request)
 		return
 	}
 	R200(w, nodes)
+}
+
+func (h *instanceHandler) GetInstanceInfo(w http.ResponseWriter, r *http.Request) {
+	instanceConfig, err := h.service.GetInstanceInfo()
+	if err != nil {
+		R500(w, err)
+		return
+	}
+	R200(w, map[string]interface{}{
+		"data": instanceConfig,
+	})
 }

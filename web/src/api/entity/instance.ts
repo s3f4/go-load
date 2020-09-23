@@ -1,5 +1,14 @@
 import {makeReq} from '../api';
 
+export interface InstanceInfo {
+  ID: string;
+  InstanceCount: number;
+  InstanceSize: string;
+  Image: string;
+  Region: string;
+  MaxWorkingPeriod: number;
+}
+
 export const spinUp = async (item: any) => {
   return await makeReq('/instances', 'POST', item);
 };

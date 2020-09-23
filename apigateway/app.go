@@ -50,6 +50,7 @@ func Run() {
 
 func initHandlers() {
 	router.Post("/instances", handlers.InstanceHandler.SpinUp)
+	router.Get("/instances", handlers.InstanceHandler.GetInstanceInfo)
 	router.Get("/instances/regions", handlers.InstanceHandler.ShowRegions)
 	router.Get("/instances/swarm-nodes", handlers.InstanceHandler.ShowSwarmNodes)
 	router.Delete("/instances", handlers.InstanceHandler.Destroy)

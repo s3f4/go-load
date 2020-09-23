@@ -47,12 +47,12 @@ const SpinUp: React.FC<Props> = (props: Props) => {
     spinUp(instances)
       .then(() => {
         setLoading(false);
-        props.afterHandle?.();
+        props.afterSubmit?.();
       })
       .catch((error) => {
         setLoading(false);
         console.log(error);
-        props.afterHandle?.();
+        props.afterSubmit?.();
       });
   };
 

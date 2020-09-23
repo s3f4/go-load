@@ -4,18 +4,23 @@ import { jsx, css } from "@emotion/core";
 import SpinUp from "../forms/SpinUpForm";
 import RunWorkers from "../forms/RunWorkers";
 import { useHistory } from "react-router-dom";
-import { getInstanceInfo } from "../../api/entity/instance";
+import { getInstanceInfo, InstanceInfo } from "../../api/entity/instance";
 interface Props {}
 
 const InstanceContent: React.FC<Props> = (props: Props) => {
   const [showRunWorkerForm, setShowRunWorkerForm] = React.useState<boolean>();
-  const [instanceInfo, setInstanceInfo] = React.useState<any>(null);
+  const [instanceInfo, setInstanceInfo] = React.useState<InstanceInfo | null>(
+    null,
+  );
+  
   const history = useHistory();
 
   React.useEffect(() => {
-    getInstanceInfo().then((response) => {
-      setInstanceInfo(response.data.data);
-    });
+    getInstanceInfo()
+      .then((response) => {
+        setInstanceInfo(response.data);
+      })
+      .catch(() => {});
   }, []);
 
   const routeToStats = () => {

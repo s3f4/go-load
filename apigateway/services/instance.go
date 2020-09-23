@@ -140,19 +140,23 @@ func (s *instanceService) joinWNodesToSwarm(token, addr string) error {
 func (s *instanceService) Destroy() error {
 	mu.RunCommands("cd infra;terraform destroy -auto-approve")
 
-	if err := os.Remove("./infra/terraform.tfstate"); err != nil {
+	if err := os.Remove("./infra/terraform.tfstate"); err != nil && !os.IsNotExist(err) {
 		return err
 	}
 
-	if err := os.Remove("./infra/terraform.tfstate.backup"); err != nil {
+	if err := os.Remove("./infra/terraform.tfstate.backup"); err != nil && !os.IsNotExist(err) {
 		return err
 	}
 
-	if err := os.Remove("./infra/workers.tf"); err != nil {
+	if err := os.Remove("./infra/workers.tf"); err != nil && !os.IsNotExist(err) {
 		return err
 	}
 
-	if err := os.RemoveAll("./infra/.terraform"); err != nil {
+	if err := os.RemoveAll("./infra/.terraform"); err != nil && !os.IsNotExist(err) {
+		return err
+	}
+
+	if err := s.repository.Delete(&models.Instance{}); err != nil {
 		return err
 	}
 

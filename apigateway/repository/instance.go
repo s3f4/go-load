@@ -9,7 +9,6 @@ import (
 type InstanceRepository interface {
 	DB() *gorm.DB
 	Insert(*models.Instance) error
-	Update(*models.Instance) error
 	Delete(*models.Instance) error
 	Get() (*models.Instance, error)
 }
@@ -33,17 +32,13 @@ func (r *instanceRepository) Insert(instance *models.Instance) error {
 	return r.DB().Create(instance).Error
 }
 
-func (r *instanceRepository) Update(instance *models.Instance) error {
-	return r.DB().Model(instance).Update("test", "test").Error
-}
-
-func (r *instanceRepository) Delete(*models.Instance) error {
-	return nil
+func (r *instanceRepository) Delete(instance *models.Instance) error {
+	return r.DB().Where("1=1").Delete(instance).Error
 }
 
 func (r *instanceRepository) Get() (*models.Instance, error) {
 	var instanceReq models.Instance
-	if err := r.DB().Find(&instanceReq).Error; err != nil {
+	if err := r.DB().Last(&instanceReq).Error; err != nil {
 		return nil, err
 	}
 	return &instanceReq, nil

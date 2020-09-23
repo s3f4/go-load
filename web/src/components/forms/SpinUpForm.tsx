@@ -7,11 +7,7 @@ import SelectBox from "../basic/SelectBox";
 import { toNum } from "../basic/helper";
 import Loader from "../basic/Loader";
 import { BaseForm } from "./BaseForm";
-import {
-  spinUp,
-  destroyAll,
-  listAvailableRegions,
-} from "../../api/entity/instance";
+import { spinUp, listAvailableRegions } from "../../api/entity/instance";
 
 interface Props extends BaseForm {}
 
@@ -54,11 +50,6 @@ const SpinUp: React.FC<Props> = (props: Props) => {
         console.log(error);
         props.afterSubmit?.();
       });
-  };
-
-  const destroyRequest = (e: any) => {
-    e.preventDefault();
-    destroyAll().then((data) => console.log(data));
   };
 
   const regionsRequest = () => {
@@ -108,7 +99,6 @@ const SpinUp: React.FC<Props> = (props: Props) => {
         />
 
         <Button text="Spin Up" onClick={sendRequest} />
-        <Button text="Destroy" onClick={destroyRequest} />
       </div>
     );
   };

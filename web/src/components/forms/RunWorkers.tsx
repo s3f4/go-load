@@ -9,10 +9,10 @@ import { runWorkers } from "../../api/entity/worker";
 import Loader from "../basic/Loader";
 import { RunConfig, TransportConfig } from "../../api/entity/run_config";
 import SelectBox from "../basic/SelectBox";
-import { InstanceInfo } from "../../api/entity/instance";
+import { destroyAll, InstanceInfo } from "../../api/entity/instance";
 
 interface Props extends BaseForm {
-  instanceInfo: InstanceInfo;
+  instanceInfo: InstanceInfo | null;
 }
 
 const RunWorkers = (props: Props) => {
@@ -70,11 +70,19 @@ const RunWorkers = (props: Props) => {
       });
   };
 
+  const destroyRequest = (e: any) => {
+    e.preventDefault();
+    destroyAll()
+      .then((data) => console.log(data))
+      .catch((error) => console.log(error));
+  };
+
   const formContent = () => {
     return (
       <div css={formDiv}>
         <h2 css={formTitle}>Run Workers</h2>
         InstanceInfo: {JSON.stringify(props.instanceInfo)}
+        <Button text="Destroy" onClick={destroyRequest} />
         <TextInput
           onChange={handleChange}
           label="Target URL"

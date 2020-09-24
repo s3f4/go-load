@@ -1,0 +1,138 @@
+version: "3.8"
+services:
+  apigateway:
+    image: apigateway
+    container_name: apigateway
+    restart: always
+    build:
+      context: ./apigateway
+      dockerfile: Dockerfile.dev
+    ports:
+      - 3001:3001
+    volumes:
+      - ./apigateway:/go/src/github.com/s3f4/go-load/apigateway
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ~/.ssh/id_rsa_for_master:/root/.ssh/id_rsa
+      - ~/.ssh/id_rsa_for_master.pub:/root/.ssh/id_rsa.pub
+    environment:
+      - APP_ENV=development
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=go-load
+      - MYSQL_USER=goload
+      - MYSQL_PASSWORD=go-load12345
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=timescaledb_example
+      - POSTGRES_HOST=timeDB
+      - POSTGRES_PORT=5432
+      - POSTGRES_DATABASE=data
+      - RABBITMQ_USER=user
+      - RABBITMQ_PASSWORD=password
+      - RABBITMQ_HOST=queue
+      - RABBITMQ_PORT=5672
+      - WAIT_HOSTS=queue:5672,mysql:3306,timeDB:5432
+      - WAIT_HOSTS_TIMEOUT=120
+
+  eventhandler:
+    image: eventhandler
+    container_name: eventhandler
+    restart: always
+    build:
+      context: ./eventhandler
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./eventhandler:/go/src/github.com/s3f4/go-load/eventhandler
+    environment:
+      - RABBITMQ_USER=user
+      - RABBITMQ_PASSWORD=password
+      - RABBITMQ_HOST=queue
+      - RABBITMQ_PORT=5672
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=timescaledb_example
+      - POSTGRES_HOST=timeDB
+      - POSTGRES_PORT=5432
+      - POSTGRES_DATABASE=data
+      - WAIT_HOSTS=queue:5672,mysql:3306,timeDB:5432
+      - WAIT_HOSTS_TIMEOUT=120
+
+  web:
+    image: web
+    container_name: web
+    restart: always
+    build:
+      context: ./web
+      dockerfile: Dockerfile.dev
+    ports:
+      - 3000:3000
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    volumes:
+      - "./web:/app"
+      - "/app/node_modules"
+    stdin_open: true
+
+  worker:
+    image: worker
+    restart: always
+    build:
+      context: ./worker
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./worker:/go/src/github.com/s3f4/go-load/worker
+    environment:
+      - RABBITMQ_USER=user
+      - RABBITMQ_PASSWORD=password
+      - RABBITMQ_HOST=queue
+      - RABBITMQ_PORT=5672
+      - WAIT_HOSTS=queue:5672,mysql:3306,timeDB:5432,apigateway:3001
+      - WAIT_HOSTS_TIMEOUT=120
+    deploy:
+      replicas: 0
+      placement:
+        max_replicas_per_node: 1
+        constraints:
+          - "node.labels.role==manager"
+      restart_policy: Never
+
+  timeDB:
+    image: timescale/timescaledb:latest-pg12
+    container_name: timeDB
+    restart: always
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=timescaledb_example
+      - POSTGRES_DB=data
+    ports:
+      - 5432:5432
+
+  queue:
+    image: rabbitmq:3-management
+    container_name: queue
+    restart: always
+    ports:
+      - 8080:15672
+    environment:
+      - RABBITMQ_DEFAULT_USER=user
+      - RABBITMQ_DEFAULT_PASS=password
+
+  pgAdmin:
+    image: dpage/pgadmin4
+    container_name: pgAdmin
+    restart: always
+    ports:
+      - 8081:80
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=test@test.com
+      - PGADMIN_DEFAULT_PASSWORD=123456
+
+  mysql:
+    image: mysql
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: p123456
+      MYSQL_DATABASE: go-load
+      MYSQL_USER: goload
+      MYSQL_PASSWORD: go-load12345
+    ports:
+      - 3306:3306

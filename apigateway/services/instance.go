@@ -194,6 +194,21 @@ func (s *instanceService) ShowSwarmNodes() ([]swarm.Node, error) {
 	return nodes, nil
 }
 
+// Shows swarm nodes
+func (s *instanceService) AddLabels() ([]swarm.Node, error) {
+	context := context.Background()
+	cli, err := client.NewEnvClient()
+	if err != nil {
+		return nil, err
+	}
+
+	var options types.NodeListOptions
+	nodes, err := cli.NodeList(context, options)
+	nodes[0].Spec.Annotations.Labels["role"] = "worker"
+	cli.NodeUpdate(context, nodes[0].ID, swarm.Version{}, nodes[0].Spec)
+	return nodes, nil
+}
+
 func (s *instanceService) GetInstanceInfo() (*models.Instance, error) {
 	return s.repository.Get()
 }

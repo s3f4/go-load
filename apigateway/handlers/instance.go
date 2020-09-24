@@ -92,3 +92,13 @@ func (h *instanceHandler) GetInstanceInfo(w http.ResponseWriter, r *http.Request
 		"data": instanceConfig,
 	})
 }
+
+func (h *instanceHandler) AddLabels(w http.ResponseWriter, r *http.Request) {
+	nodes, err := h.service.ShowSwarmNodes()
+	if err != nil {
+		log.Errorf(err.Error())
+		R500(w, err)
+		return
+	}
+	R200(w, nodes)
+}

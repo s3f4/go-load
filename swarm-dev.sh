@@ -39,8 +39,9 @@ docker-machine ssh node1 sudo mv /tmp/web /app/web
 docker-machine ssh node1 sudo mv /tmp/worker /app/worker
 docker-machine ssh node1 sudo mv /tmp/swarm-dev.yml /app/swarm-dev.yml
 
-docker-machine ssh node1 sudo curl -L "https://github.com/docker/compose/releases/download/1.27.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+docker-machine ssh node1 sudo curl -L "https://github.com/docker/compose/releases/download/1.27.4/docker-compose-Linux-x86_64" -o /usr/local/bin/docker-compose
 docker-machine ssh node1 sudo chmod +x /usr/local/bin/docker-compose
+docker-machine ssh node1 sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
 
 docker-machine ssh node1 docker-compose -f /app/swarm-dev.yml up -d
 docker-machine ssh node1 docker stack deploy -c /app/swarm-dev.yml go-load

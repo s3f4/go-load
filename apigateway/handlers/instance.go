@@ -94,11 +94,11 @@ func (h *instanceHandler) GetInstanceInfo(w http.ResponseWriter, r *http.Request
 }
 
 func (h *instanceHandler) AddLabels(w http.ResponseWriter, r *http.Request) {
-	nodes, err := h.service.ShowSwarmNodes()
+	err := h.service.AddLabels()
 	if err != nil {
 		log.Errorf(err.Error())
 		R500(w, err)
 		return
 	}
-	R200(w, nodes)
+	R200(w, "Labels has been added to worker nodes")
 }

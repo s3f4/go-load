@@ -24,6 +24,7 @@ type InstanceService interface {
 	ShowRegions() (string, error)
 	ShowSwarmNodes() ([]swarm.Node, error)
 	GetInstanceInfo() (*models.Instance, error)
+	AddLabels() error
 }
 
 type instanceService struct {
@@ -195,18 +196,28 @@ func (s *instanceService) ShowSwarmNodes() ([]swarm.Node, error) {
 }
 
 // Shows swarm nodes
-func (s *instanceService) AddLabels() ([]swarm.Node, error) {
+func (s *instanceService) AddLabels() error {
 	context := context.Background()
 	cli, err := client.NewEnvClient()
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	var options types.NodeListOptions
 	nodes, err := cli.NodeList(context, options)
-	nodes[0].Spec.Annotations.Labels["role"] = "worker"
-	cli.NodeUpdate(context, nodes[0].ID, swarm.Version{}, nodes[0].Spec)
-	return nodes, nil
+
+	swarm, err := cli.SwarmInspect(context)
+	if err != nil {
+		return err
+	}
+
+	for _, node := range nodes {
+		if strings.HasPrefix(node.Description.Hostname, "worker") {
+			node.Spec.Annotations.Labels["role"] = "worker"
+			cli.NodeUpdate(context, nodes[0].ID, swarm.Version, nodes[0].Spec)
+		}
+	}
+	return nil
 }
 
 func (s *instanceService) GetInstanceInfo() (*models.Instance, error) {

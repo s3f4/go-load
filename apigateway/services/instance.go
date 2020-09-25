@@ -192,6 +192,9 @@ func (s *instanceService) ShowSwarmNodes() ([]swarm.Node, error) {
 	var options types.NodeListOptions
 	nodes, err := cli.NodeList(context, options)
 
+	if err != nil {
+		return nil, err
+	}
 	return nodes, nil
 }
 

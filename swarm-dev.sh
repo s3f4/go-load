@@ -40,6 +40,7 @@ function moveFiles() {
     docker-machine scp -r ./apigateway node1:/tmp/apigateway
     docker-machine scp -r ./eventhandler node1:/tmp/eventhandler
     rm -rf ./web/node_modules
+    echo "REACT_APP_API_BASE_URL=$(docker-machine ip node1):3001" > ./web/.env
     docker-machine scp -r ./web node1:/tmp/web
     docker-machine scp -r ./worker node1:/tmp/worker
     docker-machine scp -r ./swarm-dev.yml node1:/tmp/swarm-dev.yml
@@ -59,15 +60,31 @@ function installCompose() {
 }
 
 function deploySwarm() {
-    docker-machine ssh node1 "MACHINE_HOST=$(docker-machine ip node1) && docker-compose -f /app/swarm-dev.yml up -d"
-    docker-machine ssh node1 "MACHINE_HOST=$(docker-machine ip node1) && docker-compose -f /app/swarm-dev.yml down"
-    docker-machine ssh node1 "MACHINE_HOST=$(docker-machine ip node1) &&docker stack deploy -c /app/swarm-dev.yml go-load"
+    docker-machine ssh node1 "docker stack rm go-load"
+    docker-machine ssh node1 "docker-compose -f /app/swarm-dev.yml up --build -d"
+    docker-machine ssh node1 "docker-compose -f /app/swarm-dev.yml down"
+    docker-machine ssh node1 "docker stack deploy -c /app/swarm-dev.yml go-load"
 }
 
 
 
-while getopts ":h :r :c :j :m :i" opt; do
+while getopts ":h :r :c :j :m :i :f :s" opt; do
     case ${opt} in
+        f)
+            echo "Files are being moved and stack will be restarted"
+            moveFiles
+            deploySwarm
+        ;;
+        s)
+            echo "Installing is getting started from zero"
+            removeNodes
+            createNodes
+            joinSwarm
+            installCompose
+            moveFiles
+            deploySwarm
+            exit 0
+        ;;
         r )
             echo "Nodes are being removed..."
             removeNodes
@@ -75,6 +92,7 @@ while getopts ":h :r :c :j :m :i" opt; do
         ;;
         c )
             echo "Nodes are being created..."
+            createNodes
             exit 0
         ;;
         j )

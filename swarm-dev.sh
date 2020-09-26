@@ -121,4 +121,5 @@ while getopts ":h :r :c :j :m :i :f :s" opt; do
         ;;
     esac
 done
+echo $(docker-machine ip node1)
 exit 0

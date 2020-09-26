@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   apigateway:
-    image: apigateway
+    image: registry.dev:5000/apigateway
     build:
       context: ./apigateway
       dockerfile: Dockerfile.dev
@@ -42,7 +42,7 @@ services:
         window: 120s
 
   eventhandler:
-    image: eventhandler
+    image: registry.dev:5000/eventhandler
     build:
       context: ./eventhandler
       dockerfile: Dockerfile.dev
@@ -69,7 +69,7 @@ services:
         condition: on-failure
 
   web:
-    image: web
+    image: registry.dev:5000/web
     build:
       context: ./web
       dockerfile: Dockerfile.dev
@@ -92,7 +92,7 @@ services:
         condition: on-failure
 
   worker:
-    image: worker
+    image: registry.dev:5000/worker
     build:
       context: ./worker
       dockerfile: Dockerfile.dev

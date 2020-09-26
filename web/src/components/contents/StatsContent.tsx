@@ -4,6 +4,7 @@ import { jsx, css } from "@emotion/core";
 import { stats, Response } from "../../api/entity/stats";
 import moment from "moment";
 import { Line } from "react-chartjs-2";
+import { preciseFormat } from "../basic/helper";
 
 interface Props {}
 
@@ -21,10 +22,6 @@ const StatsContent: React.FC<Props> = (props: Props) => {
         console.log(response.data);
       })
       .catch((error) => console.log(error));
-  };
-
-  const format = (): string => {
-    return "hh:mm:ss SSSS";
   };
 
   const byteSize = (str: string) => new Blob([str]).size;
@@ -79,13 +76,17 @@ const StatsContent: React.FC<Props> = (props: Props) => {
             responses.map((response: Response, key: number) => {
               return (
                 <tr key={key}>
-                  <td>{moment(response.FirstByte).format(format())}</td>
-                  <td>{moment(response.ConnectStart).format(format())}</td>
-                  <td>{moment(response.ConnectDone).format(format())}</td>
-                  <td>{moment(response.DNSStart).format(format())}</td>
-                  <td>{moment(response.DNSDone).format(format())}</td>
-                  <td>{moment(response.TLSStart).format(format())}</td>
-                  <td>{moment(response.TLSDone).format(format())}</td>
+                  <td>{moment(response.FirstByte).format(preciseFormat())}</td>
+                  <td>
+                    {moment(response.ConnectStart).format(preciseFormat())}
+                  </td>
+                  <td>
+                    {moment(response.ConnectDone).format(preciseFormat())}
+                  </td>
+                  <td>{moment(response.DNSStart).format(preciseFormat())}</td>
+                  <td>{moment(response.DNSDone).format(preciseFormat())}</td>
+                  <td>{moment(response.TLSStart).format(preciseFormat())}</td>
+                  <td>{moment(response.TLSDone).format(preciseFormat())}</td>
                   <td>{response.StatusCode}</td>
                   <td>{response.TotalTime / 1000000}</td>
                   <td>{byteSize(response.Body)}</td>

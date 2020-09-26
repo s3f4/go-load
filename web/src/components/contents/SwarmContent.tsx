@@ -5,6 +5,7 @@ import { showSwarmNodes } from "../../api/entity/instance";
 import { Node } from "../../api/entity/nodes";
 import { Box, Sizes } from "../style";
 import moment from "moment";
+import { defaultFormat } from "../basic/helper";
 
 interface Props {}
 
@@ -15,10 +16,6 @@ const SwarmContent: React.FC<Props> = (props: Props) => {
       .then((response) => setNodes(response.data))
       .catch((error) => console.log(error));
   }, []);
-
-  const format = (): string => {
-    return "DD.MM.YYYY hh:mm:ss";
-  };
 
   return (
     <div css={swarmContainer}>
@@ -40,7 +37,7 @@ const SwarmContent: React.FC<Props> = (props: Props) => {
               <br />
               Availability: {node.Spec.Availability}
               <br />
-              Created: {moment(node.CreatedAt).format(format())}
+              Created: {moment(node.CreatedAt).format(defaultFormat())}
               <br />
             </div>
           );

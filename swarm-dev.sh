@@ -11,6 +11,8 @@ function createNodes() {
         docker-machine create --driver virtualbox --virtualbox-disk-size "40000" --virtualbox-memory 2048 node$i
         #docker-machine create -d virtualbox node$i
     done
+    joinSwarm
+    registry
 }
 
 function joinSwarm() {
@@ -31,6 +33,35 @@ function joinSwarm() {
     docker node update --label-add role=master node1
     docker node update --label-add role=data node2
     docker node update --label-add role=worker node3
+}
+
+function registry() {
+    ## create cert files
+    echo "cert files are being created"
+    openssl req -newkey rsa:4096 -nodes -sha256 \
+    -keyout registry.key -x509 -days 365 \
+    -out registry.crt
+    
+    echo "files are being moved to nodes"
+    docker-machine scp -r ./registry.crt node1:/tmp/registry.crt
+    docker-machine ssh node1 sudo mv /tmp/registry.crt /home/docker
+    docker-machine ssh node1 sudo mkdir -p /etc/docker/certs.d/registry.dev:5000 && \
+    docker-machine ssh node1 sudo cp /home/docker/registry.crt /etc/docker/certs.d/registry.dev:5000/ca.crt
+    
+    docker-machine ssh node1 "sudo echo '$(docker-machine ip node1) registry.dev' >> /etc/hosts"
+    
+    #docker-machine scp registry.crt node1:/tmp
+    #docker-machine ssh node1 sudo mv /tmp/registry.cert /home/docker
+    docker-machine scp -r ./registry.key node1:/tmp/registry.key
+    docker-machine ssh node1 sudo mv /tmp/registry.key /home/docker
+    
+    docker-machine ssh node1 docker service create -d --name registry --publish=5000:5000 \
+    --constraint=node.role==manager \
+    --mount=type=bind,src=/home/docker,dst=/certs \
+    -e REGISTRY_HTTP_ADDR=0.0.0.0:5000 \
+    -e REGISTRY_HTTP_TLS_CERTIFICATE=/etc/docker/certs.d/registry.dev:5000/ca.crt \
+    -e REGISTRY_HTTP_TLS_KEY=/home/docker/registry.key \
+    registry:latest
 }
 
 

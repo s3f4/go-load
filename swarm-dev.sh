@@ -12,6 +12,7 @@ function createNodes() {
         #docker-machine create -d virtualbox node$i
     done
     joinSwarm
+    moveFiles
     registry
 }
 
@@ -40,28 +41,41 @@ function registry() {
     echo "cert files are being created"
     openssl req -newkey rsa:4096 -nodes -sha256 \
     -keyout registry.key -x509 -days 365 \
-    -out registry.crt
+    -out registry.crt -subj '/C=TR/ST=TR/L=Malatya/O=registry/CN=registry.dev'
     
     echo "files are being moved to nodes"
-    docker-machine scp -r ./registry.crt node1:/tmp/registry.crt
-    docker-machine ssh node1 sudo mv /tmp/registry.crt /home/docker
-    docker-machine ssh node1 sudo mkdir -p /etc/docker/certs.d/registry.dev:5000 && \
-    docker-machine ssh node1 sudo cp /home/docker/registry.crt /etc/docker/certs.d/registry.dev:5000/ca.crt
     
-    docker-machine ssh node1 "sudo echo '$(docker-machine ip node1) registry.dev' >> /etc/hosts"
     
-    #docker-machine scp registry.crt node1:/tmp
-    #docker-machine ssh node1 sudo mv /tmp/registry.cert /home/docker
-    docker-machine scp -r ./registry.key node1:/tmp/registry.key
-    docker-machine ssh node1 sudo mv /tmp/registry.key /home/docker
+    for i in {1..3}; do
+        if [ "$i" -eq 1 ]; then
+            docker-machine scp -r ./registry.key node$i:/tmp/registry.key
+            docker-machine ssh node$i sudo mv /tmp/registry.key /home/docker
+        fi
+        docker-machine scp -r ./registry.crt node$i:/tmp/registry.crt
+        docker-machine ssh node$i sudo mv /tmp/registry.crt /home/docker
+        docker-machine ssh node$i "sudo -- sh -c 'echo $(docker-machine ip node1) registry.dev >> /etc/hosts'"
+        docker-machine ssh node$i sudo mkdir -p /etc/docker/certs.d/registry.dev:5000/
+        docker-machine ssh node$i sudo cp /home/docker/registry.crt /etc/docker/certs.d/registry.dev:5000/ca.crt
+    done
     
     docker-machine ssh node1 docker service create -d --name registry --publish=5000:5000 \
     --constraint=node.role==manager \
     --mount=type=bind,src=/home/docker,dst=/certs \
     -e REGISTRY_HTTP_ADDR=0.0.0.0:5000 \
-    -e REGISTRY_HTTP_TLS_CERTIFICATE=/etc/docker/certs.d/registry.dev:5000/ca.crt \
-    -e REGISTRY_HTTP_TLS_KEY=/home/docker/registry.key \
+    -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/registry.crt \
+    -e REGISTRY_HTTP_TLS_KEY=/certs/registry.key \
     registry:latest
+    
+    docker-machine ssh node1 docker build -t registry.dev:5000/apigateway /app/apigateway -f /app/apigateway/Dockerfile.dev
+    docker-machine ssh node1 docker push registry.dev:5000/apigateway
+    docker-machine ssh node1 docker build -t registry.dev:5000/worker /app/worker -f /app/worker/Dockerfile.dev
+    docker-machine ssh node1 docker push registry.dev:5000/worker
+    docker-machine ssh node1 docker build -t registry.dev:5000/web /app/web -f /app/web/Dockerfile.dev
+    docker-machine ssh node1 docker push registry.dev:5000/web
+    docker-machine ssh node1 docker build -t registry.dev:5000/eventhandler /app/eventhandler -f /app/eventhandler/Dockerfile.dev
+    docker-machine ssh node1 docker push registry.dev:5000/eventhandler
+    
+    
 }
 
 

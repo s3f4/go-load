@@ -29,7 +29,7 @@ services:
       - RABBITMQ_HOST=queue
       - RABBITMQ_PORT=5672
       - WAIT_HOSTS=queue:5672,mysql:3306,timeDB:5432
-      - WAIT_HOSTS_TIMEOUT=120
+      - WAIT_HOSTS_TIMEOUT=360
     deploy:
       replicas: 1
       placement:
@@ -37,9 +37,6 @@ services:
           - "node.labels.role==master"
       restart_policy:
         condition: on-failure
-        delay: 5s
-        max_attempts: 3
-        window: 120s
 
   eventhandler:
     image: registry.dev:5000/eventhandler
@@ -59,7 +56,7 @@ services:
       - POSTGRES_PORT=5432
       - POSTGRES_DATABASE=data
       - WAIT_HOSTS=queue:5672,mysql:3306,timeDB:5432
-      - WAIT_HOSTS_TIMEOUT=120
+      - WAIT_HOSTS_TIMEOUT=360
     deploy:
       replicas: 1
       placement:
@@ -102,7 +99,7 @@ services:
       - RABBITMQ_HOST=queue
       - RABBITMQ_PORT=5672
       - WAIT_HOSTS=queue:5672,mysql:3306,timeDB:5432,apigateway:3001
-      - WAIT_HOSTS_TIMEOUT=120
+      - WAIT_HOSTS_TIMEOUT=360
     deploy:
       replicas: 1
       placement:
@@ -110,7 +107,7 @@ services:
         constraints:
           - "node.labels.role==worker"
       restart_policy:
-        condition: none
+        condition: on-failure
 
   timeDB:
     image: timescale/timescaledb:latest-pg12

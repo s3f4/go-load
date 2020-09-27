@@ -24,3 +24,5 @@ infra/base/inventory.txt
 *vendor
 *log
 go-load.code-workspace
+*.crt
+*.key

@@ -38,29 +38,21 @@ resource "digitalocean_droplet" "master" {
     ]
   }
 
-  ## Upload inventory file to master instance
-  # provisioner "file" {
-  #   source      = file(local_file.inventory.filename)
-  #   destination = "/etc/inventory.txt"
-  # }
-
-  ## Install terraform to master instance
-  provisioner "file" {
-    source      = "../scripts/install-terraform.sh"
-    destination = "/tmp/install-terraform.sh"
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "chmod +x /tmp/install-terraform.sh",
-      "/tmp/install-terraform.sh",
-    ]
-  }
-
   // upload playbook
   provisioner "file" {
     source      = "ansible/docker-playbook.yml"
     destination = "/etc/ansible/docker-playbook.yml"
+  }
+
+  provisioner "file" {
+    source      = "ansible/swarm.yml"
+    destination = "/etc/ansible/swarm.yml"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "ansible-playbook -i /etc/ansible/inventory.txt --extra-vars='masterIp=${digitalocean.master.public_ip},dataIp=${digitalocean.data.public_ip}'",
+    ]
   }
 
   ## Upload ssh private key for ansible master 

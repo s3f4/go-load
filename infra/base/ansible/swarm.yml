@@ -1,0 +1,24 @@
+---
+- hosts: all
+  become: true
+  connection: ssh
+  gather_facts: yes
+  become_method: sudo
+  tasks:
+    - name: Init a new swarm with default parameters
+      community.general.docker_swarm:
+        state: present
+
+    - name: Add nodes
+      community.general.docker_swarm:
+        state: join
+        advertise_addr: "{{ masterIp }}"
+        join_token: "{{ token }}"
+        remote_addrs: ["{{ dataIp }}:2377"]
+
+    - name: Deploy stack from a compose file
+      community.general.docker_stack:
+        state: present
+        name: go-load
+        compose:
+          - /app/swarm-prod.yml

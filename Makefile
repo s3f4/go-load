@@ -61,7 +61,7 @@ upload-inventory:
 ansible-ping: 
 	cd infra/base && master=$$(terraform output master_ipv4_address) && ssh -t root@$$master 'cd /etc/ansible && ansible all -i inventory.txt -m ping'
 
-swarm:  upload-inventory ansible-ping
+swarm: destroy up-instances  upload-inventory ansible-ping
 	cd infra/base && master=$$(terraform output master_ipv4_address) && \
 	ssh -t root@$$master "cd /etc/ansible && \
 	ansible-playbook -i inventory.txt docker-playbook.yml && \

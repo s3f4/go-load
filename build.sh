@@ -15,7 +15,6 @@ docker service create -d --name registry --publish=5000:5000 \
 -e REGISTRY_HTTP_TLS_KEY=/certs/registry.key \
 registry:latest
 
-sudo -- sh -c 'echo $masterIP registry.dev >> /etc/hosts'
 
 docker build -t registry.dev:5000/apigateway /root/app/apigateway -f /root/app/apigateway/Dockerfile.prod
 docker push registry.dev:5000/apigateway

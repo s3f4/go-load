@@ -1,6 +1,9 @@
 #!/bin/bash
 
 
+docker node update --label-add role=master Master
+docker node update --label-add role=data Data
+
 echo "cert files are being created"
 openssl req -newkey rsa:4096 -nodes -sha256 \
 -keyout /root/app/registry.key -x509 -days 365 \

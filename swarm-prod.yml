@@ -8,7 +8,7 @@ services:
     ports:
       - 3001:3001
     volumes:
-      - /app/apigateway:/go/src/github.com/s3f4/go-load/apigateway
+      - ~/app/apigateway:/go/src/github.com/s3f4/go-load/apigateway
       - /var/run/docker.sock:/var/run/docker.sock
       - ~/.ssh/id_rsa:/root/.ssh/id_rsa
       - ~/.ssh/id_rsa.pub:/root/.ssh/id_rsa.pub
@@ -28,8 +28,6 @@ services:
       - RABBITMQ_PASSWORD=password
       - RABBITMQ_HOST=queue
       - RABBITMQ_PORT=5672
-      - WAIT_HOSTS=queue:5672,mysql:3306,timeDB:5432
-      - WAIT_HOSTS_TIMEOUT=360
     deploy:
       replicas: 1
       placement:
@@ -44,7 +42,7 @@ services:
       context: ./eventhandler
       dockerfile: Dockerfile.dev
     volumes:
-      - ./eventhandler:/go/src/github.com/s3f4/go-load/eventhandler
+      - ~/app/eventhandler:/go/src/github.com/s3f4/go-load/eventhandler
     environment:
       - RABBITMQ_USER=user
       - RABBITMQ_PASSWORD=password
@@ -55,8 +53,6 @@ services:
       - POSTGRES_HOST=timeDB
       - POSTGRES_PORT=5432
       - POSTGRES_DATABASE=data
-      - WAIT_HOSTS=queue:5672,mysql:3306,timeDB:5432
-      - WAIT_HOSTS_TIMEOUT=360
     deploy:
       replicas: 1
       placement:
@@ -71,14 +67,10 @@ services:
       context: ./web
       dockerfile: Dockerfile.dev
     ports:
-      - 3000:3000
+      - 80:80
     environment:
       - CHOKIDAR_USEPOLLING=true
       - env_file=.env
-      - WAIT_HOSTS=apigateway:3001
-    volumes:
-      - "./web:/app/web"
-      - "/app/web/node_modules"
     stdin_open: true
     deploy:
       replicas: 1
@@ -98,8 +90,6 @@ services:
       - RABBITMQ_PASSWORD=password
       - RABBITMQ_HOST=queue
       - RABBITMQ_PORT=5672
-      - WAIT_HOSTS=queue:5672,mysql:3306,timeDB:5432,apigateway:3001
-      - WAIT_HOSTS_TIMEOUT=360
     deploy:
       replicas: 1
       placement:
@@ -124,6 +114,11 @@ services:
           - "node.labels.role==data"
       restart_policy:
         condition: on-failure
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "root"]
+      timeout: 120s
+      interval: 10s
+      retries: 10
 
   queue:
     image: rabbitmq:3-management
@@ -139,6 +134,11 @@ services:
           - "node.labels.role==data"
       restart_policy:
         condition: on-failure
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      timeout: 120s
+      interval: 10s
+      retries: 10
 
   pgAdmin:
     image: dpage/pgadmin4
@@ -171,3 +171,8 @@ services:
           - "node.labels.role==data"
       restart_policy:
         condition: on-failure
+    healthcheck:
+      test: mysql --user=$$MYSQL_USER --password=$$MYSQL_PASSWORD -e 'SHOW DATABASES;'
+      timeout: 120s
+      interval: 10s
+      retries: 10

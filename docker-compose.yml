@@ -6,7 +6,7 @@ services:
     restart: always
     build:
       context: ./apigateway
-      dockerfile: Dockerfile.prod
+      dockerfile: Dockerfile.dev
     ports:
       - 3001:3001
     volumes:
@@ -43,7 +43,7 @@ services:
     restart: always
     build:
       context: ./eventhandler
-      dockerfile: Dockerfile.prod
+      dockerfile: Dockerfile.dev
     volumes:
       - ./eventhandler:/go/src/github.com/s3f4/go-load/eventhandler
     environment:
@@ -67,7 +67,7 @@ services:
     restart: always
     build:
       context: ./web
-      dockerfile: Dockerfile.prod
+      dockerfile: Dockerfile.dev
     ports:
       - 3000:3000
     environment:
@@ -87,7 +87,7 @@ services:
     restart: always
     build:
       context: ./worker
-      dockerfile: Dockerfile.prod
+      dockerfile: Dockerfile.dev
     volumes:
       - ./worker:/go/src/github.com/s3f4/go-load/worker
     environment:

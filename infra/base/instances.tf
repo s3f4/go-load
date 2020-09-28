@@ -40,6 +40,11 @@ resource "digitalocean_droplet" "master" {
 
   // upload playbook
   provisioner "file" {
+    source      = "ansible/hosts.yml"
+    destination = "/etc/ansible/hosts.yml"
+  }
+
+  provisioner "file" {
     source      = "ansible/docker-playbook.yml"
     destination = "/etc/ansible/docker-playbook.yml"
   }

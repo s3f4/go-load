@@ -65,6 +65,7 @@ swarm: destroy up-instances  upload-inventory ansible-ping
 	cd infra/base && master=$$(terraform output master_ipv4_address) && \
 	ssh -t root@$$master "cd /etc/ansible && \
 	ansible-playbook -i inventory.txt docker-playbook.yml && \
+	ansible-playbook -i inventory.txt hosts.yml --extra-vars 'addr=$$master' && \
 	ansible-playbook -i inventory.txt swarm-init-deploy.yml --extra-vars 'addr=$$master'" && \
 	token=`ssh -t root@$$master -t docker swarm join-token worker -q` && \
 	ssh -t root@$$master "cd /etc/ansible && \

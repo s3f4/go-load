@@ -61,21 +61,11 @@ upload-inventory:
 ansible-ping: 
 	cd infra/base && master=$$(terraform output master_ipv4_address) && ssh -t root@$$master 'cd /etc/ansible && ansible all -i inventory.txt -m ping'
 
-ansible-swarm: upload-inventory ansible-ping
+swarm: destroy up-instances upload-inventory ansible-ping
 	cd infra/base && master=$$(terraform output master_ipv4_address) && ssh -t root@$$master "cd /etc/ansible && \
 	ansible-playbook -i inventory.txt docker-playbook.yml && \
 	ansible-playbook -i inventory.txt swarm.yml --extra-vars 'addr=$$master' && \
-	token=`docker swarm join-token worker -q` && \
-	ansible-playbook -i inventory.txt swarm-join.yml --extra-vars 'token=$$token addr=$$master'"
-
-ansible-swarm-join: upload-inventory ansible-ping
-	token=`cd infra/base && master=$$(terraform output master_ipv4_address) && ssh -t root@$$master docker swarm join-token worker -q` && \
-	cd infra/base && master=$$(terraform output master_ipv4_address) && ssh -t root@$$master "cd /etc/ansible && ansible-playbook -i inventory.txt swarm-join.yml --extra-vars 'token=$$token addr=$$master'"
-
-ansible-token:
-	#cd infra/base && master=$$(terraform output master_ipv4_address) && ssh -t root@$$master "t=`docker swarm join-token worker -q` && echo $$t"
-	token=`cd infra/base && master=$$(terraform output master_ipv4_address) && ssh -t root@$$master docker swarm join-token worker -q` 
-
+	ansible-playbook -i inventory.txt swarm-join.yml --extra-vars 'token=$$(docker swarm join-token worker -q) addr=$$master'"
 
 ssh-copy:
 	@echo this command creates ssh key and copy the key other instances

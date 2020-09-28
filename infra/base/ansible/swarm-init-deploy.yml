@@ -8,6 +8,9 @@
     - name: Init a new swarm with default parameters
       shell: >
         docker swarm init --advertise-addr={{ addr }}:2377
+    - name: Deploy stack
+      shell: >
+        docker stack deploy -c /root/app/swarm-prod.yml go-load
     # - name: Add nodes
     #   community.general.docker_swarm:
     #     state: join

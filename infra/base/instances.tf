@@ -45,8 +45,8 @@ resource "digitalocean_droplet" "master" {
   }
 
   provisioner "file" {
-    source      = "ansible/swarm.yml"
-    destination = "/etc/ansible/swarm.yml"
+    source      = "ansible/swarm-init-deploy.yml"
+    destination = "/etc/ansible/swarm-init-deploy.yml"
   }
 
   provisioner "file" {
@@ -97,8 +97,13 @@ resource "digitalocean_droplet" "master" {
   }
 
   provisioner "file" {
-    source      = abspath("../../docker-compose.prod.yml")
-    destination = "~/app/docker-compose.prod.yml"
+    source      = abspath("../../swarm-prod.yml")
+    destination = "~/app/swarm-prod.yml"
+  }
+
+  provisioner "file" {
+    source      = abspath("../../build.sh")
+    destination = "~/app/build.sh"
   }
 }
 

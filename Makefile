@@ -6,13 +6,13 @@ default:
 
 up: default
 	@echo "=============Compose Up============="
-	docker-compose -f docker-compose.dev.yml up -d  --build --remove-orphans
+	docker-compose -f docker-compose.yml up -d  --build --remove-orphans
 
 logs:
 	docker-compose logs -f
 
 down:
-	docker-compose -f docker-compose.dev.yml down
+	docker-compose -f docker-compose.yml down
 
 test:
 	go test -v -cover ./...
@@ -61,11 +61,14 @@ upload-inventory:
 ansible-ping: 
 	cd infra/base && master=$$(terraform output master_ipv4_address) && ssh -t root@$$master 'cd /etc/ansible && ansible all -i inventory.txt -m ping'
 
-swarm: destroy up-instances upload-inventory ansible-ping
-	cd infra/base && master=$$(terraform output master_ipv4_address) && ssh -t root@$$master "cd /etc/ansible && \
+swarm:  upload-inventory ansible-ping
+	cd infra/base && master=$$(terraform output master_ipv4_address) && \
+	ssh -t root@$$master "cd /etc/ansible && \
 	ansible-playbook -i inventory.txt docker-playbook.yml && \
-	ansible-playbook -i inventory.txt swarm.yml --extra-vars 'addr=$$master' && \
-	ansible-playbook -i inventory.txt swarm-join.yml --extra-vars 'token=$$(docker swarm join-token worker -q) addr=$$master'"
+	ansible-playbook -i inventory.txt swarm-init-deploy.yml --extra-vars 'addr=$$master'" && \
+	token=`ssh -t root@$$master -t docker swarm join-token worker -q` && \
+	ssh -t root@$$master "cd /etc/ansible && \
+	ansible-playbook -i inventory.txt swarm-join.yml --extra-vars 'token=$$token addr=$$master'"
 
 ssh-copy:
 	@echo this command creates ssh key and copy the key other instances

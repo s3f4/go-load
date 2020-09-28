@@ -49,10 +49,9 @@ resource "digitalocean_droplet" "master" {
     destination = "/etc/ansible/swarm.yml"
   }
 
-  provisioner "remote-exec" {
-    inline = [
-      "ansible-playbook -i /etc/ansible/inventory.txt --extra-vars='masterIp=${digitalocean.master.public_ip},dataIp=${digitalocean.data.public_ip}'",
-    ]
+  provisioner "file" {
+    source      = "ansible/swarm-join.yml"
+    destination = "/etc/ansible/swarm-join.yml"
   }
 
   ## Upload ssh private key for ansible master 

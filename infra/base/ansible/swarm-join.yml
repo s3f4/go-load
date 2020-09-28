@@ -1,13 +1,15 @@
 ---
-- hosts: master
+- hosts: data
   become: true
   connection: ssh
   gather_facts: yes
   become_method: sudo
   tasks:
-    - name: Init a new swarm with default parameters
+    - name: data is joining to swarm
       shell: >
-        docker swarm init --advertise-addr={{ addr }}:2377
+        docker swarm join
+        --token {{ token }}
+        {{ addr }}:2377
     # - name: Add nodes
     #   community.general.docker_swarm:
     #     state: join

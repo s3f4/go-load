@@ -8,7 +8,7 @@ resource "digitalocean_ssh_key" "for_master" {
 
 resource "digitalocean_droplet" "master" {
   image  = var.image
-  name   = "DO-Master-1"
+  name   = "Master"
   region = var.region
   size   = var.size
 
@@ -42,6 +42,11 @@ resource "digitalocean_droplet" "master" {
   provisioner "file" {
     source      = "ansible/hosts.yml"
     destination = "/etc/ansible/hosts.yml"
+  }
+
+  provisioner "file" {
+    source      = "ansible/cert.yml"
+    destination = "/etc/ansible/cert.yml"
   }
 
   provisioner "file" {
@@ -118,7 +123,7 @@ resource "digitalocean_droplet" "master" {
 # Data instance for docker swarm
 resource "digitalocean_droplet" "data" {
   image  = var.image
-  name   = "DO-Data-1"
+  name   = "Data"
   region = var.region
   size   = var.size
   ssh_keys = [

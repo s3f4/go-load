@@ -41,8 +41,6 @@ services:
     build:
       context: ./eventhandler
       dockerfile: Dockerfile.dev
-    volumes:
-      - ~/app/eventhandler:/go/src/github.com/s3f4/go-load/eventhandler
     environment:
       - RABBITMQ_USER=user
       - RABBITMQ_PASSWORD=password
@@ -57,7 +55,7 @@ services:
       replicas: 1
       placement:
         constraints:
-          - "node.labels.role==master"
+          - "node.labels.role==data"
       restart_policy:
         condition: on-failure
 

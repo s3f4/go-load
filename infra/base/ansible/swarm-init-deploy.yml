@@ -8,6 +8,9 @@
     - name: Init a new swarm with default parameters
       shell: >
         docker swarm init --advertise-addr={{ addr }}:2377
+    - name: Add label to master node
+      shell: >
+        docker node update --label-add role=master Master 
     - name: Build images
       shell: >
         sh /root/app/build.sh

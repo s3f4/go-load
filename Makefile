@@ -61,15 +61,18 @@ upload-inventory:
 ansible-ping: 
 	cd infra/base && master=$$(terraform output master_ipv4_address) && ssh -t root@$$master 'cd /etc/ansible && ansible all -i inventory.txt -m ping'
 
-swarm: destroy up-instances  upload-inventory ansible-ping
+swarm: destroy up-instances  upload-inventory 
 	cd infra/base && master=$$(terraform output master_ipv4_address) && \
 	ssh -t root@$$master "cd /etc/ansible && \
+	export ANSIBLE_HOST_KEY_CHECKING=False && \
+	ansible-playbook -i inventory.txt known_hosts.yml && \
 	ansible-playbook -i inventory.txt docker-playbook.yml && \
 	ansible-playbook -i inventory.txt hosts.yml --extra-vars 'addr=$$master' && \
 	ansible-playbook -i inventory.txt swarm-init-deploy.yml --extra-vars 'addr=$$master'" && \
 	token=`ssh -t root@$$master -t docker swarm join-token worker -q` && \
 	ssh -t root@$$master "cd /etc/ansible && \
-	ansible-playbook -i inventory.txt swarm-join.yml --extra-vars 'token=$$token addr=$$master'"
+	ansible-playbook -i inventory.txt swarm-join.yml --extra-vars 'token=$$token addr=$$master' && \
+	ansible-playbook -i inventory.txt label.yml"
 
 ssh-copy:
 	@echo this command creates ssh key and copy the key other instances

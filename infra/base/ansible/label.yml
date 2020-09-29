@@ -1,0 +1,10 @@
+---
+- hosts: master
+  become: true
+  connection: ssh
+  gather_facts: yes
+  become_method: sudo
+  tasks:
+    - name: Add label to data node
+      shell: >
+        docker node update --label-add role=data Data

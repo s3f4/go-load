@@ -45,6 +45,16 @@ resource "digitalocean_droplet" "master" {
   }
 
   provisioner "file" {
+    source      = "ansible/known_hosts.yml"
+    destination = "/etc/ansible/known_hosts.yml"
+  }
+
+   provisioner "file" {
+    source      = "ansible/label.yml"
+    destination = "/etc/ansible/label.yml"
+  }
+
+  provisioner "file" {
     source      = "ansible/cert.yml"
     destination = "/etc/ansible/cert.yml"
   }

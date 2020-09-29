@@ -61,9 +61,11 @@ upload-inventory:
 ansible-ping: 
 	cd infra/base && master=$$(terraform output master_ipv4_address) && ssh -t root@$$master 'cd /etc/ansible && ansible all -i inventory.txt -m ping'
 
-swarm: destroy up-instances  upload-inventory 
+
+swarm-prepare:
 	cd infra/base && master=$$(terraform output master_ipv4_address) && \
-	ssh -t root@$$master "cd /etc/ansible && \
+	ssh -t root@$$master "echo 'REACT_APP_API_BASE_URL=$$master:3001' >> /root/app/web/.env && \
+	cd /etc/ansible && \
 	export ANSIBLE_HOST_KEY_CHECKING=False && \
 	ansible-playbook -i inventory.txt known_hosts.yml && \
 	ansible-playbook -i inventory.txt docker-playbook.yml && \
@@ -73,6 +75,9 @@ swarm: destroy up-instances  upload-inventory
 	ssh -t root@$$master "cd /etc/ansible && \
 	ansible-playbook -i inventory.txt swarm-join.yml --extra-vars 'token=$$token addr=$$master' && \
 	ansible-playbook -i inventory.txt label.yml"
+
+swarm: destroy up-instances upload-inventory swarm-prepare
+	
 
 ssh-copy:
 	@echo this command creates ssh key and copy the key other instances

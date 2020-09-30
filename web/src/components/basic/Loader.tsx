@@ -1,16 +1,18 @@
 /** @jsx jsx */
-import React from "react";
+import React, { SVGProps } from "react";
 import { jsx, css } from "@emotion/core";
 import loaderSrc from "../img/loader.svg";
+import LoaderSvg from "./LoaderSvg";
 
 interface Props {
   message?: string;
+  inlineLoading?: boolean;
 }
 
 const Loader = (props: Props) => {
-  React.useEffect(() => {}, []);
-
-  return (
+  return props.inlineLoading ? (
+    <LoaderSvg css={inline} width={"20"} height={"20"} fill={"#fff"} />
+  ) : (
     <div css={loaderContainer}>
       <div css={loaderCss}>
         <img alt={"loader"} src={loaderSrc} />
@@ -36,6 +38,10 @@ const loaderCss = css`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+`;
+
+const inline = css`
+  display: inline;
 `;
 
 export default Loader;

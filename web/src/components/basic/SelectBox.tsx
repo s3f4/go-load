@@ -3,6 +3,7 @@ import React from "react";
 import { jsx, css } from "@emotion/core";
 import { Borders, Colors, Sizes } from "../style";
 import BasicProps from "./basicProps";
+import Loader from "./Loader";
 
 interface SelectBoxData {
   value: string;

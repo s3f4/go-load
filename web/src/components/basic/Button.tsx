@@ -2,16 +2,24 @@
 import React from "react";
 import { jsx, css } from "@emotion/core";
 import { Sizes, Borders } from "../style";
+import Loader from "./Loader";
 
 interface Props {
   text: string;
   onClick: (e: any) => any;
+  loading?: boolean;
 }
 
 const Button: React.FC<Props> = (props: Props) => {
   return (
     <React.Fragment>
-      <button css={button} type="submit" onClick={props.onClick}>
+      <button
+        css={button}
+        type="submit"
+        onClick={props.onClick}
+        disabled={props.loading}
+      >
+        {props.loading ? <Loader inlineLoading={true} /> : ""}
         {props.text}
       </button>
     </React.Fragment>

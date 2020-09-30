@@ -18,6 +18,7 @@ const SpinUp: React.FC<Props> = (props: Props) => {
   const [region, setRegion] = useState<string>("");
   const [regions, setRegions] = useState<any>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [regionsLoading, setRegionsLoading] = useState<boolean>(false);
   const [configs, setConfigs] = useState<any[]>([]);
 
   React.useEffect(() => {
@@ -73,6 +74,7 @@ const SpinUp: React.FC<Props> = (props: Props) => {
   };
 
   const regionsRequest = () => {
+    setRegionsLoading(true);
     listAvailableRegions()
       .then((response) => {
         if (response && response.status) {
@@ -84,11 +86,14 @@ const SpinUp: React.FC<Props> = (props: Props) => {
               value: region.slug,
             };
           });
-          console.log(regions);
+          setRegionsLoading(false);
           setRegions(regionSelectBox);
         }
       })
-      .catch((error) => console.log(error));
+      .catch((error) => {
+        setRegionsLoading(false);
+        console.log(error);
+      });
   };
 
   const formContent = () => {
@@ -120,7 +125,11 @@ const SpinUp: React.FC<Props> = (props: Props) => {
             value={region}
           />
 
-          <Button text="Add New Instance" onClick={addNewInstance} />
+          <Button
+            loading={regionsLoading}
+            text="Add New Instance"
+            onClick={addNewInstance}
+          />
           <Button text="Spin Up" onClick={sendRequest} />
         </div>
         <div css={configContainer}>

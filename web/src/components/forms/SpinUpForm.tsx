@@ -8,6 +8,7 @@ import { toNum } from "../basic/helper";
 import Loader from "../basic/Loader";
 import { BaseForm } from "./BaseForm";
 import { spinUp, listAvailableRegions } from "../../api/entity/instance";
+import { Box, Sizes } from "../style";
 
 interface Props extends BaseForm {}
 
@@ -17,6 +18,7 @@ const SpinUp: React.FC<Props> = (props: Props) => {
   const [region, setRegion] = useState<string>("");
   const [regions, setRegions] = useState<any>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [configs, setConfigs] = useState<any[]>([]);
 
   React.useEffect(() => {
     regionsRequest();
@@ -30,7 +32,8 @@ const SpinUp: React.FC<Props> = (props: Props) => {
       case "maxWorkingPeriod":
         setMaxWorkingPeriod(toNum(e.target.value));
         break;
-      case "regions":
+      case "region":
+        console.log(e.target.value);
         setRegion(e.target.value);
         break;
     }
@@ -52,11 +55,28 @@ const SpinUp: React.FC<Props> = (props: Props) => {
       });
   };
 
+  const addNewInstance = (e: React.FormEvent) => {
+    e.preventDefault();
+    const found = configs.find((config) => config.region === region);
+    if (!found) {
+      setConfigs([
+        ...configs,
+        {
+          instanceCount,
+          region,
+          maxWorkingPeriod,
+        },
+      ]);
+    }
+
+    console.log(configs);
+  };
+
   const regionsRequest = () => {
     listAvailableRegions()
       .then((response) => {
         if (response && response.status) {
-          const jsonRes = JSON.parse(response.message);
+          const jsonRes = JSON.parse(response.data);
           const regions = jsonRes.regions;
           const regionSelectBox = regions.map((region: any) => {
             return {
@@ -64,6 +84,7 @@ const SpinUp: React.FC<Props> = (props: Props) => {
               value: region.slug,
             };
           });
+          console.log(regions);
           setRegions(regionSelectBox);
         }
       })
@@ -72,33 +93,48 @@ const SpinUp: React.FC<Props> = (props: Props) => {
 
   const formContent = () => {
     return (
-      <div css={formDiv}>
-        <h2 css={formTitle}>Set up Testing Infrastructure</h2>
-        <TextInput
-          name="instanceCount"
-          label={"Instance Count"}
-          type="text"
-          onChange={handleChange}
-          value={instanceCount}
-        />
+      <div css={container}>
+        <div css={formDiv}>
+          <h2 css={formTitle}>Set up Testing Infrastructure</h2>
+          <TextInput
+            name="instanceCount"
+            label={"Instance Count"}
+            type="text"
+            onChange={handleChange}
+            value={instanceCount}
+          />
 
-        <TextInput
-          name="maxWorkingPeriod"
-          label={"Max working period(minutes)"}
-          type="text"
-          value={maxWorkingPeriod}
-          onChange={handleChange}
-        />
+          <TextInput
+            name="maxWorkingPeriod"
+            label={"Max working period(minutes)"}
+            type="text"
+            value={maxWorkingPeriod}
+            onChange={handleChange}
+          />
 
-        <SelectBox
-          name={"regions"}
-          label={"Pick the region"}
-          onChange={handleChange}
-          options={regions}
-          value={region}
-        />
+          <SelectBox
+            name={"region"}
+            label={"Pick the region"}
+            onChange={handleChange}
+            options={regions}
+            value={region}
+          />
 
-        <Button text="Spin Up" onClick={sendRequest} />
+          <Button text="Add New Instance" onClick={addNewInstance} />
+          <Button text="Spin Up" onClick={sendRequest} />
+        </div>
+        <div css={configContainer}>
+          {configs &&
+            configs.map((config) => {
+              return (
+                <div css={configCss} key={config.region}>
+                  {config.region}
+                  {config.maxWorkingPeriod}
+                  {config.instanceCount}
+                </div>
+              );
+            })}
+        </div>
       </div>
     );
   };
@@ -110,15 +146,38 @@ const SpinUp: React.FC<Props> = (props: Props) => {
   );
 };
 
+const container = css`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+`;
+
 const formDiv = css`
   margin: 0 auto;
-  width: 50%;
+  width: 60%;
+  margin-bottom: 3rem;
 `;
 
 const formTitle = css`
   font-size: 2.3rem;
   text-decoration: none;
   text-align: center;
+`;
+
+const configContainer = css`
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+`;
+
+const configCss = css`
+  width: 28rem;
+  height: 25rem;
+  margin: 1rem 1rem;
+  border: 1px solid black;
+  text-align: center;
+  ${Box.boxShadow1}
+  border-radius: ${Sizes.borderRadius1}
 `;
 
 export default SpinUp;

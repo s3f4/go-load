@@ -48,6 +48,7 @@ func (ib *infraBuilder) Parse(path string) (*bytes.Buffer, error) {
 		return nil, nil
 	}
 
+
 	var ts templateStruct
 	ts.Size = ib.size
 	ts.Region = ib.region

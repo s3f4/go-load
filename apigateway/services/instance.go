@@ -60,56 +60,20 @@ func (s *instanceService) BuildTemplate(iReq models.Instance) error {
 	return nil
 }
 
+// Spin Up instances
 func (s *instanceService) SpinUp() error {
 	_, err := mu.RunCommands("cd infra;terraform init;terraform apply -auto-approve")
 
 	if err != nil {
 		return err
 	}
-
-	if err := s.swarmInit(); err != nil {
-		return err
-	}
-
 	return nil
 }
 
+// installDockerToWNodes installs docker to worker nodes to join swarm
 func (s *instanceService) installDockerToWNodes() error {
 	_, err := mu.RunCommands("cd ./infra/ansible; ansible-playbook -i inventory.txt docker-playbook.yml")
 	return err
-}
-
-func (s *instanceService) swarmInit() error {
-	masterIP, err := s.parseInventoryFile()
-	if err != nil {
-		return err
-	}
-
-	context := context.Background()
-	cli, err := client.NewEnvClient()
-
-	if err != nil {
-		return err
-	}
-
-	req := swarm.InitRequest{
-		AdvertiseAddr: masterIP,
-	}
-
-	_, err = cli.SwarmInit(context, req)
-
-	if err != nil {
-		return err
-	}
-
-	swarmIns, err := s.swarmInspect()
-
-	if err != nil {
-		return err
-	}
-
-	token := swarmIns.JoinTokens.Worker
-	return s.joinWNodesToSwarm(token, masterIP)
 }
 
 // Swarm nodes
@@ -138,6 +102,7 @@ func (s *instanceService) joinWNodesToSwarm(token, addr string) error {
 	return nil
 }
 
+// Destroy destroys worker instances
 func (s *instanceService) Destroy() error {
 	mu.RunCommands("cd infra;terraform destroy -auto-approve")
 
@@ -149,9 +114,9 @@ func (s *instanceService) Destroy() error {
 		return err
 	}
 
-	if err := os.Remove("./infra/workers.tf"); err != nil && !os.IsNotExist(err) {
-		return err
-	}
+	// if err := os.Remove("./infra/workers.tf"); err != nil && !os.IsNotExist(err) {
+	// 	return err
+	// }
 
 	if err := os.RemoveAll("./infra/.terraform"); err != nil && !os.IsNotExist(err) {
 		return err
@@ -177,6 +142,8 @@ func (s *instanceService) parseInventoryFile() (string, error) {
 
 // Terraform shows available regions
 func (s *instanceService) ShowRegions() (string, error) {
+	output1, err1 := mu.RunCommands("cd infra;export TF_LOG=true && terraform apply -auto-approve;")
+	fmt.Println(output1, err1)
 	output, err := mu.RunCommands("cd infra;terraform output -json regions")
 	return string(output), err
 }

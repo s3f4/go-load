@@ -25,17 +25,18 @@ const SpinUp: React.FC<Props> = (props: Props) => {
     regionsRequest();
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement> | any) => {
+    if (!e.target) {
+      setRegion(e.value);
+      return;
+    }
+
     switch (e.target.name) {
       case "instanceCount":
         setInstanceCount(toNum(e.target.value));
         break;
       case "maxWorkingPeriod":
         setMaxWorkingPeriod(toNum(e.target.value));
-        break;
-      case "region":
-        console.log(e.target.value);
-        setRegion(e.target.value);
         break;
     }
   };

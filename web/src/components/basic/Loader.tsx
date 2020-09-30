@@ -11,7 +11,9 @@ interface Props {
 
 const Loader = (props: Props) => {
   return props.inlineLoading ? (
-    <LoaderSvg css={inline} width={"20"} height={"20"} fill={"#fff"} />
+    <div css={inline}>
+      <LoaderSvg width={"16"} height={"16"} fill={"#fff"} />
+    </div>
   ) : (
     <div css={loaderContainer}>
       <div css={loaderCss}>
@@ -41,7 +43,8 @@ const loaderCss = css`
 `;
 
 const inline = css`
-  display: inline;
+  display: inline-block;
+  margin-right: 0.5rem;
 `;
 
 export default Loader;

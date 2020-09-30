@@ -14,19 +14,19 @@ const Button: React.FC<Props> = (props: Props) => {
   return (
     <React.Fragment>
       <button
-        css={button}
+        css={button(props.loading)}
         type="submit"
         onClick={props.onClick}
         disabled={props.loading}
       >
         {props.loading ? <Loader inlineLoading={true} /> : ""}
-        {props.text}
+        <div css={text}>{props.text}</div>
       </button>
     </React.Fragment>
   );
 };
 
-const button = css`
+const button = (disabled: boolean | undefined) => css`
   display: inline-block;
   border: ${Borders.border1};
   min-width: 10rem;
@@ -39,9 +39,14 @@ const button = css`
   font-size: 1.6rem;
   font-weight: 600;
   cursor: pointer;
+  ${disabled ? "opacity: 0.5;" : ""}
   &:hover {
     background-color: #4caf50;
   }
+`;
+
+const text = css`
+  display: inline-block;
 `;
 
 export default Button;

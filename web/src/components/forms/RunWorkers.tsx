@@ -106,8 +106,8 @@ const RunWorkers = (props: Props) => {
           label={"Disable Keep-alive connections"}
           onChange={handleChange}
           options={[
-            { value: "true", text: "True" },
-            { value: "false", text: "False" },
+            { value: "true", label: "True" },
+            { value: "false", label: "False" },
           ]}
           value={transportConfig.DisableKeepAlives ? "true" : "false"}
         />

@@ -82,7 +82,7 @@ const SpinUp: React.FC<Props> = (props: Props) => {
           const regions = jsonRes.regions;
           const regionSelectBox = regions.map((region: any) => {
             return {
-              text: region.name,
+              label: region.name,
               value: region.slug,
             };
           });

@@ -3,11 +3,11 @@ import React from "react";
 import { jsx, css } from "@emotion/core";
 import { Borders, Colors, Sizes } from "../style";
 import BasicProps from "./basicProps";
-import Loader from "./Loader";
+import Select from "react-select";
 
 interface SelectBoxData {
   value: string;
-  text: string;
+  label: string;
 }
 
 interface Props extends BasicProps {
@@ -20,24 +20,17 @@ const SelectBox = (props: Props) => {
   return (
     <React.Fragment>
       {props.label ? <label css={label}>{props.label}</label> : ""}
-      <select
+      <Select
         css={selectBox}
         onChange={props.onChange}
         name={props.name}
-        value={props.value}
-      >
-        {props.options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.text}
-          </option>
-        ))}
-      </select>
+        options={props.options}
+      />
     </React.Fragment>
   );
 };
 
 const selectBox = css`
-  height: ${Sizes.inputHeight};
   width: 100%;
   border: ${Borders.border1};
   border-radius: ${Sizes.borderRadius1};

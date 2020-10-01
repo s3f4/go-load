@@ -43,7 +43,7 @@ const textInput = css`
   width: 100%;
   border-radius: ${Sizes.borderRadius1};
   font-size: ${Sizes.textInputFontSize};
-  padding: 0.8rem 0.5rem;
+  padding: ${Sizes.textInputPadding};
 `;
 
 export default TextInput;

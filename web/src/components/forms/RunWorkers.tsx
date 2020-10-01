@@ -26,7 +26,15 @@ const RunWorkers = (props: Props) => {
     },
   );
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement> | any) => {
+    if (!e.target && e.hasOwnProperty("value") && e.hasOwnProperty("label")) {
+      setTransportConfig({
+        ...transportConfig,
+        DisableKeepAlives: e.value === "true",
+      });
+      return;
+    }
+
     switch (e.target.name) {
       case "url":
         setUrl(e.target.value);
@@ -38,12 +46,6 @@ const RunWorkers = (props: Props) => {
         let val = toNum(e.target.value);
         if (val <= 0) val = 1;
         setGoroutineCount(val);
-        break;
-      case "disableKeepAlives":
-        setTransportConfig({
-          ...transportConfig,
-          DisableKeepAlives: e.target.value === "true",
-        });
         break;
     }
   };

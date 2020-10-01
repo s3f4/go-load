@@ -23,7 +23,8 @@ export enum Sizes {
   buttonWidth = '10rem',
   buttonFontSize = '1.2rem',
 
-  inputHeight = '2.5rem',
+  inputHeight = '4rem',
+  textInputPadding = '0.8rem 1rem',
   textAreaHeight = '20rem',
   fontSizePrimary = '1.6rem',
   borderRadius1 = '0.5rem',
@@ -38,7 +39,7 @@ export class Borders {
   public static buttonBorder = `0.1rem solid ${Colors.borderPrimary}`;
   public static border1 = `0.1rem solid ${Colors.borderPrimary}`;
   public static textInputBorder = (valid: boolean) =>
-      `0.1rem solid ${valid ? Colors.borderPrimary : 'red'}`;
+      `0.2rem solid ${valid ? Colors.borderPrimary : 'red'}`;
 }
 
 export enum Box {

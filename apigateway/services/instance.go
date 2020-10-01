@@ -142,8 +142,8 @@ func (s *instanceService) parseInventoryFile() (string, error) {
 
 // Terraform shows available regions
 func (s *instanceService) ShowRegions() (string, error) {
-	output1, err1 := mu.RunCommands("cd infra;export TF_LOG=true && terraform apply -auto-approve;")
-	fmt.Println(output1, err1)
+	output1, err1 := mu.RunCommands("cd infra;export TF_LOG=true;terraform init;terraform apply -auto-approve;")
+	fmt.Println(string(output1), err1)
 	output, err := mu.RunCommands("cd infra;terraform output -json regions")
 	return string(output), err
 }

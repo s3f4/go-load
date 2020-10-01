@@ -9,6 +9,7 @@ import Loader from "../basic/Loader";
 import { BaseForm } from "./BaseForm";
 import { spinUp, listAvailableRegions } from "../../api/entity/instance";
 import { Box, Sizes } from "../style";
+import { config } from "process";
 
 interface Props extends BaseForm {}
 
@@ -26,7 +27,7 @@ const SpinUp: React.FC<Props> = (props: Props) => {
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement> | any) => {
-    if (!e.target) {
+    if (!e.target && e.hasOwnProperty("value") && e.hasOwnProperty("label")) {
       setRegion(e.value);
       return;
     }
@@ -60,7 +61,7 @@ const SpinUp: React.FC<Props> = (props: Props) => {
   const addNewInstance = (e: React.FormEvent) => {
     e.preventDefault();
     const found = configs.find((config) => config.region === region);
-    if (!found) {
+    if (!found && region !== "") {
       setConfigs([
         ...configs,
         {
@@ -70,8 +71,6 @@ const SpinUp: React.FC<Props> = (props: Props) => {
         },
       ]);
     }
-
-    console.log(configs);
   };
 
   const regionsRequest = () => {
@@ -138,9 +137,9 @@ const SpinUp: React.FC<Props> = (props: Props) => {
             configs.map((config) => {
               return (
                 <div css={configCss} key={config.region}>
-                  {config.region}
-                  {config.maxWorkingPeriod}
-                  {config.instanceCount}
+                  Region: {config.region}
+                  Max Working Period: {config.maxWorkingPeriod}
+                  Instance Count: {config.instanceCount}
                 </div>
               );
             })}
@@ -181,8 +180,8 @@ const configContainer = css`
 `;
 
 const configCss = css`
-  width: 28rem;
-  height: 25rem;
+  width: 15rem;
+  height: 15rem;
   margin: 1rem 1rem;
   border: 1px solid black;
   text-align: center;

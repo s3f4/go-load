@@ -1,3 +1,3 @@
-variable "do_token"{
-    description="digitalocean api key"
+variable "do_token" {
+  description = "digitalocean api key"
 }

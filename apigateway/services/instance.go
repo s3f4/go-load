@@ -38,6 +38,60 @@ func NewInstanceService() InstanceService {
 }
 
 func (s *instanceService) BuildTemplate(iReq models.InstanceConfig) error {
+
+	f, err := os.OpenFile("./infra/workers.tf", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	_ = `
+variable regions {
+  default = [
+    { index : 0, reg : "nyc1", instance_number : 1 },
+    { index : 1, reg : "nyc1", instance_number : 2 },
+    { index : 2, reg : "sgp1", instance_number : 1 },
+    { index : 3, reg : "lon1", instance_number : 1 },
+  ]
+}
+
+locals {
+  regions = { for r in var.regions :
+    r.index => r
+  }
+}
+
+resource "digitalocean_droplet" "workers" {
+  for_each = local.regions
+  name     = "worker-${each.value.reg}-${each.value.instance_number}"
+  region   = each.value.reg
+  size     = "s-1vcpu-1gb"
+  image    = "ubuntu-18-04-x64"
+}
+`
+
+	for _, conf := range iReq.Configs {
+
+		content := fmt.Sprintf(
+			`resource "digitalocean_droplet" "worker_%s" {
+			count  = %d
+			image  = "%s"
+			name   = "worker_%s_${count.index + 1}"
+
+			region = "%s"
+			size   = "%s"
+
+			ssh_keys = [
+					data.digitalocean_ssh_key.for_master.id
+			]
+		}`, conf.Region, conf.InstanceCount, conf.Image, conf.Region, conf.Region, conf.InstanceSize,
+		)
+		f.WriteString(content + "\n")
+	}
+
+	c, _ := ioutil.ReadAll(f)
+	fmt.Println(string(c))
+	fmt.Println("------")
+
 	// iReq.Image = "ubuntu-18-04-x64"
 	// iReq.InstanceSize = "s-1vcpu-1gb"
 

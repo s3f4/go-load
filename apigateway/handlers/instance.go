@@ -30,14 +30,14 @@ var (
 )
 
 func (h *instanceHandler) SpinUp(w http.ResponseWriter, r *http.Request) {
-	var instanceRequest models.Instance
-	if err := json.NewDecoder(r.Body).Decode(&instanceRequest); err != nil {
+	var instanceConfig models.InstanceConfig
+	if err := json.NewDecoder(r.Body).Decode(&instanceConfig); err != nil {
 		log.Errorf(err.Error())
 		R400(w, err.Error())
 		return
 	}
 
-	if err := h.service.BuildTemplate(instanceRequest); err != nil {
+	if err := h.service.BuildTemplate(instanceConfig); err != nil {
 		log.Errorf(err.Error())
 		R500(w, err.Error())
 		return
@@ -50,7 +50,7 @@ func (h *instanceHandler) SpinUp(w http.ResponseWriter, r *http.Request) {
 	}
 
 	R200(w, map[string]interface{}{
-		"data": instanceRequest,
+		"data": instanceConfig,
 	})
 }
 

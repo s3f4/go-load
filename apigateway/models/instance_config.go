@@ -1,5 +1,11 @@
 package models
 
+//InstanceConfig is used for create new instances
+type InstanceConfig struct {
+	ID      uint        `json:"id" gorm:"primary_key"`
+	Configs []*Instance `json:"configs"`
+}
+
 // Instance is used for handlers and request
 type Instance struct {
 	ID               uint   `json:"id" gorm:"primary_key"`

@@ -8,9 +8,9 @@ import (
 // InstanceRepository ..
 type InstanceRepository interface {
 	DB() *gorm.DB
-	Insert(*models.Instance) error
-	Delete(*models.Instance) error
-	Get() (*models.Instance, error)
+	Insert(*models.InstanceConfig) error
+	Delete(*models.InstanceConfig) error
+	Get() (*models.InstanceConfig, error)
 }
 
 type instanceRepository struct {
@@ -28,16 +28,16 @@ func (r *instanceRepository) DB() *gorm.DB {
 	return r.base.GetDB()
 }
 
-func (r *instanceRepository) Insert(instance *models.Instance) error {
+func (r *instanceRepository) Insert(instance *models.InstanceConfig) error {
 	return r.DB().Create(instance).Error
 }
 
-func (r *instanceRepository) Delete(instance *models.Instance) error {
+func (r *instanceRepository) Delete(instance *models.InstanceConfig) error {
 	return r.DB().Where("1=1").Delete(instance).Error
 }
 
-func (r *instanceRepository) Get() (*models.Instance, error) {
-	var instanceReq models.Instance
+func (r *instanceRepository) Get() (*models.InstanceConfig, error) {
+	var instanceReq models.InstanceConfig
 	if err := r.DB().Last(&instanceReq).Error; err != nil {
 		return nil, err
 	}

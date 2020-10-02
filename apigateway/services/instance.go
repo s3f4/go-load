@@ -12,18 +12,17 @@ import (
 	"github.com/docker/docker/client"
 	"github.com/s3f4/go-load/apigateway/models"
 	"github.com/s3f4/go-load/apigateway/repository"
-	"github.com/s3f4/go-load/apigateway/template"
 	"github.com/s3f4/mu"
 )
 
 // InstanceService ...
 type InstanceService interface {
-	BuildTemplate(iReq models.Instance) error
+	BuildTemplate(iReq models.InstanceConfig) error
 	SpinUp() error
 	Destroy() error
 	ShowRegions() (string, error)
 	ShowSwarmNodes() ([]swarm.Node, error)
-	GetInstanceInfo() (*models.Instance, error)
+	GetInstanceInfo() (*models.InstanceConfig, error)
 	AddLabels() error
 }
 
@@ -38,20 +37,20 @@ func NewInstanceService() InstanceService {
 	}
 }
 
-func (s *instanceService) BuildTemplate(iReq models.Instance) error {
-	iReq.Image = "ubuntu-18-04-x64"
-	iReq.InstanceSize = "s-1vcpu-1gb"
+func (s *instanceService) BuildTemplate(iReq models.InstanceConfig) error {
+	// iReq.Image = "ubuntu-18-04-x64"
+	// iReq.InstanceSize = "s-1vcpu-1gb"
 
-	t := template.NewInfraBuilder(
-		iReq.Region,
-		iReq.InstanceSize,
-		iReq.Image,
-		iReq.InstanceCount,
-	)
+	// t := template.NewInfraBuilder(
+	// 	iReq.Region,
+	// 	iReq.InstanceSize,
+	// 	iReq.Image,
+	// 	iReq.InstanceCount,
+	// )
 
-	if err := t.Write(); err != nil {
-		return err
-	}
+	// if err := t.Write(); err != nil {
+	// 	return err
+	// }
 
 	if err := s.repository.Insert(&iReq); err != nil {
 		return err
@@ -122,7 +121,7 @@ func (s *instanceService) Destroy() error {
 		return err
 	}
 
-	if err := s.repository.Delete(&models.Instance{}); err != nil {
+	if err := s.repository.Delete(&models.InstanceConfig{}); err != nil {
 		return err
 	}
 
@@ -190,6 +189,6 @@ func (s *instanceService) AddLabels() error {
 	return nil
 }
 
-func (s *instanceService) GetInstanceInfo() (*models.Instance, error) {
+func (s *instanceService) GetInstanceInfo() (*models.InstanceConfig, error) {
 	return s.repository.Get()
 }

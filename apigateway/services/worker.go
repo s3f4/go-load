@@ -37,11 +37,11 @@ func (s *workerService) Run(runConfig models.RunConfig) error {
 		return err
 	}
 
-	runConfig.InstanceCount = iReq.InstanceCount
+	runConfig.InstanceCount = iReq.Configs[0].InstanceCount
 
 	var requestPerInstance int
-	if iReq.InstanceCount != 0 {
-		requestPerInstance = runConfig.RequestCount / iReq.InstanceCount
+	if runConfig.InstanceCount != 0 {
+		requestPerInstance = runConfig.RequestCount / runConfig.InstanceCount
 	} else {
 		requestPerInstance = runConfig.RequestCount
 	}

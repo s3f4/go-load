@@ -7,9 +7,12 @@ import SelectBox from "../basic/SelectBox";
 import { toNum } from "../basic/helper";
 import Loader from "../basic/Loader";
 import { BaseForm } from "./BaseForm";
-import { spinUp, listAvailableRegions } from "../../api/entity/instance";
+import {
+  spinUp,
+  listAvailableRegions,
+  InstanceConfig,
+} from "../../api/entity/instance";
 import { Box, Sizes } from "../style";
-import { config } from "process";
 
 interface Props extends BaseForm {}
 
@@ -45,8 +48,11 @@ const SpinUp: React.FC<Props> = (props: Props) => {
   const sendRequest = (e: any) => {
     e.preventDefault();
     setLoading(true);
-    const instances = { instanceCount, maxWorkingPeriod, region };
-    spinUp(instances)
+    const instanceConfig: InstanceConfig = {
+      Configs: configs,
+    };
+
+    spinUp(instanceConfig)
       .then(() => {
         setLoading(false);
         props.afterSubmit?.();

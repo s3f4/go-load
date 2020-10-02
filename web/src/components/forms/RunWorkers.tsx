@@ -9,10 +9,10 @@ import { runWorkers } from "../../api/entity/worker";
 import Loader from "../basic/Loader";
 import { RunConfig, TransportConfig } from "../../api/entity/run_config";
 import SelectBox from "../basic/SelectBox";
-import { destroyAll, InstanceInfo } from "../../api/entity/instance";
+import { destroyAll, InstanceConfig } from "../../api/entity/instance";
 
 interface Props extends BaseForm {
-  instanceInfo: InstanceInfo | null;
+  instanceInfo: InstanceConfig | null;
 }
 
 const RunWorkers = (props: Props) => {

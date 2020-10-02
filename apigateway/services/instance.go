@@ -12,6 +12,7 @@ import (
 	"github.com/docker/docker/client"
 	"github.com/s3f4/go-load/apigateway/models"
 	"github.com/s3f4/go-load/apigateway/repository"
+	"github.com/s3f4/go-load/apigateway/template"
 	"github.com/s3f4/mu"
 )
 
@@ -44,67 +45,22 @@ func (s *instanceService) BuildTemplate(iReq models.InstanceConfig) error {
 		return err
 	}
 	defer f.Close()
-	_ = `
-variable regions {
-  default = [
-    { index : 0, reg : "nyc1", instance_number : 1 },
-    { index : 1, reg : "nyc1", instance_number : 2 },
-    { index : 2, reg : "sgp1", instance_number : 1 },
-    { index : 3, reg : "lon1", instance_number : 1 },
-  ]
-}
-
-locals {
-  regions = { for r in var.regions :
-    r.index => r
-  }
-}
-
-resource "digitalocean_droplet" "workers" {
-  for_each = local.regions
-  name     = "worker-${each.value.reg}-${each.value.instance_number}"
-  region   = each.value.reg
-  size     = "s-1vcpu-1gb"
-  image    = "ubuntu-18-04-x64"
-}
-`
-
+	index := 0
+	var instances []string
 	for _, conf := range iReq.Configs {
-
-		content := fmt.Sprintf(
-			`resource "digitalocean_droplet" "worker_%s" {
-			count  = %d
-			image  = "%s"
-			name   = "worker_%s_${count.index + 1}"
-
-			region = "%s"
-			size   = "%s"
-
-			ssh_keys = [
-					data.digitalocean_ssh_key.for_master.id
-			]
-		}`, conf.Region, conf.InstanceCount, conf.Image, conf.Region, conf.Region, conf.InstanceSize,
-		)
-		f.WriteString(content + "\n")
+		for i := 1; i <= conf.InstanceCount; i++ {
+			instances = append(instances, fmt.Sprintf("{ index : %d, reg : \"%s\", instance_number : %d },", index, conf.Region, i))
+			index++
+		}
 	}
 
-	c, _ := ioutil.ReadAll(f)
-	fmt.Println(string(c))
-	fmt.Println("------")
+	t := template.NewInfraBuilder(
+		instances,
+	)
 
-	// iReq.Image = "ubuntu-18-04-x64"
-	// iReq.InstanceSize = "s-1vcpu-1gb"
-
-	// t := template.NewInfraBuilder(
-	// 	iReq.Region,
-	// 	iReq.InstanceSize,
-	// 	iReq.Image,
-	// 	iReq.InstanceCount,
-	// )
-
-	// if err := t.Write(); err != nil {
-	// 	return err
-	// }
+	if err := t.Write(); err != nil {
+		return err
+	}
 
 	if err := s.repository.Insert(&iReq); err != nil {
 		return err

@@ -1,16 +1,25 @@
-data "digitalocean_ssh_key" "for_master" {
-  name = "id_rsa_for_master"
+variable regions {
+  default = [
+    {{- range $index,$instance := .Instances }}
+    {{ $instance -}}
+    {{- end }}
+  ]
+}
+
+locals {
+  regions = { for r in var.regions :
+    r.index => r
+  }
 }
 
 resource "digitalocean_droplet" "workers" {
-  count  = {{.Count}}
-  image  = "{{.Image}}"
-  name   = "Worker-${count.index + 1}"
-
-  region = "{{.Region}}"
-  size   = "{{.Size}}"
+  for_each = local.regions
+  name     = "worker-${each.value.reg}-${each.value.instance_number}"
+  region   = each.value.reg
+  size     = "s-1vcpu-1gb"
+  image    = "ubuntu-18-04-x64"
 
   ssh_keys = [
-    data.digitalocean_ssh_key.for_master.id
-  ]
+	data.digitalocean_ssh_key.for_master.id
+ ]
 }

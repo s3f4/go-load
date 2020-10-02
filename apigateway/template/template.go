@@ -3,10 +3,10 @@ package template
 import (
 	"bufio"
 	"bytes"
-	"html/template"
 	"io"
 	"log"
 	"os"
+	"text/template"
 )
 
 // InfraBuilderService is used to build new
@@ -17,26 +17,13 @@ type InfraBuilderService interface {
 }
 
 type infraBuilder struct {
-	region string
-	size   string
-	image  string
-	count  int
-}
-
-type templateStruct struct {
-	Region string
-	Size   string
-	Image  string
-	Count  int
+	Instances []string
 }
 
 // NewInfraBuilder returns a new infraBuilder instance
-func NewInfraBuilder(region, size, image string, count int) InfraBuilderService {
+func NewInfraBuilder(instances []string) InfraBuilderService {
 	return &infraBuilder{
-		region: region,
-		size:   size,
-		image:  image,
-		count:  count,
+		Instances: instances,
 	}
 }
 
@@ -48,15 +35,8 @@ func (ib *infraBuilder) Parse(path string) (*bytes.Buffer, error) {
 		return nil, nil
 	}
 
-
-	var ts templateStruct
-	ts.Size = ib.size
-	ts.Region = ib.region
-	ts.Count = ib.count
-	ts.Image = ib.image
-
 	var tpl bytes.Buffer
-	err = t.Execute(&tpl, ts)
+	err = t.Execute(&tpl, *ib)
 	if err != nil {
 		log.Print("execute: ", err)
 		return nil, err

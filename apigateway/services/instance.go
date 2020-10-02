@@ -76,6 +76,19 @@ func (s *instanceService) SpinUp() error {
 	if err != nil {
 		return err
 	}
+
+	if err := s.installDockerToWNodes(); err != nil {
+		return err
+	}
+
+	if err := s.joinWNodesToSwarm(); err != nil {
+		return nil
+	}
+
+	if err := s.runAnsibleCommands(); err != nil {
+		return nil
+	}
+
 	return nil
 }
 
@@ -97,17 +110,48 @@ func (s *instanceService) swarmInspect() (swarm.Swarm, error) {
 }
 
 // joinWNodesToSwarm command runs ansible to join all workers to swarm
-func (s *instanceService) joinWNodesToSwarm(token, addr string) error {
+func (s *instanceService) joinWNodesToSwarm() error {
+
+	swarm, err := s.swarmInspect()
+	if err != nil {
+		return err
+	}
+
+	token := swarm.JoinTokens.Worker
+	addr, err := s.parseInventoryFile()
+
+	if err != nil {
+		return nil
+	}
 
 	joinCommand := fmt.Sprintf(
-		"cd ./infra/ansible; ansible-playbook -i inventory.txt docker-swarm-init.yml "+
+		"cd ./infra/ansible; ansible-playbook -i inventory.txt swarm-join.yml "+
 			"--extra-vars \"{token:%s,addr: %s}\"",
 		token,
 		addr,
 	)
 
-	mu.RunCommands(joinCommand)
+	_, err = mu.RunCommands(joinCommand)
+	return err
+}
 
+// runAnsibleCommands cert copies cert file to worker nodes to registry service
+// hosts adds registry domain to /etc/hosts file
+func (s *instanceService) runAnsibleCommands() error {
+	_, err := mu.RunCommands("cd ./infra/ansible; ansible-playbook -i inventory.txt cert.yml")
+	if err != nil {
+		return err
+	}
+
+	_, err = mu.RunCommands("cd ./infra/ansible; ansible-playbook -i inventory.txt hosts.yml")
+	if err != nil {
+		return err
+	}
+
+	_, err = mu.RunCommands("cd ./infra/ansible; ansible-playbook -i inventory.txt known_hosts.yml")
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -115,19 +159,11 @@ func (s *instanceService) joinWNodesToSwarm(token, addr string) error {
 func (s *instanceService) Destroy() error {
 	mu.RunCommands("cd infra;terraform destroy -auto-approve")
 
-	if err := os.Remove("./infra/terraform.tfstate"); err != nil && !os.IsNotExist(err) {
-		return err
-	}
+	t := template.NewInfraBuilder(
+		nil,
+	)
 
-	if err := os.Remove("./infra/terraform.tfstate.backup"); err != nil && !os.IsNotExist(err) {
-		return err
-	}
-
-	// if err := os.Remove("./infra/workers.tf"); err != nil && !os.IsNotExist(err) {
-	// 	return err
-	// }
-
-	if err := os.RemoveAll("./infra/.terraform"); err != nil && !os.IsNotExist(err) {
+	if err := t.Write(); err != nil {
 		return err
 	}
 
@@ -151,8 +187,11 @@ func (s *instanceService) parseInventoryFile() (string, error) {
 
 // Terraform shows available regions
 func (s *instanceService) ShowRegions() (string, error) {
-	output1, err1 := mu.RunCommands("cd infra;export TF_LOG=true;terraform init;terraform apply -auto-approve;")
-	fmt.Println(string(output1), err1)
+	_, err := mu.RunCommands("cd infra;terraform init;terraform apply -auto-approve;")
+	if err != nil {
+		return "", err
+	}
+
 	output, err := mu.RunCommands("cd infra;terraform output -json regions")
 	return string(output), err
 }
@@ -184,16 +223,22 @@ func (s *instanceService) AddLabels() error {
 
 	var options types.NodeListOptions
 	nodes, err := cli.NodeList(context, options)
+	if err != nil {
+		return err
+	}
 
 	swarm, err := cli.SwarmInspect(context)
 	if err != nil {
 		return err
 	}
 
+	// Loop all nodes.
 	for _, node := range nodes {
 		if strings.HasPrefix(node.Description.Hostname, "worker") {
 			node.Spec.Annotations.Labels["role"] = "worker"
-			cli.NodeUpdate(context, nodes[0].ID, swarm.Version, nodes[0].Spec)
+			if err := cli.NodeUpdate(context, node.ID, swarm.Version, node.Spec); err != nil {
+				return err
+			}
 		}
 	}
 	return nil

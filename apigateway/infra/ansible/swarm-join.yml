@@ -5,7 +5,7 @@
   gather_facts: yes
   become_method: sudo
   tasks:
-    - name: data is joining to swarm
+    - name: workers are joining to swarm
       shell: >
         docker swarm join
         --token {{ token }}

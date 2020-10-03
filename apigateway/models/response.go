@@ -4,6 +4,8 @@ import "time"
 
 // Response model
 type Response struct {
+	ID            uint
+	TestID        uint
 	TotalTime     int64
 	FirstByte     time.Time
 	FirstByteTime int64

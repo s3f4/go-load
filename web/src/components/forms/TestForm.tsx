@@ -8,11 +8,13 @@ import { BaseForm } from "./BaseForm";
 import Loader from "../basic/Loader";
 import {
   runTests,
+  Test,
   TestConfig,
   TransportConfig,
 } from "../../api/entity/test_config";
 import SelectBox from "../basic/SelectBox";
 import { destroyAll, InstanceConfig } from "../../api/entity/instance";
+import { Box, Sizes } from "../style";
 
 interface Props extends BaseForm {
   instanceInfo: InstanceConfig | null;
@@ -119,70 +121,89 @@ const TestForm = (props: Props) => {
 
   const formContent = () => {
     return (
-      <div css={formDiv}>
-        <h2 css={formTitle}>Run Workers</h2>
-        InstanceInfo: {JSON.stringify(props.instanceInfo)}
-        <Button text="Destroy" onClick={destroyRequest} />
-        <TextInput
-          onChange={handleChange}
-          label="Target URL"
-          name="url"
-          value={url}
-        />
-        <TextInput
-          onChange={handleChange}
-          label="HTTP Method"
-          name="method"
-          value={method}
-        />
-        <TextInput
-          onChange={handleChange}
-          label="Request Payload"
-          name="payload"
-          value={payload}
-        />
-        <TextInput
-          onChange={handleChange}
-          label="Expected Response Code"
-          name="responseCode"
-          value={expectedResponseCode}
-        />
-        <TextInput
-          onChange={handleChange}
-          label="Expected Response Body"
-          name="responseBody"
-          value={expectedResponseBody}
-        />
-        <TextInput
-          onChange={handleChange}
-          label="Total Request"
-          name="requestCount"
-          value={requestCount}
-        />
-        <TextInput
-          onChange={handleChange}
-          label="Goroutine per worker (up to 10)"
-          name="goroutineCount"
-          value={goroutineCount}
-        />
-        <SelectBox
-          name={"disableKeepAlives"}
-          label={"Disable Keep-alive connections"}
-          onChange={handleChange}
-          options={[
-            { value: "true", label: "True" },
-            { value: "false", label: "False" },
-          ]}
-          value={transportConfig.DisableKeepAlives ? "true" : "false"}
-        />
-        <Button text="Add New Test" onClick={addNewTest} />
-        <Button text="Run Tests" onClick={run} />
+      <div css={container}>
+        <div css={formDiv}>
+          <h2 css={formTitle}>Run Workers</h2>
+          InstanceInfo: {JSON.stringify(props.instanceInfo)}
+          <Button text="Destroy" onClick={destroyRequest} />
+          <TextInput
+            onChange={handleChange}
+            label="Target URL"
+            name="url"
+            value={url}
+          />
+          <TextInput
+            onChange={handleChange}
+            label="HTTP Method"
+            name="method"
+            value={method}
+          />
+          <TextInput
+            onChange={handleChange}
+            label="Request Payload"
+            name="payload"
+            value={payload}
+          />
+          <TextInput
+            onChange={handleChange}
+            label="Expected Response Code"
+            name="responseCode"
+            value={expectedResponseCode}
+          />
+          <TextInput
+            onChange={handleChange}
+            label="Expected Response Body"
+            name="responseBody"
+            value={expectedResponseBody}
+          />
+          <TextInput
+            onChange={handleChange}
+            label="Total Request"
+            name="requestCount"
+            value={requestCount}
+          />
+          <TextInput
+            onChange={handleChange}
+            label="Goroutine per worker (up to 10)"
+            name="goroutineCount"
+            value={goroutineCount}
+          />
+          <SelectBox
+            name={"disableKeepAlives"}
+            label={"Disable Keep-alive connections"}
+            onChange={handleChange}
+            options={[
+              { value: "true", label: "True" },
+              { value: "false", label: "False" },
+            ]}
+            value={transportConfig.DisableKeepAlives ? "true" : "false"}
+          />
+          <Button text="Add New Test" onClick={addNewTest} />
+          <Button text="Run Tests" onClick={run} />
+        </div>
+        <div css={configContainer}>
+          {testConfigs &&
+            testConfigs.map((test: Test) => {
+              return (
+                <div css={configCss} key={test.url}>
+                  Request Count :{test.requestCount}
+                  URL : {test.url}
+                  Method: {test.method}
+                </div>
+              );
+            })}
+        </div>
       </div>
     );
   };
 
-  return loading ? <Loader message="Workers are running..." /> : formContent();
+  return loading ? <Loader message="Tests are running..." /> : formContent();
 };
+
+const container = css`
+  display: block;
+  width: 100%;
+`;
 
 const formDiv = css`
   margin: 0 auto;
@@ -194,4 +215,21 @@ const formTitle = css`
   text-decoration: none;
   text-align: center;
 `;
+
+const configContainer = css`
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+`;
+
+const configCss = css`
+  width: 15rem;
+  height: 15rem;
+  margin: 1rem 1rem;
+  border: 1px solid black;
+  text-align: center;
+  ${Box.boxShadow1}
+  border-radius: ${Sizes.borderRadius1}
+`;
+
 export default TestForm;

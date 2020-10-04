@@ -5,6 +5,8 @@ import "time"
 // RunConfig config to make requests
 type RunConfig struct {
 	URL             string          `json:"url"`
+	Method          string          `json:"method"`
+	Payload         string          `json:"payload,omitempty"`
 	RequestCount    int             `json:"requestCount"`
 	GoroutineCount  int             `json:"goroutineCount"`
 	InstanceCount   int             `json:"instanceCount"`

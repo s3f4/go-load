@@ -9,27 +9,25 @@ import (
 	"github.com/s3f4/mu/log"
 )
 
-// WorkerService service makes request and runs
-// Worker container properly
-type WorkerService interface {
-	Run(models.RunConfig) error
+// TestService creates tests
+type TestService interface {
+	Start(models.RunConfig) error
 }
 
-type workerService struct {
+type testService struct {
 	ir           repository.InstanceRepository
 	queueService QueueService
 }
 
-// NewWorkerService returns new worker service object
-func NewWorkerService() WorkerService {
-
-	return &workerService{
-		queueService: NewRabbitMQService(),
+// NewTestService returns a testService instance
+func NewTestService() TestService {
+	return &testService{
 		ir:           repository.NewInstanceRepository(),
+		queueService: NewRabbitMQService(),
 	}
 }
 
-func (s *workerService) Run(runConfig models.RunConfig) error {
+func (s *testService) Start(runConfig models.RunConfig) error {
 	iReq, err := s.ir.Get()
 	log.Debug(fmt.Sprintf("%+v", iReq))
 

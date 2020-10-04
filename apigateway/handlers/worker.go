@@ -8,43 +8,23 @@ import (
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
 	"github.com/s3f4/go-load/apigateway/models"
-	"github.com/s3f4/go-load/apigateway/services"
 	. "github.com/s3f4/mu"
 	"github.com/s3f4/mu/log"
 )
 
 type workerHandlerInterface interface {
-	Run(w http.ResponseWriter, r *http.Request)
 	List(w http.ResponseWriter, r *http.Request)
 	Stop(w http.ResponseWriter, r *http.Request)
 }
 
 type workerHandler struct {
-	service services.WorkerService
 }
 
 var (
-	//WorkerHandler is handler.
-	WorkerHandler workerHandlerInterface = &workerHandler{
-		service: services.NewWorkerService(),
-	}
+	// WorkerHandler is used to show containers/services
+	//and it can start and stop containers/services
+	WorkerHandler workerHandlerInterface = &workerHandler{}
 )
-
-func (h *workerHandler) Run(w http.ResponseWriter, r *http.Request) {
-	var run models.RunConfig
-	if err := json.NewDecoder(r.Body).Decode(&run); err != nil {
-		R400(w, "Bad Request")
-		return
-	}
-
-	if err := h.service.Run(run); err != nil {
-		log.Errorf("Worker Service Error: %s", err)
-		R500(w, "worker service error")
-		return
-	}
-
-	R200(w, "Workers started.")
-}
 
 func (h *workerHandler) Stop(w http.ResponseWriter, r *http.Request) {
 	var worker models.Worker

@@ -26,7 +26,7 @@ var (
 )
 
 func (h *testHandler) Start(w http.ResponseWriter, r *http.Request) {
-	var run models.RunConfig
+	var run models.TestConfig
 	if err := json.NewDecoder(r.Body).Decode(&run); err != nil {
 		R400(w, "Bad Request")
 		return

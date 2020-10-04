@@ -1,14 +1,14 @@
 /** @jsx jsx */
 import React from "react";
 import { jsx, css } from "@emotion/core";
-import RunWorkers from "../forms/RunWorkers";
+import TestForm from "../forms/TestForm";
 
 interface Props {}
 
 const TestContent: React.FC<Props> = (props: Props) => {
   return (
     <div css={container}>
-      <RunWorkers instanceInfo={null} />
+      <TestForm instanceInfo={null} />
     </div>
   );
 };

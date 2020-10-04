@@ -5,9 +5,12 @@ import TextInput from "../basic/TextInput";
 import Button from "../basic/Button";
 import { toNum } from "../basic/helper";
 import { BaseForm } from "./BaseForm";
-import { runWorkers } from "../../api/entity/worker";
 import Loader from "../basic/Loader";
-import { RunConfig, TransportConfig } from "../../api/entity/run_config";
+import {
+  runTests,
+  TestConfig,
+  TransportConfig,
+} from "../../api/entity/test_config";
 import SelectBox from "../basic/SelectBox";
 import { destroyAll, InstanceConfig } from "../../api/entity/instance";
 
@@ -15,9 +18,17 @@ interface Props extends BaseForm {
   instanceInfo: InstanceConfig | null;
 }
 
-const RunWorkers = (props: Props) => {
+const TestForm = (props: Props) => {
   const [requestCount, setRequestCount] = React.useState<number>(0);
   const [url, setUrl] = React.useState<string>("");
+  const [method, setMethod] = React.useState<string>("");
+  const [payload, setPayload] = React.useState<string>("");
+  const [expectedResponseBody, setExpectedResponseBody] = React.useState<
+    string
+  >("");
+  const [expectedResponseCode, setExpectedResponseCode] = React.useState<
+    number
+  >(-1);
   const [goroutineCount, setGoroutineCount] = React.useState<number>(1);
   const [loading, setLoading] = React.useState<boolean>(false);
   const [transportConfig, setTransportConfig] = React.useState<TransportConfig>(
@@ -25,6 +36,7 @@ const RunWorkers = (props: Props) => {
       DisableKeepAlives: true,
     },
   );
+  const [testConfigs, setTestConfigs] = React.useState<any[]>([]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement> | any) => {
     if (!e.target && e.hasOwnProperty("value") && e.hasOwnProperty("label")) {
@@ -42,6 +54,18 @@ const RunWorkers = (props: Props) => {
       case "requestCount":
         setRequestCount(toNum(e.target.value));
         break;
+      case "method":
+        setMethod(e.target.value);
+        break;
+      case "payload":
+        setPayload(e.target.value);
+        break;
+      case "responseBody":
+        setExpectedResponseBody(e.target.value);
+        break;
+      case "responseCode":
+        setExpectedResponseCode(e.target.value);
+        break;
       case "goroutineCount":
         let val = toNum(e.target.value);
         if (val <= 0) val = 1;
@@ -54,14 +78,11 @@ const RunWorkers = (props: Props) => {
     e.preventDefault();
     setLoading(true);
 
-    const runConfig: RunConfig = {
-      requestCount,
-      goroutineCount,
-      url,
-      transportConfig,
+    const testConfig: TestConfig = {
+      Tests: testConfigs,
     };
 
-    runWorkers(runConfig)
+    runTests(testConfig)
       .then(() => {
         setLoading(false);
         props.afterSubmit?.();
@@ -70,6 +91,23 @@ const RunWorkers = (props: Props) => {
         setLoading(false);
         props.afterSubmit?.();
       });
+  };
+
+  const addNewTest = (e: React.FormEvent) => {
+    e.preventDefault();
+    setTestConfigs([
+      ...testConfigs,
+      {
+        requestCount,
+        method,
+        payload,
+        goroutineCount,
+        url,
+        transportConfig,
+        expectedResponseBody,
+        expectedResponseCode,
+      },
+    ]);
   };
 
   const destroyRequest = (e: any) => {
@@ -93,6 +131,30 @@ const RunWorkers = (props: Props) => {
         />
         <TextInput
           onChange={handleChange}
+          label="HTTP Method"
+          name="method"
+          value={method}
+        />
+        <TextInput
+          onChange={handleChange}
+          label="Request Payload"
+          name="payload"
+          value={payload}
+        />
+        <TextInput
+          onChange={handleChange}
+          label="Expected Response Code"
+          name="responseCode"
+          value={expectedResponseCode}
+        />
+        <TextInput
+          onChange={handleChange}
+          label="Expected Response Body"
+          name="responseBody"
+          value={expectedResponseBody}
+        />
+        <TextInput
+          onChange={handleChange}
           label="Total Request"
           name="requestCount"
           value={requestCount}
@@ -113,7 +175,8 @@ const RunWorkers = (props: Props) => {
           ]}
           value={transportConfig.DisableKeepAlives ? "true" : "false"}
         />
-        <Button text="run" onClick={run} />
+        <Button text="Add New Test" onClick={addNewTest} />
+        <Button text="Run Tests" onClick={run} />
       </div>
     );
   };
@@ -131,4 +194,4 @@ const formTitle = css`
   text-decoration: none;
   text-align: center;
 `;
-export default RunWorkers;
+export default TestForm;

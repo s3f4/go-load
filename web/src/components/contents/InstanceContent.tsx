@@ -2,7 +2,7 @@
 import React from "react";
 import { jsx, css } from "@emotion/core";
 import SpinUp from "../forms/SpinUpForm";
-import RunWorkers from "../forms/RunWorkers";
+import RunWorkers from "../forms/TestForm";
 import { useHistory } from "react-router-dom";
 import { getInstanceInfo, InstanceConfig } from "../../api/entity/instance";
 interface Props {}

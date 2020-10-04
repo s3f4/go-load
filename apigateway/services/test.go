@@ -11,7 +11,7 @@ import (
 
 // TestService creates tests
 type TestService interface {
-	Start(models.RunConfig) error
+	Start(models.TestConfig) error
 }
 
 type testService struct {
@@ -27,40 +27,39 @@ func NewTestService() TestService {
 	}
 }
 
-func (s *testService) Start(runConfig models.RunConfig) error {
-	iReq, err := s.ir.Get()
-	log.Debug(fmt.Sprintf("%+v", iReq))
+func (s *testService) Start(testConfig models.TestConfig) error {
+	instanceConfig, err := s.ir.Get()
+	log.Debug(fmt.Sprintf("%+v", instanceConfig))
 
 	if err != nil {
 		return err
 	}
 
-	runConfig.InstanceCount = iReq.Configs[0].InstanceCount
+	for _, test := range testConfig.Tests {
+		for _, instance := range instanceConfig.Configs {
+			requestPerInstance := test.RequestCount / instance.InstanceCount
 
-	var requestPerInstance int
-	if runConfig.InstanceCount != 0 {
-		requestPerInstance = runConfig.RequestCount / runConfig.InstanceCount
-	} else {
-		requestPerInstance = runConfig.RequestCount
-	}
+			work := models.Work{
+				Request:         requestPerInstance,
+				URL:             test.URL,
+				GoroutineCount:  test.GoroutineCount,
+				TransportConfig: test.TransportConfig,
+			}
 
-	work := models.Work{
-		Request:         requestPerInstance,
-		URL:             runConfig.URL,
-		GoroutineCount:  runConfig.GoroutineCount,
-		TransportConfig: runConfig.TransportConfig,
-	}
+			message, err := json.Marshal(work)
+			if err != nil {
+				return err
+			}
 
-	message, err := json.Marshal(work)
-	if err != nil {
-		return err
-	}
-	log.Info(string(message))
+			log.Info(string(message))
 
-	for i := 0; i < runConfig.InstanceCount; i++ {
-		if err := s.queueService.Send("worker", message); err != nil {
-			return err
+			for i := 0; i < instance.InstanceCount; i++ {
+				if err := s.queueService.Send("worker", message); err != nil {
+					return err
+				}
+			}
 		}
+
 	}
 
 	return nil

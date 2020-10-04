@@ -21,6 +21,7 @@ const Header: React.FC<Props> = (props: Props) => {
           <Link to="/workers">Worker Containers</Link>
           <Link to="/swarm">Swarm</Link>
           <Link to="/stats">Stats</Link>
+          <Link to="/test">Test</Link>
         </div>
       </div>
     </React.Fragment>

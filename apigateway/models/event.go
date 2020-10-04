@@ -1,18 +1,23 @@
 package models
 
-import "time"
+// EventType to specify events
+type EventType uint16
 
-// TestConfig model
-type TestConfig struct {
-	ID        uint   `json:"id" gorm:"primary_key"`
-	Name      string `json:"name"`
-	StartTime *time.Time
-	EndTime   *time.Time
-	Tests     []*Test
+const (
+	// REQUEST event type
+	REQUEST EventType = iota
+	// STORE events is used to store responses on db of the eventhandler
+	STORE
+)
+
+// Event is a model which is used to queue communication
+type Event struct {
+	Event   EventType `json:"event"`
+	Payload interface{} `json:"payload"`
 }
 
-// Test config to make requests
-type Test struct {
+// RequestPayload paylaod of request event
+type RequestPayload struct {
 	URL                  string          `json:"url"`
 	Method               string          `json:"method"`
 	Payload              string          `json:"payload,omitempty"`
@@ -20,12 +25,5 @@ type Test struct {
 	GoroutineCount       int             `json:"goroutineCount"`
 	ExpectedResponseCode uint            `json:"expectedResponseCode"`
 	ExpectedResponseBody string          `json:"expectedResponseBody"`
-	StartTime            *time.Time      `json:"startTime"`
-	EndTime              *time.Time      `json:"endTime"`
 	TransportConfig      TransportConfig `json:"transportConfig"`
-}
-
-// TransportConfig is used to specify how to make requests
-type TransportConfig struct {
-	DisableKeepAlives bool `json:"DisableKeepAlives"`
 }

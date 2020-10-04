@@ -111,13 +111,13 @@ func (r *rabbitMQService) Listen(queue string) {
 			time.Sleep(time.Second * 3)
 			log.Infof("Received a message: %s", d.Body)
 
-			var msg models.Work
-			if err := json.Unmarshal(d.Body, &msg); err != nil {
+			var event models.Event
+			if err := json.Unmarshal(d.Body, &event); err != nil {
 				log.Errorf("worker json error: %s", err)
 			}
 
-			s := NewWorkService()
-			s.Start(&msg)
+			s := NewWorkerService()
+			s.Start(&event)
 			// Done
 			ch.Ack(d.DeliveryTag, d.Redelivered)
 		}

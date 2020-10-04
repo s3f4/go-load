@@ -12,25 +12,26 @@ import (
 
 // WorkService makes the load testing job.
 type WorkService interface {
-	Start(config *models.Work) error
+	Start(config *models.Event) error
 }
 
 type workerService struct {
 	qs QueueService
 }
 
-// NewWorkService returns new workerService instance
-func NewWorkService() WorkService {
+// NewWorkerService returns new workerService instance
+func NewWorkerService() WorkService {
 	return &workerService{
 		qs: NewRabbitMQService(),
 	}
 }
 
-func (s *workerService) Start(config *models.Work) error {
+func (s *workerService) Start(event *models.Event) error {
+	payload := event.Payload.(models.RequestPayload)
 	i := 0
-	for i < config.GoroutineCount {
-		log.Info("%+v", config)
-		go s.run(config.URL, "worker_"+strconv.Itoa(i), config.Request, config.TransportConfig.DisableKeepAlives)
+	for i < payload.GoroutineCount {
+		log.Info("%+v", payload)
+		go s.run(payload.URL, "worker_"+strconv.Itoa(i), payload.RequestCount, payload.TransportConfig.DisableKeepAlives)
 		i++
 	}
 	return nil

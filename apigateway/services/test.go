@@ -39,14 +39,21 @@ func (s *testService) Start(testConfig models.TestConfig) error {
 		for _, instance := range instanceConfig.Configs {
 			requestPerInstance := test.RequestCount / instance.InstanceCount
 
-			work := models.Work{
-				Request:         requestPerInstance,
-				URL:             test.URL,
-				GoroutineCount:  test.GoroutineCount,
-				TransportConfig: test.TransportConfig,
+			event := models.Event{
+				Event: models.REQUEST,
+				Payload: models.RequestPayload{
+					URL:                  test.URL,
+					RequestCount:         requestPerInstance,
+					Method:               test.Method,
+					Payload:              test.Payload,
+					GoroutineCount:       test.GoroutineCount,
+					ExpectedResponseBody: test.ExpectedResponseBody,
+					ExpectedResponseCode: test.ExpectedResponseCode,
+					TransportConfig:      test.TransportConfig,
+				},
 			}
 
-			message, err := json.Marshal(work)
+			message, err := json.Marshal(event)
 			if err != nil {
 				return err
 			}

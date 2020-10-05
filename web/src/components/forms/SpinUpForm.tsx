@@ -14,7 +14,6 @@ import {
   showAccount,
 } from "../../api/entity/instance";
 import { Box, Sizes } from "../style";
-import { Validate } from "../basic/validate";
 
 interface Props extends BaseForm {}
 
@@ -26,7 +25,10 @@ const SpinUp: React.FC<Props> = (props: Props) => {
   const [regionsLoading, setRegionsLoading] = useState<boolean>(false);
   const [configs, setConfigs] = useState<any[]>([]);
   const [instanceLimit, setInstanceLimit] = useState<number>(0);
-  const [isValid, setIsValid] = useState<boolean>(false);
+  const [isValid, setIsValid] = useState<any>({
+    instanceCount: true,
+    region: false,
+  });
 
   console.log(isValid);
 
@@ -34,6 +36,12 @@ const SpinUp: React.FC<Props> = (props: Props) => {
     regionsRequest();
     accountRequest();
   }, []);
+
+  const validation = (name: string) => (value: boolean) =>
+    setIsValid({
+      ...isValid,
+      [name]: value,
+    });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement> | any) => {
     if (!e.target && e.hasOwnProperty("value") && e.hasOwnProperty("label")) {
@@ -126,8 +134,12 @@ const SpinUp: React.FC<Props> = (props: Props) => {
             type="text"
             onChange={handleChange}
             value={instanceCount}
-            validate={{ min: 1, max: instanceLimit, isValid: setIsValid }}
-            isValid={isValid}
+            validate={{
+              min: 1,
+              max: instanceLimit,
+              isValid: validation("instanceCount"),
+            }}
+            isValid={isValid["instanceCount"]}
           />
 
           <SelectBox
@@ -136,15 +148,21 @@ const SpinUp: React.FC<Props> = (props: Props) => {
             onChange={handleChange}
             options={regions}
             value={region}
-            validate={{ minLength: 3, isValid: setIsValid }}
+            validate={{ minLength: 3, isValid: validation("region") }}
+            isValid={isValid["region"]}
           />
 
           <Button
             loading={regionsLoading}
             text="Add New Instance"
             onClick={addNewInstance}
+            disabled={!isValid["instanceCount"] || !isValid["region"]}
           />
-          <Button text="Spin Up" onClick={sendRequest} />
+          <Button
+            text="Spin Up"
+            onClick={sendRequest}
+            disabled={!isValid["instanceCount"] || !isValid["region"]}
+          />
         </div>
         <div css={configContainer}>
           {configs &&
@@ -152,7 +170,6 @@ const SpinUp: React.FC<Props> = (props: Props) => {
               return (
                 <div css={configCss} key={config.region}>
                   Region: {config.region}
-                  Max Working Period: {config.maxWorkingPeriod}
                   Instance Count: {config.instanceCount}
                 </div>
               );

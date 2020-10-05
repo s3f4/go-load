@@ -8,16 +8,17 @@ interface Props {
   text: string;
   onClick: (e: any) => any;
   loading?: boolean;
+  disabled?: boolean;
 }
 
 const Button: React.FC<Props> = (props: Props) => {
   return (
     <React.Fragment>
       <button
-        css={button(props.loading)}
+        css={button(props.loading || props.disabled)}
         type="submit"
         onClick={props.onClick}
-        disabled={props.loading}
+        disabled={props.loading || props.disabled}
       >
         {props.loading ? <Loader inlineLoading={true} /> : ""}
         <div css={text}>{props.text}</div>

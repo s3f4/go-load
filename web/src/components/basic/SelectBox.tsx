@@ -20,13 +20,25 @@ interface Props extends BasicProps {
 }
 
 const SelectBox = (props: Props) => {
-  if (props.validate) validate(props.value, props.validate);
+  React.useEffect(() => {
+    if (props.validate) validate(props.value, props.validate);
+  }, [props.value]);
 
   return (
     <React.Fragment>
       {props.label ? <label css={label}>{props.label}</label> : ""}
       <Select
-        css={selectBox(props.isValid!)}
+        css={selectBox(props.isValid ?? true)}
+        styles={{
+          control: (base, state) => ({
+            ...base,
+            outline: "none !important",
+            border:
+              Borders.textInputBorder(props.isValid ?? true) + " !important",
+            fontSize: Sizes.textInputFontSize + " !important",
+            boxShadow: "none !important",
+          }),
+        }}
         onChange={props.onChange}
         name={props.name}
         options={props.options}

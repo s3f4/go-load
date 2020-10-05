@@ -81,4 +81,5 @@ export const html = `
     text-align: center;
     font-size: 2rem;
   }
+  textarea, select, input, button { outline: none; }
 `;

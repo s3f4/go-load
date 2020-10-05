@@ -13,7 +13,9 @@ interface Props extends BasicProps {
 }
 
 const TextInput: React.FC<Props> = (props: Props) => {
-  if (props.validate) validate(props.value, props.validate);
+  React.useEffect(() => {
+    if (props.validate) validate(props.value, props.validate);
+  }, [props.value]);
 
   return (
     <React.Fragment>
@@ -21,7 +23,7 @@ const TextInput: React.FC<Props> = (props: Props) => {
         {props.label ? <label css={label}>{props.label}</label> : ""}
         <input
           name={props.name}
-          css={textInput(props.isValid!)}
+          css={textInput(props.isValid ?? true)}
           type="text"
           value={props.value}
           onChange={props.onChange}

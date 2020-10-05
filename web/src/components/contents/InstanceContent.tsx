@@ -4,11 +4,7 @@ import { jsx, css } from "@emotion/core";
 import SpinUp from "../forms/SpinUpForm";
 import RunWorkers from "../forms/TestForm";
 import { useHistory } from "react-router-dom";
-import {
-  getInstanceInfo,
-  InstanceConfig,
-  showAccount,
-} from "../../api/entity/instance";
+import { getInstanceInfo, InstanceConfig } from "../../api/entity/instance";
 interface Props {}
 
 const InstanceContent: React.FC<Props> = (props: Props) => {
@@ -25,14 +21,6 @@ const InstanceContent: React.FC<Props> = (props: Props) => {
         setInstanceInfo(response.data);
       })
       .catch(() => {});
-
-    showAccount()
-      .then((response) => {
-        console.log(response);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
   }, []);
 
   const routeToStats = () => {

@@ -3,20 +3,25 @@ import React from "react";
 import { jsx, css } from "@emotion/core";
 import { Borders, Sizes, Colors } from "../style";
 import BasicProps from "./basicProps";
+import { validate, Validate } from "./validate";
 
 interface Props extends BasicProps {
   label?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  validate?: Validate;
+  isValid?: boolean;
 }
 
 const TextInput: React.FC<Props> = (props: Props) => {
+  if (props.validate) validate(props.value, props.validate);
+
   return (
     <React.Fragment>
       <div css={inputDiv}>
         {props.label ? <label css={label}>{props.label}</label> : ""}
         <input
           name={props.name}
-          css={textInput}
+          css={textInput(props.isValid!)}
           type="text"
           value={props.value}
           onChange={props.onChange}
@@ -37,8 +42,8 @@ const label = css`
   margin: 0.4rem;
 `;
 
-const textInput = css`
-  border: ${Borders.textInputBorder(true)};
+const textInput = (valid: boolean) => css`
+  border: ${Borders.textInputBorder(valid)};
   height: ${Sizes.inputHeight};
   width: 100%;
   border-radius: ${Sizes.borderRadius1};

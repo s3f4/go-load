@@ -11,22 +11,28 @@ import {
   spinUp,
   listAvailableRegions,
   InstanceConfig,
+  showAccount,
 } from "../../api/entity/instance";
 import { Box, Sizes } from "../style";
+import { Validate } from "../basic/validate";
 
 interface Props extends BaseForm {}
 
 const SpinUp: React.FC<Props> = (props: Props) => {
-  const [instanceCount, setInstanceCount] = useState<number>(0);
-  const [maxWorkingPeriod, setMaxWorkingPeriod] = useState<number>(0);
+  const [instanceCount, setInstanceCount] = useState<number>(1);
   const [region, setRegion] = useState<string>("");
   const [regions, setRegions] = useState<any>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [regionsLoading, setRegionsLoading] = useState<boolean>(false);
   const [configs, setConfigs] = useState<any[]>([]);
+  const [instanceLimit, setInstanceLimit] = useState<number>(0);
+  const [isValid, setIsValid] = useState<boolean>(false);
+
+  console.log(isValid);
 
   React.useEffect(() => {
     regionsRequest();
+    accountRequest();
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement> | any) => {
@@ -38,9 +44,6 @@ const SpinUp: React.FC<Props> = (props: Props) => {
     switch (e.target.name) {
       case "instanceCount":
         setInstanceCount(toNum(e.target.value));
-        break;
-      case "maxWorkingPeriod":
-        setMaxWorkingPeriod(toNum(e.target.value));
         break;
     }
   };
@@ -73,7 +76,6 @@ const SpinUp: React.FC<Props> = (props: Props) => {
         {
           instanceCount,
           region,
-          maxWorkingPeriod,
         },
       ]);
     }
@@ -102,6 +104,17 @@ const SpinUp: React.FC<Props> = (props: Props) => {
       });
   };
 
+  const accountRequest = () => {
+    showAccount()
+      .then((response) => {
+        const data = JSON.parse(response.data);
+        setInstanceLimit(data.droplet_limit);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   const formContent = () => {
     return (
       <div css={container}>
@@ -113,14 +126,8 @@ const SpinUp: React.FC<Props> = (props: Props) => {
             type="text"
             onChange={handleChange}
             value={instanceCount}
-          />
-
-          <TextInput
-            name="maxWorkingPeriod"
-            label={"Max working period(minutes)"}
-            type="text"
-            value={maxWorkingPeriod}
-            onChange={handleChange}
+            validate={{ min: 1, max: instanceLimit, isValid: setIsValid }}
+            isValid={isValid}
           />
 
           <SelectBox
@@ -129,6 +136,7 @@ const SpinUp: React.FC<Props> = (props: Props) => {
             onChange={handleChange}
             options={regions}
             value={region}
+            validate={{ minLength: 3, isValid: setIsValid }}
           />
 
           <Button

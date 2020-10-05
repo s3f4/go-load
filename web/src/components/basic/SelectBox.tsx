@@ -4,6 +4,7 @@ import { jsx, css } from "@emotion/core";
 import { Borders, Colors, Sizes } from "../style";
 import BasicProps from "./basicProps";
 import Select from "react-select";
+import { validate, Validate } from "./validate";
 
 interface SelectBoxData {
   value: string;
@@ -14,14 +15,18 @@ interface Props extends BasicProps {
   options: SelectBoxData[];
   value: string;
   onChange?: (e: any) => void;
+  validate?: Validate;
+  isValid?: boolean;
 }
 
 const SelectBox = (props: Props) => {
+  if (props.validate) validate(props.value, props.validate);
+
   return (
     <React.Fragment>
       {props.label ? <label css={label}>{props.label}</label> : ""}
       <Select
-        css={selectBox}
+        css={selectBox(props.isValid!)}
         onChange={props.onChange}
         name={props.name}
         options={props.options}
@@ -30,7 +35,8 @@ const SelectBox = (props: Props) => {
   );
 };
 
-const selectBox = css`
+const selectBox = (valid: boolean) => css`
+  border: ${Borders.textInputBorder(valid)};
   width: 100%;
   border: ${Borders.border1};
   border-radius: ${Sizes.borderRadius1};

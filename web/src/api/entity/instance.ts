@@ -28,6 +28,10 @@ export const listAvailableRegions = async () => {
   return await makeReq(`/instances/regions`);
 };
 
+export const showAccount = async () => {
+  return await makeReq(`/instances/account`);
+};
+
 export const showSwarmNodes = async () => {
   return await makeReq('/instances/swarm-nodes');
 };

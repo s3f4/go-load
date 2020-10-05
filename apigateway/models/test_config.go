@@ -20,9 +20,10 @@ type Test struct {
 	GoroutineCount       int             `json:"goroutineCount"`
 	ExpectedResponseCode uint            `json:"expectedResponseCode"`
 	ExpectedResponseBody string          `json:"expectedResponseBody"`
+	TransportConfig      TransportConfig `json:"transportConfig"`
+	Passed               bool            `json:"passed"`
 	StartTime            *time.Time      `json:"startTime"`
 	EndTime              *time.Time      `json:"endTime"`
-	TransportConfig      TransportConfig `json:"transportConfig"`
 }
 
 // TransportConfig is used to specify how to make requests

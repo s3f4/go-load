@@ -14,6 +14,7 @@ type instanceHandlerInterface interface {
 	SpinUp(w http.ResponseWriter, r *http.Request)
 	Destroy(w http.ResponseWriter, r *http.Request)
 	ShowRegions(w http.ResponseWriter, r *http.Request)
+	ShowAccount(w http.ResponseWriter, r *http.Request)
 	ShowSwarmNodes(w http.ResponseWriter, r *http.Request)
 	GetInstanceInfo(w http.ResponseWriter, r *http.Request)
 }
@@ -64,6 +65,16 @@ func (h *instanceHandler) Destroy(w http.ResponseWriter, r *http.Request) {
 
 func (h *instanceHandler) ShowRegions(w http.ResponseWriter, r *http.Request) {
 	output, err := h.service.ShowRegions()
+	if err != nil {
+		log.Errorf(err.Error())
+		R500(w, err)
+		return
+	}
+	R200(w, output)
+}
+
+func (h *instanceHandler) ShowAccount(w http.ResponseWriter, r *http.Request) {
+	output, err := h.service.ShowAccount()
 	if err != nil {
 		log.Errorf(err.Error())
 		R500(w, err)

@@ -22,6 +22,7 @@ type InstanceService interface {
 	SpinUp() error
 	Destroy() error
 	ShowRegions() (string, error)
+	ShowAccount() (string, error)
 	ShowSwarmNodes() ([]swarm.Node, error)
 	GetInstanceInfo() (*models.InstanceConfig, error)
 	AddLabels() error
@@ -193,6 +194,12 @@ func (s *instanceService) ShowRegions() (string, error) {
 	}
 
 	output, err := mu.RunCommands("cd infra;terraform output -json regions")
+	return string(output), err
+}
+
+// Terraform shows total droplet limit
+func (s *instanceService) ShowAccount() (string, error) {
+	output, err := mu.RunCommands("cd infra;terraform output -json account")
 	return string(output), err
 }
 

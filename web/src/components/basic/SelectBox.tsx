@@ -25,12 +25,12 @@ const SelectBox = (props: Props) => {
   }, [props.value]);
 
   return (
-    <React.Fragment>
+    <div css={container}>
       {props.label ? <label css={label}>{props.label}</label> : ""}
       <Select
         css={selectBox(props.isValid ?? true)}
         styles={{
-          control: (base, state) => ({
+          control: (base) => ({
             ...base,
             outline: "none !important",
             border:
@@ -43,9 +43,25 @@ const SelectBox = (props: Props) => {
         name={props.name}
         options={props.options}
       />
-    </React.Fragment>
+      {!props.isValid && props.validate?.message ? (
+        <span css={validateMessage}>{props.validate.message}</span>
+      ) : (
+        ""
+      )}
+    </div>
   );
 };
+
+const container = css`
+  display: flex;
+  flex-direction: column;
+`;
+
+const validateMessage = css`
+  font-size: 1.3rem;
+  color: red;
+  text-align: right;
+`;
 
 const selectBox = (valid: boolean) => css`
   border: ${Borders.textInputBorder(valid)};

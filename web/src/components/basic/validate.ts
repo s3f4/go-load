@@ -1,11 +1,12 @@
-import {toNum} from './helper';
+import { toNum } from "./helper";
 
 export interface Validate {
   maxLength?: number;
   minLength?: number;
   max?: number;
   min?: number;
-  isValid: (condition: boolean) => void
+  message?: string;
+  isValid: (condition: boolean) => void;
 }
 
 // validate is using to validation message
@@ -24,8 +25,8 @@ export const validate = (value: any, validate: Validate): void => {
   }
   if (validate.maxLength && value.length > validate.maxLength) {
     validate.isValid(false);
-    return
+    return;
   }
 
-  validate.isValid(true)
+  validate.isValid(true);
 };

@@ -137,6 +137,7 @@ const SpinUp: React.FC<Props> = (props: Props) => {
             validate={{
               min: 1,
               max: instanceLimit,
+              message: "Your droplet limit is " + instanceLimit,
               isValid: validation("instanceCount"),
             }}
             isValid={isValid["instanceCount"]}
@@ -148,7 +149,11 @@ const SpinUp: React.FC<Props> = (props: Props) => {
             onChange={handleChange}
             options={regions}
             value={region}
-            validate={{ minLength: 3, isValid: validation("region") }}
+            validate={{
+              minLength: 3,
+              message: "Please choose a region",
+              isValid: validation("region"),
+            }}
             isValid={isValid["region"]}
           />
 

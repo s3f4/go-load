@@ -28,12 +28,25 @@ const TextInput: React.FC<Props> = (props: Props) => {
           value={props.value}
           onChange={props.onChange}
         />
+        {!props.isValid && props.validate?.message ? (
+          <span css={validateMessage}>{props.validate.message}</span>
+        ) : (
+          ""
+        )}
       </div>
     </React.Fragment>
   );
 };
 
+const validateMessage = css`
+  font-size: 1.3rem;
+  color: red;
+  text-align: right;
+`;
+
 const inputDiv = css`
+  display: flex;
+  flex-direction: column;
   margin: 0.9rem auto;
   padding: 0.9rem auto;
 `;

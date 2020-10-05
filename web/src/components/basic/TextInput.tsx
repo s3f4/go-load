@@ -46,6 +46,7 @@ const validateMessage = css`
 
 const inputDiv = css`
   display: flex;
+  width: 100%;
   flex-direction: column;
   margin: 0.9rem auto;
   padding: 0.9rem auto;

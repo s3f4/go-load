@@ -157,24 +157,32 @@ const SpinUp: React.FC<Props> = (props: Props) => {
             isValid={isValid["region"]}
           />
 
-          <Button
-            loading={regionsLoading}
-            text="Add New Instance"
-            onClick={addNewInstance}
-            disabled={!isValid["instanceCount"] || !isValid["region"]}
-          />
-          <Button
-            text="Spin Up"
-            onClick={sendRequest}
-            disabled={!isValid["instanceCount"] || !isValid["region"]}
-          />
+          <div css={buttons}>
+            <Button
+              loading={regionsLoading}
+              text="Add New Instance"
+              onClick={addNewInstance}
+              disabled={!isValid["instanceCount"] || !isValid["region"]}
+            />
+
+            <Button
+              text="Spin Up"
+              onClick={sendRequest}
+              disabled={
+                !isValid["instanceCount"] ||
+                !isValid["region"] ||
+                configs.length === 0
+              }
+            />
+          </div>
         </div>
         <div css={configContainer}>
           {configs &&
             configs.map((config) => {
               return (
                 <div css={configCss} key={config.region}>
-                  Region: {config.region}
+                  <div css={instanceTitle}>Region: {config.region}</div>
+                  <br />
                   Instance Count: {config.instanceCount}
                 </div>
               );
@@ -198,6 +206,8 @@ const container = css`
 `;
 
 const formDiv = css`
+  display: flex;
+  flex-direction: column;
   margin: 0 auto;
   width: 60%;
   margin-bottom: 3rem;
@@ -216,6 +226,7 @@ const configContainer = css`
 `;
 
 const configCss = css`
+  background-color: #efefef;
   width: 15rem;
   height: 15rem;
   margin: 1rem 1rem;
@@ -223,6 +234,20 @@ const configCss = css`
   text-align: center;
   ${Box.boxShadow1}
   border-radius: ${Sizes.borderRadius1}
+`;
+
+const instanceTitle = css`
+  background-color: #007d9c;
+  color: white;
+  width: 100%;
+  height: 100;
+  padding: 0.5rem;
+  font-weight: bold;
+`;
+
+const buttons = css`
+  margin-top: 1rem;
+  height: 6.5rem;
 `;
 
 export default SpinUp;

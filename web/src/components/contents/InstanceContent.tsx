@@ -2,7 +2,7 @@
 import React from "react";
 import { jsx, css } from "@emotion/core";
 import SpinUp from "../forms/SpinUpForm";
-import RunWorkers from "../forms/TestForm";
+import TestForm from "../forms/TestForm";
 import { useHistory } from "react-router-dom";
 import { getInstanceInfo, InstanceConfig } from "../../api/entity/instance";
 interface Props {}
@@ -38,7 +38,7 @@ const InstanceContent: React.FC<Props> = (props: Props) => {
 
   // runWorkersForm
   const runWorkersForm: React.ReactNode = (
-    <RunWorkers instanceInfo={instanceInfo} afterSubmit={routeToStats} />
+    <TestForm instanceInfo={instanceInfo} afterSubmit={routeToStats} />
   );
 
   const content = () => {

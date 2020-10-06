@@ -15,13 +15,13 @@ const LoaderSvg: React.FC<Props> = (props: Props) => {
       viewBox="0 0 128 128"
     >
       <g>
-        <circle cx="16" cy="64" r="16" fill={props.fill} fill-opacity="1" />
+        <circle cx="16" cy="64" r="16" fill={props.fill} fillOpacity="1" />
         <circle
           cx="16"
           cy="64"
           r="14.344"
           fill={props.fill}
-          fill-opacity="1"
+          fillOpacity="1"
           transform="rotate(45 64 64)"
         />
         <circle
@@ -29,7 +29,7 @@ const LoaderSvg: React.FC<Props> = (props: Props) => {
           cy="64"
           r="12.531"
           fill={props.fill}
-          fill-opacity="1"
+          fillOpacity="1"
           transform="rotate(90 64 64)"
         />
         <circle
@@ -37,7 +37,7 @@ const LoaderSvg: React.FC<Props> = (props: Props) => {
           cy="64"
           r="10.75"
           fill={props.fill}
-          fill-opacity="1"
+          fillOpacity="1"
           transform="rotate(135 64 64)"
         />
         <circle
@@ -45,7 +45,7 @@ const LoaderSvg: React.FC<Props> = (props: Props) => {
           cy="64"
           r="10.063"
           fill={props.fill}
-          fill-opacity="1"
+          fillOpacity="1"
           transform="rotate(180 64 64)"
         />
         <circle
@@ -53,7 +53,7 @@ const LoaderSvg: React.FC<Props> = (props: Props) => {
           cy="64"
           r="8.063"
           fill={props.fill}
-          fill-opacity="1"
+          fillOpacity="1"
           transform="rotate(225 64 64)"
         />
         <circle
@@ -61,7 +61,7 @@ const LoaderSvg: React.FC<Props> = (props: Props) => {
           cy="64"
           r="6.438"
           fill={props.fill}
-          fill-opacity="1"
+          fillOpacity="1"
           transform="rotate(270 64 64)"
         />
         <circle
@@ -69,7 +69,7 @@ const LoaderSvg: React.FC<Props> = (props: Props) => {
           cy="64"
           r="5.375"
           fill={props.fill}
-          fill-opacity="1"
+          fillOpacity="1"
           transform="rotate(315 64 64)"
         />
         <animateTransform

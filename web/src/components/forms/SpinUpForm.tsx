@@ -183,7 +183,9 @@ const SpinUp: React.FC<Props> = (props: Props) => {
                 <div css={configCss} key={config.region}>
                   <div css={instanceTitle}>Region: {config.region}</div>
                   <br />
-                  Instance Count: {config.instanceCount}
+                  Instance Count: <b>{config.instanceCount}</b>
+                  <Button type={1} text="+" onClick={() => {}} />
+                  <Button type={1} text="-" onClick={() => {}} />
                 </div>
               );
             })}

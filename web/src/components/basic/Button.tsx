@@ -4,18 +4,24 @@ import { jsx, css } from "@emotion/core";
 import { Sizes, Borders } from "../style";
 import Loader from "./Loader";
 
+enum ButtonType {
+  small = 1,
+  mid,
+  big,
+}
 interface Props {
   text: string;
   onClick: (e: any) => any;
   loading?: boolean;
   disabled?: boolean;
+  type?: ButtonType;
 }
 
 const Button: React.FC<Props> = (props: Props) => {
   return (
     <React.Fragment>
       <button
-        css={button(props.loading || props.disabled)}
+        css={button(props.loading || props.disabled, props.type)}
         type="submit"
         onClick={props.onClick}
         disabled={props.loading || props.disabled}
@@ -27,24 +33,54 @@ const Button: React.FC<Props> = (props: Props) => {
   );
 };
 
-const button = (disabled: boolean | undefined) => css`
-  display: inline-block;
-  border: ${Borders.border1};
-  min-width: 10rem;
-  min-height: 4rem;
-  color: white;
-  background-color: #007d9c;
-  border-radius: ${Sizes.borderRadius1};
-  padding: 1rem;
-  margin: 0.5rem 0.5rem;
-  font-size: 1.6rem;
-  font-weight: 600;
-  cursor: pointer;
-  ${disabled ? "opacity: 0.5;" : ""}
-  &:hover {
-    background-color: #4caf50;
+const button = (disabled: boolean | undefined, type?: ButtonType) => {
+  let gen = `
+    display: inline-block;
+    border: ${Borders.border1};
+    color: white;
+    background-color: #007d9c;
+    border-radius: ${Sizes.borderRadius1};
+    margin: 0.5rem 0.5rem;
+    cursor: pointer;
+    padding: 1rem;
+    font-weight: 600;
+    ${disabled ? "opacity: 0.7;cursor:auto;" : ""}
+    &:hover {
+      background-color: #4caf50;
+    }
+  `;
+  switch (type) {
+    case ButtonType.small:
+      return css`
+        ${gen}
+        height: 3rem;
+        min-width: 3rem;
+        font-size: 1.4rem;
+        padding: 0.3rem;
+      `;
+    case ButtonType.mid:
+      return css`
+        ${gen}
+        height: 3.5rem;
+        width: 6rem;
+        font-size: 1.6rem;
+      `;
+    case ButtonType.big:
+      return css`
+        ${gen}
+        min-width: 10rem;
+        min-height: 4rem;
+        font-size: 1.6rem;
+      `;
+    default:
+      return css`
+        ${gen}
+        min-width: 10rem;
+        min-height: 4rem;
+        font-size: 1.6rem;
+      `;
   }
-`;
+};
 
 const text = css`
   display: inline-block;

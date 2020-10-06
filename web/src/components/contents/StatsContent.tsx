@@ -32,6 +32,7 @@ const StatsContent: React.FC<Props> = (props: Props) => {
     responses.map((response: Response, index: number) => {
       datum.push(response.DNSTime);
       labels.push("request_" + index);
+      return null;
     });
     return {
       datum,

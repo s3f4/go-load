@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import React, { SVGProps } from "react";
+import React from "react";
 import { jsx, css } from "@emotion/core";
 import loaderSrc from "../img/loader.svg";
 import LoaderSvg from "./LoaderSvg";
@@ -9,7 +9,7 @@ interface Props {
   inlineLoading?: boolean;
 }
 
-const Loader = (props: Props) => {
+const Loader: React.FC<Props> = (props: Props) => {
   return props.inlineLoading ? (
     <div css={inline}>
       <LoaderSvg width={"16"} height={"16"} fill={"#fff"} />

@@ -13,7 +13,7 @@ import {
   InstanceConfig,
   showAccount,
 } from "../../api/entity/instance";
-import { Box, Sizes } from "../style";
+import InstanceConfigCards from "../contents/InstanceConfigCards";
 
 interface Props extends BaseForm {}
 
@@ -30,7 +30,7 @@ const SpinUp: React.FC<Props> = (props: Props) => {
     region: false,
   });
 
-  console.log(isValid);
+  console.log(configs);
 
   React.useEffect(() => {
     regionsRequest();
@@ -116,11 +116,45 @@ const SpinUp: React.FC<Props> = (props: Props) => {
     showAccount()
       .then((response) => {
         const data = JSON.parse(response.data);
-        setInstanceLimit(data.droplet_limit);
+        setInstanceLimit(data.droplet_limit - 2);
       })
       .catch((error) => {
         console.log(error);
       });
+  };
+
+  const add = (config: any) => (e: React.FormEvent) => {
+    e.preventDefault();
+    const newConfigs = configs.map((conf) => {
+      if (conf.region === config.region) {
+        conf.instanceCount++;
+      }
+      return conf;
+    });
+    setConfigs([...newConfigs]);
+  };
+
+  const remove = (config: any) => (e: React.FormEvent) => {
+    e.preventDefault();
+    const newConfigs: any[] = [];
+    configs.forEach((conf) => {
+      if (conf.region === config.region) {
+        if (conf.instanceCount === 1) {
+        } else {
+          conf.instanceCount--;
+          newConfigs.push(conf);
+        }
+      } else {
+        newConfigs.push(conf);
+      }
+    });
+    setConfigs([...newConfigs]);
+  };
+
+  const totalInstanceCount = (): number => {
+    let count = 0;
+    configs.forEach((config) => (count += config.instanceCount));
+    return count;
   };
 
   const formContent = () => {
@@ -128,6 +162,10 @@ const SpinUp: React.FC<Props> = (props: Props) => {
       <div css={container}>
         <div css={formDiv}>
           <h2 css={formTitle}>Set up Testing Infrastructure</h2>
+          <div css={title}>
+            Your droplet limit is <b>{instanceLimit + 2}</b> and already used{" "}
+            <b>2</b>, you can increase this on digitalocean.
+          </div>
           <TextInput
             name="instanceCount"
             label={"Instance Count"}
@@ -137,7 +175,7 @@ const SpinUp: React.FC<Props> = (props: Props) => {
             validate={{
               min: 1,
               max: instanceLimit,
-              message: "Your droplet limit is " + instanceLimit,
+              message: "Your can create " + instanceLimit + " instances.",
               isValid: validation("instanceCount"),
             }}
             isValid={isValid["instanceCount"]}
@@ -162,7 +200,11 @@ const SpinUp: React.FC<Props> = (props: Props) => {
               loading={regionsLoading}
               text="Add New Instance"
               onClick={addNewInstance}
-              disabled={!isValid["instanceCount"] || !isValid["region"]}
+              disabled={
+                !isValid["instanceCount"] ||
+                !isValid["region"] ||
+                totalInstanceCount() + instanceCount > instanceLimit
+              }
             />
 
             <Button
@@ -171,25 +213,13 @@ const SpinUp: React.FC<Props> = (props: Props) => {
               disabled={
                 !isValid["instanceCount"] ||
                 !isValid["region"] ||
-                configs.length === 0
+                configs.length === 0 ||
+                totalInstanceCount() > instanceLimit
               }
             />
           </div>
         </div>
-        <div css={configContainer}>
-          {configs &&
-            configs.map((config) => {
-              return (
-                <div css={configCss} key={config.region}>
-                  <div css={instanceTitle}>Region: {config.region}</div>
-                  <br />
-                  Instance Count: <b>{config.instanceCount}</b>
-                  <Button type={1} text="+" onClick={() => {}} />
-                  <Button type={1} text="-" onClick={() => {}} />
-                </div>
-              );
-            })}
-        </div>
+        <InstanceConfigCards configs={configs} add={add} remove={remove} />
       </div>
     );
   };
@@ -200,6 +230,15 @@ const SpinUp: React.FC<Props> = (props: Props) => {
     formContent()
   );
 };
+
+const title = css`
+  width: 100%;
+  height: 4rem;
+  text-align: center;
+  margin: 1rem auto;
+  padding: 1rem;
+  background-color: #efefef;
+`;
 
 const container = css`
   display: flex;
@@ -219,32 +258,6 @@ const formTitle = css`
   font-size: 2.3rem;
   text-decoration: none;
   text-align: center;
-`;
-
-const configContainer = css`
-  width: 100%;
-  display: flex;
-  flex-wrap: wrap;
-`;
-
-const configCss = css`
-  background-color: #efefef;
-  width: 15rem;
-  height: 15rem;
-  margin: 1rem 1rem;
-  border: 1px solid black;
-  text-align: center;
-  ${Box.boxShadow1}
-  border-radius: ${Sizes.borderRadius1}
-`;
-
-const instanceTitle = css`
-  background-color: #007d9c;
-  color: white;
-  width: 100%;
-  height: 100;
-  padding: 0.5rem;
-  font-weight: bold;
 `;
 
 const buttons = css`

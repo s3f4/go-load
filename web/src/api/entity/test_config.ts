@@ -2,6 +2,7 @@ import {makeReq} from '../api'
 
 export interface TestConfig {
   ID?: number;
+  Name: string;
   Tests: Test[]
 }
 export interface Test {
@@ -10,7 +11,7 @@ export interface Test {
   url: string;
   method: string;
   payload: string;
-  expectedResponseCode: string;
+  expectedResponseCode: number;
   expectedResponseBody: string;
   transportConfig: TransportConfig,
 }

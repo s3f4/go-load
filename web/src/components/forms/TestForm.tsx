@@ -5,19 +5,11 @@ import TextInput from "../basic/TextInput";
 import Button from "../basic/Button";
 import { toNum } from "../basic/helper";
 import { BaseForm } from "./BaseForm";
-import Loader from "../basic/Loader";
-import {
-  runTests,
-  Test,
-  TestConfig,
-  TransportConfig,
-} from "../../api/entity/test_config";
+import { Test, TransportConfig } from "../../api/entity/test_config";
 import SelectBox from "../basic/SelectBox";
-import { destroyAll, InstanceConfig } from "../../api/entity/instance";
-import { Box, Sizes } from "../style";
 
 interface Props extends BaseForm {
-  instanceInfo: InstanceConfig | null;
+  addNewTest: (test: Test) => (e: React.FormEvent) => void;
 }
 
 const TestForm = (props: Props) => {
@@ -32,13 +24,22 @@ const TestForm = (props: Props) => {
     number
   >(-1);
   const [goroutineCount, setGoroutineCount] = React.useState<number>(1);
-  const [loading, setLoading] = React.useState<boolean>(false);
   const [transportConfig, setTransportConfig] = React.useState<TransportConfig>(
     {
       DisableKeepAlives: true,
     },
   );
-  const [testConfigs, setTestConfigs] = React.useState<any[]>([]);
+
+  const test: Test = {
+    requestCount,
+    method,
+    payload,
+    goroutineCount,
+    url,
+    transportConfig,
+    expectedResponseBody,
+    expectedResponseCode,
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement> | any) => {
     if (!e.target && e.hasOwnProperty("value") && e.hasOwnProperty("label")) {
@@ -74,42 +75,6 @@ const TestForm = (props: Props) => {
         setGoroutineCount(val);
         break;
     }
-  };
-
-  const run = (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    const testConfig: TestConfig = {
-      Tests: testConfigs,
-    };
-
-    runTests(testConfig)
-      .then(() => {
-        setLoading(false);
-        props.afterSubmit?.();
-      })
-      .catch(() => {
-        setLoading(false);
-        props.afterSubmit?.();
-      });
-  };
-
-  const addNewTest = (e: React.FormEvent) => {
-    e.preventDefault();
-    setTestConfigs([
-      ...testConfigs,
-      {
-        requestCount,
-        method,
-        payload,
-        goroutineCount,
-        url,
-        transportConfig,
-        expectedResponseBody,
-        expectedResponseCode,
-      },
-    ]);
   };
 
   const formContent = () => {
@@ -169,26 +134,14 @@ const TestForm = (props: Props) => {
             ]}
             value={transportConfig.DisableKeepAlives ? "true" : "false"}
           />
-          <Button text="Add New Test" onClick={addNewTest} />
-          <Button text="Run Tests" onClick={run} />
+          <Button text="Add New Test" onClick={props.addNewTest(test)} />
         </div>
-        <div css={configContainer}>
-          {testConfigs &&
-            testConfigs.map((test: Test) => {
-              return (
-                <div css={configCss} key={test.url}>
-                  Request Count :{test.requestCount}
-                  URL : {test.url}
-                  Method: {test.method}
-                </div>
-              );
-            })}
-        </div>
+        <div css={configContainer}></div>
       </div>
     );
   };
 
-  return loading ? <Loader message="Tests are running..." /> : formContent();
+  return formContent();
 };
 
 const container = css`
@@ -214,16 +167,6 @@ const configContainer = css`
   width: 100%;
   display: flex;
   flex-wrap: wrap;
-`;
-
-const configCss = css`
-  width: 15rem;
-  height: 15rem;
-  margin: 1rem 1rem;
-  border: 1px solid black;
-  text-align: center;
-  ${Box.boxShadow1}
-  border-radius: ${Sizes.borderRadius1}
 `;
 
 export default TestForm;

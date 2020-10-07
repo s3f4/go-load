@@ -37,9 +37,7 @@ const InstanceContent: React.FC<Props> = (props: Props) => {
   );
 
   // runWorkersForm
-  const runWorkersForm: React.ReactNode = (
-    <TestForm instanceInfo={instanceInfo} afterSubmit={routeToStats} />
-  );
+  const runWorkersForm: React.ReactNode = <div></div>;
 
   const content = () => {
     if (instanceInfo) {

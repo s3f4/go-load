@@ -112,20 +112,11 @@ const TestForm = (props: Props) => {
     ]);
   };
 
-  const destroyRequest = (e: any) => {
-    e.preventDefault();
-    destroyAll()
-      .then((data) => console.log(data))
-      .catch((error) => console.log(error));
-  };
-
   const formContent = () => {
     return (
       <div css={container}>
         <div css={formDiv}>
-          <h2 css={formTitle}>Run Workers</h2>
-          InstanceInfo: {JSON.stringify(props.instanceInfo)}
-          <Button text="Destroy" onClick={destroyRequest} />
+          <h3 css={formTitle}>Create Tests</h3>
           <TextInput
             onChange={handleChange}
             label="Target URL"
@@ -207,13 +198,16 @@ const container = css`
 
 const formDiv = css`
   margin: 0 auto;
-  width: 50%;
+  width: 80%;
+  padding: 1rem 0 3rem 0;
 `;
 
 const formTitle = css`
-  font-size: 2.3rem;
+  font-size: 2rem;
   text-decoration: none;
   text-align: center;
+  padding: 0 0 1rem 0;
+  border-bottom: 0.1rem solid #e3e3e3;
 `;
 
 const configContainer = css`

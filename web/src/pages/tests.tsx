@@ -2,7 +2,7 @@ import React from "react";
 import MainLayout from "../components/layouts/MainLayout";
 import TestContent from "../components/contents/TestContent";
 
-const Test: React.FC = () => {
+const Tests: React.FC = () => {
   return (
     <React.Fragment>
       <MainLayout content={TestContent} />
@@ -10,4 +10,4 @@ const Test: React.FC = () => {
   );
 };
 
-export default Test;
+export default Tests;

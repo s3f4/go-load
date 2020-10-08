@@ -70,17 +70,18 @@ const TestContent: React.FC<Props> = (props: Props) => {
         />
         <Button text="Create" onClick={setConfig} />
         <hr />
+      </div>
+      <div css={rightColumn}>
         {testConfig?.Tests.map((test: Test) => {
           return (
             <div css={configCss} key={test.url}>
-              Request Count :{test.requestCount}
-              URL : {test.url}
-              Method: {test.method}
+              URL : {test.url} - Method: {test.method} - Request Count:{" "}
+              {test.requestCount}
             </div>
           );
         })}
+        <TestForm addNewTest={addNewTest} />
       </div>
-      <TestForm addNewTest={addNewTest} />
     </div>
   );
 };
@@ -97,14 +98,17 @@ const leftColumn = css`
   padding: 2rem;
 `;
 
+const rightColumn = css`
+  width: 70%;
+  padding: 2rem;
+`;
+
 const configCss = css`
-  width: 15rem;
-  height: 15rem;
-  margin: 1rem 1rem;
-  border: 1px solid black;
-  text-align: center;
-  ${Box.boxShadow1}
-  border-radius: ${Sizes.borderRadius1}
+  width: 100%;
+  height: 5rem;
+  padding: 2rem 0;
+  border-bottom: 1px solid black;
+  text-align: left;
 `;
 
 export default TestContent;

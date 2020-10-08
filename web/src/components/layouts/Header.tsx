@@ -18,10 +18,9 @@ const Header: React.FC<Props> = (props: Props) => {
         </div>
         <div css={headerDiv}>
           <Link to="/instances">Instances</Link>
-          <Link to="/workers">Worker Containers</Link>
+          <Link to="/tests">Tests</Link>
           <Link to="/swarm">Swarm</Link>
           <Link to="/stats">Stats</Link>
-          <Link to="/test">Test</Link>
         </div>
       </div>
     </React.Fragment>

@@ -5,7 +5,7 @@ import Workers from "./pages/workers";
 import Stats from "./pages/stats";
 import Swarm from "./pages/swarm";
 import Index from "./pages";
-import Test from "./pages/test";
+import Tests from "./pages/tests";
 
 const App: React.FC = () => {
   return (
@@ -14,8 +14,8 @@ const App: React.FC = () => {
         <Route exact path="/instances">
           <Instances />
         </Route>
-        <Route exact path="/test">
-          <Test />
+        <Route exact path="/tests">
+          <Tests />
         </Route>
         <Route exact path="/workers">
           <Workers />

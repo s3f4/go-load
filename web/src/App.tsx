@@ -14,7 +14,7 @@ const App: React.FC = () => {
         <Route exact path="/instances">
           <Instances />
         </Route>
-        <Route exact path="/tests">
+        <Route path="/tests">
           <Tests />
         </Route>
         <Route exact path="/workers">

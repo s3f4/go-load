@@ -1,12 +1,11 @@
 /** @jsx jsx */
 import React from "react";
 import { jsx, css } from "@emotion/core";
-import TestForm from "../forms/TestForm";
-import { destroyAll } from "../../api/entity/instance";
+import CreateTest from "../forms/tests/CreateTest";
 import Button from "../basic/Button";
 import TextInput from "../basic/TextInput";
 import { runTests, Test, TestConfig } from "../../api/entity/test_config";
-import { Box, Sizes } from "../style";
+import { Link, Route, Switch, useHistory } from "react-router-dom";
 
 interface Props {}
 
@@ -18,14 +17,10 @@ const TestContent: React.FC<Props> = (props: Props) => {
     Tests: [],
   });
 
-  console.log(testConfig);
-
-  const destroyRequest = (e: any) => {
-    e.preventDefault();
-    destroyAll()
-      .then((data) => console.log(data))
-      .catch((error) => console.log(error));
-  };
+  const history = useHistory();
+  React.useEffect(() => {
+    console.log(history.location.pathname);
+  }, [history.location.pathname]);
 
   const setConfig = (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,7 +55,7 @@ const TestContent: React.FC<Props> = (props: Props) => {
     });
   };
 
-  return (
+  const createContent = () => (
     <div css={container}>
       <div css={leftColumn}>
         <TextInput
@@ -70,6 +65,7 @@ const TestContent: React.FC<Props> = (props: Props) => {
         />
         <Button text="Create" onClick={setConfig} />
         <hr />
+        {history.location.pathname}
       </div>
       <div css={rightColumn}>
         {testConfig?.Tests.map((test: Test) => {
@@ -80,9 +76,37 @@ const TestContent: React.FC<Props> = (props: Props) => {
             </div>
           );
         })}
-        <TestForm addNewTest={addNewTest} />
+        <CreateTest addNewTest={addNewTest} />
       </div>
     </div>
+  );
+
+  const showContent = () => (
+    <div css={container}>
+      <div css={leftColumn}>
+        configName
+        <hr />
+        {history.location.pathname}
+        <Link to="/tests/create"> New Test Group</Link>
+      </div>
+      <div css={rightColumn}>
+        {testConfig?.Tests.map((test: Test) => {
+          return (
+            <div css={configCss} key={test.url}>
+              URL : {test.url} - Method: {test.method} - Request Count:{" "}
+              {test.requestCount}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+
+  return (
+    <Switch>
+      <Route exact path={"/tests/create"} component={createContent} />
+      <Route exact path={"/tests"} component={showContent} />
+    </Switch>
   );
 };
 

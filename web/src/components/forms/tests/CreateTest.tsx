@@ -13,7 +13,7 @@ interface Props extends BaseForm {
 }
 
 const CreateTest = (props: Props) => {
-  const [requestCount, setRequestCount] = React.useState<number>(0);
+  const [requestCount, setRequestCount] = React.useState<number>(1);
   const [url, setUrl] = React.useState<string>("");
   const [method, setMethod] = React.useState<string>("");
   const [payload, setPayload] = React.useState<string>("");
@@ -29,6 +29,17 @@ const CreateTest = (props: Props) => {
       DisableKeepAlives: true,
     },
   );
+  const [isValid, setIsValid] = React.useState<any>({
+    requestCount: true,
+    url: true,
+    method: true,
+  });
+
+  const validation = (name: string) => (value: boolean) =>
+    setIsValid({
+      ...isValid,
+      [name]: value,
+    });
 
   const test: Test = {
     requestCount,
@@ -87,6 +98,24 @@ const CreateTest = (props: Props) => {
             label="Target URL"
             name="url"
             value={url}
+            validate={{
+              url: true,
+              message: "Please write a valid URL",
+              isValid: validation("url"),
+            }}
+            isValid={isValid["url"]}
+          />
+          <TextInput
+            onChange={handleChange}
+            label="Total Request"
+            name="requestCount"
+            value={requestCount}
+            validate={{
+              min: 1,
+              isValid: validation("requestCount"),
+              message: "Request must be greather than 0.",
+            }}
+            isValid={isValid["requestCount"]}
           />
           <TextInput
             onChange={handleChange}
@@ -112,12 +141,7 @@ const CreateTest = (props: Props) => {
             name="responseBody"
             value={expectedResponseBody}
           />
-          <TextInput
-            onChange={handleChange}
-            label="Total Request"
-            name="requestCount"
-            value={requestCount}
-          />
+
           <TextInput
             onChange={handleChange}
             label="Goroutine per worker (up to 10)"
@@ -134,7 +158,11 @@ const CreateTest = (props: Props) => {
             ]}
             value={transportConfig.DisableKeepAlives ? "true" : "false"}
           />
-          <Button text="Add New Test" onClick={props.addNewTest(test)} />
+          <Button
+            text="Add New Test"
+            onClick={props.addNewTest(test)}
+            disabled={!isValid["url"]}
+          />
         </div>
         <div css={configContainer}></div>
       </div>

@@ -19,7 +19,7 @@ const container = (type: string) => css`
   display: block;
   position: relative;
   border: 0.1rem solid white;
-  border-radius: 0.3rem;
+  border-radius: 0.5rem;
   text-align: center;
   font-size: 1.5rem;
   height: 8rem;
@@ -30,6 +30,8 @@ const container = (type: string) => css`
     : type === "error"
     ? "#dc3545"
     : "yellow"};
+  opacity: 0.8;
+  margin: 1rem auto;
 `;
 
 const message = css`

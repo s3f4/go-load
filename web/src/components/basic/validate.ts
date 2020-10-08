@@ -1,4 +1,4 @@
-import { toNum } from "./helper";
+import {toNum} from './helper';
 
 export interface Validate {
   maxLength?: number;
@@ -6,6 +6,7 @@ export interface Validate {
   max?: number;
   min?: number;
   message?: string;
+  url?: boolean;
   isValid: (condition: boolean) => void;
 }
 
@@ -26,6 +27,16 @@ export const validate = (value: any, validate: Validate): void => {
   if (validate.maxLength && value.length > validate.maxLength) {
     validate.isValid(false);
     return;
+  }
+
+  if (validate.url) {
+    const regex = new RegExp(
+        /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/);
+
+    if (!value.match(regex)) {
+      validate.isValid(false);
+      return;
+    }
   }
 
   validate.isValid(true);

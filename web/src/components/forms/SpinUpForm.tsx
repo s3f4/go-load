@@ -176,7 +176,7 @@ const SpinUp: React.FC<Props> = (props: Props) => {
               min: 1,
               max: instanceLimit,
               message: "Your can create " + instanceLimit + " instances.",
-              isValid: validation("instanceCount"),
+              validationFunction: validation("instanceCount"),
             }}
             isValid={isValid["instanceCount"]}
           />
@@ -190,7 +190,7 @@ const SpinUp: React.FC<Props> = (props: Props) => {
             validate={{
               minLength: 3,
               message: "Please choose a region",
-              isValid: validation("region"),
+              validationFunction: validation("region"),
             }}
             isValid={isValid["region"]}
           />

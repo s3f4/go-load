@@ -101,7 +101,7 @@ const CreateTest = (props: Props) => {
             validate={{
               url: true,
               message: "Please write a valid URL",
-              isValid: validation("url"),
+              validationFunction: validation("url"),
             }}
             isValid={isValid["url"]}
           />
@@ -112,7 +112,7 @@ const CreateTest = (props: Props) => {
             value={requestCount}
             validate={{
               min: 1,
-              isValid: validation("requestCount"),
+              validationFunction: validation("requestCount"),
               message: "Request must be greather than 0.",
             }}
             isValid={isValid["requestCount"]}
@@ -164,7 +164,6 @@ const CreateTest = (props: Props) => {
             disabled={!isValid["url"]}
           />
         </div>
-        <div css={configContainer}></div>
       </div>
     );
   };
@@ -189,12 +188,6 @@ const formTitle = css`
   text-align: center;
   padding: 0 0 1rem 0;
   border-bottom: 0.1rem solid #e3e3e3;
-`;
-
-const configContainer = css`
-  width: 100%;
-  display: flex;
-  flex-wrap: wrap;
 `;
 
 export default CreateTest;

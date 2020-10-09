@@ -14,20 +14,22 @@ const Table: React.FC<Props> = (props: Props) => {
       <table css={table}>
         <thead css={th}>
           <tr css={trTitle}>
-            {props.title.map((title) => (
-              <th>{title}</th>
+            {props.title.map((title, index) => (
+              <th key={index}>{title}</th>
             ))}
           </tr>
         </thead>
-        {props.content.map((rows, index) => (
-          <tr css={tr} key={index}>
-            {rows.map((column, colIndex) => (
-              <td css={td(colIndex)} key={colIndex}>
-                {column}
-              </td>
-            ))}
-          </tr>
-        ))}
+        <tbody>
+          {props.content.map((rows, index) => (
+            <tr css={tr} key={index}>
+              {rows.map((column, colIndex) => (
+                <td css={td(colIndex)} key={colIndex}>
+                  {column}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
       </table>
     </div>
   );

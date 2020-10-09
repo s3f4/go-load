@@ -1,14 +1,21 @@
 /** @jsx jsx */
-import React from "react";
+import React, { useState } from "react";
 import { jsx, css } from "@emotion/core";
 import { Link } from "react-router-dom";
-import { runTests, Test, TestConfig } from "../../../api/entity/test_config";
+import { listTests, runTests, Test, TestConfig } from "../../../api/entity/test_config";
 
 interface Props {
   testConfg?: TestConfig;
 }
 
 const Show: React.FC<Props> = (props: Props) => {
+  const [configs,setConfigs] = useState<TestConfig[]>();
+  
+  React.useEffect(()=>{
+    listTests().then(response=>
+      console.log(response)).catch(error=>console.log(error));
+  },[])
+
   const run = (e: React.FormEvent) => {
     e.preventDefault();
 

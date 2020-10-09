@@ -20,6 +20,15 @@ export interface TransportConfig {
   DisableKeepAlives: boolean;
 }
 
+export const saveTests =
+    async (testConfig: TestConfig) => {
+  return await makeReq('/test', 'POST', testConfig);
+}
+
 export const runTests = async (testConfig: TestConfig) => {
   return await makeReq('/test/run', 'POST', testConfig)
+}
+
+export const listTests = async () => {
+  return await makeReq('/test', 'Get');
 }

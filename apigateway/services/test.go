@@ -11,11 +11,17 @@ import (
 
 // TestService creates tests
 type TestService interface {
-	Start(models.TestConfig) error
+	Start(*models.TestConfig) error
+	Insert(*models.TestConfig) error
+	Get(*models.TestConfig) (*models.TestConfig, error)
+	Update(*models.TestConfig) error
+	Delete(*models.TestConfig) error
+	List() ([]*models.TestConfig, error)
 }
 
 type testService struct {
 	ir           repository.InstanceRepository
+	tr           repository.TestRepository
 	queueService QueueService
 }
 
@@ -23,11 +29,12 @@ type testService struct {
 func NewTestService() TestService {
 	return &testService{
 		ir:           repository.NewInstanceRepository(),
+		tr:           repository.NewTestRepository(),
 		queueService: NewRabbitMQService(),
 	}
 }
 
-func (s *testService) Start(testConfig models.TestConfig) error {
+func (s *testService) Start(testConfig *models.TestConfig) error {
 	instanceConfig, err := s.ir.Get()
 	log.Debug(fmt.Sprintf("%+v", instanceConfig))
 
@@ -70,4 +77,29 @@ func (s *testService) Start(testConfig models.TestConfig) error {
 	}
 
 	return nil
+}
+
+// Insert
+func (s *testService) Insert(config *models.TestConfig) error {
+	return s.tr.Insert(config)
+}
+
+// Get
+func (s *testService) Get(config *models.TestConfig) (*models.TestConfig, error) {
+	return s.tr.Get()
+}
+
+// Update
+func (s *testService) Update(config *models.TestConfig) error {
+	return s.tr.Update(config)
+}
+
+// Delete
+func (s *testService) Delete(config *models.TestConfig) error {
+	return s.tr.Delete(config)
+}
+
+// List
+func (s *testService) List() ([]*models.TestConfig, error) {
+	return s.tr.List()
 }

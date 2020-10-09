@@ -1,18 +1,12 @@
-/** @jsx jsx */
 import React from "react";
-import { jsx, css } from "@emotion/core";
 import SpinUp from "../forms/SpinUpForm";
-import { useHistory } from "react-router-dom";
 import { getInstanceInfo, InstanceConfig } from "../../api/entity/instance";
-interface Props {}
 
-const InstanceContent: React.FC<Props> = (props: Props) => {
+const InstanceContent: React.FC = () => {
   const [showRunWorkerForm, setShowRunWorkerForm] = React.useState<boolean>();
   const [instanceInfo, setInstanceInfo] = React.useState<InstanceConfig | null>(
     null,
   );
-
-  const history = useHistory();
 
   React.useEffect(() => {
     getInstanceInfo()
@@ -21,10 +15,6 @@ const InstanceContent: React.FC<Props> = (props: Props) => {
       })
       .catch(() => {});
   }, []);
-
-  const routeToStats = () => {
-    history.push("/stats");
-  };
 
   const spinUpAfterHandle = () => {
     setShowRunWorkerForm(true);
@@ -46,9 +36,7 @@ const InstanceContent: React.FC<Props> = (props: Props) => {
     }
   };
 
-  return <div css={instanceContainer}>{content()}</div>;
+  return <React.Fragment>{content()}</React.Fragment>;
 };
-
-const instanceContainer = css``;
 
 export default InstanceContent;

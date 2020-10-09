@@ -30,8 +30,6 @@ const SpinUp: React.FC<Props> = (props: Props) => {
     region: false,
   });
 
-  console.log(configs);
-
   React.useEffect(() => {
     regionsRequest();
     accountRequest();

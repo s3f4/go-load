@@ -123,6 +123,8 @@ func (r *baseRepository) connect() {
 func (r *baseRepository) Migrate() {
 	r.GetDB().AutoMigrate(&models.Instance{})
 	r.GetDB().AutoMigrate(&models.InstanceConfig{})
+	r.GetDB().AutoMigrate(&models.TestConfig{})
+	r.GetDB().AutoMigrate(&models.Test{})
 }
 
 //GetDB return *gorm.DB instance

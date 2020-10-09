@@ -1,9 +1,9 @@
 import {makeReq} from '../api'
 
 export interface TestConfig {
-  ID?: number;
-  Name: string;
-  Tests: Test[]
+  id?: number;
+  name: string;
+  tests: Test[]
 }
 export interface Test {
   requestCount: number;
@@ -22,13 +22,13 @@ export interface TransportConfig {
 
 export const saveTests =
     async (testConfig: TestConfig) => {
-  return await makeReq('/test', 'POST', testConfig);
+  return await makeReq('/tests', 'POST', testConfig);
 }
 
 export const runTests = async (testConfig: TestConfig) => {
-  return await makeReq('/test/run', 'POST', testConfig)
+  return await makeReq('/tests/start', 'POST', testConfig)
 }
 
 export const listTests = async () => {
-  return await makeReq('/test', 'Get');
+  return await makeReq('/tests', 'Get');
 }

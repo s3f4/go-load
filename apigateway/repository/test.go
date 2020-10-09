@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"fmt"
+
 	"github.com/s3f4/go-load/apigateway/models"
 	"gorm.io/gorm"
 )
@@ -12,7 +14,7 @@ type TestRepository interface {
 	Update(*models.TestConfig) error
 	Delete(*models.TestConfig) error
 	Get() (*models.TestConfig, error)
-	List() ([]*models.TestConfig, error)
+	List() ([]models.TestConfig, error)
 }
 
 type testRepository struct {
@@ -50,9 +52,10 @@ func (r *testRepository) Get() (*models.TestConfig, error) {
 	return &testReq, nil
 }
 
-func (r *testRepository) List() ([]*models.TestConfig, error) {
-	var testReq []*models.TestConfig
-	if err := r.DB().Find(&testReq).Error; err != nil {
+func (r *testRepository) List() ([]models.TestConfig, error) {
+	var testReq []models.TestConfig
+	if err := r.DB().Preload("Tests").Take(&testReq).Error; err != nil {
+		fmt.Println(err)
 		return nil, err
 	}
 	return testReq, nil

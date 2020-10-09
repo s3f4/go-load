@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/s3f4/go-load/apigateway/models"
@@ -49,12 +50,14 @@ func (h *testHandler) Start(w http.ResponseWriter, r *http.Request) {
 func (h *testHandler) Insert(w http.ResponseWriter, r *http.Request) {
 	var testConfig models.TestConfig
 	if err := json.NewDecoder(r.Body).Decode(&testConfig); err != nil {
+		fmt.Println(err)
 		R400(w, "Bad Request")
 		return
 	}
 
 	err := h.service.Insert(&testConfig)
 	if err != nil {
+		fmt.Println(err)
 		R500(w, err)
 		return
 	}

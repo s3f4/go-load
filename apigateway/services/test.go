@@ -16,7 +16,7 @@ type TestService interface {
 	Get(*models.TestConfig) (*models.TestConfig, error)
 	Update(*models.TestConfig) error
 	Delete(*models.TestConfig) error
-	List() ([]*models.TestConfig, error)
+	List() ([]models.TestConfig, error)
 }
 
 type testService struct {
@@ -100,6 +100,6 @@ func (s *testService) Delete(config *models.TestConfig) error {
 }
 
 // List
-func (s *testService) List() ([]*models.TestConfig, error) {
+func (s *testService) List() ([]models.TestConfig, error) {
 	return s.tr.List()
 }

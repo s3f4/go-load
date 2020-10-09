@@ -12,9 +12,11 @@ const Show: React.FC<Props> = (props: Props) => {
   const [configs,setConfigs] = useState<TestConfig[]>();
   
   React.useEffect(()=>{
-    listTests().then(response=>
-      console.log(response)).catch(error=>console.log(error));
+    listTests().then(response=>{
+    setConfigs(response.data)
+  }).catch(error=>console.log(error));
   },[])
+
 
   const run = (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,12 +29,13 @@ const Show: React.FC<Props> = (props: Props) => {
   return (
     <div css={container}>
       <div css={leftColumn}>
-        configName
+        {configs?.map((config:TestConfig)=>
+        <div key={config.id}>{config.name}adas</div>)}
         <hr />
         <Link to="/tests/create"> New Test Group</Link>
       </div>
       <div css={rightColumn}>
-        {props.testConfg?.Tests.map((test: Test) => {
+        {configs && configs[0].tests.map((test: Test) => {
           return (
             <div css={configCss} key={test.url}>
               URL : {test.url} - Method: {test.method} - Request Count:{" "}

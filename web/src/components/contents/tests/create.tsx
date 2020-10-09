@@ -1,7 +1,7 @@
 /** @jsx jsx */
 import React from "react";
 import { jsx, css } from "@emotion/core";
-import { Test, TestConfig } from "../../../api/entity/test_config";
+import { saveTests, Test, TestConfig } from "../../../api/entity/test_config";
 import TextInput from "../../basic/TextInput";
 import Button from "../../basic/Button";
 import CreateTest from "../../forms/tests/CreateTest";
@@ -14,26 +14,26 @@ const Create: React.FC<Props> = (props: Props) => {
   const [message, setMessage] = React.useState<string>("");
   const [configName, setConfigName] = React.useState<string>("");
   const [testConfig, setTestConfig] = React.useState<TestConfig>({
-    Name: "",
-    Tests: [],
+    name: "",
+    tests: [],
   });
 
   const setConfig = (e: React.FormEvent) => {
     e.preventDefault();
     setTestConfig({
       ...testConfig,
-      Name: configName,
+      name: configName,
     });
   };
   const addNewTest = (test: Test) => (e: React.FormEvent) => {
     e.preventDefault();
-    if (!testConfig.Name) {
+    if (!testConfig.name) {
       setMessage("Please set test group name on the left menu.");
       return;
     }
     setTestConfig({
       ...testConfig,
-      Tests: [...testConfig.Tests, test],
+      tests: [...testConfig.tests, test],
     });
   };
 
@@ -44,8 +44,8 @@ const Create: React.FC<Props> = (props: Props) => {
 
   const totalRequests = (): number => {
     let count = 0;
-    if (testConfig && testConfig.Tests.length) {
-      testConfig.Tests.map((test: Test) => {
+    if (testConfig && testConfig.tests.length) {
+      testConfig.tests.forEach((test: Test) => {
         count += test.requestCount;
       });
     }
@@ -55,7 +55,7 @@ const Create: React.FC<Props> = (props: Props) => {
   const buildTable = () => {
     const content: any[] = [];
 
-    testConfig?.Tests.map((test: Test) => {
+    testConfig?.tests.map((test: Test) => {
       const row: any[] = [test.url, test.method, test.requestCount];
       content.push(row);
     });
@@ -63,20 +63,27 @@ const Create: React.FC<Props> = (props: Props) => {
     return content;
   };
 
+  const save = () =>{
+    debugger
+    saveTests(testConfig)
+    .then(response => {console.log(response)})
+    .catch(error =>{console.log(error)});
+  }
+
   return (
     <div css={container}>
       <div css={leftColumn}>
-        {testConfig && testConfig.Name ? (
+        {testConfig && testConfig.name ? (
           <div css={leftConfigDiv}>
             <h3 css={h3title}>Test Group</h3>
             <span>
-              Name: <b>{testConfig.Name}</b>
+              Name: <b>{testConfig.name}</b>
             </span>
             <span>
               Total Requests: <b>{totalRequests()}</b>
             </span>
             <div>
-              <Button type={1} text="Save" onClick={() => {}} />
+              <Button type={1} text="Save" onClick={save} />
               <Button type={1} text="Update" onClick={() => {}} />
             </div>
           </div>
@@ -93,7 +100,7 @@ const Create: React.FC<Props> = (props: Props) => {
       </div>
       <div css={rightColumn}>
         {message ? <Message type="error" message={message} /> : ""}
-        {testConfig && testConfig.Tests.length > 0 && (
+        {testConfig && testConfig.tests.length > 0 && (
           <Table
             title={["URL", "Method", "Requests Count"]}
             content={buildTable()}

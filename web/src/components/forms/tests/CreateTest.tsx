@@ -22,7 +22,7 @@ const CreateTest = (props: Props) => {
   >("");
   const [expectedResponseCode, setExpectedResponseCode] = React.useState<
     number
-  >(-1);
+  >(0);
   const [goroutineCount, setGoroutineCount] = React.useState<number>(1);
   const [transportConfig, setTransportConfig] = React.useState<TransportConfig>(
     {

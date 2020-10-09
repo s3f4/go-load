@@ -1,5 +1,4 @@
 const URL = `http://${process.env.REACT_APP_API_BASE_URL}`;
-console.log(process.env);
 // makeReq makes requests
 export const makeReq = async (url: string, method?: any, body?: any) => {
   if (!url.startsWith("/")) {

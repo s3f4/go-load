@@ -1,5 +1,5 @@
 import React from "react";
-import InstanceContent from "../components/contents/InstanceContent";
+import InstanceContent from "../components/contents/instances/InstanceContent";
 import MainLayout from "../components/layouts/MainLayout";
 
 interface Props {}

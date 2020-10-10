@@ -4,7 +4,7 @@ import { jsx, css } from "@emotion/core";
 import TextInput from "../../basic/TextInput";
 import Button from "../../basic/Button";
 import { toNum } from "../../basic/helper";
-import { BaseForm } from "../BaseForm";
+import { BaseForm } from "../../basic/BaseForm";
 import { Test, TransportConfig } from "../../../api/entity/test_config";
 import SelectBox from "../../basic/SelectBox";
 

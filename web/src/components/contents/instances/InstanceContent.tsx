@@ -1,6 +1,6 @@
 import React from "react";
-import SpinUp from "../forms/SpinUpForm";
-import { getInstanceInfo, InstanceConfig } from "../../api/entity/instance";
+import SpinUp from "./SpinUpForm";
+import { getInstanceInfo, InstanceConfig } from "../../../api/entity/instance";
 
 const InstanceContent: React.FC = () => {
   const [showRunWorkerForm, setShowRunWorkerForm] = React.useState<boolean>();

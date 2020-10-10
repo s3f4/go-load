@@ -10,6 +10,7 @@ import {
 } from "../../../api/entity/test_config";
 import Table from "../../basic/Table";
 import Button from "../../basic/Button";
+import { Borders } from "../../style";
 
 interface Props {
   testConfg?: TestConfig;
@@ -18,6 +19,7 @@ interface Props {
 const Show: React.FC<Props> = (props: Props) => {
   const [configs, setConfigs] = useState<TestConfig[]>();
   const [selectedConfig, setSelectedConfig] = useState<TestConfig>();
+  console.log(configs);
 
   React.useEffect(() => {
     listTests()
@@ -51,6 +53,7 @@ const Show: React.FC<Props> = (props: Props) => {
   return (
     <div css={container}>
       <div css={leftColumn}>
+        <h3 css={h3title}>Test Groups</h3>
         {configs?.map((config: TestConfig) => (
           <div
             css={leftConfigDiv}
@@ -60,7 +63,6 @@ const Show: React.FC<Props> = (props: Props) => {
               setSelectedConfig(config);
             }}
           >
-            <h3 css={h3title}>Test Group</h3>
             <span>
               Name: <b>{config.name}</b>
             </span>
@@ -92,7 +94,7 @@ const container = css`
 const leftColumn = css`
   background-color: #e3e3e3;
   width: 30%;
-  height: 50rem;
+  min-height: 50rem;
   padding: 2rem;
 `;
 
@@ -103,9 +105,13 @@ const rightColumn = css`
 
 const leftConfigDiv = css`
   width: 100%;
-  height: 5rem;
+  min-height: 5rem;
   display: flex;
   flex-direction: column;
+  border: ${Borders.border1};
+  border-radius: 0.5rem;
+  padding: 1rem;
+  cursor: pointer;
 `;
 
 const h3title = css`

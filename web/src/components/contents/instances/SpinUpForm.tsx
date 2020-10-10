@@ -1,19 +1,19 @@
 /** @jsx jsx */
 import React, { useState } from "react";
 import { jsx, css } from "@emotion/core";
-import TextInput from "../basic/TextInput";
-import Button from "../basic/Button";
-import SelectBox from "../basic/SelectBox";
-import { toNum } from "../basic/helper";
-import Loader from "../basic/Loader";
-import { BaseForm } from "./BaseForm";
+import TextInput from "../../basic/TextInput";
+import Button from "../../basic/Button";
+import SelectBox from "../../basic/SelectBox";
+import { toNum } from "../../basic/helper";
+import Loader from "../../basic/Loader";
+import { BaseForm } from "../../basic/BaseForm";
 import {
   spinUp,
   listAvailableRegions,
   InstanceConfig,
   showAccount,
-} from "../../api/entity/instance";
-import InstanceConfigCards from "../contents/InstanceConfigCards";
+} from "../../../api/entity/instance";
+import InstanceConfigCards from "./InstanceConfigCards";
 
 interface Props extends BaseForm {}
 

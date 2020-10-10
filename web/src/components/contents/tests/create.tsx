@@ -4,9 +4,10 @@ import { jsx, css } from "@emotion/core";
 import { saveTests, Test, TestConfig } from "../../../api/entity/test_config";
 import TextInput from "../../basic/TextInput";
 import Button from "../../basic/Button";
-import CreateTest from "../../forms/tests/CreateTest";
+import CreateTest from "./CreateTest";
 import Message from "../../basic/Message";
 import Table from "../../basic/Table";
+import { useHistory } from "react-router-dom";
 
 interface Props {}
 
@@ -17,6 +18,7 @@ const Create: React.FC<Props> = (props: Props) => {
     name: "",
     tests: [],
   });
+  const history = useHistory();
 
   const setConfig = (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,11 +67,11 @@ const Create: React.FC<Props> = (props: Props) => {
 
   const save = () => {
     saveTests(testConfig)
-      .then((response) => {
-        console.log(response);
+      .then(() => {
+        history.push("/tests");
       })
       .catch((error) => {
-        console.log(error);
+        setMessage(error);
       });
   };
 
@@ -125,6 +127,7 @@ const container = css`
 const leftColumn = css`
   background-color: #e3e3e3;
   width: 30%;
+  min-height: 50rem;
   padding: 2rem;
 `;
 

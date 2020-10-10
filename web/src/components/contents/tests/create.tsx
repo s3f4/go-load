@@ -63,12 +63,15 @@ const Create: React.FC<Props> = (props: Props) => {
     return content;
   };
 
-  const save = () =>{
-    debugger
+  const save = () => {
     saveTests(testConfig)
-    .then(response => {console.log(response)})
-    .catch(error =>{console.log(error)});
-  }
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   return (
     <div css={container}>

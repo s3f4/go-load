@@ -2,21 +2,30 @@
 import React, { useState } from "react";
 import { jsx, css } from "@emotion/core";
 import { Link } from "react-router-dom";
-import { listTests, runTests, Test, TestConfig } from "../../../api/entity/test_config";
+import {
+  listTests,
+  runTests,
+  Test,
+  TestConfig,
+} from "../../../api/entity/test_config";
+import Table from "../../basic/Table";
+import Button from "../../basic/Button";
 
 interface Props {
   testConfg?: TestConfig;
 }
 
 const Show: React.FC<Props> = (props: Props) => {
-  const [configs,setConfigs] = useState<TestConfig[]>();
-  
-  React.useEffect(()=>{
-    listTests().then(response=>{
-    setConfigs(response.data)
-  }).catch(error=>console.log(error));
-  },[])
+  const [configs, setConfigs] = useState<TestConfig[]>();
+  const [selectedConfig, setSelectedConfig] = useState<TestConfig>();
 
+  React.useEffect(() => {
+    listTests()
+      .then((response) => {
+        setConfigs(response.data);
+      })
+      .catch((error) => console.log(error));
+  }, []);
 
   const run = (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,23 +35,49 @@ const Show: React.FC<Props> = (props: Props) => {
       .catch(() => {});
   };
 
+  const buildTable = () => {
+    const content: any[] = [];
+
+    if (selectedConfig) {
+      selectedConfig.tests.map((test: Test) => {
+        const row: any[] = [test.url, test.method, test.requestCount];
+        content.push(row);
+      });
+    }
+
+    return content;
+  };
+
   return (
     <div css={container}>
       <div css={leftColumn}>
-        {configs?.map((config:TestConfig)=>
-        <div key={config.id}>{config.name}adas</div>)}
-        <hr />
-        <Link to="/tests/create"> New Test Group</Link>
+        {configs?.map((config: TestConfig) => (
+          <div
+            css={leftConfigDiv}
+            key={config.id}
+            onClick={(e: React.MouseEvent) => {
+              e.preventDefault();
+              setSelectedConfig(config);
+            }}
+          >
+            <h3 css={h3title}>Test Group</h3>
+            <span>
+              Name: <b>{config.name}</b>
+            </span>
+            <span>
+              Total Requests: <b>0</b>
+            </span>
+          </div>
+        ))}
+        <Link to="/tests/create">
+          <Button text="New Test Group" />
+        </Link>
       </div>
       <div css={rightColumn}>
-        {configs && configs[0].tests.map((test: Test) => {
-          return (
-            <div css={configCss} key={test.url}>
-              URL : {test.url} - Method: {test.method} - Request Count:{" "}
-              {test.requestCount}
-            </div>
-          );
-        })}
+        <Table
+          title={["URL", "Method", "Requests Count"]}
+          content={buildTable()}
+        />
       </div>
     </div>
   );
@@ -57,6 +92,7 @@ const container = css`
 const leftColumn = css`
   background-color: #e3e3e3;
   width: 30%;
+  height: 50rem;
   padding: 2rem;
 `;
 
@@ -65,12 +101,17 @@ const rightColumn = css`
   padding: 2rem;
 `;
 
-const configCss = css`
+const leftConfigDiv = css`
   width: 100%;
   height: 5rem;
-  padding: 2rem 0;
-  border-bottom: 1px solid black;
-  text-align: left;
+  display: flex;
+  flex-direction: column;
+`;
+
+const h3title = css`
+  border-bottom: 0.1rem solid grey;
+  margin-bottom: 2rem;
+  padding-bottom: 0.5rem;
 `;
 
 export default Show;

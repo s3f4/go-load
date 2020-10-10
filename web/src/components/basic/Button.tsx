@@ -11,7 +11,7 @@ enum ButtonType {
 }
 interface Props {
   text: string;
-  onClick: (e: any) => any;
+  onClick?: (e: any) => any;
   loading?: boolean;
   disabled?: boolean;
   type?: ButtonType;

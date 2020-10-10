@@ -58,11 +58,61 @@ const Create: React.FC<Props> = (props: Props) => {
     const content: any[] = [];
 
     testConfig?.tests.map((test: Test) => {
-      const row: any[] = [test.url, test.method, test.requestCount];
+      const row: any[] = [
+        test.url,
+        test.method,
+        test.requestCount,
+        buttons("Edit", test),
+        buttons("Delete", test),
+      ];
       content.push(row);
     });
-
+    console.log(content);
     return content;
+  };
+
+  const buttons = (text: string, test?: Test) => {
+    switch (text) {
+      case "Delete":
+        return (
+          <Button
+            text={text}
+            onClick={(e: React.FormEvent) => {
+              e.preventDefault();
+              deleteTest(test!);
+            }}
+          />
+        );
+      case "Edit":
+        return (
+          <Button
+            text={text}
+            onClick={(e: React.FormEvent) => {
+              e.preventDefault();
+              editTest(test!);
+            }}
+          />
+        );
+      case "Delete All":
+        return (
+          <Button
+            text={text}
+            onClick={(e: React.FormEvent) => {
+              e.preventDefault();
+              deleteAllTests();
+            }}
+          />
+        );
+    }
+  };
+
+  const deleteTest = (test: Test) => {};
+  const editTest = (test: Test) => {};
+  const deleteAllTests = () => {
+    setTestConfig({
+      ...testConfig,
+      tests: [],
+    });
   };
 
   const save = () => {
@@ -107,7 +157,13 @@ const Create: React.FC<Props> = (props: Props) => {
         {message ? <Message type="error" message={message} /> : ""}
         {testConfig && testConfig.tests.length > 0 && (
           <Table
-            title={["URL", "Method", "Requests Count"]}
+            title={[
+              "URL",
+              "Method",
+              "Requests Count",
+              "",
+              buttons("Delete All"),
+            ]}
             content={buildTable()}
           />
         )}

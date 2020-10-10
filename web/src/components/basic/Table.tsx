@@ -4,8 +4,8 @@ import { jsx, css } from "@emotion/core";
 import { Colors } from "../style";
 
 interface Props {
-  title: string[];
-  content: string[][];
+  title: any[];
+  content: any[][];
 }
 
 const Table: React.FC<Props> = (props: Props) => {

@@ -42,13 +42,58 @@ const Show: React.FC<Props> = (props: Props) => {
 
     if (selectedConfig) {
       selectedConfig.tests.map((test: Test) => {
-        const row: any[] = [test.url, test.method, test.requestCount];
+        const row: any[] = [
+          test.url,
+          test.method,
+          test.requestCount,
+          buttons("Edit", test),
+          buttons("Delete", test),
+        ];
         content.push(row);
       });
     }
 
     return content;
   };
+
+  const buttons = (text: string, test?: Test) => {
+    switch (text) {
+      case "Delete":
+        return (
+          <Button
+            text={text}
+            onClick={(e: React.FormEvent) => {
+              e.preventDefault();
+              deleteTest(test!);
+            }}
+          />
+        );
+      case "Edit":
+        return (
+          <Button
+            text={text}
+            onClick={(e: React.FormEvent) => {
+              e.preventDefault();
+              editTest(test!);
+            }}
+          />
+        );
+      case "Delete All":
+        return (
+          <Button
+            text={text}
+            onClick={(e: React.FormEvent) => {
+              e.preventDefault();
+              deleteAllTests();
+            }}
+          />
+        );
+    }
+  };
+
+  const deleteTest = (test: Test) => {};
+  const editTest = (test: Test) => {};
+  const deleteAllTests = () => {};
 
   return (
     <div css={container}>
@@ -77,7 +122,7 @@ const Show: React.FC<Props> = (props: Props) => {
       </div>
       <div css={rightColumn}>
         <Table
-          title={["URL", "Method", "Requests Count"]}
+          title={["URL", "Method", "Requests Count", "", buttons("Delete All")]}
           content={buildTable()}
         />
       </div>
@@ -108,7 +153,7 @@ const leftConfigDiv = css`
   min-height: 5rem;
   display: flex;
   flex-direction: column;
-  border: ${Borders.border1};
+  border-bottom: ${Borders.border1};
   border-radius: 0.5rem;
   padding: 1rem;
   cursor: pointer;
@@ -116,7 +161,7 @@ const leftConfigDiv = css`
 
 const h3title = css`
   border-bottom: 0.1rem solid grey;
-  margin-bottom: 2rem;
+  margin-bottom: 0.5rem;
   padding-bottom: 0.5rem;
 `;
 

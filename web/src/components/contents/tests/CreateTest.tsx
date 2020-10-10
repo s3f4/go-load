@@ -12,10 +12,12 @@ interface Props extends BaseForm {
   addNewTest: (test: Test) => (e: React.FormEvent) => void;
 }
 
+type methodType = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+
 const CreateTest = (props: Props) => {
   const [requestCount, setRequestCount] = React.useState<number>(1);
   const [url, setUrl] = React.useState<string>("");
-  const [method, setMethod] = React.useState<string>("");
+  const [method, setMethod] = React.useState<methodType>("GET");
   const [payload, setPayload] = React.useState<string>("");
   const [expectedResponseBody, setExpectedResponseBody] = React.useState<
     string
@@ -31,8 +33,8 @@ const CreateTest = (props: Props) => {
   );
   const [isValid, setIsValid] = React.useState<any>({
     requestCount: true,
-    url: true,
-    method: true,
+    url: false,
+    method: false,
   });
 
   const validation = (name: string) => (value: boolean) =>
@@ -54,10 +56,14 @@ const CreateTest = (props: Props) => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement> | any) => {
     if (!e.target && e.hasOwnProperty("value") && e.hasOwnProperty("label")) {
-      setTransportConfig({
-        ...transportConfig,
-        DisableKeepAlives: e.value === "true",
-      });
+      if (e.value === "true" || e.value === "false") {
+        setTransportConfig({
+          ...transportConfig,
+          DisableKeepAlives: e.value === "true",
+        });
+        return;
+      }
+      setMethod(e.value);
       return;
     }
 
@@ -67,9 +73,6 @@ const CreateTest = (props: Props) => {
         break;
       case "requestCount":
         setRequestCount(toNum(e.target.value));
-        break;
-      case "method":
-        setMethod(e.target.value);
         break;
       case "payload":
         setPayload(e.target.value);
@@ -117,11 +120,24 @@ const CreateTest = (props: Props) => {
             }}
             isValid={isValid["requestCount"]}
           />
-          <TextInput
-            onChange={handleChange}
-            label="HTTP Method"
+          <SelectBox
             name="method"
+            label={"HTTP Method"}
+            onChange={handleChange}
+            options={[
+              { value: "GET", label: "GET" },
+              { value: "POST", label: "POST" },
+              { value: "PUT", label: "PUT" },
+              { value: "PATCH", label: "PATCH" },
+              { value: "DELETE", label: "DELETE" },
+            ]}
             value={method}
+            validate={{
+              minLength: 3,
+              validationFunction: validation("method"),
+              message: "Please select a method for HTTP requests.",
+            }}
+            isValid={isValid["method"]}
           />
           <TextInput
             onChange={handleChange}

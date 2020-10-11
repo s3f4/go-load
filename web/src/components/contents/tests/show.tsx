@@ -13,6 +13,7 @@ import Table from "../../basic/Table";
 import Button from "../../basic/Button";
 import { Borders } from "../../style";
 import Message from "../../basic/Message";
+import TestForm from "./test_form";
 
 interface Props {
   testConfg?: TestConfig;
@@ -24,12 +25,14 @@ const Show: React.FC<Props> = (props: Props) => {
     name: "",
     tests: [],
   });
+  const [selectedTest, setSelectedTest] = useState<Test | null>(null);
   const [message, setMessage] = React.useState<string>("");
 
   React.useEffect(() => {
     listTests()
       .then((response) => {
         setConfigs(response.data);
+        setSelectedConfig(response.data[0]);
       })
       .catch((error) => console.log(error));
   }, []);
@@ -96,9 +99,11 @@ const Show: React.FC<Props> = (props: Props) => {
     }
   };
 
+  const updateTest = (test: Test) => {};
+
   const deleteTest = (test: Test): void => {
     deleteTestReq(test)
-      .then((response) => {
+      .then(() => {
         setSelectedConfig({
           ...selectedConfig,
           tests: selectedConfig.tests.filter(
@@ -109,7 +114,9 @@ const Show: React.FC<Props> = (props: Props) => {
       .catch((error) => setMessage(error));
   };
 
-  const editTest = (test: Test): void => {};
+  const editTest = (test: Test): void => {
+    setSelectedTest(test);
+  };
 
   const deleteAllTests = (): void => {};
 
@@ -144,6 +151,7 @@ const Show: React.FC<Props> = (props: Props) => {
           title={["URL", "Method", "Requests Count", "", buttons("Delete All")]}
           content={buildTable()}
         />
+        {selectedTest && <TestForm test={selectedTest} updateTest={() => {}} />}
       </div>
     </div>
   );

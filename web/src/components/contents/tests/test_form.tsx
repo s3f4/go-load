@@ -9,8 +9,8 @@ import { Test } from "../../../api/entity/test_config";
 import SelectBox from "../../basic/SelectBox";
 
 interface Props extends BaseForm {
-  addNewTest: (test: Test) => void;
-  updateNewTest: (test: Test) => void;
+  addTest?: (test: Test) => void;
+  updateTest?: (test: Test) => void;
   setMessage?: () => void;
   test?: Test;
 }
@@ -47,9 +47,8 @@ const TestForm = (props: Props) => {
     });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement> | any) => {
-    if (props.setMessage) {
-      props.setMessage();
-    }
+    props.setMessage && props.setMessage();
+
     if (!e.target && e.hasOwnProperty("value") && e.hasOwnProperty("label")) {
       if (e.value === "true" || e.value === "false") {
         setTest({
@@ -78,7 +77,9 @@ const TestForm = (props: Props) => {
     return (
       <div css={container}>
         <div css={formDiv}>
-          <h3 css={formTitle}>Create Tests</h3>
+          <h3 css={formTitle}>
+            {props.test ? "Update the Test" : "Create New Test"}
+          </h3>
           <TextInput
             onChange={handleChange}
             label="Target URL"
@@ -161,7 +162,7 @@ const TestForm = (props: Props) => {
             <Button
               text="Update"
               onClick={() => {
-                props.updateNewTest(test);
+                props.updateTest?.(test);
                 setTest(initialTest);
               }}
               disabled={!isValid["url"]}
@@ -170,7 +171,7 @@ const TestForm = (props: Props) => {
             <Button
               text="Add New Test"
               onClick={() => {
-                props.addNewTest(test);
+                props.addTest?.(test);
                 setTest(initialTest);
               }}
               disabled={!isValid["url"]}

@@ -4,11 +4,11 @@ import { jsx, css } from "@emotion/core";
 import { saveTests, Test, TestConfig } from "../../../api/entity/test_config";
 import TextInput from "../../basic/TextInput";
 import Button from "../../basic/Button";
-import CreateTest from "./CreateTest";
 import Message from "../../basic/Message";
 import Table from "../../basic/Table";
 import { useHistory } from "react-router-dom";
 import { isEqual } from "lodash";
+import TestForm from "./test_form";
 
 interface Props {}
 
@@ -220,11 +220,11 @@ const Create: React.FC<Props> = (props: Props) => {
           />
         )}
 
-        <CreateTest
+        <TestForm
           test={editTest}
           setMessage={triggerMessage("")}
-          addNewTest={addNewTest}
-          updateNewTest={updateNewTest}
+          addTest={addNewTest}
+          updateTest={updateNewTest}
         />
       </div>
     </div>

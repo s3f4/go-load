@@ -6,6 +6,7 @@ export interface TestConfig {
   tests: Test[];
 }
 export interface Test {
+  id?: number;
   requestCount: number;
   goroutineCount: number;
   url: string;
@@ -34,4 +35,12 @@ export const runTests = async (testConfig: TestConfig) => {
 
 export const listTests = async () => {
   return await makeReq("/tests", "Get");
+};
+
+export const deleteTestsReq = async (testConfig: TestConfig) => {
+  return await makeReq("/tests", "DELETE", testConfig);
+};
+
+export const deleteTestReq = async (test: Test) => {
+  return await makeReq("/tests/test", "DELETE", test);
 };

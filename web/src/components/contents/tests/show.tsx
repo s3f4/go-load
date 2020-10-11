@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { jsx, css } from "@emotion/core";
 import { Link } from "react-router-dom";
 import {
+  deleteTestReq,
   listTests,
   runTests,
   Test,
@@ -11,6 +12,7 @@ import {
 import Table from "../../basic/Table";
 import Button from "../../basic/Button";
 import { Borders } from "../../style";
+import Message from "../../basic/Message";
 
 interface Props {
   testConfg?: TestConfig;
@@ -18,8 +20,11 @@ interface Props {
 
 const Show: React.FC<Props> = (props: Props) => {
   const [configs, setConfigs] = useState<TestConfig[]>();
-  const [selectedConfig, setSelectedConfig] = useState<TestConfig>();
-  console.log(configs);
+  const [selectedConfig, setSelectedConfig] = useState<TestConfig>({
+    name: "",
+    tests: [],
+  });
+  const [message, setMessage] = React.useState<string>("");
 
   React.useEffect(() => {
     listTests()
@@ -91,9 +96,22 @@ const Show: React.FC<Props> = (props: Props) => {
     }
   };
 
-  const deleteTest = (test: Test) => {};
-  const editTest = (test: Test) => {};
-  const deleteAllTests = () => {};
+  const deleteTest = (test: Test): void => {
+    deleteTestReq(test)
+      .then((response) => {
+        setSelectedConfig({
+          ...selectedConfig,
+          tests: selectedConfig.tests.filter(
+            (selectedTest: Test) => test.id !== selectedTest.id,
+          ),
+        });
+      })
+      .catch((error) => setMessage(error));
+  };
+
+  const editTest = (test: Test): void => {};
+
+  const deleteAllTests = (): void => {};
 
   return (
     <div css={container}>
@@ -121,6 +139,7 @@ const Show: React.FC<Props> = (props: Props) => {
         </Link>
       </div>
       <div css={rightColumn}>
+        {message ? <Message type="error" message={message} /> : ""}
         <Table
           title={["URL", "Method", "Requests Count", "", buttons("Delete All")]}
           content={buildTable()}

@@ -16,6 +16,7 @@ type TestService interface {
 	Get(*models.TestConfig) (*models.TestConfig, error)
 	Update(*models.TestConfig) error
 	Delete(*models.TestConfig) error
+	DeleteTest(*models.Test) error
 	List() ([]models.TestConfig, error)
 }
 
@@ -97,6 +98,11 @@ func (s *testService) Update(config *models.TestConfig) error {
 // Delete
 func (s *testService) Delete(config *models.TestConfig) error {
 	return s.tr.Delete(config)
+}
+
+// DeleteTest
+func (s *testService) DeleteTest(test *models.Test) error {
+	return s.tr.DeleteTest(test)
 }
 
 // List

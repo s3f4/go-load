@@ -59,6 +59,7 @@ func initHandlers() {
 	router.Post("/workers", handlers.WorkerHandler.Stop)
 	router.Get("/stats", handlers.StatsHandler.List)
 	router.Post("/tests/start", handlers.TestHandler.Start)
+	router.Delete("/tests/test", handlers.TestHandler.DeleteTest)
 	router.Post("/tests", handlers.TestHandler.Insert)
 	router.Get("/tests", handlers.TestHandler.List)
 }

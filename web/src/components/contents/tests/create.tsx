@@ -106,8 +106,15 @@ const Create: React.FC<Props> = (props: Props) => {
     }
   };
 
-  const deleteTest = (test: Test) => {};
+  const deleteTest = (test: Test) => {
+    setTestConfig({
+      ...testConfig,
+      tests: testConfig.tests.filter((testFilter) => testFilter.id !== test.id),
+    });
+  };
+
   const editTest = (test: Test) => {};
+
   const deleteAllTests = () => {
     setTestConfig({
       ...testConfig,

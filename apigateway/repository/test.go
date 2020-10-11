@@ -13,6 +13,7 @@ type TestRepository interface {
 	Insert(*models.TestConfig) error
 	Update(*models.TestConfig) error
 	Delete(*models.TestConfig) error
+	DeleteTest(*models.Test) error
 	Get() (*models.TestConfig, error)
 	List() ([]models.TestConfig, error)
 }
@@ -42,6 +43,14 @@ func (r *testRepository) Update(testConfig *models.TestConfig) error {
 
 func (r *testRepository) Delete(testConfig *models.TestConfig) error {
 	return r.DB().Where("1=1").Delete(testConfig).Error
+}
+
+func (r *testRepository) DeleteTest(test *models.Test) error {
+	err := r.DB().Where("test_id=?", test.ID).Delete(&models.TransportConfig{}).Error
+	if err != nil {
+		return err
+	}
+	return r.DB().Where("id=?", test.ID).Delete(test).Error
 }
 
 func (r *testRepository) Get() (*models.TestConfig, error) {

@@ -9,7 +9,8 @@ import { Test } from "../../../api/entity/test_config";
 import SelectBox from "../../basic/SelectBox";
 
 interface Props extends BaseForm {
-  addNewTest: (test: Test) => (e: React.FormEvent) => void;
+  addNewTest: (test: Test) => void;
+  updateNewTest: (test: Test) => void;
   setMessage?: () => void;
   test?: Test;
 }
@@ -156,11 +157,25 @@ const TestForm = (props: Props) => {
             ]}
             value={test.transportConfig.DisableKeepAlives ? "true" : "false"}
           />
-          <Button
-            text="Add New Test"
-            onClick={props.addNewTest(test)}
-            disabled={!isValid["url"]}
-          />
+          {props.test ? (
+            <Button
+              text="Update"
+              onClick={() => {
+                props.updateNewTest(test);
+                setTest(initialTest);
+              }}
+              disabled={!isValid["url"]}
+            />
+          ) : (
+            <Button
+              text="Add New Test"
+              onClick={() => {
+                props.addNewTest(test);
+                setTest(initialTest);
+              }}
+              disabled={!isValid["url"]}
+            />
+          )}
         </div>
       </div>
     );

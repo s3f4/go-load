@@ -29,12 +29,13 @@ const Create: React.FC<Props> = (props: Props) => {
       name: configName,
     });
   };
-  const addNewTest = (test: Test) => (e: React.FormEvent) => {
-    e.preventDefault();
+  const addNewTest = (test: Test) => {
     if (!testConfig.name) {
       setMessage("Please set test group name on the left menu.");
       return;
     }
+
+    setEditTest(undefined);
 
     let equal = false;
     testConfig.tests.forEach((t: Test) => {
@@ -47,11 +48,26 @@ const Create: React.FC<Props> = (props: Props) => {
       setMessage("This test was already created");
       return;
     }
-
+    test.id = new Date().getUTCMilliseconds();
     setTestConfig({
       ...testConfig,
       tests: [...testConfig.tests, test],
     });
+  };
+
+  const updateNewTest = (test: Test) => {
+    const index = testConfig.tests.findIndex((t) => t.id === test.id);
+    if (index !== -1) {
+      setTestConfig({
+        ...testConfig,
+        tests: [
+          ...testConfig.tests.slice(0, index),
+          Object.assign({}, testConfig.tests[index], test),
+          ...testConfig.tests.slice(index + 1),
+        ],
+      });
+    }
+    setEditTest(undefined);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -208,6 +224,7 @@ const Create: React.FC<Props> = (props: Props) => {
           test={editTest}
           setMessage={triggerMessage("")}
           addNewTest={addNewTest}
+          updateNewTest={updateNewTest}
         />
       </div>
     </div>

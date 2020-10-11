@@ -33,6 +33,21 @@ const Create: React.FC<Props> = (props: Props) => {
       setMessage("Please set test group name on the left menu.");
       return;
     }
+    let found = false;
+    testConfig.tests.forEach((t: Test) => {
+      if (
+        t.url + t.method + t.payload ===
+        test.url + test.method + test.payload
+      ) {
+        found = true;
+      }
+    });
+
+    if (found) {
+      setMessage("This test was already created");
+      return;
+    }
+
     setTestConfig({
       ...testConfig,
       tests: [...testConfig.tests, test],
@@ -123,6 +138,11 @@ const Create: React.FC<Props> = (props: Props) => {
   };
 
   const save = () => {
+    if (!testConfig.tests.length) {
+      setMessage("Please create a test to save test group");
+      return;
+    }
+
     saveTests(testConfig)
       .then(() => {
         history.push("/tests");
@@ -130,6 +150,10 @@ const Create: React.FC<Props> = (props: Props) => {
       .catch((error) => {
         setMessage(error);
       });
+  };
+
+  const triggerMessage = (message: string) => () => {
+    setMessage(message);
   };
 
   return (
@@ -175,7 +199,7 @@ const Create: React.FC<Props> = (props: Props) => {
           />
         )}
 
-        <CreateTest addNewTest={addNewTest} />
+        <CreateTest setMessage={triggerMessage("")} addNewTest={addNewTest} />
       </div>
     </div>
   );

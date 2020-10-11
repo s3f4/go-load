@@ -10,6 +10,7 @@ import SelectBox from "../../basic/SelectBox";
 
 interface Props extends BaseForm {
   addNewTest: (test: Test) => (e: React.FormEvent) => void;
+  setMessage?: () => void;
 }
 
 type methodType = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -55,6 +56,9 @@ const CreateTest = (props: Props) => {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement> | any) => {
+    if (props.setMessage) {
+      props.setMessage();
+    }
     if (!e.target && e.hasOwnProperty("value") && e.hasOwnProperty("label")) {
       if (e.value === "true" || e.value === "false") {
         setTransportConfig({

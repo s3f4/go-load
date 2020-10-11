@@ -29,6 +29,7 @@ const SelectBox = (props: Props) => {
       {props.label ? <label css={label}>{props.label}</label> : ""}
       <Select
         css={selectBox(props.isValid ?? true)}
+        value={props.options.filter((option) => option.value === props.value)}
         styles={{
           control: (base) => ({
             ...base,

@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import React from "react";
+import React, { useState } from "react";
 import { jsx, css } from "@emotion/core";
 import { saveTests, Test, TestConfig } from "../../../api/entity/test_config";
 import TextInput from "../../basic/TextInput";
@@ -8,13 +8,15 @@ import CreateTest from "./CreateTest";
 import Message from "../../basic/Message";
 import Table from "../../basic/Table";
 import { useHistory } from "react-router-dom";
+import { isEqual } from "lodash";
 
 interface Props {}
 
 const Create: React.FC<Props> = (props: Props) => {
-  const [message, setMessage] = React.useState<string>("");
-  const [configName, setConfigName] = React.useState<string>("");
-  const [testConfig, setTestConfig] = React.useState<TestConfig>({
+  const [editTest, setEditTest] = useState<Test | undefined>(undefined);
+  const [message, setMessage] = useState<string>("");
+  const [configName, setConfigName] = useState<string>("");
+  const [testConfig, setTestConfig] = useState<TestConfig>({
     name: "",
     tests: [],
   });
@@ -33,17 +35,15 @@ const Create: React.FC<Props> = (props: Props) => {
       setMessage("Please set test group name on the left menu.");
       return;
     }
-    let found = false;
+
+    let equal = false;
     testConfig.tests.forEach((t: Test) => {
-      if (
-        t.url + t.method + t.payload ===
-        test.url + test.method + test.payload
-      ) {
-        found = true;
+      if (isEqual(t, test)) {
+        equal = true;
       }
     });
 
-    if (found) {
+    if (equal) {
       setMessage("This test was already created");
       return;
     }
@@ -104,7 +104,7 @@ const Create: React.FC<Props> = (props: Props) => {
             text={text}
             onClick={(e: React.FormEvent) => {
               e.preventDefault();
-              editTest(test!);
+              setEditTest(test!);
             }}
           />
         );
@@ -124,20 +124,18 @@ const Create: React.FC<Props> = (props: Props) => {
   const deleteTest = (test: Test) => {
     setTestConfig({
       ...testConfig,
-      tests: testConfig.tests.filter((testFilter) => testFilter.id !== test.id),
+      tests: testConfig.tests.filter((t: Test) => !isEqual(t, test)),
     });
   };
 
-  const editTest = (test: Test) => {};
-
   const deleteAllTests = () => {
     setTestConfig({
-      ...testConfig,
+      name: "",
       tests: [],
     });
   };
 
-  const save = () => {
+  const saveTestConfig = () => {
     if (!testConfig.tests.length) {
       setMessage("Please create a test to save test group");
       return;
@@ -150,6 +148,13 @@ const Create: React.FC<Props> = (props: Props) => {
       .catch((error) => {
         setMessage(error);
       });
+  };
+
+  const updateTestConfig = () => {
+    setTestConfig({
+      ...testConfig,
+      name: "",
+    });
   };
 
   const triggerMessage = (message: string) => () => {
@@ -169,15 +174,15 @@ const Create: React.FC<Props> = (props: Props) => {
               Total Requests: <b>{totalRequests()}</b>
             </span>
             <div>
-              <Button type={1} text="Save" onClick={save} />
-              <Button type={1} text="Update" onClick={() => {}} />
+              <Button text="Save" onClick={saveTestConfig} />
+              <Button text="Update" onClick={updateTestConfig} />
             </div>
           </div>
         ) : (
           <React.Fragment>
             <TextInput
-              name={"Test Config Name"}
-              label={"Test Config Name"}
+              name={"Test Group Name"}
+              label={"Test Group Name"}
               onChange={handleChange}
             />
             <Button text="Create" onClick={setConfig} />
@@ -199,7 +204,11 @@ const Create: React.FC<Props> = (props: Props) => {
           />
         )}
 
-        <CreateTest setMessage={triggerMessage("")} addNewTest={addNewTest} />
+        <CreateTest
+          test={editTest}
+          setMessage={triggerMessage("")}
+          addNewTest={addNewTest}
+        />
       </div>
     </div>
   );

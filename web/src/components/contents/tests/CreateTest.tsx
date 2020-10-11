@@ -5,38 +5,39 @@ import TextInput from "../../basic/TextInput";
 import Button from "../../basic/Button";
 import { toNum } from "../../basic/helper";
 import { BaseForm } from "../../basic/BaseForm";
-import { Test, TransportConfig } from "../../../api/entity/test_config";
+import { Test } from "../../../api/entity/test_config";
 import SelectBox from "../../basic/SelectBox";
 
 interface Props extends BaseForm {
   addNewTest: (test: Test) => (e: React.FormEvent) => void;
   setMessage?: () => void;
+  test?: Test;
 }
 
-type methodType = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+// type methodType = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
-const CreateTest = (props: Props) => {
-  const [requestCount, setRequestCount] = React.useState<number>(1);
-  const [url, setUrl] = React.useState<string>("");
-  const [method, setMethod] = React.useState<methodType>("GET");
-  const [payload, setPayload] = React.useState<string>("");
-  const [expectedResponseBody, setExpectedResponseBody] = React.useState<
-    string
-  >("");
-  const [expectedResponseCode, setExpectedResponseCode] = React.useState<
-    number
-  >(0);
-  const [goroutineCount, setGoroutineCount] = React.useState<number>(1);
-  const [transportConfig, setTransportConfig] = React.useState<TransportConfig>(
-    {
-      DisableKeepAlives: true,
-    },
-  );
+const initialTest: Test = {
+  url: "",
+  requestCount: 1,
+  method: "GET",
+  expectedResponseCode: 0,
+  expectedResponseBody: "",
+  payload: "",
+  goroutineCount: 1,
+  transportConfig: { DisableKeepAlives: true },
+};
+
+const TestForm = (props: Props) => {
+  const [test, setTest] = React.useState<Test>(initialTest);
   const [isValid, setIsValid] = React.useState<any>({
     requestCount: true,
     url: false,
     method: false,
   });
+
+  React.useEffect(() => {
+    props.test && setTest(props.test);
+  }, [props.test]);
 
   const validation = (name: string) => (value: boolean) =>
     setIsValid({
@@ -44,55 +45,32 @@ const CreateTest = (props: Props) => {
       [name]: value,
     });
 
-  const test: Test = {
-    requestCount,
-    method,
-    payload,
-    goroutineCount,
-    url,
-    transportConfig,
-    expectedResponseBody,
-    expectedResponseCode,
-  };
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement> | any) => {
     if (props.setMessage) {
       props.setMessage();
     }
     if (!e.target && e.hasOwnProperty("value") && e.hasOwnProperty("label")) {
       if (e.value === "true" || e.value === "false") {
-        setTransportConfig({
-          ...transportConfig,
-          DisableKeepAlives: e.value === "true",
+        setTest({
+          ...test,
+          ["transportConfig"]: { DisableKeepAlives: e.value === "true" },
         });
         return;
       }
-      setMethod(e.value);
+      setTest({
+        ...test,
+        ["method"]: e.value,
+      });
       return;
     }
 
-    switch (e.target.name) {
-      case "url":
-        setUrl(e.target.value);
-        break;
-      case "requestCount":
-        setRequestCount(toNum(e.target.value));
-        break;
-      case "payload":
-        setPayload(e.target.value);
-        break;
-      case "responseBody":
-        setExpectedResponseBody(e.target.value);
-        break;
-      case "responseCode":
-        setExpectedResponseCode(e.target.value);
-        break;
-      case "goroutineCount":
-        let val = toNum(e.target.value);
-        if (val <= 0) val = 1;
-        setGoroutineCount(val);
-        break;
-    }
+    setTest({
+      ...test,
+      [e.target.name]:
+        typeof test[e.target.name] === "number"
+          ? toNum(e.target.value)
+          : e.target.value,
+    });
   };
 
   const formContent = () => {
@@ -104,7 +82,7 @@ const CreateTest = (props: Props) => {
             onChange={handleChange}
             label="Target URL"
             name="url"
-            value={url}
+            value={test.url}
             validate={{
               url: true,
               message: "Please write a valid URL",
@@ -116,7 +94,7 @@ const CreateTest = (props: Props) => {
             onChange={handleChange}
             label="Total Request"
             name="requestCount"
-            value={requestCount}
+            value={test.requestCount}
             validate={{
               min: 1,
               validationFunction: validation("requestCount"),
@@ -135,7 +113,7 @@ const CreateTest = (props: Props) => {
               { value: "PATCH", label: "PATCH" },
               { value: "DELETE", label: "DELETE" },
             ]}
-            value={method}
+            value={test.method}
             validate={{
               minLength: 3,
               validationFunction: validation("method"),
@@ -147,26 +125,26 @@ const CreateTest = (props: Props) => {
             onChange={handleChange}
             label="Request Payload"
             name="payload"
-            value={payload}
+            value={test.payload}
           />
           <TextInput
             onChange={handleChange}
             label="Expected Response Code"
-            name="responseCode"
-            value={expectedResponseCode}
+            name="expectedResponseCode"
+            value={test.expectedResponseCode}
           />
           <TextInput
             onChange={handleChange}
             label="Expected Response Body"
-            name="responseBody"
-            value={expectedResponseBody}
+            name="expectedResponseBody"
+            value={test.expectedResponseBody}
           />
 
           <TextInput
             onChange={handleChange}
             label="Goroutine per worker (up to 10)"
             name="goroutineCount"
-            value={goroutineCount}
+            value={test.goroutineCount}
           />
           <SelectBox
             name={"disableKeepAlives"}
@@ -176,7 +154,7 @@ const CreateTest = (props: Props) => {
               { value: "true", label: "True" },
               { value: "false", label: "False" },
             ]}
-            value={transportConfig.DisableKeepAlives ? "true" : "false"}
+            value={test.transportConfig.DisableKeepAlives ? "true" : "false"}
           />
           <Button
             text="Add New Test"
@@ -210,4 +188,4 @@ const formTitle = css`
   border-bottom: 0.1rem solid #e3e3e3;
 `;
 
-export default CreateTest;
+export default TestForm;

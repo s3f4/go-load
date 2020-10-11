@@ -5,6 +5,7 @@
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
+    "suppressImplicitAnyIndexErrors": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
@@ -15,5 +16,5 @@
     "noEmit": true,
     "jsx": "react"
   },
-  "include": ["src"]
+  "include": ["src", "index.d.ts"]
 }

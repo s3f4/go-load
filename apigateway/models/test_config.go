@@ -4,11 +4,9 @@ import "time"
 
 // TestConfig model
 type TestConfig struct {
-	ID        uint   `json:"id" gorm:"primaryKey"`
-	Name      string `json:"name"`
-	StartTime *time.Time
-	EndTime   *time.Time
-	Tests     []*Test `json:"tests"`
+	ID    uint    `json:"id" gorm:"primaryKey"`
+	Name  string  `json:"name"`
+	Tests []*Test `json:"tests"`
 }
 
 // Test config to make requests
@@ -23,9 +21,15 @@ type Test struct {
 	ExpectedResponseCode uint            `json:"expectedResponseCode"`
 	ExpectedResponseBody string          `json:"expectedResponseBody"`
 	TransportConfig      TransportConfig `json:"transportConfig" gorm:"foreignKey:TestID"`
-	Passed               bool            `json:"passed"`
-	StartTime            *time.Time      `json:"startTime"`
-	EndTime              *time.Time      `json:"endTime"`
+}
+
+// RunTest tests
+type RunTest struct {
+	ID        uint `json:"id" gorm:"primaryKey"`
+	TestID    uint `gorm:"foreignKey:TestID"`
+	StartTime *time.Time
+	EndTime   *time.Time
+	Passed    bool `json:"passed"`
 }
 
 // TransportConfig is used to specify how to make requests

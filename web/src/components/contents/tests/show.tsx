@@ -28,7 +28,8 @@ const Show: React.FC<Props> = (props: Props) => {
     tests: [],
   });
   const [selectedTest, setSelectedTest] = useState<Test | null>(null);
-  const [message, setMessage] = React.useState<string>("");
+  const [message, setMessage] = useState<string>("");
+  const [showLinkList, setShowLinkList] = useState<TestConfig>();
 
   React.useEffect(() => {
     listTests()
@@ -39,10 +40,10 @@ const Show: React.FC<Props> = (props: Props) => {
       .catch((error) => console.log(error));
   }, []);
 
-  const run = (e: React.FormEvent) => {
+  const run = (testConfig: TestConfig) => (e: React.FormEvent) => {
     e.preventDefault();
 
-    runTests(props.testConfg!)
+    runTests(testConfig)
       .then(() => {})
       .catch(() => {});
   };
@@ -139,13 +140,26 @@ const Show: React.FC<Props> = (props: Props) => {
               e.preventDefault();
               setSelectedConfig(config);
             }}
+            onMouseEnter={() => {
+              setShowLinkList(config);
+            }}
+            onMouseLeave={() => {
+              setShowLinkList(undefined);
+            }}
           >
-            <span>
-              Name: <b>{config.name}</b>
-            </span>
-            <span>
-              Total Requests: <b>0</b>
-            </span>
+            {showLinkList === undefined || showLinkList !== config ? (
+              <div>
+                <span>
+                  <b>{config.name}</b> Total Requests: <b>0</b>
+                </span>
+              </div>
+            ) : (
+              <div>
+                <b>{config.name}</b>
+                <Button type={1} text="Run" onClick={run(config)} />
+                <Button type={1} text="Update" />
+              </div>
+            )}
           </div>
         ))}
         <Link to="/tests/create">
@@ -177,6 +191,10 @@ const leftColumn = css`
   width: 30%;
   min-height: 50rem;
   padding: 2rem;
+`;
+
+const linkList = css`
+  display: block;
 `;
 
 const rightColumn = css`

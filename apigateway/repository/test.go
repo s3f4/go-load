@@ -39,11 +39,11 @@ func (r *testRepository) Insert(testConfig *models.TestConfig) error {
 }
 
 func (r *testRepository) Update(testConfig *models.TestConfig) error {
-	return r.DB().Where("1=1").Delete(testConfig).Error
+	return r.DB().Model(testConfig).Updates(testConfig).Error
 }
 
 func (r *testRepository) Delete(testConfig *models.TestConfig) error {
-	return r.DB().Where("1=1").Delete(testConfig).Error
+	return r.DB().Model(testConfig).Delete(testConfig).Error
 }
 
 func (r *testRepository) UpdateTest(test *models.Test) error {
@@ -60,7 +60,7 @@ func (r *testRepository) DeleteTest(test *models.Test) error {
 
 func (r *testRepository) Get() (*models.TestConfig, error) {
 	var testReq models.TestConfig
-	if err := r.DB().Last(&testReq).Error; err != nil {
+	if err := r.DB().Take(&testReq).Error; err != nil {
 		return nil, err
 	}
 	return &testReq, nil

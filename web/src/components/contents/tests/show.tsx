@@ -4,6 +4,7 @@ import { jsx, css } from "@emotion/core";
 import { Link } from "react-router-dom";
 import {
   deleteTestReq,
+  deleteTestsReq,
   listTests,
   runTests,
   Test,
@@ -12,7 +13,7 @@ import {
 } from "../../../api/entity/test_config";
 import Table from "../../basic/Table";
 import Button from "../../basic/Button";
-import { Borders } from "../../style";
+import { leftContent } from "../../style";
 import Message from "../../basic/Message";
 import TestForm from "./test_form";
 
@@ -87,16 +88,6 @@ const Show: React.FC<Props> = (props: Props) => {
             }}
           />
         );
-      case "Delete All":
-        return (
-          <Button
-            text={text}
-            onClick={(e: React.FormEvent) => {
-              e.preventDefault();
-              deleteAllTests();
-            }}
-          />
-        );
     }
   };
 
@@ -115,6 +106,17 @@ const Show: React.FC<Props> = (props: Props) => {
             (selectedTest: Test) => test.id !== selectedTest.id,
           ),
         });
+        if (selectedConfig.tests.length <= 1) {
+          deleteTestsReq(selectedConfig)
+            .then(() => {
+              setConfigs(
+                configs?.filter(
+                  (conf: TestConfig) => conf.id !== selectedConfig.id,
+                ),
+              );
+            })
+            .catch((error) => console.log(error));
+        }
       })
       .catch((error) => setMessage(error));
   };
@@ -123,15 +125,15 @@ const Show: React.FC<Props> = (props: Props) => {
     setSelectedTest(test);
   };
 
-  const deleteAllTests = (): void => {};
-
   return (
     <div css={container}>
       <div css={leftColumn}>
         <h3 css={h3title}>Test Groups</h3>
         {configs?.map((config: TestConfig) => (
           <div
-            css={leftConfigDiv}
+            css={css`
+              ${leftContent}
+            `}
             key={config.id}
             onClick={(e: React.MouseEvent) => {
               e.preventDefault();
@@ -153,7 +155,7 @@ const Show: React.FC<Props> = (props: Props) => {
       <div css={rightColumn}>
         {message ? <Message type="error" message={message} /> : ""}
         <Table
-          title={["URL", "Method", "Requests Count", "", buttons("Delete All")]}
+          title={["URL", "Method", "Requests Count", "", ""]}
           content={buildTable()}
         />
         {selectedTest && (
@@ -180,17 +182,6 @@ const leftColumn = css`
 const rightColumn = css`
   width: 70%;
   padding: 2rem;
-`;
-
-const leftConfigDiv = css`
-  width: 100%;
-  min-height: 5rem;
-  display: flex;
-  flex-direction: column;
-  border-bottom: ${Borders.border1};
-  border-radius: 0.5rem;
-  padding: 1rem;
-  cursor: pointer;
 `;
 
 const h3title = css`

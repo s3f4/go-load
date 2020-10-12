@@ -17,6 +17,7 @@ type testHandlerInterface interface {
 	Update(w http.ResponseWriter, r *http.Request)
 	Delete(w http.ResponseWriter, r *http.Request)
 	DeleteTest(w http.ResponseWriter, r *http.Request)
+	UpdateTest(w http.ResponseWriter, r *http.Request)
 	Get(w http.ResponseWriter, r *http.Request)
 	List(w http.ResponseWriter, r *http.Request)
 }
@@ -102,6 +103,21 @@ func (h *testHandler) DeleteTest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err := h.service.DeleteTest(&test)
+	if err != nil {
+		R500(w, err)
+		return
+	}
+	R200(w, test)
+}
+
+func (h *testHandler) UpdateTest(w http.ResponseWriter, r *http.Request) {
+	var test models.Test
+	if err := json.NewDecoder(r.Body).Decode(&test); err != nil {
+		R400(w, "Bad Request")
+		return
+	}
+
+	err := h.service.UpdateTest(&test)
 	if err != nil {
 		R500(w, err)
 		return

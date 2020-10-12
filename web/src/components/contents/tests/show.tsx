@@ -8,6 +8,7 @@ import {
   runTests,
   Test,
   TestConfig,
+  updateTestReq,
 } from "../../../api/entity/test_config";
 import Table from "../../basic/Table";
 import Button from "../../basic/Button";
@@ -99,7 +100,11 @@ const Show: React.FC<Props> = (props: Props) => {
     }
   };
 
-  const updateTest = (test: Test) => {};
+  const updateTest = (test: Test) => {
+    updateTestReq(test).then(() => {
+      setMessage(JSON.stringify(test));
+    });
+  };
 
   const deleteTest = (test: Test): void => {
     deleteTestReq(test)
@@ -151,7 +156,9 @@ const Show: React.FC<Props> = (props: Props) => {
           title={["URL", "Method", "Requests Count", "", buttons("Delete All")]}
           content={buildTable()}
         />
-        {selectedTest && <TestForm test={selectedTest} updateTest={() => {}} />}
+        {selectedTest && (
+          <TestForm test={selectedTest} updateTest={updateTest} />
+        )}
       </div>
     </div>
   );

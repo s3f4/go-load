@@ -13,6 +13,7 @@ type TestRepository interface {
 	Insert(*models.TestConfig) error
 	Update(*models.TestConfig) error
 	Delete(*models.TestConfig) error
+	UpdateTest(*models.Test) error
 	DeleteTest(*models.Test) error
 	Get() (*models.TestConfig, error)
 	List() ([]models.TestConfig, error)
@@ -43,6 +44,10 @@ func (r *testRepository) Update(testConfig *models.TestConfig) error {
 
 func (r *testRepository) Delete(testConfig *models.TestConfig) error {
 	return r.DB().Where("1=1").Delete(testConfig).Error
+}
+
+func (r *testRepository) UpdateTest(test *models.Test) error {
+	return r.DB().Model(test).Updates(test).Error
 }
 
 func (r *testRepository) DeleteTest(test *models.Test) error {

@@ -44,3 +44,7 @@ export const deleteTestsReq = async (testConfig: TestConfig) => {
 export const deleteTestReq = async (test: Test) => {
   return await makeReq("/tests/test", "DELETE", test);
 };
+
+export const updateTestReq = async (test: Test) => {
+  return await makeReq("/tests/test", "PUT", test);
+};

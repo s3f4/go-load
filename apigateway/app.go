@@ -58,12 +58,12 @@ func initHandlers() {
 	router.Get("/workers", handlers.WorkerHandler.List)
 	router.Post("/workers", handlers.WorkerHandler.Stop)
 	router.Get("/stats", handlers.StatsHandler.List)
-	router.Post("/tests/start", handlers.TestHandler.Start)
-	router.Put("/tests/test", handlers.TestHandler.UpdateTest)
-	router.Delete("/tests/test", handlers.TestHandler.DeleteTest)
-	router.Post("/tests", handlers.TestHandler.Insert)
-	router.Get("/tests", handlers.TestHandler.List)
-	router.Delete("/tests", handlers.TestHandler.Delete)
+	router.Post("/tests/start", handlers.TestGroupHandler.Start)
+	router.Put("/tests/test", handlers.TestHandler.Update)
+	router.Delete("/tests/test", handlers.TestHandler.Delete)
+	router.Post("/tests", handlers.TestGroupHandler.Insert)
+	router.Get("/tests", handlers.TestGroupHandler.List)
+	router.Delete("/tests", handlers.TestGroupHandler.Delete)
 }
 
 //Down downs service when kill SIGINT came.

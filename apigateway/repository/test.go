@@ -10,13 +10,11 @@ import (
 // TestRepository ..
 type TestRepository interface {
 	DB() *gorm.DB
-	Insert(*models.TestConfig) error
-	Update(*models.TestConfig) error
-	Delete(*models.TestConfig) error
-	UpdateTest(*models.Test) error
-	DeleteTest(*models.Test) error
-	Get() (*models.TestConfig, error)
-	List() ([]models.TestConfig, error)
+	Insert(*models.Test) error
+	Update(*models.Test) error
+	Delete(*models.Test) error
+	Get() (*models.Test, error)
+	List() ([]models.Test, error)
 }
 
 type testRepository struct {
@@ -34,23 +32,15 @@ func (r *testRepository) DB() *gorm.DB {
 	return r.base.GetDB()
 }
 
-func (r *testRepository) Insert(testConfig *models.TestConfig) error {
-	return r.DB().Create(testConfig).Error
+func (r *testRepository) Insert(test *models.Test) error {
+	return r.DB().Create(test).Error
 }
 
-func (r *testRepository) Update(testConfig *models.TestConfig) error {
-	return r.DB().Model(testConfig).Updates(testConfig).Error
-}
-
-func (r *testRepository) Delete(testConfig *models.TestConfig) error {
-	return r.DB().Model(testConfig).Delete(testConfig).Error
-}
-
-func (r *testRepository) UpdateTest(test *models.Test) error {
+func (r *testRepository) Update(test *models.Test) error {
 	return r.DB().Model(test).Updates(test).Error
 }
 
-func (r *testRepository) DeleteTest(test *models.Test) error {
+func (r *testRepository) Delete(test *models.Test) error {
 	err := r.DB().Where("test_id=?", test.ID).Delete(&models.TransportConfig{}).Error
 	if err != nil {
 		return err
@@ -58,16 +48,16 @@ func (r *testRepository) DeleteTest(test *models.Test) error {
 	return r.DB().Where("id=?", test.ID).Delete(test).Error
 }
 
-func (r *testRepository) Get() (*models.TestConfig, error) {
-	var testReq models.TestConfig
+func (r *testRepository) Get() (*models.Test, error) {
+	var testReq models.Test
 	if err := r.DB().Take(&testReq).Error; err != nil {
 		return nil, err
 	}
 	return &testReq, nil
 }
 
-func (r *testRepository) List() ([]models.TestConfig, error) {
-	var testReq []models.TestConfig
+func (r *testRepository) List() ([]models.Test, error) {
+	var testReq []models.Test
 	if err := r.DB().Preload("Tests").Find(&testReq).Error; err != nil {
 		fmt.Println(err)
 		return nil, err

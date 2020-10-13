@@ -126,6 +126,7 @@ func (r *baseRepository) Migrate() {
 	r.GetDB().AutoMigrate(&models.InstanceConfig{})
 	r.GetDB().AutoMigrate(&models.TestGroup{})
 	r.GetDB().AutoMigrate(&models.Test{})
+	r.GetDB().AutoMigrate(&models.RunTest{})
 	r.GetDB().AutoMigrate(&models.TransportConfig{})
 }
 

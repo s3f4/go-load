@@ -1,7 +1,6 @@
 /** @jsx jsx */
 import React, { useState } from "react";
 import { jsx, css } from "@emotion/core";
-import { saveTests, Test, TestConfig } from "../../../api/entity/test_config";
 import TextInput from "../../basic/TextInput";
 import Button from "../../basic/Button";
 import Message from "../../basic/Message";
@@ -9,14 +8,16 @@ import Table from "../../basic/Table";
 import { useHistory } from "react-router-dom";
 import { isEqual } from "lodash";
 import TestForm from "./test_form";
+import { Test } from "../../../api/entity/test";
+import { saveTestGroup, TestGroup } from "../../../api/entity/test_group";
 
 interface Props {}
 
 const Create: React.FC<Props> = (props: Props) => {
   const [editTest, setEditTest] = useState<Test | undefined>(undefined);
   const [message, setMessage] = useState<string>("");
-  const [configName, setConfigName] = useState<string>("");
-  const [testConfig, setTestConfig] = useState<TestConfig>({
+  const [testGroupName, setTestGroupName] = useState<string>("");
+  const [testGroup, setTestGroup] = useState<TestGroup>({
     name: "",
     tests: [],
   });
@@ -24,13 +25,13 @@ const Create: React.FC<Props> = (props: Props) => {
 
   const setConfig = (e: React.FormEvent) => {
     e.preventDefault();
-    setTestConfig({
-      ...testConfig,
-      name: configName,
+    setTestGroup({
+      ...testGroup,
+      name: testGroupName,
     });
   };
   const addNewTest = (test: Test) => {
-    if (!testConfig.name) {
+    if (!testGroup.name) {
       setMessage("Please set test group name on the left menu.");
       return;
     }
@@ -38,7 +39,7 @@ const Create: React.FC<Props> = (props: Props) => {
     setEditTest(undefined);
 
     let equal = false;
-    testConfig.tests.forEach((t: Test) => {
+    testGroup.tests.forEach((t: Test) => {
       if (isEqual(t, test)) {
         equal = true;
       }
@@ -49,21 +50,21 @@ const Create: React.FC<Props> = (props: Props) => {
       return;
     }
     test.id = new Date().getUTCMilliseconds();
-    setTestConfig({
-      ...testConfig,
-      tests: [...testConfig.tests, test],
+    setTestGroup({
+      ...testGroup,
+      tests: [...testGroup.tests, test],
     });
   };
 
   const updateNewTest = (test: Test) => {
-    const index = testConfig.tests.findIndex((t) => t.id === test.id);
+    const index = testGroup.tests.findIndex((t) => t.id === test.id);
     if (index !== -1) {
-      setTestConfig({
-        ...testConfig,
+      setTestGroup({
+        ...testGroup,
         tests: [
-          ...testConfig.tests.slice(0, index),
-          Object.assign({}, testConfig.tests[index], test),
-          ...testConfig.tests.slice(index + 1),
+          ...testGroup.tests.slice(0, index),
+          Object.assign({}, testGroup.tests[index], test),
+          ...testGroup.tests.slice(index + 1),
         ],
       });
     }
@@ -72,13 +73,13 @@ const Create: React.FC<Props> = (props: Props) => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMessage("");
-    setConfigName(e.target.value);
+    setTestGroupName(e.target.value);
   };
 
   const totalRequests = (): number => {
     let count = 0;
-    if (testConfig && testConfig.tests.length) {
-      testConfig.tests.forEach((test: Test) => {
+    if (testGroup && testGroup.tests.length) {
+      testGroup.tests.forEach((test: Test) => {
         count += test.requestCount;
       });
     }
@@ -88,7 +89,7 @@ const Create: React.FC<Props> = (props: Props) => {
   const buildTable = () => {
     const content: any[] = [];
 
-    testConfig?.tests.map((test: Test) => {
+    testGroup?.tests.map((test: Test) => {
       const row: any[] = [
         test.url,
         test.method,
@@ -110,7 +111,7 @@ const Create: React.FC<Props> = (props: Props) => {
             text={text}
             onClick={(e: React.FormEvent) => {
               e.preventDefault();
-              deleteTest(test!);
+              onDeleteTest(test!);
             }}
           />
         );
@@ -137,27 +138,27 @@ const Create: React.FC<Props> = (props: Props) => {
     }
   };
 
-  const deleteTest = (test: Test) => {
-    setTestConfig({
-      ...testConfig,
-      tests: testConfig.tests.filter((t: Test) => !isEqual(t, test)),
+  const onDeleteTest = (test: Test) => {
+    setTestGroup({
+      ...testGroup,
+      tests: testGroup.tests.filter((t: Test) => !isEqual(t, test)),
     });
   };
 
   const deleteAllTests = () => {
-    setTestConfig({
+    setTestGroup({
       name: "",
       tests: [],
     });
   };
 
-  const saveTestConfig = () => {
-    if (!testConfig.tests.length) {
+  const onSaveTestGroup = () => {
+    if (!testGroup.tests.length) {
       setMessage("Please create a test to save test group");
       return;
     }
 
-    saveTests(testConfig)
+    saveTestGroup(testGroup)
       .then(() => {
         history.push("/tests");
       })
@@ -166,9 +167,9 @@ const Create: React.FC<Props> = (props: Props) => {
       });
   };
 
-  const updateTestConfig = () => {
-    setTestConfig({
-      ...testConfig,
+  const onUpdateTestGroup = () => {
+    setTestGroup({
+      ...testGroup,
       name: "",
     });
   };
@@ -180,18 +181,18 @@ const Create: React.FC<Props> = (props: Props) => {
   return (
     <div css={container}>
       <div css={leftColumn}>
-        {testConfig && testConfig.name ? (
+        {testGroup && testGroup.name ? (
           <div css={leftConfigDiv}>
             <h3 css={h3title}>Test Group</h3>
             <span>
-              Name: <b>{testConfig.name}</b>
+              Name: <b>{testGroup.name}</b>
             </span>
             <span>
               Total Requests: <b>{totalRequests()}</b>
             </span>
             <div>
-              <Button text="Save" onClick={saveTestConfig} />
-              <Button text="Update" onClick={updateTestConfig} />
+              <Button text="Save" onClick={onSaveTestGroup} />
+              <Button text="Update" onClick={onUpdateTestGroup} />
             </div>
           </div>
         ) : (
@@ -207,7 +208,7 @@ const Create: React.FC<Props> = (props: Props) => {
       </div>
       <div css={rightColumn}>
         {message ? <Message type="error" message={message} /> : ""}
-        {testConfig && testConfig.tests.length > 0 && (
+        {testGroup && testGroup.tests.length > 0 && (
           <Table
             title={[
               "URL",

@@ -5,8 +5,8 @@ import TextInput from "../../basic/TextInput";
 import Button from "../../basic/Button";
 import { toNum } from "../../basic/helper";
 import { BaseForm } from "../../basic/BaseForm";
-import { Test } from "../../../api/entity/test_config";
 import SelectBox from "../../basic/SelectBox";
+import { Test } from "../../../api/entity/test";
 
 interface Props extends BaseForm {
   addTest?: (test: Test) => void;

@@ -3,47 +3,47 @@ import React, { useState } from "react";
 import { jsx, css } from "@emotion/core";
 import { Link } from "react-router-dom";
 import {
-  deleteTestReq,
-  deleteTestsReq,
-  listTests,
-  runTests,
-  Test,
-  TestConfig,
-  updateTestReq,
-} from "../../../api/entity/test_config";
+  deleteTestGroup,
+  listTestGroup,
+  runTestGroup,
+  TestGroup,
+} from "../../../api/entity/test_group";
 import Table from "../../basic/Table";
 import Button from "../../basic/Button";
 import { leftContent } from "../../style";
 import Message from "../../basic/Message";
 import TestForm from "./test_form";
+import { deleteTest, Test, updateTest } from "../../../api/entity/test";
 
 interface Props {
-  testConfg?: TestConfig;
+  testGroup?: TestGroup;
 }
 
 const Show: React.FC<Props> = (props: Props) => {
-  const [configs, setConfigs] = useState<TestConfig[]>();
-  const [selectedConfig, setSelectedConfig] = useState<TestConfig>({
+  const [configs, setConfigs] = useState<TestGroup[]>();
+  const [selectedTestGroup, setSelectedTestGroup] = useState<TestGroup>({
     name: "",
     tests: [],
   });
   const [selectedTest, setSelectedTest] = useState<Test | null>(null);
   const [message, setMessage] = useState<string>("");
-  const [showLinkList, setShowLinkList] = useState<TestConfig>();
+  const [updateSelectedGroupName, setUpdateSelectedGroupName] = useState<
+    TestGroup
+  >();
 
   React.useEffect(() => {
-    listTests()
+    listTestGroup()
       .then((response) => {
         setConfigs(response.data);
-        setSelectedConfig(response.data[0]);
+        setSelectedTestGroup(response.data[0]);
       })
       .catch((error) => console.log(error));
   }, []);
 
-  const run = (testConfig: TestConfig) => (e: React.FormEvent) => {
+  const run = (testConfig: TestGroup) => (e: React.FormEvent) => {
     e.preventDefault();
 
-    runTests(testConfig)
+    runTestGroup(testConfig)
       .then(() => {})
       .catch(() => {});
   };
@@ -51,8 +51,8 @@ const Show: React.FC<Props> = (props: Props) => {
   const buildTable = () => {
     const content: any[] = [];
 
-    if (selectedConfig) {
-      selectedConfig.tests.map((test: Test) => {
+    if (selectedTestGroup) {
+      selectedTestGroup.tests.map((test: Test) => {
         const row: any[] = [
           test.url,
           test.method,
@@ -75,7 +75,7 @@ const Show: React.FC<Props> = (props: Props) => {
             text={text}
             onClick={(e: React.FormEvent) => {
               e.preventDefault();
-              deleteTest(test!);
+              onDeleteTest(test!);
             }}
           />
         );
@@ -92,27 +92,27 @@ const Show: React.FC<Props> = (props: Props) => {
     }
   };
 
-  const updateTest = (test: Test) => {
-    updateTestReq(test).then(() => {
+  const onUpdateTest = (test: Test) => {
+    updateTest(test).then(() => {
       setMessage(JSON.stringify(test));
     });
   };
 
-  const deleteTest = (test: Test): void => {
-    deleteTestReq(test)
+  const onDeleteTest = (test: Test): void => {
+    deleteTest(test)
       .then(() => {
-        setSelectedConfig({
-          ...selectedConfig,
-          tests: selectedConfig.tests.filter(
+        setSelectedTestGroup({
+          ...selectedTestGroup,
+          tests: selectedTestGroup.tests.filter(
             (selectedTest: Test) => test.id !== selectedTest.id,
           ),
         });
-        if (selectedConfig.tests.length <= 1) {
-          deleteTestsReq(selectedConfig)
+        if (selectedTestGroup.tests.length <= 1) {
+          deleteTestGroup(selectedTestGroup)
             .then(() => {
               setConfigs(
                 configs?.filter(
-                  (conf: TestConfig) => conf.id !== selectedConfig.id,
+                  (conf: TestGroup) => conf.id !== selectedTestGroup.id,
                 ),
               );
             })
@@ -130,7 +130,7 @@ const Show: React.FC<Props> = (props: Props) => {
     <div css={container}>
       <div css={leftColumn}>
         <h3 css={h3title}>Test Groups</h3>
-        {configs?.map((config: TestConfig) => (
+        {configs?.map((config: TestGroup) => (
           <div
             css={css`
               ${leftContent}
@@ -138,28 +138,14 @@ const Show: React.FC<Props> = (props: Props) => {
             key={config.id}
             onClick={(e: React.MouseEvent) => {
               e.preventDefault();
-              setSelectedConfig(config);
-            }}
-            onMouseEnter={() => {
-              setShowLinkList(config);
-            }}
-            onMouseLeave={() => {
-              setShowLinkList(undefined);
+              setSelectedTestGroup(config);
             }}
           >
-            {showLinkList === undefined || showLinkList !== config ? (
-              <div>
-                <span>
-                  <b>{config.name}</b> Total Requests: <b>0</b>
-                </span>
-              </div>
-            ) : (
-              <div>
-                <b>{config.name}</b>
-                <Button type={1} text="Run" onClick={run(config)} />
-                <Button type={1} text="Update" />
-              </div>
-            )}
+            <div>
+              <span>
+                <b>{config.name}</b> Total Requests: <b>0</b>
+              </span>
+            </div>
           </div>
         ))}
         <Link to="/tests/create">
@@ -168,12 +154,14 @@ const Show: React.FC<Props> = (props: Props) => {
       </div>
       <div css={rightColumn}>
         {message ? <Message type="error" message={message} /> : ""}
+        <Button text="Run" onClick={run(selectedTestGroup)} />
+        <Button text="Update" />
         <Table
           title={["URL", "Method", "Requests Count", "", ""]}
           content={buildTable()}
         />
         {selectedTest && (
-          <TestForm test={selectedTest} updateTest={updateTest} />
+          <TestForm test={selectedTest} updateTest={onUpdateTest} />
         )}
       </div>
     </div>
@@ -191,10 +179,6 @@ const leftColumn = css`
   width: 30%;
   min-height: 50rem;
   padding: 2rem;
-`;
-
-const linkList = css`
-  display: block;
 `;
 
 const rightColumn = css`

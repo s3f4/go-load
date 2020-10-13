@@ -7,20 +7,27 @@ import {
   listTestGroup,
   runTestGroup,
   TestGroup,
+  updateTestGroup,
 } from "../../../api/entity/test_group";
 import Table from "../../basic/Table";
 import Button from "../../basic/Button";
 import { leftContent } from "../../style";
 import Message, { MessageObj } from "../../basic/Message";
 import TestForm from "./test_form";
-import { deleteTest, Test, updateTest } from "../../../api/entity/test";
+import {
+  deleteTest,
+  saveTest,
+  Test,
+  updateTest,
+} from "../../../api/entity/test";
+import TextInput from "../../basic/TextInput";
 
 interface Props {
   testGroup?: TestGroup;
 }
 
 const Show: React.FC<Props> = (props: Props) => {
-  const [configs, setConfigs] = useState<TestGroup[]>();
+  const [testGroups, setTestGroups] = useState<TestGroup[]>();
   const [selectedTestGroup, setSelectedTestGroup] = useState<TestGroup>({
     name: "",
     tests: [],
@@ -28,13 +35,14 @@ const Show: React.FC<Props> = (props: Props) => {
   const [selectedTest, setSelectedTest] = useState<Test | null>(null);
   const [message, setMessage] = useState<MessageObj>();
   const [updateSelectedGroupName, setUpdateSelectedGroupName] = useState<
-    TestGroup
-  >();
+    string
+  >("");
+  const [addNewTest, setAddNewTest] = useState<boolean>(false);
 
   React.useEffect(() => {
     listTestGroup()
       .then((response) => {
-        setConfigs(response.data);
+        setTestGroups(response.data);
         setSelectedTestGroup(response.data[0]);
       })
       .catch((error) => console.log(error));
@@ -92,6 +100,20 @@ const Show: React.FC<Props> = (props: Props) => {
     }
   };
 
+  const onAddTest = (test: Test) => {
+    test.testGroupId = selectedTestGroup.id!;
+    saveTest(test).then(() => {
+      const newTestGroups = testGroups?.map((tg: TestGroup) => {
+        if (tg.id === selectedTestGroup.id) {
+          tg.tests = [...selectedTestGroup.tests, test];
+        }
+        return tg;
+      });
+
+      setTestGroups(newTestGroups);
+    });
+  };
+
   const onUpdateTest = (test: Test) => {
     updateTest(test).then(() => {
       setSelectedTestGroup({
@@ -122,8 +144,8 @@ const Show: React.FC<Props> = (props: Props) => {
         if (selectedTestGroup.tests.length <= 1) {
           deleteTestGroup(selectedTestGroup)
             .then(() => {
-              setConfigs(
-                configs?.filter(
+              setTestGroups(
+                testGroups?.filter(
                   (conf: TestGroup) => conf.id !== selectedTestGroup.id,
                 ),
               );
@@ -142,7 +164,7 @@ const Show: React.FC<Props> = (props: Props) => {
     <div css={container}>
       <div css={leftColumn}>
         <h3 css={h3title}>Test Groups</h3>
-        {configs?.map((config: TestGroup) => (
+        {testGroups?.map((config: TestGroup) => (
           <div
             css={css`
               ${leftContent}
@@ -168,8 +190,55 @@ const Show: React.FC<Props> = (props: Props) => {
         {message ? <Message type="error" message={message.message} /> : ""}
         {selectedTestGroup && selectedTestGroup.tests.length > 0 ? (
           <React.Fragment>
-            <Button text="Run" onClick={run(selectedTestGroup)} />
-            <Button text="Update" />
+            {updateSelectedGroupName ? (
+              <React.Fragment>
+                <TextInput
+                  name="testGroupName"
+                  type="text"
+                  value={updateSelectedGroupName}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    setUpdateSelectedGroupName(e.target.value);
+                  }}
+                />
+                <Button
+                  text="Save"
+                  onClick={(e: React.FormEvent) => {
+                    e.preventDefault();
+                    updateTestGroup(selectedTestGroup).then(() => {
+                      const newTestGroups = testGroups?.map((tg: TestGroup) => {
+                        if (tg.id === selectedTestGroup.id) {
+                          tg.name = updateSelectedGroupName;
+                        }
+                        return tg;
+                      });
+
+                      setTestGroups(newTestGroups);
+                      setSelectedTestGroup({
+                        ...selectedTestGroup,
+                        name: updateSelectedGroupName,
+                      });
+                      setUpdateSelectedGroupName("");
+                    });
+                  }}
+                />
+              </React.Fragment>
+            ) : (
+              <React.Fragment>
+                <Button
+                  text="Add New Test"
+                  onClick={() => {
+                    setAddNewTest(true);
+                  }}
+                />
+                <Button text="Run" onClick={run(selectedTestGroup)} />
+                <Button
+                  text="Update"
+                  onClick={() => {
+                    setUpdateSelectedGroupName(selectedTestGroup.name);
+                  }}
+                />
+              </React.Fragment>
+            )}
             <Table
               title={["URL", "Method", "Requests Count", "", ""]}
               content={buildTable()}
@@ -182,6 +251,9 @@ const Show: React.FC<Props> = (props: Props) => {
           />
         )}
 
+        {addNewTest && (
+          <TestForm testGroup={selectedTestGroup} addTest={onAddTest} />
+        )}
         {selectedTest && (
           <TestForm
             testGroup={selectedTestGroup}

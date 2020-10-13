@@ -62,10 +62,12 @@ func initHandlers() {
 	router.Post("/test_group/start", handlers.TestGroupHandler.Start)
 	router.Post("/test_group", handlers.TestGroupHandler.Insert)
 	router.Get("/test_group", handlers.TestGroupHandler.List)
+	router.Put("/test_group", handlers.TestGroupHandler.Update)
 	router.Get("/test_group/{ID}", handlers.TestGroupHandler.List)
 	router.Delete("/test_group", handlers.TestGroupHandler.Delete)
 
 	router.Get("/test/{ID}", handlers.TestHandler.Get)
+	router.Post("/test", handlers.TestHandler.Insert)
 	router.Get("/test", handlers.TestHandler.List)
 	router.Put("/test", handlers.TestHandler.Update)
 	router.Delete("/test", handlers.TestHandler.Delete)

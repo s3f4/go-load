@@ -46,7 +46,7 @@ const button = (disabled: boolean | undefined, type?: ButtonType) => {
     font-weight: 600;
     ${disabled ? "opacity: 0.7;cursor:auto;" : ""}
     &:hover {
-      background-color: #4caf50;
+      ${disabled ? "" : "background-color: #4caf50;"}
     }
   `;
   switch (type) {

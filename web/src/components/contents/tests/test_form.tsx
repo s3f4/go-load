@@ -7,8 +7,10 @@ import { toNum } from "../../basic/helper";
 import { BaseForm } from "../../basic/BaseForm";
 import SelectBox from "../../basic/SelectBox";
 import { Test } from "../../../api/entity/test";
+import { TestGroup } from "../../../api/entity/test_group";
 
 interface Props extends BaseForm {
+  testGroup?: TestGroup;
   addTest?: (test: Test) => void;
   updateTest?: (test: Test) => void;
   setMessage?: () => void;
@@ -33,7 +35,8 @@ const TestForm = (props: Props) => {
   const [isValid, setIsValid] = React.useState<any>({
     requestCount: true,
     url: false,
-    method: false,
+    method: true,
+    goroutineCount: true,
   });
 
   React.useEffect(() => {
@@ -45,6 +48,16 @@ const TestForm = (props: Props) => {
       ...isValid,
       [name]: value,
     });
+
+  const validate = () => {
+    let valid = true;
+    Object.keys(isValid).forEach(function (key) {
+      if (!isValid[key]) {
+        valid = false;
+      }
+    });
+    return valid;
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement> | any) => {
     props.setMessage && props.setMessage();
@@ -147,6 +160,13 @@ const TestForm = (props: Props) => {
             label="Goroutine per worker (up to 10)"
             name="goroutineCount"
             value={test.goroutineCount}
+            validate={{
+              min: 1,
+              max: 10,
+              message: "Goroutine count must be less than or equal to 10",
+              validationFunction: validation("goroutineCount"),
+            }}
+            isValid={isValid["goroutineCount"]}
           />
           <SelectBox
             name={"disableKeepAlives"}
@@ -165,7 +185,11 @@ const TestForm = (props: Props) => {
                 props.updateTest?.(test);
                 setTest(initialTest);
               }}
-              disabled={!isValid["url"]}
+              disabled={
+                !validate() ||
+                typeof props.testGroup === "undefined" ||
+                props.testGroup.name.length == 0
+              }
             />
           ) : (
             <Button
@@ -174,7 +198,11 @@ const TestForm = (props: Props) => {
                 props.addTest?.(test);
                 setTest(initialTest);
               }}
-              disabled={!isValid["url"]}
+              disabled={
+                !validate() ||
+                typeof props.testGroup === "undefined" ||
+                props.testGroup.name.length == 0
+              }
             />
           )}
         </div>

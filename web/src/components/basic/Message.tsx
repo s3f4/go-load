@@ -2,8 +2,13 @@
 import React from "react";
 import { jsx, css } from "@emotion/core";
 
+type messageType = "success" | "error" | "warning";
+export interface MessageObj {
+  type: messageType;
+  message: string;
+}
 interface Props {
-  type: "success" | "error" | "warning";
+  type: messageType;
   message: string;
 }
 
@@ -29,7 +34,7 @@ const container = (type: string) => css`
     ? "green"
     : type === "error"
     ? "#dc3545"
-    : "yellow"};
+    : "grey"};
   opacity: 0.8;
   margin: 1rem auto;
 `;

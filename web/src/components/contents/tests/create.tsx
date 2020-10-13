@@ -6,7 +6,7 @@ import Button from "../../basic/Button";
 import Message from "../../basic/Message";
 import Table from "../../basic/Table";
 import { useHistory } from "react-router-dom";
-import { isEqual } from "lodash";
+import { map, omit, isEqual } from "lodash";
 import TestForm from "./test_form";
 import { Test } from "../../../api/entity/test";
 import { saveTestGroup, TestGroup } from "../../../api/entity/test_group";
@@ -40,7 +40,7 @@ const Create: React.FC<Props> = (props: Props) => {
 
     let equal = false;
     testGroup.tests.forEach((t: Test) => {
-      if (isEqual(t, test)) {
+      if (isEqual(omit(t, "id"), omit(test, "id"))) {
         equal = true;
       }
     });
@@ -49,7 +49,7 @@ const Create: React.FC<Props> = (props: Props) => {
       setMessage("This test was already created");
       return;
     }
-    test.id = new Date().getUTCMilliseconds();
+    test.id = Date.now();
     setTestGroup({
       ...testGroup,
       tests: [...testGroup.tests, test],
@@ -158,6 +158,10 @@ const Create: React.FC<Props> = (props: Props) => {
       return;
     }
 
+    testGroup.tests = map(testGroup.tests, (o: Test) => {
+      return omit(o, "id");
+    });
+
     saveTestGroup(testGroup)
       .then(() => {
         history.push("/tests");
@@ -222,6 +226,7 @@ const Create: React.FC<Props> = (props: Props) => {
         )}
 
         <TestForm
+          testGroup={testGroup}
           test={editTest}
           setMessage={triggerMessage("")}
           addTest={addNewTest}

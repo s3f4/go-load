@@ -11,7 +11,7 @@ import {
 import Table from "../../basic/Table";
 import Button from "../../basic/Button";
 import { leftContent } from "../../style";
-import Message from "../../basic/Message";
+import Message, { MessageObj } from "../../basic/Message";
 import TestForm from "./test_form";
 import { deleteTest, Test, updateTest } from "../../../api/entity/test";
 
@@ -26,7 +26,7 @@ const Show: React.FC<Props> = (props: Props) => {
     tests: [],
   });
   const [selectedTest, setSelectedTest] = useState<Test | null>(null);
-  const [message, setMessage] = useState<string>("");
+  const [message, setMessage] = useState<MessageObj>();
   const [updateSelectedGroupName, setUpdateSelectedGroupName] = useState<
     TestGroup
   >();
@@ -94,7 +94,19 @@ const Show: React.FC<Props> = (props: Props) => {
 
   const onUpdateTest = (test: Test) => {
     updateTest(test).then(() => {
-      setMessage(JSON.stringify(test));
+      setSelectedTestGroup({
+        ...selectedTestGroup,
+        tests: selectedTestGroup.tests.map((t: Test) => {
+          if (t.id === test.id) {
+            return test;
+          }
+          return t;
+        }),
+      });
+      setMessage({
+        type: "success",
+        message: "Test's been updated.",
+      });
     });
   };
 
@@ -153,15 +165,29 @@ const Show: React.FC<Props> = (props: Props) => {
         </Link>
       </div>
       <div css={rightColumn}>
-        {message ? <Message type="error" message={message} /> : ""}
-        <Button text="Run" onClick={run(selectedTestGroup)} />
-        <Button text="Update" />
-        <Table
-          title={["URL", "Method", "Requests Count", "", ""]}
-          content={buildTable()}
-        />
+        {message ? <Message type="error" message={message.message} /> : ""}
+        {selectedTestGroup && selectedTestGroup.tests.length > 0 ? (
+          <React.Fragment>
+            <Button text="Run" onClick={run(selectedTestGroup)} />
+            <Button text="Update" />
+            <Table
+              title={["URL", "Method", "Requests Count", "", ""]}
+              content={buildTable()}
+            />
+          </React.Fragment>
+        ) : (
+          <Message
+            type="warning"
+            message="There is no tests here, Please create a new test group"
+          />
+        )}
+
         {selectedTest && (
-          <TestForm test={selectedTest} updateTest={onUpdateTest} />
+          <TestForm
+            testGroup={selectedTestGroup}
+            test={selectedTest}
+            updateTest={onUpdateTest}
+          />
         )}
       </div>
     </div>

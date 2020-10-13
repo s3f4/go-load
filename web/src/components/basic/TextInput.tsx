@@ -10,6 +10,7 @@ interface Props extends BasicProps {
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   validate?: Validate;
   isValid?: boolean;
+  disabled?: boolean;
 }
 
 const TextInput: React.FC<Props> = (props: Props) => {
@@ -27,6 +28,7 @@ const TextInput: React.FC<Props> = (props: Props) => {
           type="text"
           value={props.value}
           onChange={props.onChange}
+          disabled={props.disabled}
         />
         {!props.isValid && props.validate?.message ? (
           <span css={validateMessage}>{props.validate.message}</span>

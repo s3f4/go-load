@@ -13,7 +13,7 @@ type TestRepository interface {
 	Insert(*models.Test) error
 	Update(*models.Test) error
 	Delete(*models.Test) error
-	Get() (*models.Test, error)
+	Get(id uint) (*models.Test, error)
 	List() ([]models.Test, error)
 }
 
@@ -48,7 +48,7 @@ func (r *testRepository) Delete(test *models.Test) error {
 	return r.DB().Where("id=?", test.ID).Delete(test).Error
 }
 
-func (r *testRepository) Get() (*models.Test, error) {
+func (r *testRepository) Get(id uint) (*models.Test, error) {
 	var testReq models.Test
 	if err := r.DB().Take(&testReq).Error; err != nil {
 		return nil, err

@@ -9,11 +9,17 @@ const InstanceContent: React.FC = () => {
   );
 
   React.useEffect(() => {
+    let mount = true;
     getInstanceInfo()
       .then((response) => {
-        setInstanceInfo(response.data);
+        if (mount) {
+          setInstanceInfo(response.data);
+        }
       })
       .catch(() => {});
+    return () => {
+      mount = false;
+    };
   }, []);
 
   const spinUpAfterHandle = () => {

@@ -13,7 +13,7 @@ type TestGroupRepository interface {
 	Insert(*models.TestGroup) error
 	Update(*models.TestGroup) error
 	Delete(*models.TestGroup) error
-	Get() (*models.TestGroup, error)
+	Get(id uint) (*models.TestGroup, error)
 	List() ([]models.TestGroup, error)
 }
 
@@ -44,9 +44,9 @@ func (r *testGroupRepository) Delete(testGroup *models.TestGroup) error {
 	return r.DB().Model(testGroup).Delete(testGroup).Error
 }
 
-func (r *testGroupRepository) Get() (*models.TestGroup, error) {
+func (r *testGroupRepository) Get(id uint) (*models.TestGroup, error) {
 	var testReq models.TestGroup
-	if err := r.DB().Take(&testReq).Error; err != nil {
+	if err := r.DB().First(&testReq, id).Error; err != nil {
 		return nil, err
 	}
 	return &testReq, nil

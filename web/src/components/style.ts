@@ -86,11 +86,10 @@ export const html = `
 
 export const leftContent = `
   width: 100%;
-  min-height: 5rem;
+  min-height: 3rem;
   display: flex;
   flex-direction: column;
   border-bottom: ${Borders.border1};
-  border-radius: 0.5rem;
   padding: 1rem;
   cursor: pointer;
 `;

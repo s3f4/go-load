@@ -36,7 +36,7 @@ func (s *testService) Insert(test *models.Test) error {
 
 // Get
 func (s *testService) Get(test *models.Test) (*models.Test, error) {
-	return s.tr.Get()
+	return s.tr.Get(test.ID)
 }
 
 // Update

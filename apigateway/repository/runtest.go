@@ -12,7 +12,7 @@ type RunTestRepository interface {
 	DB() *gorm.DB
 	Insert(*models.RunTest) error
 	Delete(*models.RunTest) error
-	Get() (*models.RunTest, error)
+	Get(id uint) (*models.RunTest, error)
 	List() ([]models.RunTest, error)
 }
 
@@ -31,17 +31,17 @@ func (r *runTestRepository) DB() *gorm.DB {
 	return r.base.GetDB()
 }
 
-func (r *runTestRepository) Insert(testGroup *models.RunTest) error {
-	return r.DB().Create(testGroup).Error
+func (r *runTestRepository) Insert(runTest *models.RunTest) error {
+	return r.DB().Create(runTest).Error
 }
 
-func (r *runTestRepository) Delete(testGroup *models.RunTest) error {
-	return r.DB().Model(testGroup).Delete(testGroup).Error
+func (r *runTestRepository) Delete(runTest *models.RunTest) error {
+	return r.DB().Model(runTest).Delete(runTest).Error
 }
 
-func (r *runTestRepository) Get() (*models.RunTest, error) {
+func (r *runTestRepository) Get(id uint) (*models.RunTest, error) {
 	var testReq models.RunTest
-	if err := r.DB().Take(&testReq).Error; err != nil {
+	if err := r.DB().First(&testReq, id).Error; err != nil {
 		return nil, err
 	}
 	return &testReq, nil
@@ -49,7 +49,7 @@ func (r *runTestRepository) Get() (*models.RunTest, error) {
 
 func (r *runTestRepository) List() ([]models.RunTest, error) {
 	var testReq []models.RunTest
-	if err := r.DB().Preload("Tests").Find(&testReq).Error; err != nil {
+	if err := r.DB().Find(&testReq).Error; err != nil {
 		fmt.Println(err)
 		return nil, err
 	}

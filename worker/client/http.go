@@ -20,12 +20,12 @@ type Client struct {
 }
 
 // HTTPTrace load testing with HTTPTrace tool of golang.
-func (c *Client) HTTPTrace() *models.Response {
+func (c *Client) HTTPTrace() (*models.Response, error) {
 	req, err := http.NewRequest("GET", c.URL, nil)
 
 	if err != nil {
 		log.Errorf("HTTPTrace Error: %v\n", err)
-		return nil
+		return nil, err
 	}
 
 	log.Debugf("%#v\n", c)
@@ -63,6 +63,10 @@ func (c *Client) HTTPTrace() *models.Response {
 	req = req.WithContext(httptrace.WithClientTrace(req.Context(), trace))
 	start = time.Now()
 	response, err := transport.RoundTrip(req)
+	if err != nil {
+		log.Error(err)
+		return nil, err
+	}
 	defer response.Body.Close()
 
 	res.FirstByteTime = int64(res.FirstByte.Sub(start))
@@ -72,15 +76,15 @@ func (c *Client) HTTPTrace() *models.Response {
 
 	if err != nil {
 		log.Error(err)
-		return nil
+		return nil, err
 	}
 	res.TotalTime = int64(time.Since(start))
 	res.StatusCode = response.StatusCode
 	body, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		log.Error(err)
-		return nil
+		return nil, err
 	}
 	res.Body = string(body)
-	return &res
+	return &res, err
 }

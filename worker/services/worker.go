@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"strconv"
 
+	"github.com/mitchellh/mapstructure"
 	"github.com/s3f4/go-load/worker/client"
 	"github.com/s3f4/go-load/worker/models"
 	"github.com/s3f4/mu"
@@ -27,7 +28,9 @@ func NewWorkerService() WorkService {
 }
 
 func (s *workerService) Start(event *models.Event) error {
-	payload := event.Payload.(models.RequestPayload)
+	var payload models.RequestPayload
+	mapstructure.Decode(event.Payload, &payload)
+
 	i := 0
 	for i < payload.GoroutineCount {
 		log.Info("%+v", payload)
@@ -55,7 +58,10 @@ func (s *workerService) makeReq(client *client.Client, request int, dataBuf chan
 	url := client.URL
 	for i := 0; i < request; i++ {
 		client.URL = url + "/?reqRef=" + mu.RandomString(5)
-		res := client.HTTPTrace()
+		res, err := client.HTTPTrace()
+		if err != nil {
+			continue
+		}
 		dataBuf <- *res
 	}
 }

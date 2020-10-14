@@ -31,8 +31,12 @@ const SpinUp: React.FC<Props> = (props: Props) => {
   });
 
   React.useEffect(() => {
-    regionsRequest();
-    accountRequest();
+    let mount = true;
+    regionsRequest(mount);
+    accountRequest(mount);
+    return () => {
+      mount = false;
+    };
   }, []);
 
   const validation = (name: string) => (value: boolean) =>
@@ -87,21 +91,23 @@ const SpinUp: React.FC<Props> = (props: Props) => {
     }
   };
 
-  const regionsRequest = () => {
+  const regionsRequest = (isMounted: boolean) => {
     setRegionsLoading(true);
     listAvailableRegions()
       .then((response) => {
-        if (response && response.status) {
-          const jsonRes = JSON.parse(response.data);
-          const regions = jsonRes.regions;
-          const regionSelectBox = regions.map((region: any) => {
-            return {
-              label: region.name,
-              value: region.slug,
-            };
-          });
-          setRegionsLoading(false);
-          setRegions(regionSelectBox);
+        if (isMounted) {
+          if (response && response.status) {
+            const jsonRes = JSON.parse(response.data);
+            const regions = jsonRes.regions;
+            const regionSelectBox = regions.map((region: any) => {
+              return {
+                label: region.name,
+                value: region.slug,
+              };
+            });
+            setRegionsLoading(false);
+            setRegions(regionSelectBox);
+          }
         }
       })
       .catch((error) => {
@@ -110,11 +116,13 @@ const SpinUp: React.FC<Props> = (props: Props) => {
       });
   };
 
-  const accountRequest = () => {
+  const accountRequest = (isMounted: boolean) => {
     showAccount()
       .then((response) => {
-        const data = JSON.parse(response.data);
-        setInstanceLimit(data.droplet_limit - 2);
+        if (isMounted) {
+          const data = JSON.parse(response.data);
+          setInstanceLimit(data.droplet_limit - 2);
+        }
       })
       .catch((error) => {
         console.log(error);

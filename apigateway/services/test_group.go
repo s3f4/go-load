@@ -44,6 +44,7 @@ func (s *testGroupService) Start(testGroup *models.TestGroup) error {
 
 	for _, test := range testGroup.Tests {
 		for _, instance := range instanceConfig.Configs {
+			fmt.Println(instance)
 			requestPerInstance := test.RequestCount / instance.InstanceCount
 
 			event := models.Event{
@@ -69,6 +70,7 @@ func (s *testGroupService) Start(testGroup *models.TestGroup) error {
 
 			for i := 0; i < instance.InstanceCount; i++ {
 				if err := s.queueService.Send("worker", message); err != nil {
+					fmt.Println(err)
 					return err
 				}
 			}
@@ -86,7 +88,7 @@ func (s *testGroupService) Insert(testGroup *models.TestGroup) error {
 
 // Get
 func (s *testGroupService) Get(testGroup *models.TestGroup) (*models.TestGroup, error) {
-	return s.tgr.Get()
+	return s.tgr.Get(testGroup.ID)
 }
 
 // Update

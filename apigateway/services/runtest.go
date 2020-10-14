@@ -31,7 +31,7 @@ func (s *runTestService) Insert(runTest *models.RunTest) error {
 
 // Get
 func (s *runTestService) Get(runTest *models.RunTest) (*models.RunTest, error) {
-	return s.rtr.Get()
+	return s.rtr.Get(runTest.ID)
 }
 
 // Delete

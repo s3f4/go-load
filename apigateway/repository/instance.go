@@ -38,7 +38,7 @@ func (r *instanceRepository) Delete(instance *models.InstanceConfig) error {
 
 func (r *instanceRepository) Get() (*models.InstanceConfig, error) {
 	var instanceReq models.InstanceConfig
-	if err := r.DB().Last(&instanceReq).Error; err != nil {
+	if err := r.DB().Preload("Configs").Last(&instanceReq).Error; err != nil {
 		return nil, err
 	}
 	return &instanceReq, nil

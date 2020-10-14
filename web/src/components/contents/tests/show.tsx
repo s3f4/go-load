@@ -177,7 +177,7 @@ const Show: React.FC<Props> = (props: Props) => {
           >
             <div>
               <span>
-                <b>{config.name}</b> Total Requests: <b>0</b>
+                <b>{config.name}</b>
               </span>
             </div>
           </div>

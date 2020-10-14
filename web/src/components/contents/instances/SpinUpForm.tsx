@@ -62,7 +62,7 @@ const SpinUp: React.FC<Props> = (props: Props) => {
     e.preventDefault();
     setLoading(true);
     const instanceConfig: InstanceConfig = {
-      Configs: configs,
+      configs: configs,
     };
 
     spinUp(instanceConfig)

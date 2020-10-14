@@ -1,19 +1,18 @@
-import {makeReq} from '../api';
+import { makeReq } from "../api";
 
 export interface InstanceConfig {
-  Configs: Instance[];
+  configs: Instance[];
 }
 
 export interface Instance {
-  InstanceCount: number;
-  InstanceSize: string;
-  Image: string;
-  Region: string;
-  MaxWorkingPeriod: number;
+  instance_count: number;
+  instance_size: string;
+  image: string;
+  region: string;
 }
 
 export const spinUp = async (instanceConfig: InstanceConfig) => {
-  return await makeReq('/instances', 'POST', instanceConfig);
+  return await makeReq("/instances", "POST", instanceConfig);
 };
 
 export const getInstanceInfo = async () => {
@@ -21,7 +20,7 @@ export const getInstanceInfo = async () => {
 };
 
 export const destroyAll = async () => {
-  return await makeReq(`/instances`, 'DELETE');
+  return await makeReq(`/instances`, "DELETE");
 };
 
 export const listAvailableRegions = async () => {
@@ -33,5 +32,5 @@ export const showAccount = async () => {
 };
 
 export const showSwarmNodes = async () => {
-  return await makeReq('/instances/swarm-nodes');
+  return await makeReq("/instances/swarm-nodes");
 };

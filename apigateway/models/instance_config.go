@@ -10,9 +10,8 @@ type InstanceConfig struct {
 type Instance struct {
 	ID               uint   `json:"id" gorm:"primary_key"`
 	InstanceConfigID uint   `json:"instance_config_id" gorm:"instance_config_id"`
-	InstanceCount    int    `json:"instanceCount"`
+	InstanceCount    int    `json:"instance_count"`
 	InstanceSize     string `json:"size"`
 	Image            string `json:"image"`
 	Region           string `json:"region"`
-	MaxWorkingPeriod int    `json:"maxWorkingPeriod"`
 }

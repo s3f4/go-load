@@ -1,9 +1,7 @@
-/** @jsx jsx */
 import React from "react";
-import { jsx, css } from "@emotion/core";
 import { Worker } from "../../api/entity/worker";
 import Loader from "../basic/Loader";
-import { Box, Sizes } from "../style";
+import { card, cardContainer, cardTitle } from "../style";
 import Button from "../basic/Button";
 
 interface Props {
@@ -17,8 +15,8 @@ const WorkersContent: React.FC<Props> = (props: Props) => {
     props.workers?.map((worker: Worker) => {
       if (worker.Names[0].includes("worker")) {
         return (
-          <div css={workerCard} key={worker.Id}>
-            <h1 css={workerTitle}>{worker.Names[0].substr(1)}</h1>
+          <div css={card} key={worker.Id}>
+            <h1 css={cardTitle}>{worker.Names[0].substr(1)}</h1>
             <br />
             {worker.Id.substr(0, 7)} <br />
             {worker.Status} <br />
@@ -34,7 +32,7 @@ const WorkersContent: React.FC<Props> = (props: Props) => {
     });
 
   return (
-    <div css={workers}>
+    <div css={cardContainer}>
       {!props.loader ? (
         workersDiv()
       ) : (
@@ -43,29 +41,5 @@ const WorkersContent: React.FC<Props> = (props: Props) => {
     </div>
   );
 };
-
-const workers = css`
-  display: flex;
-  flex-wrap: wrap;
-  height: 100%;
-`;
-
-const workerCard = css`
-  width: 28rem;
-  height: 25rem;
-  margin: 1rem 1rem;
-  border: 1px solid black;
-  text-align: center;
-  ${Box.boxShadow1}
-  border-radius: ${Sizes.borderRadius1}
-`;
-
-const workerTitle = css`
-  background-color: #007d9c;
-  color: white;
-  width: 100%;
-  height: 100;
-  padding: 0.5rem;
-`;
 
 export default WorkersContent;

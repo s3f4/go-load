@@ -1,3 +1,6 @@
+/** @jsx jsx */
+import { jsx, css } from "@emotion/core";
+
 export enum Colors {
   textPrimary = "#3e4042",
   textSecondary = "#ddd",
@@ -92,4 +95,29 @@ export const leftContent = `
   border-bottom: ${Borders.border1};
   padding: 1rem;
   cursor: pointer;
+`;
+
+export const cardContainer = css`
+  display: flex;
+  flex-wrap: wrap;
+  height: 100%;
+`;
+
+export const card = css`
+  background-color: #efefef;
+  width: 28rem;
+  height: 25rem;
+  margin: 1rem 1rem;
+  border: 1px solid black;
+  text-align: center;
+  ${Box.boxShadow1}
+  border-radius: ${Sizes.borderRadius1}
+`;
+
+export const cardTitle = css`
+  background-color: #007d9c;
+  color: white;
+  width: 100%;
+  height: 100;
+  padding: 0.5rem;
 `;

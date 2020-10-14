@@ -99,9 +99,7 @@ func (h *instanceHandler) GetInstanceInfo(w http.ResponseWriter, r *http.Request
 		R500(w, err)
 		return
 	}
-	R200(w, map[string]interface{}{
-		"data": instanceConfig,
-	})
+	R200(w, instanceConfig)
 }
 
 func (h *instanceHandler) AddLabels(w http.ResponseWriter, r *http.Request) {

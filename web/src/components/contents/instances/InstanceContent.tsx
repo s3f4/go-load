@@ -1,6 +1,13 @@
+/** @jsx jsx */
 import React from "react";
+import { jsx, css } from "@emotion/core";
 import SpinUp from "./SpinUpForm";
-import { getInstanceInfo, InstanceConfig } from "../../../api/entity/instance";
+import {
+  getInstanceInfo,
+  Instance,
+  InstanceConfig,
+} from "../../../api/entity/instance";
+import { card, cardTitle, cardContainer } from "../../style";
 
 const InstanceContent: React.FC = () => {
   const [showRunWorkerForm, setShowRunWorkerForm] = React.useState<boolean>();
@@ -32,7 +39,24 @@ const InstanceContent: React.FC = () => {
   );
 
   // runWorkersForm
-  const runWorkersForm: React.ReactNode = <div></div>;
+  const runWorkersForm: React.ReactNode = (
+    <div>
+      <div css={cardContainer}>
+        {instanceInfo &&
+          instanceInfo.configs &&
+          instanceInfo.configs.map((instance: Instance) => {
+            return (
+              <div css={card} key={instance.region}>
+                <h1 css={cardTitle}>{instance.region}</h1>
+                Size: {instance.instance_size} <br />
+                <br />
+                <br />
+              </div>
+            );
+          })}
+      </div>
+    </div>
+  );
 
   const content = () => {
     if (instanceInfo) {

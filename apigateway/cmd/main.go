@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	_, err := mu.RunCommands("cd infra;terraform init;terraform apply -auto-approve;")
+	_, err := mu.RunCommands("cd infra;mv ./workers-tpl.tf ./workers.tf;terraform init;terraform apply -auto-approve;")
 	if err != nil {
 		log.Panicf("error: %v", err)
 	}

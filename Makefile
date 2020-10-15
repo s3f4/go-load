@@ -12,6 +12,8 @@ logs:
 	docker-compose logs -f
 
 down:
+	rm -rf apigateway/infra/.terraform && \
+	rm -f apigateway/infra/terraform.tfstate* && \
 	docker-compose -f docker-compose.yml down
 
 test:
@@ -33,7 +35,7 @@ create_ssh_for_master:
 
 rm-files:
 	rm -f apigateway/cmd/apigateway && \
-	rm -f apigateway/infra/.terraform && \
+	rm -rf apigateway/infra/.terraform && \
 	rm -f apigateway/infra/terraform.tfstate* && \
 	rm -f worker/cmd/worker && \
 	rm -f eventhandler/cmd/eventhandler && \

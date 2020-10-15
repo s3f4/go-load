@@ -58,7 +58,9 @@ cpInventory:
 
 up-instances: rm-files init apply cpInventory
 	@echo "=============instances spinning up============="
-	 
+	cd infra/base && master=$$(terraform output master_ipv4_address) && \
+	ssh-keyscan -H $$master >> ~/.ssh/known_hosts 
+
 upload-inventory:
 	cd infra/base && master=$$(terraform output master_ipv4_address) && scp inventory.txt root@$$master:/etc/ansible/inventory.txt
 

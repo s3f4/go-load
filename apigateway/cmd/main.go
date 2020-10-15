@@ -12,19 +12,19 @@ import (
 func sshTpl() {
 	t, err := template.ParseFiles("infra/data.tpl")
 	if err != nil {
-		log.Panic(err)
+		log.Errorf("error %v", err)
 		return
 	}
 
 	f, err := os.Create("infra/data.tf")
 	if err != nil {
-		log.Panicf("create file: ", err)
+		log.Errorf("create file: ", err)
 		return
 	}
 	defer f.Close()
 
 	if err := t.Execute(f, map[string]string{"env": os.Getenv("APP_ENV")}); err != nil {
-		log.Panicf("execute: ", err)
+		log.Errorf("execute: ", err)
 		return
 	}
 }
@@ -34,7 +34,8 @@ func main() {
 
 	_, err := mu.RunCommands("cd infra;terraform init;terraform apply -auto-approve;")
 	if err != nil {
-		log.Panicf("error: %v", err)
+		log.Errorf("error: %v", err)
+		return
 	}
 	apigateway.Run()
 }

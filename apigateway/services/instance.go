@@ -14,6 +14,7 @@ import (
 	"github.com/s3f4/go-load/apigateway/repository"
 	"github.com/s3f4/go-load/apigateway/template"
 	"github.com/s3f4/mu"
+	"github.com/s3f4/mu/log"
 )
 
 // InstanceService ...
@@ -94,7 +95,8 @@ func (s *instanceService) SpinUp() error {
 
 // installDockerToWNodes installs docker to worker nodes to join swarm
 func (s *instanceService) installDockerToWNodes() error {
-	_, err := mu.RunCommands("cd ./infra/ansible; ansible-playbook -i inventory.txt docker-playbook.yml")
+	output, err := mu.RunCommands("cd ./infra/ansible; ansible-playbook -i inventory.txt docker-playbook.yml")
+	log.Debug(output)
 	return err
 }
 
@@ -131,27 +133,30 @@ func (s *instanceService) joinWNodesToSwarm() error {
 		addr,
 	)
 
-	_, err = mu.RunCommands(joinCommand)
+	output, err := mu.RunCommands(joinCommand)
+	log.Debug(output)
 	return err
 }
 
 // runAnsibleCommands cert copies cert file to worker nodes to registry service
 // hosts adds registry domain to /etc/hosts file
 func (s *instanceService) runAnsibleCommands() error {
-	_, err := mu.RunCommands("cd ./infra/ansible; ansible-playbook -i inventory.txt cert.yml")
+	output, err := mu.RunCommands("cd ./infra/ansible; ansible-playbook -i inventory.txt cert.yml")
 	if err != nil {
 		return err
 	}
+	log.Debug(output)
 
-	_, err = mu.RunCommands("cd ./infra/ansible; ansible-playbook -i inventory.txt hosts.yml")
+	output, err = mu.RunCommands("cd ./infra/ansible; ansible-playbook -i inventory.txt hosts.yml")
 	if err != nil {
 		return err
 	}
-
-	_, err = mu.RunCommands("cd ./infra/ansible; ansible-playbook -i inventory.txt known_hosts.yml")
+	log.Debug(output)
+	output, err = mu.RunCommands("cd ./infra/ansible; ansible-playbook -i inventory.txt known_hosts.yml")
 	if err != nil {
 		return err
 	}
+	log.Debug(output)
 	return nil
 }
 

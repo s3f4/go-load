@@ -5,8 +5,8 @@ export interface InstanceConfig {
 }
 
 export interface Instance {
-  instance_count: number;
-  instance_size: string;
+  count: number;
+  size: string;
   image: string;
   region: string;
 }

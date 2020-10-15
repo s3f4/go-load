@@ -13,6 +13,7 @@ logs:
 
 down:
 	rm -rf apigateway/infra/.terraform && \
+	rm -f apigateway/infra/.terraform* && \
 	rm -f apigateway/infra/terraform.tfstate* && \
 	docker-compose -f docker-compose.yml down
 

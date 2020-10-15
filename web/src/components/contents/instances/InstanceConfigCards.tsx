@@ -18,7 +18,7 @@ const InstanceConfigCards: React.FC<Props> = (props: Props) => {
           <div css={configCss} key={config.region}>
             <div css={instanceTitle}>Region: {config.region}</div>
             <br />
-            Instance Count: <b>{config.instanceCount}</b>
+            Instance Count: <b>{config.count}</b>
             <Button type={1} text="+" onClick={props.add(config)} />
             <Button type={1} text="-" onClick={props.remove(config)} />
           </div>

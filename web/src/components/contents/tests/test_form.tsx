@@ -21,19 +21,19 @@ interface Props extends BaseForm {
 
 const initialTest: Test = {
   url: "",
-  requestCount: 1,
+  request_count: 1,
   method: "GET",
-  expectedResponseCode: 0,
-  expectedResponseBody: "",
+  expected_response_code: 0,
+  expected_response_body: "",
   payload: "",
-  goroutineCount: 1,
-  transportConfig: { DisableKeepAlives: true },
+  goroutine_count: 1,
+  transportConfig: { disable_keep_alives: true },
 };
 
 const TestForm = (props: Props) => {
   const [test, setTest] = React.useState<Test>(initialTest);
   const [isValid, setIsValid] = React.useState<any>({
-    requestCount: true,
+    request_count: true,
     url: false,
     method: true,
     goroutineCount: true,
@@ -66,7 +66,7 @@ const TestForm = (props: Props) => {
       if (e.value === "true" || e.value === "false") {
         setTest({
           ...test,
-          ["transportConfig"]: { DisableKeepAlives: e.value === "true" },
+          ["transportConfig"]: { disable_keep_alives: e.value === "true" },
         });
         return;
       }
@@ -108,14 +108,14 @@ const TestForm = (props: Props) => {
           <TextInput
             onChange={handleChange}
             label="Total Request"
-            name="requestCount"
-            value={test.requestCount}
+            name="request_count"
+            value={test.request_count}
             validate={{
               min: 1,
-              validationFunction: validation("requestCount"),
+              validationFunction: validation("request_count"),
               message: "Request must be greather than 0.",
             }}
-            isValid={isValid["requestCount"]}
+            isValid={isValid["request_count"]}
           />
           <SelectBox
             name="method"
@@ -145,21 +145,21 @@ const TestForm = (props: Props) => {
           <TextInput
             onChange={handleChange}
             label="Expected Response Code"
-            name="expectedResponseCode"
-            value={test.expectedResponseCode}
+            name="expected_response_code"
+            value={test.expected_response_code}
           />
           <TextInput
             onChange={handleChange}
             label="Expected Response Body"
-            name="expectedResponseBody"
-            value={test.expectedResponseBody}
+            name="expected_response_body"
+            value={test.expected_response_body}
           />
 
           <TextInput
             onChange={handleChange}
             label="Goroutine per worker (up to 10)"
             name="goroutineCount"
-            value={test.goroutineCount}
+            value={test.goroutine_count}
             validate={{
               min: 1,
               max: 10,
@@ -176,7 +176,7 @@ const TestForm = (props: Props) => {
               { value: "true", label: "True" },
               { value: "false", label: "False" },
             ]}
-            value={test.transportConfig.DisableKeepAlives ? "true" : "false"}
+            value={test.transportConfig.disable_keep_alives ? "true" : "false"}
           />
           {props.test ? (
             <Button

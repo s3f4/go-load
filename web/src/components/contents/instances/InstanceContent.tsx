@@ -3,14 +3,17 @@ import React from "react";
 import { jsx, css } from "@emotion/core";
 import SpinUp from "./SpinUpForm";
 import {
+  destroyAll,
   getInstanceInfo,
   Instance,
   InstanceConfig,
 } from "../../../api/entity/instance";
 import { card, cardTitle, cardContainer } from "../../style";
+import Button from "../../basic/Button";
 
 const InstanceContent: React.FC = () => {
-  const [showRunWorkerForm, setShowRunWorkerForm] = React.useState<boolean>();
+  const [loading, setLoading] = React.useState<boolean>(false);
+  const [showInstances, setShowInstances] = React.useState<boolean>();
   const [instanceInfo, setInstanceInfo] = React.useState<InstanceConfig | null>(
     null,
   );
@@ -30,7 +33,7 @@ const InstanceContent: React.FC = () => {
   }, []);
 
   const spinUpAfterHandle = () => {
-    setShowRunWorkerForm(true);
+    setShowInstances(true);
   };
 
   // spinUpForm
@@ -38,9 +41,26 @@ const InstanceContent: React.FC = () => {
     <SpinUp afterSubmit={spinUpAfterHandle} />
   );
 
-  // runWorkersForm
-  const runWorkersForm: React.ReactNode = (
+  const onDestroyAll = () => {
+    setLoading(true);
+    destroyAll()
+      .then((response) => {
+        setLoading(false);
+        console.log(response);
+        setShowInstances(false);
+      })
+      .catch((error) => {
+        setLoading(false);
+        console.log(error);
+        setShowInstances(false);
+      });
+  };
+
+  const instances: React.ReactNode = (
     <div>
+      <div css={center}>
+        <Button loading={loading} text="Destroy All" onClick={onDestroyAll} />
+      </div>
       <div css={cardContainer}>
         {instanceInfo &&
           instanceInfo.configs &&
@@ -48,9 +68,7 @@ const InstanceContent: React.FC = () => {
             return (
               <div css={card} key={instance.region}>
                 <h1 css={cardTitle}>{instance.region}</h1>
-                Size: {instance.instance_size} <br />
-                <br />
-                <br />
+                Size: {instance.size} <br />
               </div>
             );
           })}
@@ -60,13 +78,20 @@ const InstanceContent: React.FC = () => {
 
   const content = () => {
     if (instanceInfo) {
-      return runWorkersForm;
+      return instances;
     } else {
-      return showRunWorkerForm ? runWorkersForm : spinUpForm;
+      return showInstances ? instances : spinUpForm;
     }
   };
 
   return <React.Fragment>{content()}</React.Fragment>;
 };
+
+const center = css`
+  height: 3em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
 
 export default InstanceContent;

@@ -40,7 +40,6 @@ func NewInstanceService() InstanceService {
 }
 
 func (s *instanceService) BuildTemplate(iReq models.InstanceConfig) error {
-
 	f, err := os.OpenFile("./infra/workers.tf", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		return err
@@ -49,7 +48,7 @@ func (s *instanceService) BuildTemplate(iReq models.InstanceConfig) error {
 	index := 0
 	var instances []string
 	for _, conf := range iReq.Configs {
-		for i := 1; i <= conf.InstanceCount; i++ {
+		for i := 1; i <= conf.Count; i++ {
 			instances = append(instances, fmt.Sprintf("{ index : %d, reg : \"%s\", instance_number : %d },", index, conf.Region, i))
 			index++
 		}
@@ -159,7 +158,9 @@ func (s *instanceService) runAnsibleCommands() error {
 // Destroy destroys worker instances
 func (s *instanceService) Destroy() error {
 	mu.RunCommands("cd infra;terraform destroy -auto-approve")
-
+	mu.RunCommands("cd infra;rm -rf .terraform")
+	mu.RunCommands("cd infra;rm -f terraform.tfstate*")
+	mu.RunCommands("cd infra;terraform init;terraform apply -auto-approve")
 	t := template.NewInfraBuilder(
 		nil,
 	)

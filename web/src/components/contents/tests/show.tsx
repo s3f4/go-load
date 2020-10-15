@@ -64,7 +64,7 @@ const Show: React.FC<Props> = (props: Props) => {
         const row: any[] = [
           test.url,
           test.method,
-          test.requestCount,
+          test.request_count,
           buttons("Edit", test),
           buttons("Delete", test),
         ];
@@ -101,7 +101,7 @@ const Show: React.FC<Props> = (props: Props) => {
   };
 
   const onAddTest = (test: Test) => {
-    test.testGroupId = selectedTestGroup.id!;
+    test.test_group_id = selectedTestGroup.id!;
     saveTest(test).then(() => {
       const newTestGroups = testGroups?.map((tg: TestGroup) => {
         if (tg.id === selectedTestGroup.id) {

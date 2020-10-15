@@ -80,7 +80,7 @@ const Create: React.FC<Props> = (props: Props) => {
     let count = 0;
     if (testGroup && testGroup.tests.length) {
       testGroup.tests.forEach((test: Test) => {
-        count += test.requestCount;
+        count += test.request_count;
       });
     }
     return count;
@@ -93,7 +93,7 @@ const Create: React.FC<Props> = (props: Props) => {
       const row: any[] = [
         test.url,
         test.method,
-        test.requestCount,
+        test.request_count,
         buttons("Edit", test),
         buttons("Delete", test),
       ];

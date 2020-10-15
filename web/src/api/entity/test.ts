@@ -1,20 +1,22 @@
 import { makeReq } from "../api";
+import { RunTest } from "./runtest";
 
 export interface Test {
   id?: number;
-  testGroupId?: number;
-  requestCount: number;
-  goroutineCount: number;
+  test_group_id?: number;
+  request_count: number;
+  goroutine_count: number;
   url: string;
   method: string;
   payload: string;
-  expectedResponseCode: number;
-  expectedResponseBody: string;
+  expected_response_code: number;
+  expected_response_body: string;
   transportConfig: TransportConfig;
+  run_tests?: RunTest[];
 }
 
 export interface TransportConfig {
-  DisableKeepAlives: boolean;
+  disable_keep_alives: boolean;
 }
 
 export const saveTest = async (test: Test) => {

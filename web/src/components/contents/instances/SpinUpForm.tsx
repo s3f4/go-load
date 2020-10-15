@@ -12,13 +12,14 @@ import {
   listAvailableRegions,
   InstanceConfig,
   showAccount,
+  Instance,
 } from "../../../api/entity/instance";
 import InstanceConfigCards from "./InstanceConfigCards";
 
 interface Props extends BaseForm {}
 
 const SpinUp: React.FC<Props> = (props: Props) => {
-  const [instanceCount, setInstanceCount] = useState<number>(1);
+  const [count, setCount] = useState<number>(1);
   const [region, setRegion] = useState<string>("");
   const [regions, setRegions] = useState<any>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -26,7 +27,7 @@ const SpinUp: React.FC<Props> = (props: Props) => {
   const [configs, setConfigs] = useState<any[]>([]);
   const [instanceLimit, setInstanceLimit] = useState<number>(0);
   const [isValid, setIsValid] = useState<any>({
-    instanceCount: true,
+    count: true,
     region: false,
   });
 
@@ -52,8 +53,8 @@ const SpinUp: React.FC<Props> = (props: Props) => {
     }
 
     switch (e.target.name) {
-      case "instanceCount":
-        setInstanceCount(toNum(e.target.value));
+      case "count":
+        setCount(toNum(e.target.value));
         break;
     }
   };
@@ -84,7 +85,7 @@ const SpinUp: React.FC<Props> = (props: Props) => {
       setConfigs([
         ...configs,
         {
-          instanceCount,
+          count,
           region,
         },
       ]);
@@ -131,23 +132,23 @@ const SpinUp: React.FC<Props> = (props: Props) => {
 
   const add = (config: any) => (e: React.FormEvent) => {
     e.preventDefault();
-    const newConfigs = configs.map((conf) => {
+    const newConfigs = configs.map((conf: Instance) => {
       if (conf.region === config.region) {
-        conf.instanceCount++;
+        conf.count++;
       }
       return conf;
     });
     setConfigs([...newConfigs]);
   };
 
-  const remove = (config: any) => (e: React.FormEvent) => {
+  const remove = (config: Instance) => (e: React.FormEvent) => {
     e.preventDefault();
-    const newConfigs: any[] = [];
-    configs.forEach((conf) => {
+    const newConfigs: Instance[] = [];
+    configs.forEach((conf: Instance) => {
       if (conf.region === config.region) {
-        if (conf.instanceCount === 1) {
+        if (conf.count === 1) {
         } else {
-          conf.instanceCount--;
+          conf.count--;
           newConfigs.push(conf);
         }
       } else {
@@ -159,7 +160,7 @@ const SpinUp: React.FC<Props> = (props: Props) => {
 
   const totalInstanceCount = (): number => {
     let count = 0;
-    configs.forEach((config) => (count += config.instanceCount));
+    configs.forEach((config: Instance) => (count += config.count));
     return count;
   };
 
@@ -173,18 +174,18 @@ const SpinUp: React.FC<Props> = (props: Props) => {
             <b>2</b>, you can increase this on digitalocean.
           </div>
           <TextInput
-            name="instanceCount"
+            name="count"
             label={"Instance Count"}
             type="text"
             onChange={handleChange}
-            value={instanceCount}
+            value={count}
             validate={{
               min: 1,
               max: instanceLimit,
               message: "Your can create " + instanceLimit + " instances.",
-              validationFunction: validation("instanceCount"),
+              validationFunction: validation("count"),
             }}
-            isValid={isValid["instanceCount"]}
+            isValid={isValid["count"]}
           />
 
           <SelectBox
@@ -207,9 +208,9 @@ const SpinUp: React.FC<Props> = (props: Props) => {
               text="Add New Instance"
               onClick={addNewInstance}
               disabled={
-                !isValid["instanceCount"] ||
+                !isValid["count"] ||
                 !isValid["region"] ||
-                totalInstanceCount() + instanceCount > instanceLimit
+                totalInstanceCount() + count > instanceLimit
               }
             />
 
@@ -217,7 +218,7 @@ const SpinUp: React.FC<Props> = (props: Props) => {
               text="Spin Up"
               onClick={sendRequest}
               disabled={
-                !isValid["instanceCount"] ||
+                !isValid["count"] ||
                 !isValid["region"] ||
                 configs.length === 0 ||
                 totalInstanceCount() > instanceLimit

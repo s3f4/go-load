@@ -45,7 +45,7 @@ func (s *testGroupService) Start(testGroup *models.TestGroup) error {
 	for _, test := range testGroup.Tests {
 		for _, instance := range instanceConfig.Configs {
 			fmt.Println(instance)
-			requestPerInstance := test.RequestCount / instance.InstanceCount
+			requestPerInstance := test.RequestCount / instance.Count
 
 			event := models.Event{
 				Event: models.REQUEST,
@@ -68,7 +68,7 @@ func (s *testGroupService) Start(testGroup *models.TestGroup) error {
 
 			log.Info(string(message))
 
-			for i := 0; i < instance.InstanceCount; i++ {
+			for i := 0; i < instance.Count; i++ {
 				if err := s.queueService.Send("worker", message); err != nil {
 					fmt.Println(err)
 					return err

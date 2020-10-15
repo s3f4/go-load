@@ -1,9 +1,5 @@
-variable "public_key" {}
-variable "private_key" {}
-variable "ssh_fingerprint" {}
 
 variable "do_token" {
-  description = "This is digitalocean apikey that will be given in runtime with terraform apply -var \"do_token=abc..\""
 }
 
 variable "image" {

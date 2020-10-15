@@ -72,7 +72,7 @@ func (s *instanceService) BuildTemplate(iReq models.InstanceConfig) error {
 
 // Spin Up instances
 func (s *instanceService) SpinUp() error {
-	_, err := mu.RunCommands("cd infra;terraform init;terraform apply -auto-approve")
+	_, err := mu.RunCommands("cd infra;terraform apply -auto-approve")
 
 	if err != nil {
 		return err
@@ -188,11 +188,6 @@ func (s *instanceService) parseInventoryFile() (string, error) {
 
 // Terraform shows available regions
 func (s *instanceService) ShowRegions() (string, error) {
-	_, err := mu.RunCommands("cd infra;terraform init;terraform apply -auto-approve;")
-	if err != nil {
-		return "", err
-	}
-
 	output, err := mu.RunCommands("cd infra;terraform output -json regions")
 	return string(output), err
 }

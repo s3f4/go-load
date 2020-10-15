@@ -1,10 +1,11 @@
-#!/bin/bash
+#!/bin/sh
 
 #set -euo pipefail
 
-apt update
-apt install --yes software-properties-common
-apt-add-repository --yes --update ppa:ansible/ansible
-apt install --yes ansible
-
+apk update
+#apk add --yes software-properties-common
+#apt-add-repository --yes --update ppa:ansible/ansible
+#apt install --yes ansible
+apk add ansible
+apk add python3
 ansible --version

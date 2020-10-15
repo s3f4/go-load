@@ -1,5 +1,10 @@
 # Master instance for docker swarm
 
+resource "digitalocean_ssh_key" "ssh" {
+  name       = "id_rsa"
+  public_key = file("~/.ssh/id_rsa.pub")
+}
+
 # Create a new SSH key
 resource "digitalocean_ssh_key" "for_master" {
   name       = "id_rsa_for_master"
@@ -13,7 +18,7 @@ resource "digitalocean_droplet" "master" {
   size   = var.size
 
   ssh_keys = [
-    var.ssh_fingerprint,
+    digitalocean_ssh_key.ssh.fingerprint,
     digitalocean_ssh_key.for_master.fingerprint
   ]
 
@@ -21,7 +26,7 @@ resource "digitalocean_droplet" "master" {
     host        = self.ipv4_address
     user        = "root"
     type        = "ssh"
-    private_key = file(var.private_key)
+    private_key = file("~/.ssh/id_rsa")
     timeout     = "2m"
   }
 
@@ -137,7 +142,7 @@ resource "digitalocean_droplet" "data" {
   region = var.region
   size   = var.size
   ssh_keys = [
-    var.ssh_fingerprint,
+    digitalocean_ssh_key.ssh.fingerprint,
     digitalocean_ssh_key.for_master.fingerprint
   ]
 }

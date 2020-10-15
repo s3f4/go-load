@@ -8,7 +8,8 @@ services:
     ports:
       - 3001:3001
     volumes:
-      - ~/app/apigateway:/go/src/github.com/s3f4/go-load/apigateway
+      - ~/app/apigateway/template/workers.tpl:/app/template/workers.tpl
+      - ~/app/apigateway/infra:/app/infra
       - /var/run/docker.sock:/var/run/docker.sock
       - ~/.ssh/id_rsa:/root/.ssh/id_rsa
       - ~/.ssh/id_rsa.pub:/root/.ssh/id_rsa.pub

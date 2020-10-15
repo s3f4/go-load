@@ -33,6 +33,8 @@ create_ssh_for_master:
 
 rm-files:
 	rm -f apigateway/cmd/apigateway && \
+	rm -f apigateway/infra/.terraform && \
+	rm -f apigateway/infra/terraform.tfstate* && \
 	rm -f worker/cmd/worker && \
 	rm -f eventhandler/cmd/eventhandler && \
 	rm -rf web/node_modules && \
@@ -45,9 +47,8 @@ init :create_ssh_for_master
 	cd infra/base && terraform init
 
 apply:
-	cd infra/base && export TF_LOG=true && terraform apply -auto-approve -var "public_key=$$HOME/.ssh/id_rsa.pub" \
-  														 -var "private_key=$$HOME/.ssh/id_rsa" \
-  														 -var "ssh_fingerprint=$(SSH_FINGERPRINT)" 
+	cd infra/base && export TF_LOG=true && terraform apply -auto-approve
+
 cpInventory:
 	cd infra/base && cp inventory.txt ../../apigateway/infra/ansible/inventory.tmpl \
 	&& echo "\n[workers]\n\$${workers}" >> ../../apigateway/infra/ansible/inventory.tmpl
@@ -84,14 +85,10 @@ ssh-copy:
 	cd infra/base && master=$$(terraform output master_ipv4_address) && ssh -t root@$$master 'ssh-keygen' 
 
 destroy:
-	cd infra/base && terraform destroy -auto-approve -var "public_key=$$HOME/.ssh/id_rsa.pub" \
-  														   -var "private_key=$$HOME/.ssh/id_rsa" \
-  														   -var "ssh_fingerprint=$(SSH_FINGERPRINT)"
+	cd infra/base && terraform destroy -auto-approve 
 
 plan:
-	cd infra/base && terraform plan -var "public_key=$$HOME/.ssh/id_rsa.pub" \
-  														   -var "private_key=$$HOME/.ssh/id_rsa" \
-  														   -var "ssh_fingerprint=$(SSH_FINGERPRINT)"
+	cd infra/base && terraform plan 
 
 finger:
 	@echo this is my fingerprint $(SSH_FINGERPRINT)

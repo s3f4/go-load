@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"strings"
 
 	"github.com/docker/docker/api/types"
@@ -13,7 +14,6 @@ import (
 	"github.com/s3f4/go-load/apigateway/models"
 	"github.com/s3f4/go-load/apigateway/repository"
 	"github.com/s3f4/go-load/apigateway/template"
-	"github.com/s3f4/mu"
 	"github.com/s3f4/mu/log"
 )
 
@@ -72,9 +72,8 @@ func (s *instanceService) BuildTemplate(iReq models.InstanceConfig) error {
 
 // Spin Up instances
 func (s *instanceService) SpinUp() error {
-	_, err := mu.RunCommands("cd infra;terraform apply -auto-approve")
+	if _, err := RunCommands("cd infra;terraform apply -auto-approve"); err != nil {
 
-	if err != nil {
 		return err
 	}
 
@@ -95,8 +94,8 @@ func (s *instanceService) SpinUp() error {
 
 // installDockerToWNodes installs docker to worker nodes to join swarm
 func (s *instanceService) installDockerToWNodes() error {
-	output, err := mu.RunCommands("cd ./infra/ansible; ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.txt docker-playbook.yml")
-	log.Debug(output)
+	output, err := RunCommands("cd ./infra/ansible; ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.txt docker-playbook.yml")
+	log.Debug(string(output))
 	return err
 }
 
@@ -133,45 +132,46 @@ func (s *instanceService) joinWNodesToSwarm() error {
 		addr,
 	)
 
-	output, err := mu.RunCommands(joinCommand)
-	log.Debug(output)
+	output, err := RunCommands(joinCommand)
+	log.Debug(string(output))
 	return err
 }
 
 // runAnsibleCommands cert copies cert file to worker nodes to registry service
 // hosts adds registry domain to /etc/hosts file
 func (s *instanceService) runAnsibleCommands() error {
-	output, err := mu.RunCommands("cd ./infra/ansible; ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.txt cert.yml")
+	output, err := RunCommands("cd ./infra/ansible; ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.txt cert.yml")
+	log.Debug(string(output))
 	if err != nil {
 		return err
 	}
-	log.Debug(output)
 
 	addr, err := s.parseInventoryFile()
 	if err != nil {
 		return err
 	}
 
-	output, err = mu.RunCommands("cd ./infra/ansible; ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.txt hosts.yml" +
+	output, err = RunCommands("cd ./infra/ansible; ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.txt hosts.yml" +
 		fmt.Sprintf("--extra-vars \"{addr: %s}\"", addr))
+	log.Debug(string(output))
 	if err != nil {
 		return err
 	}
-	log.Debug(output)
-	output, err = mu.RunCommands("cd ./infra/ansible; ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.txt known_hosts.yml")
+
+	output, err = RunCommands("cd ./infra/ansible; ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.txt known_hosts.yml")
+	log.Debug(string(output))
 	if err != nil {
 		return err
 	}
-	log.Debug(output)
+
 	return nil
 }
 
 // Destroy destroys worker instances
 func (s *instanceService) Destroy() error {
-	mu.RunCommands("cd infra;terraform destroy -auto-approve")
-	mu.RunCommands("cd infra;rm -rf .terraform")
-	mu.RunCommands("cd infra;rm -f terraform.tfstate*")
-	mu.RunCommands("cd infra;terraform init;terraform apply -auto-approve")
+	RunCommands("cd infra;terraform destroy -auto-approve")
+	RunCommands("cd infra;rm -rf .terraform")
+	RunCommands("cd infra;rm -f terraform.tfstate*")
 	t := template.NewInfraBuilder(
 		nil,
 	)
@@ -179,6 +179,8 @@ func (s *instanceService) Destroy() error {
 	if err := t.Write(); err != nil {
 		return err
 	}
+
+	RunCommands("cd infra;terraform init;terraform apply -auto-approve")
 
 	if err := s.repository.Delete(&models.InstanceConfig{}); err != nil {
 		return err
@@ -200,13 +202,15 @@ func (s *instanceService) parseInventoryFile() (string, error) {
 
 // Terraform shows available regions
 func (s *instanceService) ShowRegions() (string, error) {
-	output, err := mu.RunCommands("cd infra;terraform output -json regions")
+	output, err := RunCommands("cd infra;terraform output -json regions")
+	log.Debug(string(output))
 	return string(output), err
 }
 
 // Terraform shows total droplet limit
 func (s *instanceService) ShowAccount() (string, error) {
-	output, err := mu.RunCommands("cd infra;terraform output -json account")
+	output, err := RunCommands("cd infra;terraform output -json account")
+	log.Debug(string(output))
 	return string(output), err
 }
 
@@ -260,4 +264,17 @@ func (s *instanceService) AddLabels() error {
 
 func (s *instanceService) GetInstanceInfo() (*models.InstanceConfig, error) {
 	return s.repository.Get()
+}
+
+// RunCommands runs multiple commands
+func RunCommands(command string) ([]byte, error) {
+	cmd := exec.Command("/bin/sh", "-c", command)
+	output, err := cmd.CombinedOutput()
+
+	if err != nil {
+		fmt.Println(string(output))
+		return output, err
+	}
+	fmt.Println(string(output))
+	return output, nil
 }

@@ -3,9 +3,12 @@ package template
 import (
 	"bufio"
 	"bytes"
+	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"os"
+	"strings"
 	"text/template"
 )
 
@@ -58,7 +61,9 @@ func (ib *infraBuilder) Write() error {
 	}
 
 	reader := bufio.NewReader(tpl)
-	io.Copy(f, reader)
+	b, _ := ioutil.ReadAll(reader)
+	fmt.Println(string(b))
+	io.Copy(f, strings.NewReader(string(b)))
 
 	return nil
 }

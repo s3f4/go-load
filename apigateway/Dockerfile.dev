@@ -1,6 +1,8 @@
 FROM golang:1.15.2-alpine3.12
-WORKDIR /go/src/github.com/s3f4/go-load/apigateway/cmd
 
+RUN apk --update add openssh-client
+
+WORKDIR /go/src/github.com/s3f4/go-load/apigateway/cmd
 COPY ./cmd/install-terraform.sh .
 COPY ./cmd/install-ansible.sh .
 

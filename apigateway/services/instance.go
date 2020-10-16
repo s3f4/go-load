@@ -78,16 +78,16 @@ func (s *instanceService) SpinUp() error {
 		return err
 	}
 
+	if err := s.runAnsibleCommands(); err != nil {
+		return err
+	}
+
 	if err := s.installDockerToWNodes(); err != nil {
 		return err
 	}
 
 	if err := s.joinWNodesToSwarm(); err != nil {
-		return nil
-	}
-
-	if err := s.runAnsibleCommands(); err != nil {
-		return nil
+		return err
 	}
 
 	return nil
@@ -95,7 +95,7 @@ func (s *instanceService) SpinUp() error {
 
 // installDockerToWNodes installs docker to worker nodes to join swarm
 func (s *instanceService) installDockerToWNodes() error {
-	output, err := mu.RunCommands("cd ./infra/ansible; ansible-playbook -i inventory.txt docker-playbook.yml")
+	output, err := mu.RunCommands("cd ./infra/ansible; ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.txt docker-playbook.yml")
 	log.Debug(output)
 	return err
 }
@@ -127,7 +127,7 @@ func (s *instanceService) joinWNodesToSwarm() error {
 	}
 
 	joinCommand := fmt.Sprintf(
-		"cd ./infra/ansible; ansible-playbook -i inventory.txt swarm-join.yml "+
+		"cd ./infra/ansible; ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.txt swarm-join.yml "+
 			"--extra-vars \"{token:%s,addr: %s}\"",
 		token,
 		addr,
@@ -141,18 +141,24 @@ func (s *instanceService) joinWNodesToSwarm() error {
 // runAnsibleCommands cert copies cert file to worker nodes to registry service
 // hosts adds registry domain to /etc/hosts file
 func (s *instanceService) runAnsibleCommands() error {
-	output, err := mu.RunCommands("cd ./infra/ansible; ansible-playbook -i inventory.txt cert.yml")
+	output, err := mu.RunCommands("cd ./infra/ansible; ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.txt cert.yml")
 	if err != nil {
 		return err
 	}
 	log.Debug(output)
 
-	output, err = mu.RunCommands("cd ./infra/ansible; ansible-playbook -i inventory.txt hosts.yml")
+	addr, err := s.parseInventoryFile()
+	if err != nil {
+		return err
+	}
+
+	output, err = mu.RunCommands("cd ./infra/ansible; ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.txt hosts.yml" +
+		fmt.Sprintf("--extra-vars \"{addr: %s}\"", addr))
 	if err != nil {
 		return err
 	}
 	log.Debug(output)
-	output, err = mu.RunCommands("cd ./infra/ansible; ansible-playbook -i inventory.txt known_hosts.yml")
+	output, err = mu.RunCommands("cd ./infra/ansible; ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.txt known_hosts.yml")
 	if err != nil {
 		return err
 	}

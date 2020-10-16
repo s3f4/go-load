@@ -10,6 +10,7 @@ services:
     volumes:
       - ~/app/apigateway/template/workers.tpl:/app/template/workers.tpl
       - ~/app/apigateway/infra:/app/infra
+      - ~/app/apigateway/log:/app/log
       - /var/run/docker.sock:/var/run/docker.sock
       - ~/.ssh/id_rsa:/root/.ssh/id_rsa
       - ~/.ssh/id_rsa.pub:/root/.ssh/id_rsa.pub

@@ -13,6 +13,8 @@ COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder /build/cmd/apigateway /app/
 COPY --from=builder /build/cmd/install-terraform.sh /app/
 COPY --from=builder /build/cmd/install-ansible.sh /app/
+RUN apk --update add openssh-client
+
 WORKDIR /app/
 
 RUN chmod +x install-terraform.sh

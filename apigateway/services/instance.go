@@ -100,7 +100,7 @@ func (s *instanceService) SpinUp() error {
 
 // installDockerToWNodes installs docker to worker nodes to join swarm
 func (s *instanceService) installDockerToWNodes() error {
-	output, err := RunCommands("cd ./infra/ansible; ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.txt docker-playbook.yml")
+	output, err := RunCommands(buildAnsibleCommand("docker-playbook.yml", ""))
 	fmt.Println(string(output))
 	return err
 }
@@ -131,14 +131,7 @@ func (s *instanceService) joinWNodesToSwarm() error {
 		return nil
 	}
 
-	joinCommand := fmt.Sprintf(
-		"cd ./infra/ansible; ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.txt swarm-join.yml "+
-			"--extra-vars \"{token:%s,addr: %s}\"",
-		token,
-		addr,
-	)
-
-	output, err := RunCommands(joinCommand)
+	output, err := RunCommands(buildAnsibleCommand("swarm-join.yml", fmt.Sprintf("--extra-vars \"{token:%s,addr: %s}\"", token, addr)))
 	fmt.Println(string(output))
 	return err
 }
@@ -146,7 +139,7 @@ func (s *instanceService) joinWNodesToSwarm() error {
 // runAnsibleCommands cert copies cert file to worker nodes to registry service
 // hosts adds registry domain to /etc/hosts file
 func (s *instanceService) runAnsibleCommands() error {
-	output, err := RunCommands("cd ./infra/ansible; ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.txt cert.yml")
+	output, err := RunCommands(buildAnsibleCommand("cert.yml", ""))
 	fmt.Println(string(output))
 	if err != nil {
 		return err
@@ -157,8 +150,7 @@ func (s *instanceService) runAnsibleCommands() error {
 		return err
 	}
 
-	output, err = RunCommands("cd ./infra/ansible; ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.txt hosts.yml" +
-		fmt.Sprintf("--extra-vars \"{addr: %s}\"", addr))
+	output, err = RunCommands(buildAnsibleCommand("hosts.yml", fmt.Sprintf("--extra-vars \"{addr: %s}\"", addr)))
 	fmt.Println(string(output))
 	if err != nil {
 		return err
@@ -264,6 +256,10 @@ func (s *instanceService) AddLabels() error {
 
 func (s *instanceService) GetInstanceInfo() (*models.InstanceConfig, error) {
 	return s.repository.Get()
+}
+
+func buildAnsibleCommand(file string, extraVars string) string {
+	return fmt.Sprintf("cd ./infra/ansible; ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.txt %s %s", file, extraVars)
 }
 
 // RunCommands runs multiple commands

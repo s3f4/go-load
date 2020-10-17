@@ -8,6 +8,13 @@ up: default
 	@echo "=============Compose Up============="
 	docker-compose -f docker-compose.yml up -d  --build --remove-orphans
 
+up-dev:
+	@echo "=============Initializing local docker swarm============="
+	docker swarm leave --force
+	docker swarm init
+	./build-dev.sh
+	docker stack deploy -c swarm-dev.yml go-load
+
 logs:
 	docker-compose logs -f
 

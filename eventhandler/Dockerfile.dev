@@ -1,6 +1,6 @@
 FROM golang:latest
 
-WORKDIR /go/src/github.com/s3f4/go-load/eventhandler
+WORKDIR /app/
 
 COPY . .
 

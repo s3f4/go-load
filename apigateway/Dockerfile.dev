@@ -1,6 +1,7 @@
 FROM golang:1.15.2-alpine3.12
 
 RUN apk --update add openssh-client
+RUN apk --update add openssl
 
 WORKDIR /go/src/github.com/s3f4/go-load/apigateway/cmd
 COPY ./cmd/install-terraform.sh .

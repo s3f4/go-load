@@ -1,5 +1,7 @@
 variable regions {
   default = [
+    { index : 0, reg : "nyc1", instance_number : 1 },
+    { index : 1, reg : "sgp1", instance_number : 1 },
   ]
 }
 
@@ -17,6 +19,6 @@ resource "digitalocean_droplet" "workers" {
   image    = "ubuntu-18-04-x64"
 
   ssh_keys = [
-    data.digitalocean_ssh_key.for_master.id
+	  data.digitalocean_ssh_key.for_master.id
   ]
 }

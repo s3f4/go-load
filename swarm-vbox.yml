@@ -1,23 +1,17 @@
-version: "3"
+version: "3.8"
 services:
   apigateway:
-    image: apigateway
-    container_name: apigateway
-    restart: always
+    image: registry.dev:5000/apigateway
     build:
       context: ./apigateway
       dockerfile: Dockerfile.dev
     ports:
       - 3001:3001
     volumes:
-      - ./apigateway:/go/src/github.com/s3f4/go-load/apigateway
+      - /app/apigateway:/go/src/github.com/s3f4/go-load/apigateway
       - /var/run/docker.sock:/var/run/docker.sock
       - ~/.ssh/id_rsa_for_master:/root/.ssh/id_rsa
       - ~/.ssh/id_rsa_for_master.pub:/root/.ssh/id_rsa.pub
-    depends_on:
-      - mysql
-      - eventhandler
-      - queue
     environment:
       - APP_ENV=development
       - MYSQL_HOST=mysql
@@ -35,12 +29,17 @@ services:
       - RABBITMQ_HOST=queue
       - RABBITMQ_PORT=5672
       - WAIT_HOSTS=queue:5672,mysql:3306,timeDB:5432
-      - WAIT_HOSTS_TIMEOUT=120
+      - WAIT_HOSTS_TIMEOUT=360
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - "node.labels.role==master"
+      restart_policy:
+        condition: on-failure
 
   eventhandler:
-    image: eventhandler
-    container_name: eventhandler
-    restart: always
+    image: registry.dev:5000/eventhandler
     build:
       context: ./eventhandler
       dockerfile: Dockerfile.dev
@@ -57,14 +56,17 @@ services:
       - POSTGRES_PORT=5432
       - POSTGRES_DATABASE=data
       - WAIT_HOSTS=queue:5672,mysql:3306,timeDB:5432
-      - WAIT_HOSTS_TIMEOUT=120
-    depends_on:
-      - queue
-      - timeDB
+      - WAIT_HOSTS_TIMEOUT=360
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - "node.labels.role==master"
+      restart_policy:
+        condition: on-failure
+
   web:
-    image: web
-    container_name: web
-    restart: always
+    image: registry.dev:5000/web
     build:
       context: ./web
       dockerfile: Dockerfile.dev
@@ -72,71 +74,89 @@ services:
       - 3000:3000
     environment:
       - CHOKIDAR_USEPOLLING=true
+      - env_file=.env
+      - WAIT_HOSTS=apigateway:3001
     volumes:
-      - "./web:/app"
-      - "/app/node_modules"
+      - "./web:/app/web"
+      - "/app/web/node_modules"
     stdin_open: true
-    depends_on:
-      - apigateway
-      - mysql
-      - timeDB
-      - queue
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - "node.labels.role==master"
+      restart_policy:
+        condition: on-failure
 
   worker:
-    image: worker
-    restart: always
+    image: registry.dev:5000/worker
     build:
       context: ./worker
       dockerfile: Dockerfile.dev
-    volumes:
-      - ./worker:/go/src/github.com/s3f4/go-load/worker
     environment:
       - RABBITMQ_USER=user
       - RABBITMQ_PASSWORD=password
       - RABBITMQ_HOST=queue
       - RABBITMQ_PORT=5672
       - WAIT_HOSTS=queue:5672,mysql:3306,timeDB:5432,apigateway:3001
-      - WAIT_HOSTS_TIMEOUT=120
-    scale: 5
-    depends_on:
-      - eventhandler
-      - queue
+      - WAIT_HOSTS_TIMEOUT=360
+    deploy:
+      replicas: 1
+      placement:
+        max_replicas_per_node: 1
+        constraints:
+          - "node.labels.role==worker"
+      restart_policy:
+        condition: on-failure
 
   timeDB:
     image: timescale/timescaledb:latest-pg12
-    container_name: timeDB
-    restart: always
     environment:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=timescaledb_example
       - POSTGRES_DB=data
     ports:
       - 5432:5432
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - "node.labels.role==data"
+      restart_policy:
+        condition: on-failure
 
   queue:
     image: rabbitmq:3-management
-    container_name: queue
-    restart: always
     ports:
       - 8080:15672
     environment:
       - RABBITMQ_DEFAULT_USER=user
       - RABBITMQ_DEFAULT_PASS=password
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - "node.labels.role==data"
+      restart_policy:
+        condition: on-failure
 
   pgAdmin:
     image: dpage/pgadmin4
-    container_name: pgAdmin
-    restart: always
     ports:
       - 8081:80
     environment:
       - PGADMIN_DEFAULT_EMAIL=test@test.com
       - PGADMIN_DEFAULT_PASSWORD=123456
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - "node.labels.role==data"
+      restart_policy:
+        condition: on-failure
 
   mysql:
     image: mysql
-    container_name: mysql
-    restart: always
     environment:
       MYSQL_ROOT_PASSWORD: p123456
       MYSQL_DATABASE: go-load
@@ -144,3 +164,10 @@ services:
       MYSQL_PASSWORD: go-load12345
     ports:
       - 3306:3306
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - "node.labels.role==data"
+      restart_policy:
+        condition: on-failure

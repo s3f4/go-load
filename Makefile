@@ -10,10 +10,12 @@ up: default
 
 up-dev:
 	@echo "=============Initializing local docker swarm============="
-	docker swarm leave --force
 	docker swarm init
 	./build-dev.sh
 	docker stack deploy -c swarm-dev.yml go-load
+
+down-dev:
+	docker swarm leave --force
 
 logs:
 	docker-compose logs -f

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+docker node update --label-add role=master $(docker node ls -f "role=manager" --format "{{.Hostname}}")
+
 echo "cert files are being created"
 openssl req -newkey rsa:4096 -nodes -sha256 \
 -keyout registry.key -x509 -days 365 \

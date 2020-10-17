@@ -10,7 +10,7 @@ up: default
 
 up-dev:
 	@echo "=============Initializing local docker swarm============="
-	docker swarm init
+	docker swarm init --listen-addr 85.98.80.222:2377
 	./build-dev.sh
 	docker stack deploy -c swarm-dev.yml go-load
 

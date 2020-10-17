@@ -2,8 +2,10 @@ package services
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"os/exec"
 	"strings"
@@ -125,13 +127,23 @@ func (s *instanceService) joinWNodesToSwarm() error {
 	}
 
 	token := swarm.JoinTokens.Worker
-	addr, err := s.parseInventoryFile()
+	var addr string
+	fmt.Println(os.Getenv("APP_ENV"))
+	if os.Getenv("APP_ENV") != "development" {
+		os.Getenv("APP_ENV")
+		// If environment is production, read master ip address from inventory file
+		addr, err = s.parseInventoryFile()
+	} else {
+		os.Getenv("APP_ENV")
+		// If environment is not production read master ip address from ntppool site.
+		addr, err = getIP()
+	}
 
 	if err != nil {
 		return nil
 	}
 
-	output, err := RunCommands(buildAnsibleCommand("swarm-join.yml", fmt.Sprintf("--extra-vars \"{token:%s,addr: %s}\"", token, addr)))
+	output, err := RunCommands(buildAnsibleCommand("swarm-join.yml", fmt.Sprintf("--extra-vars '{\"token\":\"%s\",\"addr\": \"%s\"}'", token, addr)))
 	fmt.Println(string(output))
 	return err
 }
@@ -144,13 +156,18 @@ func (s *instanceService) runAnsibleCommands() error {
 	if err != nil {
 		return err
 	}
+	var addr string
+	if os.Getenv("APP_ENV") != "development" {
+		addr, err = s.parseInventoryFile()
+	} else {
+		addr, err = getIP()
+	}
 
-	addr, err := s.parseInventoryFile()
 	if err != nil {
 		return err
 	}
 
-	output, err = RunCommands(buildAnsibleCommand("hosts.yml", fmt.Sprintf("--extra-vars \"{addr: %s}\"", addr)))
+	output, err = RunCommands(buildAnsibleCommand("hosts.yml", fmt.Sprintf("--extra-vars '{\"addr\": \"%s\"}'", addr)))
 	fmt.Println(string(output))
 	if err != nil {
 		return err
@@ -259,7 +276,9 @@ func (s *instanceService) GetInstanceInfo() (*models.InstanceConfig, error) {
 }
 
 func buildAnsibleCommand(file string, extraVars string) string {
-	return fmt.Sprintf("cd ./infra/ansible; ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.txt %s %s", file, extraVars)
+	c := fmt.Sprintf("cd ./infra/ansible; ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.txt %s %s", file, extraVars)
+	fmt.Println(c)
+	return c
 }
 
 // RunCommands runs multiple commands
@@ -273,4 +292,33 @@ func RunCommands(command string) ([]byte, error) {
 	}
 	fmt.Println(string(output))
 	return output, nil
+}
+
+func getIP() (string, error) {
+	resp, err := http.Get("https://www.mapper.ntppool.org/json")
+	if err != nil {
+		fmt.Println(err)
+		return "", err
+	}
+
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Println(err)
+		return "", err
+	}
+
+	ip := struct {
+		HTTP string
+		DNS  string
+		EDNS string
+	}{}
+
+	if err = json.Unmarshal(body, &ip); err != nil {
+		fmt.Println(err)
+		return "", err
+	}
+
+	return ip.HTTP, nil
 }

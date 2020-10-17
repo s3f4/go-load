@@ -2,18 +2,15 @@ version: "3.8"
 services:
   apigateway:
     image: registry.dev:5000/apigateway
-    build:
-      context: ./apigateway
-      dockerfile: Dockerfile.dev
     ports:
       - 3001:3001
     volumes:
-      - .:/app
+      - ./apigateway:/app
       - /var/run/docker.sock:/var/run/docker.sock
       - ~/.ssh/id_rsa:/root/.ssh/id_rsa
       - ~/.ssh/id_rsa.pub:/root/.ssh/id_rsa.pub
     environment:
-      - APP_ENV=production
+      - APP_ENV=development
       - MYSQL_HOST=mysql
       - MYSQL_PORT=3306
       - MYSQL_DATABASE=go-load
@@ -38,11 +35,8 @@ services:
 
   eventhandler:
     image: registry.dev:5000/eventhandler
-    build:
-      context: ./eventhandler
-      dockerfile: Dockerfile.dev
     environment:
-      - APP_ENV=production
+      - APP_ENV=development
       - RABBITMQ_USER=user
       - RABBITMQ_PASSWORD=password
       - RABBITMQ_HOST=queue
@@ -56,17 +50,14 @@ services:
       replicas: 1
       placement:
         constraints:
-          - "node.labels.role==data"
+          - "node.labels.role==master"
       restart_policy:
         condition: on-failure
 
   web:
     image: registry.dev:5000/web
-    build:
-      context: ./web
-      dockerfile: Dockerfile.dev
     ports:
-      - 80:80
+      - 80:3000
     environment:
       - CHOKIDAR_USEPOLLING=true
       - env_file=.env
@@ -81,11 +72,8 @@ services:
 
   worker:
     image: registry.dev:5000/worker
-    build:
-      context: ./worker
-      dockerfile: Dockerfile.dev
     environment:
-      - APP_ENV=production
+      - APP_ENV=development
       - RABBITMQ_USER=user
       - RABBITMQ_PASSWORD=password
       - RABBITMQ_HOST=queue
@@ -111,7 +99,7 @@ services:
       replicas: 1
       placement:
         constraints:
-          - "node.labels.role==data"
+          - "node.labels.role==master"
       restart_policy:
         condition: on-failure
     healthcheck:
@@ -131,7 +119,7 @@ services:
       replicas: 1
       placement:
         constraints:
-          - "node.labels.role==data"
+          - "node.labels.role==master"
       restart_policy:
         condition: on-failure
     healthcheck:
@@ -151,7 +139,7 @@ services:
       replicas: 1
       placement:
         constraints:
-          - "node.labels.role==data"
+          - "node.labels.role==master"
       restart_policy:
         condition: on-failure
 
@@ -168,7 +156,7 @@ services:
       replicas: 1
       placement:
         constraints:
-          - "node.labels.role==data"
+          - "node.labels.role==master"
       restart_policy:
         condition: on-failure
     healthcheck:

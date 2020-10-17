@@ -21,12 +21,14 @@ type InfraBuilderService interface {
 
 type infraBuilder struct {
 	Instances []string
+	Env       string
 }
 
 // NewInfraBuilder returns a new infraBuilder instance
 func NewInfraBuilder(instances []string) InfraBuilderService {
 	return &infraBuilder{
 		Instances: instances,
+		Env:       os.Getenv("APP_ENV"),
 	}
 }
 

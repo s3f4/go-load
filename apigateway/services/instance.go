@@ -14,7 +14,6 @@ import (
 	"github.com/s3f4/go-load/apigateway/models"
 	"github.com/s3f4/go-load/apigateway/repository"
 	"github.com/s3f4/go-load/apigateway/template"
-	"github.com/s3f4/mu/log"
 )
 
 // InstanceService ...
@@ -72,16 +71,23 @@ func (s *instanceService) BuildTemplate(iReq models.InstanceConfig) error {
 
 // Spin Up instances
 func (s *instanceService) SpinUp() error {
-	if _, err := RunCommands("cd infra;terraform apply -auto-approve"); err != nil {
-
+	if _, err := RunCommands("cd infra;terraform apply -auto-approve;"); err != nil {
 		return err
 	}
 
-	if err := s.runAnsibleCommands(); err != nil {
-		return err
-	}
+	RunCommands("echo 'sleeping 20 secs for initializing'; sleep 20;")
 
 	if err := s.installDockerToWNodes(); err != nil {
+		return err
+	}
+
+	// output, err := RunCommands("cd ./infra/ansible; ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.txt known_hosts.yml;")
+	// fmt.Println(string(output))
+	// if err != nil {
+	// 	return err
+	// }
+
+	if err := s.runAnsibleCommands(); err != nil {
 		return err
 	}
 
@@ -95,7 +101,7 @@ func (s *instanceService) SpinUp() error {
 // installDockerToWNodes installs docker to worker nodes to join swarm
 func (s *instanceService) installDockerToWNodes() error {
 	output, err := RunCommands("cd ./infra/ansible; ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.txt docker-playbook.yml")
-	log.Debug(string(output))
+	fmt.Println(string(output))
 	return err
 }
 
@@ -133,7 +139,7 @@ func (s *instanceService) joinWNodesToSwarm() error {
 	)
 
 	output, err := RunCommands(joinCommand)
-	log.Debug(string(output))
+	fmt.Println(string(output))
 	return err
 }
 
@@ -141,7 +147,7 @@ func (s *instanceService) joinWNodesToSwarm() error {
 // hosts adds registry domain to /etc/hosts file
 func (s *instanceService) runAnsibleCommands() error {
 	output, err := RunCommands("cd ./infra/ansible; ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.txt cert.yml")
-	log.Debug(string(output))
+	fmt.Println(string(output))
 	if err != nil {
 		return err
 	}
@@ -153,13 +159,7 @@ func (s *instanceService) runAnsibleCommands() error {
 
 	output, err = RunCommands("cd ./infra/ansible; ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.txt hosts.yml" +
 		fmt.Sprintf("--extra-vars \"{addr: %s}\"", addr))
-	log.Debug(string(output))
-	if err != nil {
-		return err
-	}
-
-	output, err = RunCommands("cd ./infra/ansible; ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.txt known_hosts.yml")
-	log.Debug(string(output))
+	fmt.Println(string(output))
 	if err != nil {
 		return err
 	}
@@ -203,14 +203,14 @@ func (s *instanceService) parseInventoryFile() (string, error) {
 // Terraform shows available regions
 func (s *instanceService) ShowRegions() (string, error) {
 	output, err := RunCommands("cd infra;terraform output -json regions")
-	log.Debug(string(output))
+	fmt.Println(string(output))
 	return string(output), err
 }
 
 // Terraform shows total droplet limit
 func (s *instanceService) ShowAccount() (string, error) {
 	output, err := RunCommands("cd infra;terraform output -json account")
-	log.Debug(string(output))
+	fmt.Println(string(output))
 	return string(output), err
 }
 

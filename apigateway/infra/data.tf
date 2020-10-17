@@ -13,7 +13,3 @@ resource "digitalocean_ssh_key" "for_master" {
 	name       = "id_rsa_for_master"
 	public_key = file("~/.ssh/id_rsa.pub")
 }
-data "digitalocean_ssh_key" "for_master" {
-  depends_on = [digitalocean_ssh_key.for_master]
-  name       = "id_rsa_for_master"
-}

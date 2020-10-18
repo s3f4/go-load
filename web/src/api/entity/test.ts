@@ -17,6 +17,7 @@ export interface Test {
 }
 
 export interface Header {
+  id?: number;
   key: string;
   value: string;
 }

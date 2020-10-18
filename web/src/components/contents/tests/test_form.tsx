@@ -6,7 +6,7 @@ import Button from "../../basic/Button";
 import { toNum } from "../../basic/helper";
 import { BaseForm } from "../../basic/BaseForm";
 import SelectBox from "../../basic/SelectBox";
-import { Test } from "../../../api/entity/test";
+import { Header, Test } from "../../../api/entity/test";
 import { TestGroup } from "../../../api/entity/test_group";
 
 interface Props extends BaseForm {
@@ -84,6 +84,35 @@ const TestForm = (props: Props) => {
         typeof test[e.target.name] === "number"
           ? toNum(e.target.value)
           : e.target.value,
+    });
+  };
+
+  const onHeaderHandle = (header: Header) => (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    e.preventDefault();
+    header[e.target.name] = e.target.value;
+    setTest({
+      ...test,
+      headers: test.headers!.map((h: Header) => {
+        if (h.id === header.id) {
+          return header;
+        }
+        return h;
+      }),
+    });
+  };
+
+  const onAddHeader = (e: React.FormEvent) => {
+    e.preventDefault();
+    const header: Header = {
+      id: Date.now(),
+      key: "",
+      value: "",
+    };
+    setTest({
+      ...test,
+      headers: [...test.headers!, header],
     });
   };
 
@@ -179,15 +208,30 @@ const TestForm = (props: Props) => {
             ]}
             value={test.transportConfig.disable_keep_alives ? "true" : "false"}
           />
-          <div
-            css={css`
-              display: flex;
-            `}
-          >
-            <TextInput label="Header key" name="key" value={test.headers} />
-            <TextInput label="Header value" name="value" value={test.headers} />
-          </div>
-          <Button text="Add New Header" />
+          {test.headers &&
+            test.headers.map((header: Header) => {
+              return (
+                <div key={header.id!} css={flex}>
+                  <div css={headerDiv(true)}>
+                    <TextInput
+                      label="Header key"
+                      name="key"
+                      value={header.key}
+                      onChange={onHeaderHandle(header)}
+                    />
+                  </div>
+                  <div css={headerDiv(false)}>
+                    <TextInput
+                      label="Header value"
+                      name="value"
+                      value={header.value}
+                      onChange={onHeaderHandle(header)}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          <Button text="Add New Header" onClick={onAddHeader} />
 
           {props.test ? (
             <Button
@@ -241,6 +285,15 @@ const formTitle = css`
   text-align: center;
   padding: 0 0 1rem 0;
   border-bottom: 0.1rem solid #e3e3e3;
+`;
+
+const flex = css`
+  display: flex;
+`;
+
+const headerDiv = (right?: boolean) => css`
+  width: 50%;
+  ${right && typeof right !== "undefined" ? "margin-right: 3rem;" : ""}
 `;
 
 export default TestForm;

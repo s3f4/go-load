@@ -34,18 +34,19 @@ func (s *workerService) Start(event *models.Event) error {
 	i := 0
 	for i < payload.GoroutineCount {
 		log.Info("%+v", payload)
-		go s.run(payload.URL, "worker_"+strconv.Itoa(i), payload.RequestCount, payload.TransportConfig.DisableKeepAlives)
+		go s.run(payload.URL, "worker_"+strconv.Itoa(i), payload.RequestCount, payload.TransportConfig.DisableKeepAlives, payload.Headers)
 		i++
 	}
 	return nil
 }
 
-func (s *workerService) run(url, workerName string, request int, disableKeepAlives bool) {
+func (s *workerService) run(url, workerName string, request int, disableKeepAlives bool, headers []*models.Header) {
 	dataBuf := make(chan models.Response, 100)
 	defer close(dataBuf)
 	client := &client.Client{
 		URL:        url,
 		WorkerName: workerName,
+		Headers:    headers,
 		TransportConfig: models.TransportConfig{
 			DisableKeepAlives: disableKeepAlives,
 		},

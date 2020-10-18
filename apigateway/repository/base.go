@@ -128,6 +128,7 @@ func (r *baseRepository) Migrate() {
 	r.GetDB().AutoMigrate(&models.Test{})
 	r.GetDB().AutoMigrate(&models.RunTest{})
 	r.GetDB().AutoMigrate(&models.TransportConfig{})
+	r.GetDB().AutoMigrate(&models.Header{})
 }
 
 //GetDB return *gorm.DB instance

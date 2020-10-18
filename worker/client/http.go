@@ -17,6 +17,7 @@ type Client struct {
 	WorkerName      string
 	URL             string
 	TransportConfig models.TransportConfig
+	Headers         []*models.Header
 }
 
 // HTTPTrace load testing with HTTPTrace tool of golang.
@@ -61,6 +62,10 @@ func (c *Client) HTTPTrace() (*models.Response, error) {
 	}
 
 	req = req.WithContext(httptrace.WithClientTrace(req.Context(), trace))
+	for _, header := range c.Headers {
+		req.Header.Add(header.Key, header.Value)
+	}
+
 	start = time.Now()
 	response, err := transport.RoundTrip(req)
 	if err != nil {

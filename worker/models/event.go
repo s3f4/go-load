@@ -26,6 +26,13 @@ type RequestPayload struct {
 	ExpectedResponseCode uint            `json:"expectedResponseCode"`
 	ExpectedResponseBody string          `json:"expectedResponseBody"`
 	TransportConfig      TransportConfig `json:"transportConfig"`
+	Headers              []*Header       `json:"headers"`
+}
+
+// Header holds request headers
+type Header struct {
+	Key   string `json:"key"`
+	Value string `json:"value"`
 }
 
 // TransportConfig is used to specify how to make requests

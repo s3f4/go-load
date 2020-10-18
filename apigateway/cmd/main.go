@@ -37,5 +37,6 @@ func main() {
 		log.Errorf("error: %v", err)
 		return
 	}
+	log.Info("apigateway is running....")
 	apigateway.Run()
 }

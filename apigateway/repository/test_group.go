@@ -54,7 +54,11 @@ func (r *testGroupRepository) Get(id uint) (*models.TestGroup, error) {
 
 func (r *testGroupRepository) List() ([]models.TestGroup, error) {
 	var testReq []models.TestGroup
-	if err := r.DB().Preload("Tests").Find(&testReq).Error; err != nil {
+	if err := r.DB().Preload("Tests").
+		Preload("Tests.Headers").
+		Preload("Tests.TransportConfig").
+		Preload("Tests.RunTests").
+		Find(&testReq).Error; err != nil {
 		fmt.Println(err)
 		return nil, err
 	}

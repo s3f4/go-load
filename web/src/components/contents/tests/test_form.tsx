@@ -28,7 +28,7 @@ const initialTest: Test = {
   payload: "",
   goroutine_count: 1,
   headers: [],
-  transportConfig: { disable_keep_alives: true },
+  transport_config: { disable_keep_alives: true },
 };
 
 const TestForm = (props: Props) => {
@@ -67,7 +67,7 @@ const TestForm = (props: Props) => {
       if (e.value === "true" || e.value === "false") {
         setTest({
           ...test,
-          ["transportConfig"]: { disable_keep_alives: e.value === "true" },
+          ["transport_config"]: { disable_keep_alives: e.value === "true" },
         });
         return;
       }
@@ -115,6 +115,8 @@ const TestForm = (props: Props) => {
       headers: [...test.headers!, header],
     });
   };
+
+  console.log(test);
 
   const formContent = () => {
     return (
@@ -206,7 +208,7 @@ const TestForm = (props: Props) => {
               { value: "true", label: "True" },
               { value: "false", label: "False" },
             ]}
-            value={test.transportConfig.disable_keep_alives ? "true" : "false"}
+            value={test.transport_config.disable_keep_alives ? "true" : "false"}
           />
           {test.headers &&
             test.headers.map((header: Header) => {

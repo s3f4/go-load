@@ -11,7 +11,7 @@ export interface Test {
   payload: string;
   expected_response_code: number;
   expected_response_body: string;
-  transportConfig: TransportConfig;
+  transport_config: TransportConfig;
   headers?: Header[];
   run_tests?: RunTest[];
 }

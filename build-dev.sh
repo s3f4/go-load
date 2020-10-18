@@ -14,11 +14,11 @@ docker service create -d --name registry --publish=5000:5000 \
 -e REGISTRY_HTTP_ADDR=0.0.0.0:5000 \
 -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/registry.crt \
 -e REGISTRY_HTTP_TLS_KEY=/certs/registry.key \
-registry:latest
+registry:2.7.1
 
 echo "You must add ' 127.0.0.1 registry.dev ' to /etc/hosts"
 echo "Wait for starting registry service..."
-sleep 2
+sleep 5
 
 docker build -t registry.dev:5000/apigateway ./apigateway -f ./apigateway/Dockerfile.dev
 docker build -t registry.dev:5000/worker ./worker -f ./worker/Dockerfile.dev

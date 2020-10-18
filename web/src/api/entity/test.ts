@@ -12,7 +12,13 @@ export interface Test {
   expected_response_code: number;
   expected_response_body: string;
   transportConfig: TransportConfig;
+  headers?: Header[];
   run_tests?: RunTest[];
+}
+
+export interface Header {
+  key: string;
+  value: string;
 }
 
 export interface TransportConfig {

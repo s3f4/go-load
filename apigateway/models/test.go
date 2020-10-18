@@ -13,6 +13,15 @@ type Test struct {
 	ExpectedResponseBody string          `json:"expectedResponseBody" gorm:"expected_response_body"`
 	TransportConfig      TransportConfig `json:"transport_config"`
 	RunTests             []*RunTest      `json:"run_tests" gorm:"foreignKey:TestID"`
+	Headers              []*Header       `json:"headers" gorm:"foreignKey:TestID"`
+}
+
+// Header holds request headers
+type Header struct {
+	ID     uint   `json:"id" gorm:"primaryKey;column:id"`
+	TestID uint   `json:"test_id"`
+	Key    string `json:"key"`
+	Value  string `json:"value"`
 }
 
 // TransportConfig is used to specify how to make requests

@@ -27,6 +27,7 @@ const initialTest: Test = {
   expected_response_body: "",
   payload: "",
   goroutine_count: 1,
+  headers: [],
   transportConfig: { disable_keep_alives: true },
 };
 
@@ -178,6 +179,16 @@ const TestForm = (props: Props) => {
             ]}
             value={test.transportConfig.disable_keep_alives ? "true" : "false"}
           />
+          <div
+            css={css`
+              display: flex;
+            `}
+          >
+            <TextInput label="Header key" name="key" value={test.headers} />
+            <TextInput label="Header value" name="value" value={test.headers} />
+          </div>
+          <Button text="Add New Header" />
+
           {props.test ? (
             <Button
               text="Update"

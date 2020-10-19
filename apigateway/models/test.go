@@ -7,10 +7,10 @@ type Test struct {
 	URL                  string          `json:"url" gorm:"url"`
 	Method               string          `json:"method" gorm:"method"`
 	Payload              string          `json:"payload,omitempty" gorm:"payload"`
-	RequestCount         int             `json:"requestCount" gorm:"request_count"`
-	GoroutineCount       int             `json:"goroutineCount" gorm:"goroutine_count"`
-	ExpectedResponseCode uint            `json:"expectedResponseCode" gorm:"expected_response_code"`
-	ExpectedResponseBody string          `json:"expectedResponseBody" gorm:"expected_response_body"`
+	RequestCount         int             `json:"request_count" gorm:"request_count"`
+	GoroutineCount       int             `json:"goroutine_count" gorm:"goroutine_count"`
+	ExpectedResponseCode uint            `json:"expected_response_code" gorm:"expected_response_code"`
+	ExpectedResponseBody string          `json:"expected_response_body" gorm:"expected_response_body"`
 	TransportConfig      TransportConfig `json:"transport_config"`
 	RunTests             []*RunTest      `json:"run_tests" gorm:"foreignKey:TestID"`
 	Headers              []*Header       `json:"headers" gorm:"foreignKey:TestID"`

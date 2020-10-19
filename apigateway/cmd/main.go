@@ -2,29 +2,21 @@ package main
 
 import (
 	"os"
-	"text/template"
 
 	"github.com/s3f4/go-load/apigateway"
+	"github.com/s3f4/go-load/apigateway/template"
 	"github.com/s3f4/mu"
 	"github.com/s3f4/mu/log"
 )
 
 func sshTpl() {
-	t, err := template.ParseFiles("infra/data.tpl")
-	if err != nil {
-		log.Errorf("error %v", err)
-		return
-	}
-
-	f, err := os.Create("infra/data.tf")
-	if err != nil {
-		log.Errorf("create file: ", err)
-		return
-	}
-	defer f.Close()
-
-	if err := t.Execute(f, map[string]string{"env": os.Getenv("APP_ENV")}); err != nil {
-		log.Errorf("execute: ", err)
+	t := template.NewInfraBuilder(
+		"template/data.tpl",
+		"infra/data.tf",
+		map[string]interface{}{"env": os.Getenv("APP_ENV")},
+	)
+	if err := t.Write(); err != nil {
+		log.Errorf("error: ", err)
 		return
 	}
 }

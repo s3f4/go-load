@@ -37,7 +37,7 @@ const TestForm = (props: Props) => {
     request_count: true,
     url: false,
     method: true,
-    goroutineCount: true,
+    goroutine_count: true,
   });
 
   React.useEffect(() => {
@@ -190,18 +190,18 @@ const TestForm = (props: Props) => {
           <TextInput
             onChange={handleChange}
             label="Goroutine per worker (up to 10)"
-            name="goroutineCount"
+            name="goroutine_count"
             value={test.goroutine_count}
             validate={{
               min: 1,
               max: 10,
               message: "Goroutine count must be less than or equal to 10",
-              validationFunction: validation("goroutineCount"),
+              validationFunction: validation("goroutine_count"),
             }}
-            isValid={isValid["goroutineCount"]}
+            isValid={isValid["goroutine_count"]}
           />
           <SelectBox
-            name={"disableKeepAlives"}
+            name={"disable_keep_alives"}
             label={"Disable Keep-alive connections"}
             onChange={handleChange}
             options={[

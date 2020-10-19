@@ -57,7 +57,12 @@ func (s *instanceService) BuildTemplate(iReq models.InstanceConfig) error {
 	}
 
 	t := template.NewInfraBuilder(
-		instances,
+		"template/workers.tpl",
+		"infra/workers.tf",
+		map[string]interface{}{
+			"Instances": instances,
+			"Env":       os.Getenv("APP_ENV"),
+		},
 	)
 
 	if err := t.Write(); err != nil {
@@ -182,7 +187,12 @@ func (s *instanceService) Destroy() error {
 	RunCommands("cd infra;rm -rf .terraform")
 	RunCommands("cd infra;rm -f terraform.tfstate*")
 	t := template.NewInfraBuilder(
-		nil,
+		"template/workers.tpl",
+		"infra/workers.tf",
+		map[string]interface{}{
+			"Instances": nil,
+			"Env":       os.Getenv("APP_ENV"),
+		},
 	)
 
 	if err := t.Write(); err != nil {

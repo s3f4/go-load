@@ -15,33 +15,35 @@ import (
 // InfraBuilderService is used to build new
 // terraform files to create new digitalocean droplets
 type InfraBuilderService interface {
-	Parse(path string) (*bytes.Buffer, error)
+	Parse() (*bytes.Buffer, error)
 	Write() error
 }
 
 type infraBuilder struct {
-	Instances []string
-	Env       string
+	TemplatePath string
+	TargetPath   string
+	Vars         map[string]interface{}
 }
 
 // NewInfraBuilder returns a new infraBuilder instance
-func NewInfraBuilder(instances []string) InfraBuilderService {
+func NewInfraBuilder(templatePath, targetPath string, vars map[string]interface{}) InfraBuilderService {
 	return &infraBuilder{
-		Instances: instances,
-		Env:       os.Getenv("APP_ENV"),
+		TemplatePath: templatePath,
+		TargetPath:   targetPath,
+		Vars:         vars,
 	}
 }
 
 // Parse template file
-func (ib *infraBuilder) Parse(path string) (*bytes.Buffer, error) {
-	t, err := template.ParseFiles(path)
+func (ib *infraBuilder) Parse() (*bytes.Buffer, error) {
+	t, err := template.ParseFiles(ib.TemplatePath)
 	if err != nil {
 		log.Print(err)
 		return nil, nil
 	}
 
 	var tpl bytes.Buffer
-	err = t.Execute(&tpl, *ib)
+	err = t.Execute(&tpl, ib.Vars)
 	if err != nil {
 		log.Print("execute: ", err)
 		return nil, err
@@ -51,13 +53,13 @@ func (ib *infraBuilder) Parse(path string) (*bytes.Buffer, error) {
 
 // Write to template file
 func (ib *infraBuilder) Write() error {
-	f, err := os.Create("infra/workers.tf")
+	f, err := os.Create(ib.TargetPath)
 	if err != nil {
 		return err
 	}
 	defer f.Close()
 
-	tpl, err := ib.Parse("template/workers.tpl")
+	tpl, err := ib.Parse()
 	if err != nil {
 		return err
 	}

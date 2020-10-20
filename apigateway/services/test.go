@@ -16,11 +16,13 @@ type TestService interface {
 	Update(*models.Test) error
 	Delete(*models.Test) error
 	List() ([]models.Test, error)
+	Start(testID uint) error
 }
 
 type testService struct {
 	ir           repository.InstanceRepository
 	tr           repository.TestRepository
+	rtr          repository.RunTestRepository
 	queueService QueueService
 }
 
@@ -29,6 +31,7 @@ func NewTestService() TestService {
 	return &testService{
 		ir:           repository.NewInstanceRepository(),
 		tr:           repository.NewTestRepository(),
+		rtr:          repository.NewRunTestRepository(),
 		queueService: NewRabbitMQService(),
 	}
 }
@@ -58,7 +61,7 @@ func (s *testService) List() ([]models.Test, error) {
 	return s.tr.List()
 }
 
-func (s *testService) Run(testID uint) error {
+func (s *testService) Start(testID uint) error {
 	instanceConfig, err := s.ir.Get()
 	if err != nil {
 		return err
@@ -70,12 +73,20 @@ func (s *testService) Run(testID uint) error {
 		return err
 	}
 
+	var runTest models.RunTest
+	runTest.TestID = test.ID
+
+	if err := s.rtr.Insert(&runTest); err != nil {
+		return err
+	}
+
 	for _, instance := range instanceConfig.Configs {
 		requestPerInstance := test.RequestCount / uint64(instance.Count)
 
 		event := models.Event{
 			Event: models.REQUEST,
 			Payload: models.RequestPayload{
+				RunTestID:            runTest.ID,
 				URL:                  test.URL,
 				RequestCount:         requestPerInstance,
 				Method:               test.Method,

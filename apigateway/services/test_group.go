@@ -22,6 +22,7 @@ type TestGroupService interface {
 type testGroupService struct {
 	ir           repository.InstanceRepository
 	tgr          repository.TestGroupRepository
+	rtr          repository.RunTestRepository
 	queueService QueueService
 }
 
@@ -30,6 +31,7 @@ func NewTestGroupService() TestGroupService {
 	return &testGroupService{
 		ir:           repository.NewInstanceRepository(),
 		tgr:          repository.NewTestGroupRepository(),
+		rtr:          repository.NewRunTestRepository(),
 		queueService: NewRabbitMQService(),
 	}
 }
@@ -43,6 +45,14 @@ func (s *testGroupService) Start(testGroup *models.TestGroup) error {
 	}
 
 	for _, test := range testGroup.Tests {
+
+		var runTest models.RunTest
+		runTest.TestID = test.ID
+
+		if err := s.rtr.Insert(&runTest); err != nil {
+			return err
+		}
+
 		for _, instance := range instanceConfig.Configs {
 			fmt.Println(instance)
 			requestPerInstance := test.RequestCount / uint64(instance.Count)
@@ -50,6 +60,7 @@ func (s *testGroupService) Start(testGroup *models.TestGroup) error {
 			event := models.Event{
 				Event: models.REQUEST,
 				Payload: models.RequestPayload{
+					RunTestID:            runTest.ID,
 					URL:                  test.URL,
 					RequestCount:         requestPerInstance,
 					Method:               test.Method,

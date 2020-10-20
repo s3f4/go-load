@@ -15,6 +15,7 @@ import { leftContent } from "../../style";
 import Message, { MessageObj } from "../../basic/Message";
 import TestForm from "./test_form";
 import {
+  runTest,
   deleteTest,
   saveTest,
   Test,
@@ -78,13 +79,13 @@ const Show: React.FC<Props> = (props: Props) => {
 
   const buttons = (text: string, test?: Test) => {
     switch (text) {
-      case "Delete":
+      case "Run":
         return (
           <Button
             text={text}
             onClick={(e: React.FormEvent) => {
               e.preventDefault();
-              onDeleteTest(test!);
+              onRunTest(test!);
             }}
           />
         );
@@ -168,7 +169,9 @@ const Show: React.FC<Props> = (props: Props) => {
   };
 
   const onRunTest = (test: Test) => {
-    
+    runTest(test)
+      .then((response) => console.log(response))
+      .catch((error) => console.log(error));
   };
 
   const editTest = (test: Test): void => {

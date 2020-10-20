@@ -16,7 +16,7 @@ type testHandlerInterface interface {
 	Update(w http.ResponseWriter, r *http.Request)
 	Get(w http.ResponseWriter, r *http.Request)
 	List(w http.ResponseWriter, r *http.Request)
-	Run(w http.ResponseWriter, r *http.Request)
+	Start(w http.ResponseWriter, r *http.Request)
 }
 
 type testHandler struct {
@@ -100,7 +100,7 @@ func (h *testHandler) List(w http.ResponseWriter, r *http.Request) {
 	R200(w, tests)
 }
 
-func (h *testHandler) Run(w http.ResponseWriter, r *http.Request) {
+func (h *testHandler) Start(w http.ResponseWriter, r *http.Request) {
 	tests, err := h.service.List()
 	if err != nil {
 		R500(w, err)

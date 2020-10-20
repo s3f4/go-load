@@ -45,7 +45,7 @@ func (s *testGroupService) Start(testGroup *models.TestGroup) error {
 	for _, test := range testGroup.Tests {
 		for _, instance := range instanceConfig.Configs {
 			fmt.Println(instance)
-			requestPerInstance := test.RequestCount / instance.Count
+			requestPerInstance := test.RequestCount / uint64(instance.Count)
 
 			event := models.Event{
 				Event: models.REQUEST,

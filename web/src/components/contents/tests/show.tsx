@@ -65,6 +65,7 @@ const Show: React.FC<Props> = (props: Props) => {
           test.url,
           test.method,
           test.request_count,
+          buttons("Run", test),
           buttons("Edit", test),
           buttons("Delete", test),
         ];
@@ -77,6 +78,16 @@ const Show: React.FC<Props> = (props: Props) => {
 
   const buttons = (text: string, test?: Test) => {
     switch (text) {
+      case "Delete":
+        return (
+          <Button
+            text={text}
+            onClick={(e: React.FormEvent) => {
+              e.preventDefault();
+              onDeleteTest(test!);
+            }}
+          />
+        );
       case "Delete":
         return (
           <Button
@@ -154,6 +165,10 @@ const Show: React.FC<Props> = (props: Props) => {
         }
       })
       .catch((error) => setMessage(error));
+  };
+
+  const onRunTest = (test: Test) => {
+    
   };
 
   const editTest = (test: Test): void => {
@@ -240,7 +255,7 @@ const Show: React.FC<Props> = (props: Props) => {
               </React.Fragment>
             )}
             <Table
-              title={["URL", "Method", "Requests Count", "", ""]}
+              title={["URL", "Method", "Requests Count", "", "", ""]}
               content={buildTable()}
             />
           </React.Fragment>

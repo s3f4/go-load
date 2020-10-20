@@ -26,6 +26,10 @@ export interface TransportConfig {
   disable_keep_alives: boolean;
 }
 
+export const runTest = async (test: Test) => {
+  return await makeReq("/test/run", "POST", test);
+};
+
 export const saveTest = async (test: Test) => {
   return await makeReq("/test", "POST", test);
 };

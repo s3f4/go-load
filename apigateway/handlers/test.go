@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 
+	"github.com/go-chi/chi"
 	"github.com/s3f4/go-load/apigateway/models"
 	"github.com/s3f4/go-load/apigateway/services"
 	. "github.com/s3f4/mu"
@@ -101,10 +103,16 @@ func (h *testHandler) List(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *testHandler) Start(w http.ResponseWriter, r *http.Request) {
-	tests, err := h.service.List()
+	testID, err := strconv.Atoi(chi.URLParam(r, "ID"))
 	if err != nil {
+		R400(w, err)
+		return
+	}
+
+	if err := h.service.Start(uint(testID)); err != nil {
 		R500(w, err)
 		return
 	}
-	R200(w, tests)
+
+	R200(w, "Test has been started.")
 }

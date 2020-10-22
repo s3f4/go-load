@@ -10,7 +10,7 @@ import (
 // TestRepository ..
 type TestRepository interface {
 	DB() *gorm.DB
-	Insert(*models.Test) error
+	Create(*models.Test) error
 	Update(*models.Test) error
 	Delete(*models.Test) error
 	Get(id uint) (*models.Test, error)
@@ -32,7 +32,7 @@ func (r *testRepository) DB() *gorm.DB {
 	return r.base.GetDB()
 }
 
-func (r *testRepository) Insert(test *models.Test) error {
+func (r *testRepository) Create(test *models.Test) error {
 	return r.DB().Create(test).Error
 }
 

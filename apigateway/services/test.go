@@ -11,7 +11,7 @@ import (
 
 // TestService creates tests
 type TestService interface {
-	Insert(*models.Test) error
+	Create(*models.Test) error
 	Get(*models.Test) (*models.Test, error)
 	Update(*models.Test) error
 	Delete(*models.Test) error
@@ -36,9 +36,9 @@ func NewTestService() TestService {
 	}
 }
 
-// Insert
-func (s *testService) Insert(test *models.Test) error {
-	return s.tr.Insert(test)
+// Create
+func (s *testService) Create(test *models.Test) error {
+	return s.tr.Create(test)
 }
 
 // Get
@@ -76,7 +76,7 @@ func (s *testService) Start(testID uint) error {
 	var runTest models.RunTest
 	runTest.TestID = test.ID
 
-	if err := s.rtr.Insert(&runTest); err != nil {
+	if err := s.rtr.Create(&runTest); err != nil {
 		return err
 	}
 

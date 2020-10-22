@@ -10,7 +10,7 @@ import (
 // RunTestRepository ..
 type RunTestRepository interface {
 	DB() *gorm.DB
-	Insert(*models.RunTest) error
+	Create(*models.RunTest) error
 	Delete(*models.RunTest) error
 	Get(id uint) (*models.RunTest, error)
 	List() ([]models.RunTest, error)
@@ -31,7 +31,7 @@ func (r *runTestRepository) DB() *gorm.DB {
 	return r.base.GetDB()
 }
 
-func (r *runTestRepository) Insert(runTest *models.RunTest) error {
+func (r *runTestRepository) Create(runTest *models.RunTest) error {
 	return r.DB().Create(runTest).Error
 }
 

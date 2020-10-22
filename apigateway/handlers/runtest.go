@@ -11,7 +11,7 @@ import (
 )
 
 type runTestHandlerInterface interface {
-	Insert(w http.ResponseWriter, r *http.Request)
+	Create(w http.ResponseWriter, r *http.Request)
 	Delete(w http.ResponseWriter, r *http.Request)
 	Get(w http.ResponseWriter, r *http.Request)
 	List(w http.ResponseWriter, r *http.Request)
@@ -28,7 +28,7 @@ var (
 	}
 )
 
-func (h *runTestHandler) Insert(w http.ResponseWriter, r *http.Request) {
+func (h *runTestHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var runTest models.RunTest
 	if err := json.NewDecoder(r.Body).Decode(&runTest); err != nil {
 		fmt.Println(err)
@@ -36,7 +36,7 @@ func (h *runTestHandler) Insert(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := h.service.Insert(&runTest)
+	err := h.service.Create(&runTest)
 	if err != nil {
 		fmt.Println(err)
 		R500(w, err)

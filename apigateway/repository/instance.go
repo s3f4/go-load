@@ -8,7 +8,7 @@ import (
 // InstanceRepository ..
 type InstanceRepository interface {
 	DB() *gorm.DB
-	Insert(*models.InstanceConfig) error
+	Create(*models.InstanceConfig) error
 	Delete(*models.InstanceConfig) error
 	Get() (*models.InstanceConfig, error)
 }
@@ -28,7 +28,7 @@ func (r *instanceRepository) DB() *gorm.DB {
 	return r.base.GetDB()
 }
 
-func (r *instanceRepository) Insert(instance *models.InstanceConfig) error {
+func (r *instanceRepository) Create(instance *models.InstanceConfig) error {
 	return r.DB().Create(instance).Error
 }
 

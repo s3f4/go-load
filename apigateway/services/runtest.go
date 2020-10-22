@@ -7,7 +7,7 @@ import (
 
 // RunTestService creates runTests
 type RunTestService interface {
-	Insert(*models.RunTest) error
+	Create(*models.RunTest) error
 	Get(*models.RunTest) (*models.RunTest, error)
 	Delete(*models.RunTest) error
 	List() ([]models.RunTest, error)
@@ -24,9 +24,9 @@ func NewRunTestService() RunTestService {
 	}
 }
 
-// Insert
-func (s *runTestService) Insert(runTest *models.RunTest) error {
-	return s.rtr.Insert(runTest)
+// Create
+func (s *runTestService) Create(runTest *models.RunTest) error {
+	return s.rtr.Create(runTest)
 }
 
 // Get

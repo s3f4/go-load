@@ -69,7 +69,7 @@ func (s *instanceService) BuildTemplate(iReq models.InstanceConfig) error {
 		return err
 	}
 
-	if err := s.repository.Insert(&iReq); err != nil {
+	if err := s.repository.Create(&iReq); err != nil {
 		return err
 	}
 

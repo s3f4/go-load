@@ -39,14 +39,14 @@ func routeMap(*chi.Mux) {
 
 	router.Post("/test_group/{ID}/start", handlers.TestGroupHandler.Start)
 	router.Get("/test_group/{ID}", handlers.TestGroupHandler.List)
-	router.Post("/test_group", handlers.TestGroupHandler.Insert)
+	router.Post("/test_group", handlers.TestGroupHandler.Create)
 	router.Get("/test_group", handlers.TestGroupHandler.List)
 	router.Put("/test_group", handlers.TestGroupHandler.Update)
 	router.Delete("/test_group", handlers.TestGroupHandler.Delete)
 
 	router.Post("/test/{ID}/start", handlers.TestHandler.Start)
 	router.Get("/test/{ID}", handlers.TestHandler.Get)
-	router.Post("/test", handlers.TestHandler.Insert)
+	router.Post("/test", handlers.TestHandler.Create)
 	router.Get("/test", handlers.TestHandler.List)
 	router.Put("/test", handlers.TestHandler.Update)
 	router.Delete("/test", handlers.TestHandler.Delete)

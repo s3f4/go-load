@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/s3f4/go-load/apigateway"
+	"github.com/s3f4/go-load/apigateway/app"
 	"github.com/s3f4/go-load/apigateway/template"
 	"github.com/s3f4/mu"
 	"github.com/s3f4/mu/log"
@@ -30,5 +30,5 @@ func main() {
 		return
 	}
 	log.Info("apigateway is running....")
-	apigateway.Run()
+	app.Run()
 }

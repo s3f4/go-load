@@ -12,7 +12,7 @@ import (
 // TestGroupService creates tests
 type TestGroupService interface {
 	Start(*models.TestGroup) error
-	Insert(*models.TestGroup) error
+	Create(*models.TestGroup) error
 	Get(*models.TestGroup) (*models.TestGroup, error)
 	Update(*models.TestGroup) error
 	Delete(*models.TestGroup) error
@@ -49,7 +49,7 @@ func (s *testGroupService) Start(testGroup *models.TestGroup) error {
 		var runTest models.RunTest
 		runTest.TestID = test.ID
 
-		if err := s.rtr.Insert(&runTest); err != nil {
+		if err := s.rtr.Create(&runTest); err != nil {
 			return err
 		}
 
@@ -92,9 +92,9 @@ func (s *testGroupService) Start(testGroup *models.TestGroup) error {
 	return nil
 }
 
-// Insert
-func (s *testGroupService) Insert(testGroup *models.TestGroup) error {
-	return s.tgr.Insert(testGroup)
+// Create
+func (s *testGroupService) Create(testGroup *models.TestGroup) error {
+	return s.tgr.Create(testGroup)
 }
 
 // Get

@@ -13,7 +13,7 @@ import (
 
 type testGroupHandlerInterface interface {
 	Start(w http.ResponseWriter, r *http.Request)
-	Insert(w http.ResponseWriter, r *http.Request)
+	Create(w http.ResponseWriter, r *http.Request)
 	Update(w http.ResponseWriter, r *http.Request)
 	Delete(w http.ResponseWriter, r *http.Request)
 	Get(w http.ResponseWriter, r *http.Request)
@@ -47,7 +47,7 @@ func (h *testGroupHandler) Start(w http.ResponseWriter, r *http.Request) {
 	R200(w, "Test started.")
 }
 
-func (h *testGroupHandler) Insert(w http.ResponseWriter, r *http.Request) {
+func (h *testGroupHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var testConfig models.TestGroup
 	if err := json.NewDecoder(r.Body).Decode(&testConfig); err != nil {
 		fmt.Println(err)
@@ -56,7 +56,7 @@ func (h *testGroupHandler) Insert(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Printf("%#v", testConfig)
-	err := h.service.Insert(&testConfig)
+	err := h.service.Create(&testConfig)
 	if err != nil {
 		fmt.Println(err)
 		R500(w, err)

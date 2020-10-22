@@ -13,7 +13,7 @@ import (
 )
 
 type testHandlerInterface interface {
-	Insert(w http.ResponseWriter, r *http.Request)
+	Create(w http.ResponseWriter, r *http.Request)
 	Delete(w http.ResponseWriter, r *http.Request)
 	Update(w http.ResponseWriter, r *http.Request)
 	Get(w http.ResponseWriter, r *http.Request)
@@ -32,7 +32,7 @@ var (
 	}
 )
 
-func (h *testHandler) Insert(w http.ResponseWriter, r *http.Request) {
+func (h *testHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var test models.Test
 	if err := json.NewDecoder(r.Body).Decode(&test); err != nil {
 		fmt.Println(err)
@@ -40,7 +40,7 @@ func (h *testHandler) Insert(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := h.service.Insert(&test)
+	err := h.service.Create(&test)
 	if err != nil {
 		fmt.Println(err)
 		R500(w, err)

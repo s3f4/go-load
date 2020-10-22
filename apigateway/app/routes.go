@@ -1,26 +1,13 @@
-package apigateway
+package app
 
 import (
-	"flag"
-	"fmt"
-	"net/http"
-	"os"
-	"os/signal"
-
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
 	"github.com/s3f4/go-load/apigateway/handlers"
-	"github.com/s3f4/go-load/apigateway/repository"
 )
 
-var router *chi.Mux
-
-// Run apigateway Service
-func Run() {
-	go Down()
-	router = chi.NewRouter()
-
+func applyMiddlewares() {
 	router.Use(middleware.RequestID)
 	router.Use(middleware.RealIP)
 	//router.Use(middleware.Logger)
@@ -35,20 +22,11 @@ func Run() {
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	})
 	router.Use(cors.Handler)
-	initHandlers()
-
-	port := flag.String("port", "3001", " default port is 3001")
-	flag.Parse()
-
-	baseRepo := repository.NewBaseRepository(repository.MYSQL)
-	baseRepo.Migrate()
-
-	if err := http.ListenAndServe(":"+*port, router); err != nil {
-		panic(err)
-	}
 }
 
-func initHandlers() {
+// routeMap initializes routes.
+func routeMap(*chi.Mux) {
+	applyMiddlewares()
 	router.Post("/instances", handlers.InstanceHandler.SpinUp)
 	router.Get("/instances", handlers.InstanceHandler.GetInstanceInfo)
 	router.Get("/instances/regions", handlers.InstanceHandler.ShowRegions)
@@ -76,14 +54,4 @@ func initHandlers() {
 	router.Get("/run_test/{ID}", handlers.RunTestHandler.Get)
 	router.Get("/run_test", handlers.RunTestHandler.List)
 	router.Delete("/run_test", handlers.RunTestHandler.Delete)
-
-}
-
-//Down downs service when kill SIGINT came.
-func Down() {
-	sigint := make(chan os.Signal, 1)
-	signal.Notify(sigint, os.Interrupt)
-	<-sigint
-	fmt.Println("\ni am dead")
-	os.Exit(0)
 }

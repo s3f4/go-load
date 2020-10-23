@@ -19,7 +19,7 @@ const App: React.FC = () => {
         <Route exact path="/workers">
           <Workers />
         </Route>
-        <Route exact path="/stats">
+        <Route exact path="/stats/:id">
           <Stats />
         </Route>
         <Route exact path="/swarm">

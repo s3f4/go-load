@@ -1,22 +1,29 @@
 /** @jsx jsx */
-import React from "react";
+import React, { useState } from "react";
 import { jsx, css } from "@emotion/core";
 import { stats, Response } from "../../api/entity/stats";
 import moment from "moment";
 import { Line } from "react-chartjs-2";
 import { preciseFormat } from "../basic/helper";
+import { getTest } from "../../api/entity/test";
 
-interface Props {}
+interface Props {
+  testID: number;
+}
 
 const StatsContent: React.FC<Props> = (props: Props) => {
   const [responses, setResponses] = React.useState<Response[]>([]);
 
   React.useEffect(() => {
+    getTest(props.testID)
+      .then((response) => console.log(response))
+      .catch((error) => console.log(error));
     listResponses();
-  }, []);
+  }, [props.testID]);
 
   const listResponses = () => {
-    stats()
+    console.log(props.testID);
+    stats(props.testID)
       .then((response) => {
         setResponses(response.data.data);
         console.log(response.data);
@@ -56,6 +63,7 @@ const StatsContent: React.FC<Props> = (props: Props) => {
 
   return (
     <div css={statsContainer}>
+      test group
       {graph()}
       <table css={table}>
         <thead>

@@ -34,8 +34,8 @@ export const saveTest = async (test: Test) => {
   return await makeReq("/test", "POST", test);
 };
 
-export const getTest = async (test: Test) => {
-  return await makeReq(`/test/${test.id}`, "GET");
+export const getTest = async (testID: number) => {
+  return await makeReq(`/test/${testID}`, "GET");
 };
 
 export const deleteTest = async (test: Test) => {

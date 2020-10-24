@@ -22,7 +22,6 @@ const StatsContent: React.FC<Props> = (props: Props) => {
         setTest(response.test);
       })
       .catch((error) => console.log(error));
-    listResponses();
   }, [props.testID]);
 
   const listResponses = () => {
@@ -67,7 +66,7 @@ const StatsContent: React.FC<Props> = (props: Props) => {
 
   return (
     <div css={statsContainer}>
-      {test?.url}
+      {test?.url}ssdfs
       {graph()}
       <table css={table}>
         <thead>

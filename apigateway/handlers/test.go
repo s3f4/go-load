@@ -2,11 +2,11 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/go-chi/chi"
+	"github.com/s3f4/go-load/apigateway/middlewares"
 	"github.com/s3f4/go-load/apigateway/models"
 	"github.com/s3f4/go-load/apigateway/services"
 	. "github.com/s3f4/mu"
@@ -35,14 +35,12 @@ var (
 func (h *testHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var test models.Test
 	if err := json.NewDecoder(r.Body).Decode(&test); err != nil {
-		fmt.Println(err)
 		R400(w, "Bad Request")
 		return
 	}
 
 	err := h.service.Create(&test)
 	if err != nil {
-		fmt.Println(err)
 		R500(w, err)
 		return
 	}
@@ -50,15 +48,10 @@ func (h *testHandler) Create(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *testHandler) Delete(w http.ResponseWriter, r *http.Request) {
-	var test models.Test
-	if err := json.NewDecoder(r.Body).Decode(&test); err != nil {
-		R400(w, "Bad Request")
-		return
-	}
-
-	err := h.service.Delete(&test)
-	if err != nil {
-		R500(w, err)
+	ctx := r.Context()
+	test, ok := ctx.Value(middlewares.TestCtx).(*models.Test)
+	if !ok {
+		R422(w, "unprocessable entity")
 		return
 	}
 	R200(w, test)
@@ -80,19 +73,15 @@ func (h *testHandler) Update(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *testHandler) Get(w http.ResponseWriter, r *http.Request) {
-	var test models.Test
-	if err := json.NewDecoder(r.Body).Decode(&test); err != nil {
-		R400(w, "Bad Request")
+	ctx := r.Context()
+	test, ok := ctx.Value(middlewares.TestCtx).(*models.Test)
+	if !ok {
+		R422(w, "unprocessable entity")
 		return
 	}
-
-	tc, err := h.service.Get(&test)
-	if err != nil {
-		R500(w, err)
-		return
-	}
-	R200(w, tc)
+	R200(w, test)
 }
+
 func (h *testHandler) List(w http.ResponseWriter, r *http.Request) {
 	tests, err := h.service.List()
 	if err != nil {

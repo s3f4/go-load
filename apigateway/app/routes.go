@@ -5,6 +5,7 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
 	"github.com/s3f4/go-load/apigateway/handlers"
+	"github.com/s3f4/go-load/apigateway/middlewares"
 )
 
 func applyMiddlewares() {
@@ -44,12 +45,18 @@ func routeMap(*chi.Mux) {
 	router.Put("/test_group", handlers.TestGroupHandler.Update)
 	router.Delete("/test_group", handlers.TestGroupHandler.Delete)
 
-	router.Post("/test/{ID}/start", handlers.TestHandler.Start)
-	router.Get("/test/{ID}", handlers.TestHandler.Get)
-	router.Post("/test", handlers.TestHandler.Create)
-	router.Get("/test", handlers.TestHandler.List)
-	router.Put("/test", handlers.TestHandler.Update)
-	router.Delete("/test", handlers.TestHandler.Delete)
+	router.Route("/test", func(router chi.Router) {
+		router.Post("/", handlers.TestHandler.Create)
+		router.Get("/", handlers.TestHandler.List)
+
+		router.Route("/{ID}", func(router chi.Router) {
+			router.Use(middlewares.TestCtx)
+			router.Post("/start", handlers.TestHandler.Start)
+			router.Get("/", handlers.TestHandler.Get)
+			router.Put("/", handlers.TestHandler.Update)
+			router.Delete("/", handlers.TestHandler.Delete)
+		})
+	})
 
 	router.Get("/run_test/{ID}", handlers.RunTestHandler.Get)
 	router.Get("/run_test", handlers.RunTestHandler.List)

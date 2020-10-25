@@ -11,10 +11,6 @@ import (
 
 // TestService creates tests
 type TestService interface {
-	Create(*models.Test) error
-	Get(*models.Test) (*models.Test, error)
-	Update(*models.Test) error
-	Delete(*models.Test) error
 	List() ([]models.Test, error)
 	Start(testID uint) error
 }
@@ -36,25 +32,6 @@ func NewTestService() TestService {
 	}
 }
 
-// Create
-func (s *testService) Create(test *models.Test) error {
-	return s.tr.Create(test)
-}
-
-// Get
-func (s *testService) Get(test *models.Test) (*models.Test, error) {
-	return s.tr.Get(test.ID)
-}
-
-// Update
-func (s *testService) Update(test *models.Test) error {
-	return s.tr.Update(test)
-}
-
-// Delete
-func (s *testService) Delete(test *models.Test) error {
-	return s.tr.Delete(test)
-}
 
 // List
 func (s *testService) List() ([]models.Test, error) {

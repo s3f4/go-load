@@ -11,7 +11,6 @@ import (
 
 // TestService creates tests
 type TestService interface {
-	List() ([]models.Test, error)
 	Start(testID uint) error
 }
 
@@ -30,12 +29,6 @@ func NewTestService() TestService {
 		rtr:          repository.NewRunTestRepository(),
 		queueService: NewRabbitMQService(),
 	}
-}
-
-
-// List
-func (s *testService) List() ([]models.Test, error) {
-	return s.tr.List()
 }
 
 func (s *testService) Start(testID uint) error {

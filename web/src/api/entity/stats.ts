@@ -19,5 +19,5 @@ export interface Response {
 }
 
 export const stats = async (runTestID: number) => {
-  return await makeReq(`/stats/${runTestID}`);
+  return await makeReq(`/run_test/${runTestID}`);
 };

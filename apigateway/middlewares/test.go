@@ -25,7 +25,7 @@ func TestCtx(next http.Handler) http.Handler {
 			R404(w, err)
 			return
 		}
-		ctx := context.WithValue(r.Context(), TestCtx, test)
+		ctx := context.WithValue(r.Context(), TestCtxKey, test)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

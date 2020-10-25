@@ -105,7 +105,7 @@ func (h *testHandler) Start(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.service.Start(test.ID); err != nil {
+	if err := h.service.Start(test); err != nil {
 		R500(w, err)
 		return
 	}

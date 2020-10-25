@@ -3,6 +3,7 @@ package services
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/s3f4/go-load/apigateway/models"
 	"github.com/s3f4/go-load/apigateway/repository"
@@ -11,7 +12,7 @@ import (
 
 // TestService creates tests
 type TestService interface {
-	Start(testID uint) error
+	Start(test *models.Test) error
 }
 
 type testService struct {
@@ -31,20 +32,17 @@ func NewTestService() TestService {
 	}
 }
 
-func (s *testService) Start(testID uint) error {
+func (s *testService) Start(test *models.Test) error {
+	startTime := time.Now()
+
 	instanceConfig, err := s.ir.Get()
-	if err != nil {
-		return err
-	}
-
-	test, err := s.tr.Get(testID)
-
 	if err != nil {
 		return err
 	}
 
 	var runTest models.RunTest
 	runTest.TestID = test.ID
+	runTest.StartTime = &startTime
 
 	if err := s.rtr.Create(&runTest); err != nil {
 		return err

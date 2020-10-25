@@ -24,6 +24,10 @@ func sshTpl() {
 func main() {
 	sshTpl()
 
+	if os.Getenv("APP_ENV") == "development" {
+		_, _ = mu.RunCommands("cd infra;terraform init;terraform destroy -auto-approve;")
+	}
+
 	_, err := mu.RunCommands("cd infra;terraform init;terraform apply -auto-approve;")
 	if err != nil {
 		log.Errorf("error: %v", err)

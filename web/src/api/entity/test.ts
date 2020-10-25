@@ -27,7 +27,7 @@ export interface TransportConfig {
 }
 
 export const runTest = async (test: Test) => {
-  return await makeReq("/test/run", "POST", test);
+  return await makeReq(`/test/${test.id}/start`, "POST", test);
 };
 
 export const saveTest = async (test: Test) => {

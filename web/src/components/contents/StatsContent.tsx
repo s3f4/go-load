@@ -5,7 +5,9 @@ import { stats, Response } from "../../api/entity/stats";
 import moment from "moment";
 import { Line } from "react-chartjs-2";
 import { preciseFormat } from "../basic/helper";
-import { getTest, Test } from "../../api/entity/test";
+import { getTest, runTest, Test } from "../../api/entity/test";
+import { Borders } from "../style";
+import { RunTest } from "../../api/entity/runtest";
 
 interface Props {
   testID: number;
@@ -18,14 +20,12 @@ const StatsContent: React.FC<Props> = (props: Props) => {
   React.useEffect(() => {
     getTest(props.testID)
       .then((response) => {
-        console.log(response);
-        setTest(response.test);
+        setTest(response.data);
       })
       .catch((error) => console.log(error));
   }, [props.testID]);
 
   const listResponses = () => {
-    console.log(props.testID);
     stats(props.testID)
       .then((response) => {
         setResponses(response.data.data);
@@ -64,9 +64,31 @@ const StatsContent: React.FC<Props> = (props: Props) => {
     return <Line data={data} />;
   };
 
+  const testContent = (test: Test) => {
+    return (
+      <div css={testDiv}>
+        Test URL: {test.url} <br />
+        Method: {test.method} <br />
+        {test.run_tests &&
+          test.run_tests.map((runTest: RunTest) => {
+            return (
+              <div>
+                Start Time: {runTest.start_time}
+                <br />
+                End Time: {runTest.end_time}
+                <br />
+                Passed: {runTest.passed}
+                <br />
+              </div>
+            );
+          })}
+      </div>
+    );
+  };
+
   return (
     <div css={statsContainer}>
-      {test?.url}ssdfs
+      <div css={testContainer}>{test && testContent(test)}</div>
       {graph()}
       <table css={table}>
         <thead>
@@ -113,6 +135,20 @@ const StatsContent: React.FC<Props> = (props: Props) => {
 };
 
 const statsContainer = css``;
+
+const testContainer = css`
+  margin: 1rem 0 1rem 0;
+  width: 100%;
+  height: 10rem;
+`;
+
+const testDiv = css`
+  width: 80%;
+  margin: 0 auto;
+  padding: 3rem 2rem 3rem 2rem;
+  background-color: #efefef;
+  border: ${Borders.border1};
+`;
 
 const table = css`
   width: 100%;

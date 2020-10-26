@@ -99,7 +99,7 @@ func (h *testHandler) List(w http.ResponseWriter, r *http.Request) {
 
 func (h *testHandler) Start(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	test, ok := ctx.Value(middlewares.TestCtx).(*models.Test)
+	test, ok := ctx.Value(middlewares.TestCtxKey).(*models.Test)
 	if !ok {
 		R422(w, "unprocessable entity")
 		return

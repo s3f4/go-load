@@ -23,15 +23,17 @@ const StatsContent: React.FC<Props> = (props: Props) => {
         setTest(response.data);
       })
       .catch((error) => console.log(error));
-  }, [props.testID]);
+  }, [props.testID, test]);
 
   const listResponses = () => {
-    stats(props.testID)
-      .then((response) => {
-        setResponses(response.data.data);
-        console.log(response.data);
-      })
-      .catch((error) => console.log(error));
+    if (test) {
+      stats(test.id!)
+        .then((response) => {
+          setResponses(response.data.data);
+          console.log(response.data);
+        })
+        .catch((error) => console.log(error));
+    }
   };
 
   const byteSize = (str: string) => new Blob([str]).size;
@@ -69,6 +71,8 @@ const StatsContent: React.FC<Props> = (props: Props) => {
       <div css={testDiv}>
         Test URL: {test.url} <br />
         Method: {test.method} <br />
+        <hr />
+        Run Tests
         {test.run_tests &&
           test.run_tests.map((runTest: RunTest) => {
             return (
@@ -139,7 +143,7 @@ const statsContainer = css``;
 const testContainer = css`
   margin: 1rem 0 1rem 0;
   width: 100%;
-  height: 10rem;
+  height: 12rem;
 `;
 
 const testDiv = css`

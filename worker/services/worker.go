@@ -11,8 +11,8 @@ import (
 	"github.com/s3f4/mu/log"
 )
 
-// WorkService makes the load testing job.
-type WorkService interface {
+// WorkerService makes the load testing job.
+type WorkerService interface {
 	Start(config *models.Event) error
 }
 
@@ -20,11 +20,16 @@ type workerService struct {
 	qs QueueService
 }
 
+var workerServiceObj WorkerService
+
 // NewWorkerService returns new workerService instance
-func NewWorkerService() WorkService {
-	return &workerService{
-		qs: NewRabbitMQService(),
+func NewWorkerService() WorkerService {
+	if workerServiceObj == nil {
+		workerServiceObj = &workerService{
+			qs: NewRabbitMQService(),
+		}
 	}
+	return workerServiceObj
 }
 
 func (s *workerService) Start(event *models.Event) error {

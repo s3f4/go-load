@@ -28,5 +28,5 @@ func (h *statsHandler) List(w http.ResponseWriter, r *http.Request) {
 		R500(w, err)
 		return
 	}
-	R200(w, map[string]interface{}{"data": responses})
+	R200(w, responses)
 }

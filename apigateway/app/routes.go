@@ -58,7 +58,12 @@ func routeMap(*chi.Mux) {
 		})
 	})
 
-	router.Get("/run_test/{ID}", handlers.RunTestHandler.Get)
-	router.Get("/run_test", handlers.RunTestHandler.List)
-	router.Delete("/run_test", handlers.RunTestHandler.Delete)
+	router.Route("/run_test", func(router chi.Router) {
+		router.Route("/{ID}", func(router chi.Router) {
+			router.Use(middlewares.RunTestCtx)
+			router.Get("/", handlers.RunTestHandler.Get)
+			router.Delete("/", handlers.RunTestHandler.Delete)
+		})
+		router.Get("/run_test", handlers.RunTestHandler.List)
+	})
 }

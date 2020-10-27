@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/s3f4/go-load/apigateway/middlewares"
 	"github.com/s3f4/go-load/apigateway/models"
 	"github.com/s3f4/go-load/apigateway/services"
 	. "github.com/s3f4/mu"
@@ -61,18 +62,13 @@ func (h *runTestHandler) Delete(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *runTestHandler) Get(w http.ResponseWriter, r *http.Request) {
-	var runTest models.RunTest
-	if err := json.NewDecoder(r.Body).Decode(&runTest); err != nil {
-		R400(w, "Bad Request")
+	ctx := r.Context()
+	runTest, ok := ctx.Value(middlewares.RunTestCtxKey).(*models.RunTest)
+	if !ok {
+		R422(w, "unprocessable entity")
 		return
 	}
-
-	tc, err := h.service.Get(&runTest)
-	if err != nil {
-		R500(w, err)
-		return
-	}
-	R200(w, tc)
+	R200(w, runTest)
 }
 func (h *runTestHandler) List(w http.ResponseWriter, r *http.Request) {
 	runTest, err := h.service.List()

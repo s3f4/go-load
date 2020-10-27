@@ -16,6 +16,7 @@ interface Props {
 const StatsContent: React.FC<Props> = (props: Props) => {
   const [responses, setResponses] = useState<Response[]>([]);
   const [test, setTest] = useState<Test>();
+  const [selectedRunTest, setSelectedRunTest] = useState<RunTest>();
 
   React.useEffect(() => {
     getTest(props.testID)
@@ -26,8 +27,8 @@ const StatsContent: React.FC<Props> = (props: Props) => {
   }, [props.testID]);
 
   const listResponses = () => {
-    if (test) {
-      stats(test.id!)
+    if (selectedRunTest) {
+      stats(selectedRunTest.id!)
         .then((response) => {
           setResponses(response.data.data);
           console.log(response.data);
@@ -66,6 +67,11 @@ const StatsContent: React.FC<Props> = (props: Props) => {
     return <Line data={data} />;
   };
 
+  const onSelectRunTest = (runTest: RunTest) => (e: React.FormEvent) => {
+    setSelectedRunTest(runTest);
+    listResponses();
+  };
+
   const testContent = (test: Test) => {
     return (
       <div css={testDiv}>
@@ -76,7 +82,11 @@ const StatsContent: React.FC<Props> = (props: Props) => {
         {test.run_tests &&
           test.run_tests.map((runTest: RunTest) => {
             return (
-              <div>
+              <div
+                css={runTestDiv}
+                onClick={onSelectRunTest(runTest)}
+                key={runTest.id}
+              >
                 Start Time: {runTest.start_time}
                 <br />
                 End Time: {runTest.end_time}
@@ -90,50 +100,49 @@ const StatsContent: React.FC<Props> = (props: Props) => {
     );
   };
 
+  const responseTable = () => (
+    <table css={table}>
+      <thead>
+        <tr>
+          <th>FirstByte</th>
+          <th>ConnectStart</th>
+          <th>ConnectDone</th>
+          <th>DNSStart</th>
+          <th>DNSDone</th>
+          <th>TLSStart</th>
+          <th>TLSDone</th>
+          <th>StatusCode</th>
+          <th>TotalTime</th>
+          <th>Body</th>
+        </tr>
+      </thead>
+      <tbody>
+        {responses &&
+          responses.map((response: Response, key: number) => {
+            return (
+              <tr key={key}>
+                <td>{moment(response.FirstByte).format(preciseFormat())}</td>
+                <td>{moment(response.ConnectStart).format(preciseFormat())}</td>
+                <td>{moment(response.ConnectDone).format(preciseFormat())}</td>
+                <td>{moment(response.DNSStart).format(preciseFormat())}</td>
+                <td>{moment(response.DNSDone).format(preciseFormat())}</td>
+                <td>{moment(response.TLSStart).format(preciseFormat())}</td>
+                <td>{moment(response.TLSDone).format(preciseFormat())}</td>
+                <td>{response.StatusCode}</td>
+                <td>{response.TotalTime / 1000000}</td>
+                <td>{byteSize(response.Body)}</td>
+              </tr>
+            );
+          })}
+      </tbody>
+    </table>
+  );
+
   return (
     <div css={statsContainer}>
       <div css={testContainer}>{test && testContent(test)}</div>
       {graph()}
-      <table css={table}>
-        <thead>
-          <tr>
-            <th>FirstByte</th>
-            <th>ConnectStart</th>
-            <th>ConnectDone</th>
-            <th>DNSStart</th>
-            <th>DNSDone</th>
-            <th>TLSStart</th>
-            <th>TLSDone</th>
-            <th>StatusCode</th>
-            <th>TotalTime</th>
-            <th>Body</th>
-          </tr>
-        </thead>
-        <tbody>
-          {responses &&
-            responses.map((response: Response, key: number) => {
-              return (
-                <tr key={key}>
-                  <td>{moment(response.FirstByte).format(preciseFormat())}</td>
-                  <td>
-                    {moment(response.ConnectStart).format(preciseFormat())}
-                  </td>
-                  <td>
-                    {moment(response.ConnectDone).format(preciseFormat())}
-                  </td>
-                  <td>{moment(response.DNSStart).format(preciseFormat())}</td>
-                  <td>{moment(response.DNSDone).format(preciseFormat())}</td>
-                  <td>{moment(response.TLSStart).format(preciseFormat())}</td>
-                  <td>{moment(response.TLSDone).format(preciseFormat())}</td>
-                  <td>{response.StatusCode}</td>
-                  <td>{response.TotalTime / 1000000}</td>
-                  <td>{byteSize(response.Body)}</td>
-                </tr>
-              );
-            })}
-        </tbody>
-      </table>
-      {responses.length}
+      {responseTable()}
     </div>
   );
 };
@@ -143,7 +152,7 @@ const statsContainer = css``;
 const testContainer = css`
   margin: 1rem 0 1rem 0;
   width: 100%;
-  height: 12rem;
+  height: 20rem;
 `;
 
 const testDiv = css`
@@ -156,6 +165,10 @@ const testDiv = css`
 
 const table = css`
   width: 100%;
+`;
+
+const runTestDiv = css`
+  cursor: pointer;
 `;
 
 export default StatsContent;

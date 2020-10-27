@@ -21,11 +21,16 @@ type testGroupRepository struct {
 	base BaseRepository
 }
 
+var testGroupRepositoryObject TestGroupRepository
+
 // NewTestGroupRepository returns an testGroupRepository object
 func NewTestGroupRepository() TestGroupRepository {
-	return &testGroupRepository{
-		base: NewBaseRepository(MYSQL),
+	if testGroupRepositoryObject == nil {
+		return &testGroupRepository{
+			base: NewBaseRepository(MYSQL),
+		}
 	}
+	return testGroupRepositoryObject
 }
 
 func (r *testGroupRepository) DB() *gorm.DB {

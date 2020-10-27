@@ -15,11 +15,16 @@ type responseRepository struct {
 	base BaseRepository
 }
 
+var responseRepositoryObject ResponseRepository
+
 // NewResponseRepository returns new ResponseRepository instance
 func NewResponseRepository() ResponseRepository {
-	return &responseRepository{
-		base: NewBaseRepository(POSTGRES),
+	if responseRepositoryObject == nil {
+		responseRepositoryObject = &responseRepository{
+			base: NewBaseRepository(POSTGRES),
+		}
 	}
+	return responseRepositoryObject
 }
 
 func (r *responseRepository) DB() *gorm.DB {

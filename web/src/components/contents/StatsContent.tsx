@@ -23,7 +23,7 @@ const StatsContent: React.FC<Props> = (props: Props) => {
         setTest(response.data);
       })
       .catch((error) => console.log(error));
-  }, [props.testID, test]);
+  }, [props.testID]);
 
   const listResponses = () => {
     if (test) {

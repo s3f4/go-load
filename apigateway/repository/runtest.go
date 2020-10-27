@@ -20,11 +20,16 @@ type runTestRepository struct {
 	base BaseRepository
 }
 
+var runTestRepositoryObject RunTestRepository
+
 // NewRunTestRepository returns an testRepository object
 func NewRunTestRepository() RunTestRepository {
-	return &runTestRepository{
-		base: NewBaseRepository(MYSQL),
+	if runTestRepositoryObject == nil {
+		runTestRepositoryObject = &runTestRepository{
+			base: NewBaseRepository(MYSQL),
+		}
 	}
+	return runTestRepositoryObject
 }
 
 func (r *runTestRepository) DB() *gorm.DB {

@@ -88,7 +88,6 @@ func (c *connect) connectPOSTGRES(r *baseRepository) {
 type BaseRepository interface {
 	Migrate()
 	GetDB() *gorm.DB
-	Create(model interface{}) error
 }
 
 type baseRepository struct {
@@ -137,8 +136,4 @@ func (r *baseRepository) GetDB() *gorm.DB {
 		r.connect()
 	}
 	return r.DB
-}
-
-func (r *baseRepository) Create(model interface{}) error {
-	return r.GetDB().Create(model).Error
 }

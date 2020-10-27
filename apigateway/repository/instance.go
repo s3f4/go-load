@@ -17,11 +17,16 @@ type instanceRepository struct {
 	base BaseRepository
 }
 
+var instanceRepositoryObject InstanceRepository
+
 // NewInstanceRepository returns an instanceRepository object
 func NewInstanceRepository() InstanceRepository {
-	return &instanceRepository{
-		base: NewBaseRepository(MYSQL),
+	if instanceRepositoryObject == nil {
+		instanceRepositoryObject = &instanceRepository{
+			base: NewBaseRepository(MYSQL),
+		}
 	}
+	return instanceRepositoryObject
 }
 
 func (r *instanceRepository) DB() *gorm.DB {

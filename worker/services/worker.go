@@ -34,7 +34,21 @@ func NewWorkerService() WorkerService {
 
 func (s *workerService) Start(event *models.Event) error {
 	var payload models.RequestPayload
-	mapstructure.Decode(event.Payload, &payload)
+	cfg := &mapstructure.DecoderConfig{
+		Metadata: nil,
+		Result:   &payload,
+		TagName:  "json",
+	}
+	decoder, err := mapstructure.NewDecoder(cfg)
+	if err != nil {
+		log.Errorf("mapstructrure.decode", err)
+		return err
+	}
+
+	if err := decoder.Decode(event.Payload); err != nil {
+		log.Errorf("worker.start", err)
+		return err
+	}
 
 	i := uint8(0)
 	for i < payload.GoroutineCount {

@@ -67,13 +67,13 @@ const TestForm = (props: Props) => {
       if (e.value === "true" || e.value === "false") {
         setTest({
           ...test,
-          ["transport_config"]: { disable_keep_alives: e.value === "true" },
+          transport_config: { disable_keep_alives: e.value === "true" },
         });
         return;
       }
       setTest({
         ...test,
-        ["method"]: e.value,
+        method: e.value,
       });
       return;
     }
@@ -245,7 +245,7 @@ const TestForm = (props: Props) => {
               disabled={
                 !validate() ||
                 typeof props.testGroup === "undefined" ||
-                props.testGroup.name.length == 0
+                props.testGroup.name.length === 0
               }
             />
           ) : (
@@ -258,7 +258,7 @@ const TestForm = (props: Props) => {
               disabled={
                 !validate() ||
                 typeof props.testGroup === "undefined" ||
-                props.testGroup.name.length == 0
+                props.testGroup.name.length === 0
               }
             />
           )}

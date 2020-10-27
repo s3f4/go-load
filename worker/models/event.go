@@ -38,5 +38,5 @@ type Header struct {
 
 // TransportConfig is used to specify how to make requests
 type TransportConfig struct {
-	DisableKeepAlives bool `json:"DisableKeepAlives"`
+	DisableKeepAlives bool `json:"disable_keep_alives"`
 }

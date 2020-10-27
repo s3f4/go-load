@@ -1,5 +1,4 @@
-/** @jsx jsx */
-import { jsx, css } from "@emotion/core";
+import { css } from "@emotion/core";
 
 export enum Colors {
   textPrimary = "#3e4042",

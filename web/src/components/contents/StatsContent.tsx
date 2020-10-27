@@ -5,7 +5,7 @@ import { stats, Response } from "../../api/entity/stats";
 import moment from "moment";
 import { Line } from "react-chartjs-2";
 import { preciseFormat } from "../basic/helper";
-import { getTest, runTest, Test } from "../../api/entity/test";
+import { getTest, Test } from "../../api/entity/test";
 import { Borders } from "../style";
 import { RunTest } from "../../api/entity/runtest";
 
@@ -30,7 +30,7 @@ const StatsContent: React.FC<Props> = (props: Props) => {
     if (selectedRunTest) {
       stats(selectedRunTest.id!)
         .then((response) => {
-          setResponses(response.data.data);
+          setResponses(response.data);
           console.log(response.data);
         })
         .catch((error) => console.log(error));
@@ -57,7 +57,7 @@ const StatsContent: React.FC<Props> = (props: Props) => {
     if (!responses) {
       return;
     }
-    
+
     const data = {
       datasets: [
         {

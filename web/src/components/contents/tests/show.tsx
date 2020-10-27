@@ -61,7 +61,7 @@ const Show: React.FC<Props> = (props: Props) => {
     const content: any[] = [];
 
     if (selectedTestGroup) {
-      selectedTestGroup.tests.map((test: Test) => {
+      selectedTestGroup.tests.forEach((test: Test) => {
         const row: any[] = [
           test.url,
           test.method,

@@ -1,15 +1,12 @@
-/** @jsx jsx */
 import React from "react";
-import { jsx, css } from "@emotion/core";
+import { css } from "@emotion/core";
 import { showSwarmNodes } from "../../api/entity/instance";
 import { Node } from "../../api/entity/nodes";
-import { Box, card, cardContainer, cardTitle, Sizes } from "../style";
+import { card, cardContainer, cardTitle } from "../style";
 import moment from "moment";
 import { defaultFormat } from "../basic/helper";
 
-interface Props {}
-
-const SwarmContent: React.FC<Props> = (props: Props) => {
+const SwarmContent: React.FC = () => {
   const [nodes, setNodes] = React.useState<Node[]>([]);
   React.useEffect(() => {
     showSwarmNodes()

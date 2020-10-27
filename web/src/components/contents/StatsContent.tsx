@@ -53,17 +53,20 @@ const StatsContent: React.FC<Props> = (props: Props) => {
     };
   };
 
-  const data = {
-    datasets: [
-      {
-        data: chartData().datum,
-        label: "Latency", // for legend
-      },
-    ],
-    labels: chartData().labels,
-  };
-
   const graph = () => {
+    if (!responses) {
+      return;
+    }
+    
+    const data = {
+      datasets: [
+        {
+          data: chartData().datum,
+          label: "Latency", // for legend
+        },
+      ],
+      labels: chartData().labels,
+    };
     return <Line data={data} />;
   };
 

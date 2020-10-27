@@ -31,16 +31,16 @@ func (s *workerService) Start(event *models.Event) error {
 	var payload models.RequestPayload
 	mapstructure.Decode(event.Payload, &payload)
 
-	i := 0
+	i := uint8(0)
 	for i < payload.GoroutineCount {
 		log.Info("%+v", payload)
-		go s.run(payload.URL, "worker_"+strconv.Itoa(i), payload.RequestCount, payload.TransportConfig.DisableKeepAlives, payload.Headers)
+		go s.run(payload.URL, "worker_"+strconv.Itoa(int(i)), payload.RequestCount, payload.TransportConfig.DisableKeepAlives, payload.Headers)
 		i++
 	}
 	return nil
 }
 
-func (s *workerService) run(url, workerName string, request int, disableKeepAlives bool, headers []*models.Header) {
+func (s *workerService) run(url, workerName string, request uint64, disableKeepAlives bool, headers []*models.Header) {
 	dataBuf := make(chan models.Response, 100)
 	defer close(dataBuf)
 	client := &client.Client{
@@ -55,9 +55,9 @@ func (s *workerService) run(url, workerName string, request int, disableKeepAliv
 	s.sendToEventHandler(dataBuf)
 }
 
-func (s *workerService) makeReq(client *client.Client, request int, dataBuf chan<- models.Response) {
+func (s *workerService) makeReq(client *client.Client, request uint64, dataBuf chan<- models.Response) {
 	url := client.URL
-	for i := 0; i < request; i++ {
+	for i := 0; i < int(request); i++ {
 		client.URL = url + "/?reqRef=" + mu.RandomString(5)
 		res, err := client.HTTPTrace()
 		if err != nil {

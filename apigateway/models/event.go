@@ -23,7 +23,7 @@ type RequestPayload struct {
 	Method               string          `json:"method"`
 	Payload              string          `json:"payload,omitempty"`
 	RequestCount         uint64          `json:"request_count"`
-	GoroutineCount       uint            `json:"goroutine_count"`
+	GoroutineCount       uint8           `json:"goroutine_count"`
 	ExpectedResponseCode uint            `json:"expected_response_code"`
 	ExpectedResponseBody string          `json:"expected_response_body"`
 	TransportConfig      TransportConfig `json:"transport_config"`

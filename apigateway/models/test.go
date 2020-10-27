@@ -8,7 +8,7 @@ type Test struct {
 	Method               string          `json:"method" gorm:"method"`
 	Payload              string          `json:"payload,omitempty" gorm:"payload"`
 	RequestCount         uint64          `json:"request_count" gorm:"request_count"`
-	GoroutineCount       uint            `json:"goroutine_count" gorm:"goroutine_count"`
+	GoroutineCount       uint8           `json:"goroutine_count" gorm:"goroutine_count"`
 	ExpectedResponseCode uint            `json:"expected_response_code" gorm:"expected_response_code"`
 	ExpectedResponseBody string          `json:"expected_response_body" gorm:"expected_response_body"`
 	TransportConfig      TransportConfig `json:"transport_config"`

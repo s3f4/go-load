@@ -12,22 +12,29 @@ const (
 
 // Event is a model which is used to queue communication
 type Event struct {
-	Event   EventType `json:"event"`
+	Event   EventType   `json:"event"`
 	Payload interface{} `json:"payload"`
 }
 
 // RequestPayload paylaod of request event
 type RequestPayload struct {
+	RunTestID            uint            `json:"run_test_id"`
 	URL                  string          `json:"url"`
 	Method               string          `json:"method"`
 	Payload              string          `json:"payload,omitempty"`
-	RequestCount         int             `json:"requestCount"`
-	GoroutineCount       int             `json:"goroutineCount"`
-	ExpectedResponseCode uint            `json:"expectedResponseCode"`
-	ExpectedResponseBody string          `json:"expectedResponseBody"`
-	TransportConfig      TransportConfig `json:"transportConfig"`
+	RequestCount         uint64          `json:"request_count"`
+	GoroutineCount       uint8           `json:"goroutine_count"`
+	ExpectedResponseCode uint            `json:"expected_response_code"`
+	ExpectedResponseBody string          `json:"expected_response_body"`
+	TransportConfig      TransportConfig `json:"transport_config"`
+	Headers              []*Header       `json:"headers"`
 }
 
+// Header holds request headers
+type Header struct {
+	Key   string `json:"key"`
+	Value string `json:"value"`
+}
 
 // TransportConfig is used to specify how to make requests
 type TransportConfig struct {

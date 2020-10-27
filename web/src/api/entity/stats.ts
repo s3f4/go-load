@@ -1,21 +1,21 @@
 import { makeReq } from "../api";
 
 export interface Response {
-  RunTestID: number;
-  TotalTime: number;
-  FirstByte: Date;
-  FirstByteTime: number;
-  DNSStart: Date;
-  DNSDone: Date;
-  DNSTime: number;
-  TLSStart: Date;
-  TLSDone: Date;
-  TLSTime: number;
-  ConnectStart: Date;
-  ConnectDone: Date;
-  ConnectTime: number;
-  StatusCode: number;
-  Body: string;
+  run_test_id: number;
+  total_time: number;
+  first_byte: Date;
+  first_byte_time: number;
+  dns_start: Date;
+  dns_done: Date;
+  dns_time: number;
+  tls_start: Date;
+  tls_done: Date;
+  tls_time: number;
+  connect_start: Date;
+  connect_done: Date;
+  connect_time: number;
+  status_code: number;
+  body: string;
 }
 
 export const stats = async (runTestID: number) => {

@@ -30,8 +30,7 @@ const StatsContent: React.FC<Props> = (props: Props) => {
     if (selectedRunTest) {
       stats(selectedRunTest.id!)
         .then((response) => {
-          // setResponses(response.data);
-          console.log(response.data);
+          setResponses(response.data);
         })
         .catch((error) => console.log(error));
     }
@@ -43,7 +42,7 @@ const StatsContent: React.FC<Props> = (props: Props) => {
     const datum: any[] = [];
     const labels: any[] = [];
     responses.map((response: Response, index: number) => {
-      datum.push(response.DNSTime);
+      datum.push(response.dns_time);
       labels.push("request_" + index);
       return null;
     });
@@ -120,18 +119,21 @@ const StatsContent: React.FC<Props> = (props: Props) => {
       <tbody>
         {responses &&
           responses.map((response: Response, key: number) => {
+            console.log(JSON.stringify(response));
             return (
               <tr key={key}>
-                <td>{moment(response.FirstByte).format(preciseFormat())}</td>
-                <td>{moment(response.ConnectStart).format(preciseFormat())}</td>
-                <td>{moment(response.ConnectDone).format(preciseFormat())}</td>
-                <td>{moment(response.DNSStart).format(preciseFormat())}</td>
-                <td>{moment(response.DNSDone).format(preciseFormat())}</td>
-                <td>{moment(response.TLSStart).format(preciseFormat())}</td>
-                <td>{moment(response.TLSDone).format(preciseFormat())}</td>
-                <td>{response.StatusCode}</td>
-                <td>{response.TotalTime / 1000000}</td>
-                <td>{byteSize(response.Body)}</td>
+                <td>{moment(response.first_byte).format(preciseFormat())}</td>
+                <td>
+                  {moment(response.connect_start).format(preciseFormat())}
+                </td>
+                <td>{moment(response.connect_done).format(preciseFormat())}</td>
+                <td>{moment(response.dns_start).format(preciseFormat())}</td>
+                <td>{moment(response.dns_done).format(preciseFormat())}</td>
+                <td>{moment(response.tls_start).format(preciseFormat())}</td>
+                <td>{moment(response.tls_done).format(preciseFormat())}</td>
+                <td>{response.status_code}</td>
+                <td>{response.total_time / 1000000}</td>
+                <td>{byteSize(response.body)}</td>
               </tr>
             );
           })}

@@ -14,6 +14,7 @@ import (
 // Client is a HTTP client that will be used for sending
 // HTTP requests.
 type Client struct {
+	RunTestID       uint
 	WorkerName      string
 	URL             string
 	TransportConfig models.TransportConfig
@@ -76,8 +77,9 @@ func (c *Client) HTTPTrace() (*models.Response, error) {
 
 	res.FirstByteTime = int64(res.FirstByte.Sub(start))
 	res.DNSTime = int64(res.DNSDone.Sub(res.DNSStart))
-	res.TLSTime = int64(res.TLSDone.Sub(res.TLSDone))
+	res.TLSTime = int64(res.TLSDone.Sub(res.TLSStart))
 	res.ConnectTime = int64(res.ConnectDone.Sub(res.ConnectStart))
+	res.RunTestID = c.RunTestID
 
 	if err != nil {
 		log.Error(err)

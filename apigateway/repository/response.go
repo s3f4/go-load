@@ -8,7 +8,7 @@ import (
 // ResponseRepository is used for processes on timescaledB
 type ResponseRepository interface {
 	DB() *gorm.DB
-	List(query interface{}) ([]*models.Response, error)
+	List(runTestID uint) ([]*models.Response, error)
 }
 
 type responseRepository struct {
@@ -31,9 +31,9 @@ func (r *responseRepository) DB() *gorm.DB {
 	return r.base.GetDB()
 }
 
-func (r *responseRepository) List(query interface{}) ([]*models.Response, error) {
+func (r *responseRepository) List(runTestID uint) ([]*models.Response, error) {
 	var responses []*models.Response
-	if err := r.DB().Find(&responses).Error; err != nil {
+	if err := r.DB().Where("run_test_id", runTestID).Find(&responses).Error; err != nil {
 		return nil, err
 	}
 

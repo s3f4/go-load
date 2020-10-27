@@ -30,7 +30,7 @@ const StatsContent: React.FC<Props> = (props: Props) => {
     if (selectedRunTest) {
       stats(selectedRunTest.id!)
         .then((response) => {
-          setResponses(response.data);
+          // setResponses(response.data);
           console.log(response.data);
         })
         .catch((error) => console.log(error));
@@ -71,6 +71,7 @@ const StatsContent: React.FC<Props> = (props: Props) => {
   };
 
   const onSelectRunTest = (runTest: RunTest) => (e: React.FormEvent) => {
+    e.preventDefault();
     setSelectedRunTest(runTest);
     listResponses();
   };
@@ -90,11 +91,8 @@ const StatsContent: React.FC<Props> = (props: Props) => {
                 onClick={onSelectRunTest(runTest)}
                 key={runTest.id}
               >
-                Start Time: {runTest.start_time}
-                <br />
-                End Time: {runTest.end_time}
-                <br />
-                Passed: {runTest.passed}
+                Start Time: {runTest.start_time} - End Time: {runTest.end_time}{" "}
+                - Passed: {runTest.passed}
                 <br />
               </div>
             );
@@ -155,7 +153,7 @@ const statsContainer = css``;
 const testContainer = css`
   margin: 1rem 0 1rem 0;
   width: 100%;
-  height: 20rem;
+  min-height: 20rem;
 `;
 
 const testDiv = css`
@@ -171,6 +169,7 @@ const table = css`
 `;
 
 const runTestDiv = css`
+  display: block;
   cursor: pointer;
 `;
 

@@ -45,8 +45,11 @@ func (s *testService) Start(test *models.Test) error {
 	runTest.StartTime = &startTime
 
 	if err := s.rtr.Create(&runTest); err != nil {
+		fmt.Println("err")
 		return err
 	}
+
+	fmt.Printf("%#v", runTest)
 
 	for _, instance := range instanceConfig.Configs {
 		requestPerInstance := test.RequestCount / uint64(instance.Count)

@@ -3,6 +3,7 @@ import React from "react";
 import { jsx, css } from "@emotion/core";
 import { Sizes, Borders } from "../style";
 import Loader from "./Loader";
+import { FiPlay } from "react-icons/fi";
 
 enum ButtonType {
   small = 1,
@@ -26,6 +27,7 @@ const Button: React.FC<Props> = (props: Props) => {
         onClick={props.onClick}
         disabled={props.loading || props.disabled}
       >
+        <FiPlay />
         {props.loading ? <Loader inlineLoading={true} /> : ""}
         <div css={text}>{props.text}</div>
       </button>

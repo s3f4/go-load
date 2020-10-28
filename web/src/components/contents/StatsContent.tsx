@@ -42,7 +42,7 @@ const StatsContent: React.FC<Props> = (props: Props) => {
     const datum: any[] = [];
     const labels: any[] = [];
     responses.map((response: Response, index: number) => {
-      datum.push(response.dns_time);
+      datum.push(response.dns_time / 100000);
       labels.push("request_" + index);
       return null;
     });

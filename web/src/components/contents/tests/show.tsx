@@ -10,7 +10,7 @@ import {
   updateTestGroup,
 } from "../../../api/entity/test_group";
 import Table from "../../basic/Table";
-import Button from "../../basic/Button";
+import Button, { ButtonColorType, ButtonType } from "../../basic/Button";
 import { leftContent } from "../../style";
 import Message, { MessageObj } from "../../basic/Message";
 import TestForm from "./test_form";
@@ -22,6 +22,7 @@ import {
   updateTest,
 } from "../../../api/entity/test";
 import TextInput from "../../basic/TextInput";
+import { FiPlay, FiTrash2, FiEdit } from "react-icons/fi";
 
 interface Props {
   testGroup?: TestGroup;
@@ -82,7 +83,9 @@ const Show: React.FC<Props> = (props: Props) => {
       case "Run":
         return (
           <Button
-            text={text}
+            colorType={ButtonColorType.success}
+            type={ButtonType.iconButton}
+            icon={<FiPlay />}
             onClick={(e: React.FormEvent) => {
               e.preventDefault();
               onRunTest(test!);
@@ -92,7 +95,9 @@ const Show: React.FC<Props> = (props: Props) => {
       case "Delete":
         return (
           <Button
-            text={text}
+            colorType={ButtonColorType.danger}
+            type={ButtonType.iconButton}
+            icon={<FiTrash2 />}
             onClick={(e: React.FormEvent) => {
               e.preventDefault();
               onDeleteTest(test!);
@@ -102,7 +107,9 @@ const Show: React.FC<Props> = (props: Props) => {
       case "Edit":
         return (
           <Button
-            text={text}
+            colorType={ButtonColorType.secondary}
+            type={ButtonType.iconButton}
+            icon={<FiEdit />}
             onClick={(e: React.FormEvent) => {
               e.preventDefault();
               editTest(test!);

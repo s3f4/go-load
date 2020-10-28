@@ -3,44 +3,96 @@ import React from "react";
 import { jsx, css } from "@emotion/core";
 import { Sizes, Borders } from "../style";
 import Loader from "./Loader";
-import { FiPlay } from "react-icons/fi";
 
-enum ButtonType {
+export enum ButtonType {
   small = 1,
   mid,
   big,
+  iconButton,
+  iconTextButton,
 }
+
+export const ButtonColorType = {
+  primary: {
+    color: "#fff",
+    background_color: "#007d9c",
+  },
+  secondary: {
+    color: "#fff",
+    background_color: "#6c757d",
+  },
+  success: {
+    color: "#fff",
+    background_color: "#28a745",
+  },
+  danger: {
+    color: "#fff",
+    background_color: "#dc3545",
+  },
+  warning: {
+    color: "#212529",
+    background_color: "#ffc107",
+  },
+  info: {
+    color: "#fff",
+    background_color: "#17a2b8",
+  },
+  dark: {
+    color: "#fff",
+    background_color: "#343a40",
+  },
+  light: {
+    color: "#212529",
+    background_color: "#f8f9fa",
+  },
+};
+
 interface Props {
-  text: string;
+  text?: string;
   onClick?: (e: any) => any;
   loading?: boolean;
   disabled?: boolean;
   type?: ButtonType;
+  colorType?: any;
+  icon?: any;
 }
 
 const Button: React.FC<Props> = (props: Props) => {
   return (
     <React.Fragment>
       <button
-        css={button(props.loading || props.disabled, props.type)}
+        css={button(
+          props.loading || props.disabled,
+          props.type,
+          props.colorType ?? ButtonColorType.primary,
+        )}
         type="submit"
         onClick={props.onClick}
         disabled={props.loading || props.disabled}
       >
-        <FiPlay />
+        {(props.type !== ButtonType.iconButton && props.icon) ?? ""}
         {props.loading ? <Loader inlineLoading={true} /> : ""}
-        <div css={text}>{props.text}</div>
+
+        {props.type === ButtonType.iconButton ? (
+          props.icon
+        ) : (
+          <div css={text}>{props.text}</div>
+        )}
       </button>
     </React.Fragment>
   );
 };
 
-const button = (disabled: boolean | undefined, type?: ButtonType) => {
+const button = (
+  disabled: boolean | undefined,
+  type?: ButtonType,
+  colorType?: any,
+) => {
   let gen = `
     display: inline-block;
     border: ${Borders.border1};
-    color: white;
-    background-color: #007d9c;
+    color: ${colorType.color};
+    background-color: ${colorType.background_color};
     border-radius: ${Sizes.borderRadius1};
     margin: 0.5rem 0.5rem;
     cursor: pointer;
@@ -53,6 +105,7 @@ const button = (disabled: boolean | undefined, type?: ButtonType) => {
   `;
   switch (type) {
     case ButtonType.small:
+    case ButtonType.iconButton:
       return css`
         ${gen}
         height: 3rem;

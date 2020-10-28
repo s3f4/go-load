@@ -37,9 +37,12 @@ const MainLayout: React.FC<Props> = (props: Props) => {
 };
 
 const container = css`
-  width: 1200px;
-  height: auto;
-  margin: 0 auto;
+  @media (min-width: 1200px) {
+    width: 1200px;
+    height: auto;
+    margin: 0 auto;
+  }
+  width: 100%;
 `;
 
 export default MainLayout;

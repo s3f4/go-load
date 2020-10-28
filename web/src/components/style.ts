@@ -1,5 +1,13 @@
 import { css } from "@emotion/core";
 
+export enum BreakPoints {
+  mobilePortrait = "@media(max-width: 640px)",
+  mobileLandscape = "@media(min-width: 641px, max-width: 768px)",
+  tabletPortrait = "@media(min-width: 769px, max-width: 1024px)",
+  tabletLandscape = "@media(min-width: 1025px, max-width: 1280px)",
+  laptop = "@media(min-width: 1281px)",
+}
+
 export enum Colors {
   textPrimary = "#3e4042",
   textSecondary = "#ddd",

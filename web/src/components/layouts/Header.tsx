@@ -4,6 +4,12 @@ import { jsx, css } from "@emotion/core";
 import { ReactComponent as ReactLogo } from "../img/gopher.svg";
 import { Link } from "react-router-dom";
 import { FiServer, FiClipboard, FiActivity, FiMonitor } from "react-icons/fi";
+
+const headerLinkStyle = {
+  width: "2rem",
+  height: "1.8rem",
+};
+
 interface Props {}
 
 const Header: React.FC<Props> = (props: Props) => {
@@ -18,19 +24,19 @@ const Header: React.FC<Props> = (props: Props) => {
         </div>
         <div css={headerDiv}>
           <Link to="/instances">
-            <FiServer style={{ width: "2rem", height: "1.8rem" }} />
+            <FiServer style={headerLinkStyle} />
             Instances
           </Link>
           <Link to="/tests">
-            <FiClipboard style={{ width: "2rem", height: "1.8rem" }} />
+            <FiClipboard style={headerLinkStyle} />
             Tests
           </Link>
           <Link to="/swarm">
-            <FiMonitor style={{ width: "2rem", height: "1.8rem" }} />
+            <FiMonitor style={headerLinkStyle} />
             Swarm
           </Link>
           <Link to="/stats">
-            <FiActivity style={{ width: "2rem", height: "1.8rem" }} />
+            <FiActivity style={headerLinkStyle} />
             Stats
           </Link>
         </div>

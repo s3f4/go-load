@@ -3,7 +3,7 @@ import React from "react";
 import { jsx, css } from "@emotion/core";
 import { ReactComponent as ReactLogo } from "../img/gopher.svg";
 import { Link } from "react-router-dom";
-
+import { FiServer, FiClipboard, FiActivity, FiMonitor } from "react-icons/fi";
 interface Props {}
 
 const Header: React.FC<Props> = (props: Props) => {
@@ -17,10 +17,22 @@ const Header: React.FC<Props> = (props: Props) => {
           </a>
         </div>
         <div css={headerDiv}>
-          <Link to="/instances">Instances</Link>
-          <Link to="/tests">Tests</Link>
-          <Link to="/swarm">Swarm</Link>
-          <Link to="/stats">Stats</Link>
+          <Link to="/instances">
+            <FiServer style={{ width: "2rem", height: "1.8rem" }} />
+            Instances
+          </Link>
+          <Link to="/tests">
+            <FiClipboard style={{ width: "2rem", height: "1.8rem" }} />
+            Tests
+          </Link>
+          <Link to="/swarm">
+            <FiMonitor style={{ width: "2rem", height: "1.8rem" }} />
+            Swarm
+          </Link>
+          <Link to="/stats">
+            <FiActivity style={{ width: "2rem", height: "1.8rem" }} />
+            Stats
+          </Link>
         </div>
       </div>
     </React.Fragment>

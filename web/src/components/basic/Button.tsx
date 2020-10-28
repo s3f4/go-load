@@ -47,13 +47,18 @@ export const ButtonColorType = {
   },
 };
 
+interface ColorType {
+  color: string;
+  background_color: string;
+}
+
 interface Props {
   text?: string;
   onClick?: (e: any) => any;
   loading?: boolean;
   disabled?: boolean;
   type?: ButtonType;
-  colorType?: any;
+  colorType?: ColorType;
   icon?: any;
 }
 

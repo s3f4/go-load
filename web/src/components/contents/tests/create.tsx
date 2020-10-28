@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { jsx, css } from "@emotion/core";
 import TextInput from "../../basic/TextInput";
-import Button from "../../basic/Button";
+import Button, { ButtonColorType, ButtonType } from "../../basic/Button";
 import Message from "../../basic/Message";
 import Table from "../../basic/Table";
 import { useHistory } from "react-router-dom";
@@ -10,6 +10,7 @@ import { map, omit, isEqual } from "lodash";
 import TestForm from "./test_form";
 import { Test } from "../../../api/entity/test";
 import { saveTestGroup, TestGroup } from "../../../api/entity/test_group";
+import { FiTrash2, FiEdit } from "react-icons/fi";
 
 interface Props {}
 
@@ -99,7 +100,6 @@ const Create: React.FC<Props> = (props: Props) => {
       ];
       content.push(row);
     });
-    console.log(content);
     return content;
   };
 
@@ -108,7 +108,9 @@ const Create: React.FC<Props> = (props: Props) => {
       case "Delete":
         return (
           <Button
-            text={text}
+            colorType={ButtonColorType.danger}
+            type={ButtonType.iconButton}
+            icon={<FiTrash2 />}
             onClick={(e: React.FormEvent) => {
               e.preventDefault();
               onDeleteTest(test!);
@@ -118,7 +120,9 @@ const Create: React.FC<Props> = (props: Props) => {
       case "Edit":
         return (
           <Button
-            text={text}
+            colorType={ButtonColorType.secondary}
+            type={ButtonType.iconButton}
+            icon={<FiEdit />}
             onClick={(e: React.FormEvent) => {
               e.preventDefault();
               setEditTest(test!);
@@ -128,7 +132,9 @@ const Create: React.FC<Props> = (props: Props) => {
       case "Delete All":
         return (
           <Button
-            text={text}
+            colorType={ButtonColorType.secondary}
+            type={ButtonType.iconButton}
+            icon={<FiTrash2 />}
             onClick={(e: React.FormEvent) => {
               e.preventDefault();
               deleteAllTests();

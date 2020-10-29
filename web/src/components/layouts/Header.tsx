@@ -4,6 +4,7 @@ import { jsx, css } from "@emotion/core";
 import { ReactComponent as ReactLogo } from "../img/gopher.svg";
 import { Link } from "react-router-dom";
 import { FiServer, FiClipboard, FiActivity, FiMonitor } from "react-icons/fi";
+import { MediaQuery } from "../style";
 
 const headerLinkStyle = {
   width: "2rem",
@@ -17,25 +18,25 @@ const Header: React.FC<Props> = (props: Props) => {
     <React.Fragment>
       <div css={header}>
         <div css={logoDiv}>
-          <a css={headerLink} href="/">
+          <a css={logoLink} href="/">
             <ReactLogo css={logo} />
             <span css={logoFont}>go-load</span>
           </a>
         </div>
         <div css={headerDiv}>
-          <Link to="/instances">
+          <Link css={headerLink} to="/instances">
             <FiServer style={headerLinkStyle} />
             Instances
           </Link>
-          <Link to="/tests">
+          <Link css={headerLink} to="/tests">
             <FiClipboard style={headerLinkStyle} />
             Tests
           </Link>
-          <Link to="/swarm">
+          <Link css={headerLink} to="/swarm">
             <FiMonitor style={headerLinkStyle} />
             Swarm
           </Link>
-          <Link to="/stats">
+          <Link css={headerLink} to="/stats">
             <FiActivity style={headerLinkStyle} />
             Stats
           </Link>
@@ -45,52 +46,85 @@ const Header: React.FC<Props> = (props: Props) => {
   );
 };
 
-const header = css`
-  background-color: #007d9c;
-  width: 100%;
-  height: 5rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 0.1rem solid gray;
-  & a {
-    color: white;
-    text-decoration: none;
-  }
-`;
+const header = () => {
+  return css`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    background-color: #007d9c;
+    border-bottom: 0.1rem solid gray;
+    & a {
+      color: white;
+      text-decoration: none;
+    }
+
+    ${MediaQuery[1]} {
+      flex-direction: row;
+      justify-content: space-between;
+      height: 5rem;
+      align-items: center;
+    }
+  `;
+};
 
 const logoDiv = css`
   height: 100%;
-  width: 30%;
-  padding: 0.2rem 1rem 0.5rem 1rem;
+  width: 100%;
+  ${MediaQuery[1]} {
+    width: 30%;
+  }
+  padding: 0.4rem 1rem 0.5rem 1rem;
 `;
 
 const logo = css`
-  height: 100%;
-  width: 10%;
+  height: 4rem;
+  width: 4rem;
 `;
 
 const logoFont = css`
+  text-align: center;
+  ${MediaQuery[1]} {
+    text-align: left;
+  }
   height: 80%;
-  width: 90%;
   font-size: 2.7rem;
+`;
+
+const logoLink = css`
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  ${MediaQuery[1]} {
+    justify-content: center;
+  }
+`;
+
+const headerDiv = css`
+  font-size: 2.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  height: 70%;
+  width: 100%;
+
+  & a {
+    margin-left: 1.5rem;
+  }
+
+  ${MediaQuery[1]} {
+    flex-direction: row;
+    justify-content: center;
+  }
 `;
 
 const headerLink = css`
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  height: 100%;
-`;
 
-const headerDiv = css`
-  width: 70%;
-  height: 70%;
-  font-size: 2.3rem;
-  display: flex;
-  align-items: center;
-  & a {
-    margin-left: 1.5rem;
+  ${MediaQuery[1]} {
+    flex-direction: row;
   }
 `;
 

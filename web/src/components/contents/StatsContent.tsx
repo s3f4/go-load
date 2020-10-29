@@ -6,7 +6,7 @@ import moment from "moment";
 import { Line } from "react-chartjs-2";
 import { preciseFormat } from "../basic/helper";
 import { getTest, Test } from "../../api/entity/test";
-import { Borders } from "../style";
+import { Borders, MediaQuery } from "../style";
 import { RunTest } from "../../api/entity/runtest";
 
 interface Props {
@@ -159,7 +159,10 @@ const testContainer = css`
 `;
 
 const testDiv = css`
-  width: 80%;
+  width: 100%;
+  ${MediaQuery[1]} {
+    width: 90%;
+  }
   margin: 0 auto;
   padding: 3rem 2rem 3rem 2rem;
   background-color: #efefef;

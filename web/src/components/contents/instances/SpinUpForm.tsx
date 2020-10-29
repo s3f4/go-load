@@ -15,6 +15,7 @@ import {
   Instance,
 } from "../../../api/entity/instance";
 import InstanceConfigCards from "./InstanceConfigCards";
+import { MediaQuery } from "../../style";
 
 interface Props extends BaseForm {}
 
@@ -240,11 +241,14 @@ const SpinUp: React.FC<Props> = (props: Props) => {
 
 const title = css`
   width: 100%;
-  height: 4rem;
   text-align: center;
   margin: 1rem auto;
   padding: 1rem;
   background-color: #efefef;
+
+  ${MediaQuery[1]} {
+    height: 4rem;
+  }
 `;
 
 const container = css`
@@ -257,11 +261,15 @@ const formDiv = css`
   display: flex;
   flex-direction: column;
   margin: 0 auto;
-  width: 60%;
   margin-bottom: 3rem;
+  width: 95%;
+  ${MediaQuery[1]} {
+    width: 60%;
+  }
 `;
 
 const formTitle = css`
+  margin-top: 1rem;
   font-size: 2.3rem;
   text-decoration: none;
   text-align: center;

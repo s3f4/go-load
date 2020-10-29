@@ -1,7 +1,7 @@
 /** @jsx jsx */
 import React from "react";
 import { jsx, css } from "@emotion/core";
-import { Box, Sizes } from "../../style";
+import { Box, MediaQuery, Sizes } from "../../style";
 import Button from "../../basic/Button";
 
 interface Props {
@@ -30,8 +30,9 @@ const InstanceConfigCards: React.FC<Props> = (props: Props) => {
 
 const container = css`
   display: flex;
-  width: 100%;
   flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
 `;
 
 const configCss = css`

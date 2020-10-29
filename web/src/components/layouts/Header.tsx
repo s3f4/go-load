@@ -96,7 +96,7 @@ const logoLink = css`
   justify-content: center;
   width: 100%;
   ${MediaQuery[1]} {
-    justify-content: center;
+    justify-content: left;
   }
 `;
 

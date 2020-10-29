@@ -11,7 +11,7 @@ import {
 } from "../../../api/entity/test_group";
 import Table from "../../basic/Table";
 import Button, { ButtonColorType, ButtonType } from "../../basic/Button";
-import { leftContent } from "../../style";
+import { leftContent, MediaQuery } from "../../style";
 import Message, { MessageObj } from "../../basic/Message";
 import TestForm from "./test_form";
 import {
@@ -294,18 +294,29 @@ const Show: React.FC<Props> = (props: Props) => {
 const container = css`
   display: flex;
   width: 100%;
-  flex-direction: row;
+  flex-direction: column;
+  ${MediaQuery[1]} {
+    flex-direction: row;
+  }
 `;
 
 const leftColumn = css`
   background-color: #e3e3e3;
-  width: 30%;
-  min-height: 50rem;
+  width: 100%;
   padding: 2rem;
+
+  ${MediaQuery[1]} {
+    width: 30%;
+    min-height: 50rem;
+  }
 `;
 
 const rightColumn = css`
-  width: 70%;
+  width: 100%;
+  ${MediaQuery[1]} {
+    width: 70%;
+    min-height: 50rem;
+  }
   padding: 2rem;
 `;
 

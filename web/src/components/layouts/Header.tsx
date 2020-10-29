@@ -5,6 +5,7 @@ import { ReactComponent as ReactLogo } from "../img/gopher.svg";
 import { Link } from "react-router-dom";
 import { FiServer, FiClipboard, FiActivity, FiMonitor } from "react-icons/fi";
 import { MediaQuery } from "../style";
+import { useLocation } from "react-router-dom";
 
 const headerLinkStyle = {
   width: "2rem",
@@ -14,6 +15,7 @@ const headerLinkStyle = {
 interface Props {}
 
 const Header: React.FC<Props> = (props: Props) => {
+  const location = useLocation();
   return (
     <React.Fragment>
       <div css={header}>
@@ -24,19 +26,22 @@ const Header: React.FC<Props> = (props: Props) => {
           </a>
         </div>
         <div css={headerDiv}>
-          <Link css={headerLink} to="/instances">
+          <Link
+            css={headerLink(location.pathname === "/instances")}
+            to="/instances"
+          >
             <FiServer style={headerLinkStyle} />
             Instances
           </Link>
-          <Link css={headerLink} to="/tests">
+          <Link css={headerLink(location.pathname === "/tests")} to="/tests">
             <FiClipboard style={headerLinkStyle} />
             Tests
           </Link>
-          <Link css={headerLink} to="/swarm">
+          <Link css={headerLink(location.pathname === "/swarm")} to="/swarm">
             <FiMonitor style={headerLinkStyle} />
             Swarm
           </Link>
-          <Link css={headerLink} to="/stats">
+          <Link css={headerLink(location.pathname === "/stats")} to="/stats">
             <FiActivity style={headerLinkStyle} />
             Stats
           </Link>
@@ -101,12 +106,12 @@ const logoLink = css`
 `;
 
 const headerDiv = css`
-  font-size: 2.3rem;
   display: flex;
-  align-items: center;
   justify-content: space-around;
-  height: 70%;
+  align-items: center;
+  height: 100%;
   width: 100%;
+  font-size: 2.3rem;
 
   & a {
     margin-left: 1.5rem;
@@ -118,10 +123,13 @@ const headerDiv = css`
   }
 `;
 
-const headerLink = css`
+const headerLink = (selected?: boolean) => css`
   display: flex;
   flex-direction: column;
   align-items: center;
+  height: 100%;
+  padding: 0rem 0.5rem 0rem 0.5rem;
+  ${selected ? "background-color:#17a2b8" : ""};
 
   ${MediaQuery[1]} {
     flex-direction: row;

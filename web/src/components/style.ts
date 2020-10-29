@@ -90,7 +90,7 @@ export const html = `
   textarea, select, input, button { outline: none; }
 `;
 
-export const leftContent = `
+export const leftContent = (selected?: boolean) => css`
   width: 100%;
   min-height: 3rem;
   display: flex;
@@ -98,6 +98,7 @@ export const leftContent = `
   border-bottom: ${Borders.border1};
   padding: 1rem;
   cursor: pointer;
+  ${selected ? "background-color:#e3e3c3" : ""};
 `;
 
 export const cardContainer = css`

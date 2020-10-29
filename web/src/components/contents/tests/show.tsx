@@ -191,9 +191,7 @@ const Show: React.FC<Props> = (props: Props) => {
         <h3 css={h3title}>Test Groups</h3>
         {testGroups?.map((config: TestGroup) => (
           <div
-            css={css`
-              ${leftContent}
-            `}
+            css={leftContent(config.id === selectedTestGroup.id)}
             key={config.id}
             onClick={(e: React.MouseEvent) => {
               e.preventDefault();

@@ -114,12 +114,19 @@ const headerDiv = css`
   font-size: 2.3rem;
 
   & a {
-    margin-left: 1.5rem;
+    padding: 0.5rem 0 0.5rem 0;
+    margin-left: 0.5rem;
+    width: 100%;
   }
 
   ${MediaQuery[1]} {
     flex-direction: row;
     justify-content: center;
+
+    & a {
+      width: auto;
+      padding: 0.5rem 1rem 0.5rem 1rem;
+    }
   }
 `;
 
@@ -128,7 +135,7 @@ const headerLink = (selected?: boolean) => css`
   flex-direction: column;
   align-items: center;
   height: 100%;
-  padding: 0rem 0.5rem 0rem 0.5rem;
+  padding: 0rem 1rem 0rem 1rem;
   ${selected ? "background-color:#17a2b8" : ""};
 
   ${MediaQuery[1]} {

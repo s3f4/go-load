@@ -13,11 +13,14 @@ interface Props {
 }
 
 const Message: React.FC<Props> = (props: Props) => {
-  return (
-    <div css={container(props.type)}>
-      <div css={message}>{props.message}</div>
-    </div>
-  );
+  const messageContent = () => {
+    return (
+      <div css={container(props.type)}>
+        <div css={message}>{props.message}</div>
+      </div>
+    );
+  };
+  return props.message.length ? messageContent() : <React.Fragment />;
 };
 
 const container = (type: string) => css`

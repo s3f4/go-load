@@ -5,15 +5,16 @@ import TextInput from "../basic/TextInput";
 import Button from "../basic/Button";
 import { MediaQuery } from "../style";
 import { login } from "../../api/entity/user";
+import Message from "../basic/Message";
 
 const initialLoginState = {
   email: "",
   password: "",
-  error: "",
 };
 
 const LoginContent: React.FC = () => {
   const [user, setUser] = useState(initialLoginState);
+  const [error, setError] = useState<string>("");
   const [isValid, setIsValid] = useState<any>({
     email: true,
     password: true,
@@ -38,6 +39,7 @@ const LoginContent: React.FC = () => {
         console.log(response);
       })
       .catch((error) => {
+        setError(error);
         console.log(error);
       });
   };
@@ -47,6 +49,7 @@ const LoginContent: React.FC = () => {
       <div css={container}>
         <div css={formDiv}>
           <h2 css={formTitle}>Login</h2>
+          <Message type="error" message={error} />
           <TextInput
             name="email"
             label={"E-Mail:"}

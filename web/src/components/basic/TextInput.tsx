@@ -25,7 +25,7 @@ const TextInput: React.FC<Props> = (props: Props) => {
         <input
           name={props.name}
           css={textInput(props.isValid ?? true)}
-          type="text"
+          type={props.type ?? "text"}
           value={props.value}
           onChange={props.onChange}
           disabled={props.disabled}

@@ -4,6 +4,7 @@ import { jsx, css } from "@emotion/core";
 import TextInput from "../basic/TextInput";
 import Button from "../basic/Button";
 import { MediaQuery } from "../style";
+import { login } from "../../api/entity/user";
 
 const initialLoginState = {
   email: "",
@@ -12,15 +13,15 @@ const initialLoginState = {
 };
 
 const LoginContent: React.FC = () => {
-  const [login, setLogin] = useState(initialLoginState);
+  const [user, setUser] = useState(initialLoginState);
   const [isValid, setIsValid] = useState<any>({
     email: true,
     password: true,
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement> | any) => {
-    setLogin({
-      ...login,
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUser({
+      ...user,
       [e.target.name]: e.target.value,
     });
   };
@@ -31,7 +32,15 @@ const LoginContent: React.FC = () => {
       [name]: value,
     });
 
-  const onLogin = () => {};
+  const onLogin = () => {
+    login(user)
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   const loginForm = () => {
     return (
@@ -43,8 +52,9 @@ const LoginContent: React.FC = () => {
             label={"E-Mail:"}
             type="text"
             onChange={handleChange}
-            value={login.email}
+            value={user.email}
             validate={{
+              email: true,
               message: "Provide an valid email",
               validationFunction: validation("email"),
             }}
@@ -56,10 +66,10 @@ const LoginContent: React.FC = () => {
             label={"Password:"}
             type="password"
             onChange={handleChange}
-            value={login.password}
+            value={user.password}
             validate={{
-              min: 6,
-              max: 9,
+              minLength: 6,
+              maxLength: 9,
               message: "Please provide a valid passowrd",
               validationFunction: validation("password"),
             }}

@@ -58,7 +58,7 @@ const LoginContent: React.FC = () => {
             value={user.email}
             validate={{
               email: true,
-              message: "Provide an valid email",
+              message: "Provide a valid email",
               validationFunction: validation("email"),
             }}
             isValid={isValid["email"]}

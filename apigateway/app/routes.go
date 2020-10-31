@@ -28,6 +28,12 @@ func applyMiddlewares() {
 // routeMap initializes routes.
 func routeMap(*chi.Mux) {
 	applyMiddlewares()
+
+	router.Route("/user", func(router chi.Router) {
+		router.Post("/login", handlers.UserHandler.Login)
+		router.Get("/logout", handlers.UserHandler.Logout)
+	})
+
 	router.Post("/instances", handlers.InstanceHandler.SpinUp)
 	router.Get("/instances", handlers.InstanceHandler.GetInstanceInfo)
 	router.Get("/instances/regions", handlers.InstanceHandler.ShowRegions)

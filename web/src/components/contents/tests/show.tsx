@@ -319,7 +319,6 @@ const rightColumn = css`
 `;
 
 const h3title = css`
-  border-bottom: 0.1rem solid grey;
   margin-bottom: 0.5rem;
   padding-bottom: 0.5rem;
 `;

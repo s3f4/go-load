@@ -3,7 +3,13 @@ import React from "react";
 import { jsx, css } from "@emotion/core";
 import { ReactComponent as ReactLogo } from "../img/gopher.svg";
 import { Link } from "react-router-dom";
-import { FiServer, FiClipboard, FiActivity, FiMonitor } from "react-icons/fi";
+import {
+  FiServer,
+  FiClipboard,
+  FiActivity,
+  FiMonitor,
+  FiUser,
+} from "react-icons/fi";
 import { MediaQuery } from "../style";
 import { useLocation } from "react-router-dom";
 
@@ -44,6 +50,12 @@ const Header: React.FC<Props> = (props: Props) => {
           <Link css={headerLink(location.pathname === "/stats")} to="/stats">
             <FiActivity style={headerLinkStyle} />
             Stats
+          </Link>
+        </div>
+        <div>
+          <Link css={headerLink(location.pathname === "/login")} to="/login">
+            <FiUser style={headerLinkStyle} />
+            Login
           </Link>
         </div>
       </div>

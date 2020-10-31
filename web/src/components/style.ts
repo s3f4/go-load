@@ -99,6 +99,9 @@ export const leftContent = (selected?: boolean) => css`
   padding: 1rem;
   cursor: pointer;
   ${selected ? "background-color:#e3e3c3" : ""};
+  &:first-of-type {
+    border-top: ${Borders.border1};
+  }
 `;
 
 export const cardContainer = css`

@@ -1,5 +1,6 @@
 import { makeReq } from "../api";
 import { RunTest } from "./runtest";
+import { TestGroup } from "./test_group";
 
 export interface Test {
   id?: number;
@@ -11,6 +12,7 @@ export interface Test {
   payload: string;
   expected_response_code: number;
   expected_response_body: string;
+  test_group?: TestGroup;
   transport_config: TransportConfig;
   headers?: Header[];
   run_tests?: RunTest[];

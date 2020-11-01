@@ -78,6 +78,7 @@ const StatsContent: React.FC<Props> = (props: Props) => {
   const testContent = (test: Test) => {
     return (
       <div css={testDiv}>
+        <div css={testGroupTitle}>{test.test_group?.name}</div>
         Test URL: {test.url} <br />
         Method: {test.method} <br />
         <hr />
@@ -142,15 +143,13 @@ const StatsContent: React.FC<Props> = (props: Props) => {
   );
 
   return (
-    <div css={statsContainer}>
+    <div>
       <div css={testContainer}>{test && testContent(test)}</div>
       {graph()}
       {responseTable()}
     </div>
   );
 };
-
-const statsContainer = css``;
 
 const testContainer = css`
   margin: 1rem 0 1rem 0;
@@ -161,12 +160,12 @@ const testContainer = css`
 const testDiv = css`
   width: 100%;
   ${MediaQuery[1]} {
-    width: 90%;
+    width: 100%;
   }
   margin: 0 auto;
   padding: 3rem 2rem 3rem 2rem;
   background-color: #efefef;
-  border: ${Borders.border1};
+  border-bottom: ${Borders.border1};
 `;
 
 const table = css`
@@ -176,6 +175,14 @@ const table = css`
 const runTestDiv = css`
   display: block;
   cursor: pointer;
+`;
+
+const testGroupTitle = css`
+  border-bottom: ${Borders.border1};
+  font-weight: bold;
+  font-size: 2.2rem;
+  padding: 0 0 0.5rem 1rem;
+  margin-bottom: 2rem;
 `;
 
 export default StatsContent;

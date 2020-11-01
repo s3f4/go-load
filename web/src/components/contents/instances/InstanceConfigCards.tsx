@@ -1,7 +1,7 @@
 /** @jsx jsx */
 import React from "react";
 import { jsx, css } from "@emotion/core";
-import { Box, MediaQuery, Sizes } from "../../style";
+import { Box, Sizes } from "../../style";
 import Button from "../../basic/Button";
 
 interface Props {

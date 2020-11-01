@@ -6,6 +6,7 @@ import Stats from "./pages/stats";
 import Swarm from "./pages/swarm";
 import Tests from "./pages/tests";
 import Login from "./pages/login";
+import NotFound from "./pages/not_found";
 
 const App: React.FC = () => {
   return (
@@ -32,6 +33,7 @@ const App: React.FC = () => {
         <Route exact path="/">
           <Instances />
         </Route>
+        <Route component={NotFound} />
       </Switch>
     </Router>
   );

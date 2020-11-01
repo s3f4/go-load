@@ -77,27 +77,30 @@ const StatsContent: React.FC<Props> = (props: Props) => {
 
   const testContent = (test: Test) => {
     return (
-      <div css={testDiv}>
-        <div css={testGroupTitle}>{test.test_group?.name}</div>
-        Test URL: {test.url} <br />
-        Method: {test.method} <br />
-        <hr />
-        Run Tests
-        {test.run_tests &&
-          test.run_tests.map((runTest: RunTest) => {
-            return (
-              <div
-                css={runTestDiv}
-                onClick={onSelectRunTest(runTest)}
-                key={runTest.id}
-              >
-                Start Time: {runTest.start_time} - End Time: {runTest.end_time}{" "}
-                - Passed: {runTest.passed}
-                <br />
-              </div>
-            );
-          })}
-      </div>
+      <React.Fragment>
+        <div css={testDiv}>
+          <div css={title}>{test.test_group?.name}</div>
+          Test URL: {test.url} <br />
+          Method: {test.method} <br />
+        </div>
+        <div css={testDiv}>
+          <div css={title}>Run Tests</div>
+          {test.run_tests &&
+            test.run_tests.map((runTest: RunTest) => {
+              return (
+                <div
+                  css={runTestDiv}
+                  onClick={onSelectRunTest(runTest)}
+                  key={runTest.id}
+                >
+                  Start Time: {runTest.start_time} - End Time:{" "}
+                  {runTest.end_time} - Passed: {runTest.passed}
+                  <br />
+                </div>
+              );
+            })}
+        </div>
+      </React.Fragment>
     );
   };
 
@@ -162,7 +165,7 @@ const testDiv = css`
   ${MediaQuery[1]} {
     width: 100%;
   }
-  margin: 0 auto;
+  margin: 1rem auto;
   padding: 3rem 2rem 3rem 2rem;
   background-color: #efefef;
   border-bottom: ${Borders.border1};
@@ -177,7 +180,7 @@ const runTestDiv = css`
   cursor: pointer;
 `;
 
-const testGroupTitle = css`
+const title = css`
   border-bottom: ${Borders.border1};
   font-weight: bold;
   font-size: 2.2rem;

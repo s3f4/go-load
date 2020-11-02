@@ -1,13 +1,17 @@
-/** @jsx jsx */
 import React from "react";
-import { jsx, css } from "@emotion/core";
+import MainLayout from "../components/layouts/MainLayout";
+import Message from "../components/basic/Message";
 
-interface Props {}
-
-const NotFound: React.FC<Props> = (props: Props) => {
-  return <div>Not found</div>;
+const NotFound: React.FC = () => {
+  return (
+    <React.Fragment>
+      <MainLayout
+        content={() => {
+          return <Message message={"Page not found."} type="error" />;
+        }}
+      />
+    </React.Fragment>
+  );
 };
-
-const notfoundContainer = css``;
 
 export default NotFound;

@@ -30,8 +30,8 @@ func routeMap(*chi.Mux) {
 	applyMiddlewares()
 
 	router.Route("/user", func(router chi.Router) {
-		router.Post("/login", handlers.UserHandler.Login)
-		router.Get("/logout", handlers.UserHandler.Logout)
+		router.Post("/login", handlers.AuthHandler.Signin)
+		router.Get("/logout", handlers.AuthHandler.Signout)
 	})
 
 	router.Post("/instances", handlers.InstanceHandler.SpinUp)

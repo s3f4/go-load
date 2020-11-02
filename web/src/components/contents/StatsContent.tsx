@@ -53,7 +53,7 @@ const StatsContent: React.FC<Props> = (props: Props) => {
   };
 
   const graph = () => {
-    if (!responses) {
+    if (!responses || !selectedRunTest) {
       return;
     }
 
@@ -104,46 +104,52 @@ const StatsContent: React.FC<Props> = (props: Props) => {
     );
   };
 
-  const responseTable = () => (
-    <table css={table}>
-      <thead>
-        <tr>
-          <th>FirstByte</th>
-          <th>ConnectStart</th>
-          <th>ConnectDone</th>
-          <th>DNSStart</th>
-          <th>DNSDone</th>
-          <th>TLSStart</th>
-          <th>TLSDone</th>
-          <th>StatusCode</th>
-          <th>TotalTime</th>
-          <th>Body</th>
-        </tr>
-      </thead>
-      <tbody>
-        {responses &&
-          responses.map((response: Response, key: number) => {
-            console.log(JSON.stringify(response));
-            return (
-              <tr key={key}>
-                <td>{moment(response.first_byte).format(preciseFormat())}</td>
-                <td>
-                  {moment(response.connect_start).format(preciseFormat())}
-                </td>
-                <td>{moment(response.connect_done).format(preciseFormat())}</td>
-                <td>{moment(response.dns_start).format(preciseFormat())}</td>
-                <td>{moment(response.dns_done).format(preciseFormat())}</td>
-                <td>{moment(response.tls_start).format(preciseFormat())}</td>
-                <td>{moment(response.tls_done).format(preciseFormat())}</td>
-                <td>{response.status_code}</td>
-                <td>{response.total_time / 1000000}</td>
-                <td>{byteSize(response.body)}</td>
-              </tr>
-            );
-          })}
-      </tbody>
-    </table>
-  );
+  const responseTable = () => {
+    if (!responses || !selectedRunTest) {
+      return;
+    }
+    return (
+      <table css={table}>
+        <thead>
+          <tr>
+            <th>FirstByte</th>
+            <th>ConnectStart</th>
+            <th>ConnectDone</th>
+            <th>DNSStart</th>
+            <th>DNSDone</th>
+            <th>TLSStart</th>
+            <th>TLSDone</th>
+            <th>StatusCode</th>
+            <th>TotalTime</th>
+            <th>Body</th>
+          </tr>
+        </thead>
+        <tbody>
+          {responses &&
+            responses.map((response: Response, key: number) => {
+              return (
+                <tr key={key}>
+                  <td>{moment(response.first_byte).format(preciseFormat())}</td>
+                  <td>
+                    {moment(response.connect_start).format(preciseFormat())}
+                  </td>
+                  <td>
+                    {moment(response.connect_done).format(preciseFormat())}
+                  </td>
+                  <td>{moment(response.dns_start).format(preciseFormat())}</td>
+                  <td>{moment(response.dns_done).format(preciseFormat())}</td>
+                  <td>{moment(response.tls_start).format(preciseFormat())}</td>
+                  <td>{moment(response.tls_done).format(preciseFormat())}</td>
+                  <td>{response.status_code}</td>
+                  <td>{response.total_time / 1000000}</td>
+                  <td>{byteSize(response.body)}</td>
+                </tr>
+              );
+            })}
+        </tbody>
+      </table>
+    );
+  };
 
   return (
     <div>

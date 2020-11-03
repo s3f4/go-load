@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -24,7 +25,6 @@ type AuthService interface {
 	IsTokenValid(r *http.Request) error
 	ExtractTokenMetadata(r *http.Request) (*models.AccessDetails, error)
 	FetchAuth(authDetails *models.AccessDetails) (uint, error)
-	DeleteAuth(givenUUID string) (int64, error)
 }
 
 type authService struct {
@@ -82,9 +82,7 @@ func (s *authService) CreateToken(userID uint) (*models.TokenDetails, error) {
 	atClaims["exp"] = time.Now().Add(time.Minute * 15).Unix()
 
 	at := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
-
-	td.AccessToken, err = at.SignedString([]byte(os.Getenv("AUTH_ACCESS_SECRET")))
-	if err != nil {
+	if td.AccessToken, err = at.SignedString([]byte(os.Getenv("AUTH_ACCESS_SECRET"))); err != nil {
 		return nil, err
 	}
 
@@ -94,13 +92,9 @@ func (s *authService) CreateToken(userID uint) (*models.TokenDetails, error) {
 	rtClaims["exp"] = td.RefreshTokenExpires
 
 	rt := jwt.NewWithClaims(jwt.SigningMethodHS256, rtClaims)
-
-	td.RefreshToken, err = rt.SignedString([]byte(os.Getenv("AUTH_REFRESH_SECRET")))
-
-	if err != nil {
+	if td.RefreshToken, err = rt.SignedString([]byte(os.Getenv("AUTH_REFRESH_SECRET"))); err != nil {
 		return nil, err
 	}
-
 	return td, nil
 }
 
@@ -109,17 +103,16 @@ func (s *authService) CreateAuthCache(userID uint, tokenDetails *models.TokenDet
 	rt := time.Unix(tokenDetails.RefreshTokenExpires, 0)
 
 	now := time.Now()
-
 	ctx := context.Background()
-	errAccess := s.client.Set(ctx, tokenDetails.AccessUUID, strconv.Itoa(int(userID)), at.Sub(now)).Err()
-	if errAccess != nil {
+
+	if errAccess := s.client.Set(ctx, tokenDetails.AccessUUID, strconv.Itoa(int(userID)), at.Sub(now)).Err(); errAccess != nil {
 		return errAccess
 	}
 
-	errRefresh := s.client.Set(ctx, tokenDetails.RefreshUUID, strconv.Itoa(int(userID)), rt.Sub(now)).Err()
-	if errRefresh != nil {
+	if errRefresh := s.client.Set(ctx, tokenDetails.RefreshUUID, strconv.Itoa(int(userID)), rt.Sub(now)).Err(); errRefresh != nil {
 		return errRefresh
 	}
+
 	return nil
 }
 
@@ -134,21 +127,21 @@ func (s *authService) ExtractToken(r *http.Request) string {
 	return ""
 }
 
+// VerifyToken
 func (s *authService) VerifyToken(r *http.Request) (*jwt.Token, error) {
 	tokenString := s.ExtractToken(r)
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		// Make sure that the token method conform to "SigningMethodMAC"
+
+	var err error
+	if token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method %v", token.Header["alg"])
 		}
 		return []byte(os.Getenv("AUTH_ACCESS_SECRET")), nil
-	})
-
-	if err != nil {
-		return nil, err
+	}); err == nil {
+		return token, nil
 	}
 
-	return token, nil
+	return nil, err
 }
 
 func (s *authService) IsTokenValid(r *http.Request) error {
@@ -196,8 +189,28 @@ func (s *authService) FetchAuth(authDetails *models.AccessDetails) (uint, error)
 	return uint(userID), nil
 }
 
-func (s *authService) DeleteAuth(givenUUID string) (int64, error) {
-	deleted, err := s.client.Del(context.Background(), givenUUID).Result()
+func (s *authService) Clear(authDetails *models.TokenDetails) error {
+	ctx := context.Background()
+	deletedAt, err := s.client.Del(ctx, authDetails.AccessUUID).Result()
+	if err != nil {
+		return err
+	}
+
+	deletedRt, err := s.client.Del(ctx, authDetails.RefreshUUID).Result()
+	if err != nil {
+		return err
+	}
+
+	if deletedAt != 1 || deletedRt != 1 {
+		return errors.New("something went wrong")
+	}
+
+	return nil
+}
+
+// Delete redis entry with key
+func (s *authService) Del(key string) (int64, error) {
+	deleted, err := s.client.Del(context.Background(), key).Result()
 	if err != nil {
 		return 0, err
 	}

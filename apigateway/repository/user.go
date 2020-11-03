@@ -8,10 +8,8 @@ import (
 // UserRepository for auth db
 type UserRepository interface {
 	DB() *gorm.DB
-	Register(*models.User) error
-	Login(*models.User) error
-	Logout(*models.User) error
-	Get(id uint) (*models.User, error)
+	Create(*models.User) error
+	GetByEmailAndPassword(*models.User) (*models.User, error)
 }
 
 type userRepository struct {
@@ -34,18 +32,14 @@ func (r *userRepository) DB() *gorm.DB {
 	return r.base.GetDB()
 }
 
-func (r *userRepository) Register(user *models.User) error {
-	return nil
+func (r *userRepository) Create(user *models.User) error {
+	return r.DB().Create(user).Error
 }
 
-func (r *userRepository) Login(user *models.User) error {
-	return nil
-}
-
-func (r *userRepository) Logout(user *models.User) error {
-	return nil
-}
-
-func (r *userRepository) Get(id uint) (*models.User, error) {
-	return nil, nil
+func (r *userRepository) GetByEmailAndPassword(user *models.User) (*models.User, error) {
+	var dbUser *models.User
+	if err := r.DB().Where("email=? AND password=?", user.Email, user.Password).Take(dbUser).Error; err != nil {
+		return nil, err
+	}
+	return dbUser, nil
 }

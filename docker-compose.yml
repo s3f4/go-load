@@ -36,6 +36,8 @@ services:
       - RABBITMQ_PORT=5672
       - WAIT_HOSTS=queue:5672,mysql:3306,timeDB:5432
       - WAIT_HOSTS_TIMEOUT=120
+      - AUTH_ACCESS_SECRET=abc13253
+      - AUTH_REFRESH_SECRET=abc13253
 
   eventhandler:
     image: eventhandler
@@ -108,7 +110,7 @@ services:
     restart: always
     environment:
       - POSTGRES_USER=root
-      - POSTGRES_PASSWORD=timescaledb_example
+      - POSTGRES_PASSWORD=tqimescaledb_example
       - POSTGRES_DB=data
     ports:
       - 5432:5432

@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/s3f4/go-load/apigateway/models"
@@ -45,6 +46,26 @@ func (h *authHandler) Signin(w http.ResponseWriter, r *http.Request) {
 		R404(w, "User Not Found")
 		return
 	}
+
+	tokenDetails, err := h.as.CreateToken(r, user)
+	if err != nil {
+		R401(w, "unauthorized")
+		return
+	}
+
+	h.as.CreateAuthCache()
+
+	cookie := http.Cookie{
+		Name:    "rt",
+		Value:   tokenDetails.RefreshToken,
+		Expires: time.Now().Add(time.Hour * 24 * 7),
+	}
+
+	if os.Getenv("APP_ENV") == "production" {
+		cookie.Domain = os.Getenv("DOMAIN")
+	}
+
+	http.SetCookie(w, &cookie)
 
 }
 
@@ -98,7 +119,7 @@ func (h *authHandler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		deleted, delErr := h.as.DeleteAuth(refreshUUID)
+		deleted, delErr := h.as.Clean(refreshUUID)
 		if delErr != nil || deleted == 0 {
 			R401(w, "unauthorized")
 			return

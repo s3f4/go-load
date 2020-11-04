@@ -11,16 +11,27 @@ import (
 // AuthCtx gets test with given id
 func AuthCtx(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ts := services.NewTokenService()
 		as := services.NewAuthService()
 
-		if err := as.IsTokenValid(r); err != nil {
+		if err := ts.IsTokenValid(r); err != nil {
 			R401(w, err)
 			return
 		}
 
-		user := as.ExtractTokenMetadata(r)
+		access, err := ts.GetAccessDetailsFromToken(r)
+		if err != nil {
+			R401(w, err)
+			return
+		}
 
-		ctx := context.WithValue(r.Context(), RunTestCtxKey, runTest)
+		userID, err := as.GetAuthCache(access)
+		if err != nil {
+			R401(w, err)
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), RunTestCtxKey, userID)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

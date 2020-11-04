@@ -15,12 +15,12 @@ import (
 
 // TokenService using for jwt token methods.
 type TokenService interface {
-	CreateToken(r *http.Request, user *models.User) (*models.TokenDetails, error)
+	CreateToken(r *http.Request, user *models.User) (*models.AccessToken, *models.RefreshToken, error)
 	TokenFromCookie(r *http.Request) string
 	TokenFromHeader(r *http.Request) string
 	VerifyToken(r *http.Request) (*jwt.Token, error)
 	IsTokenValid(r *http.Request) error
-	ExtractTokenMetadata(r *http.Request) (*models.AccessDetails, error)
+	GetAccessDetailsFromToken(r *http.Request) (*models.AccessDetails, error)
 }
 
 type tokenService struct{}
@@ -35,40 +35,42 @@ func NewTokenService() TokenService {
 	return tokenServiceObject
 }
 
-func (s *tokenService) CreateToken(r *http.Request, user *models.User) (*models.TokenDetails, error) {
-	td := &models.TokenDetails{}
+func (s *tokenService) CreateToken(r *http.Request, user *models.User) (*models.AccessToken, *models.RefreshToken, error) {
+	at := &models.AccessToken{}
+	rt := &models.RefreshToken{}
 
-	td.AccessTokenExpires = time.Now().Add(time.Minute * 15).Unix()
-	td.AccessUUID = uuid.NewV4().String()
+	at.Expire = time.Now().Add(time.Minute * 15).Unix()
+	at.UUID = uuid.NewV4().String()
 
-	td.RefreshTokenExpires = time.Now().Add(time.Hour * 24 * 7).Unix()
-	td.RefreshUUID = uuid.NewV4().String()
+	rt.Expire = time.Now().Add(time.Hour * 24 * 7).Unix()
+	rt.UUID = uuid.NewV4().String()
 
 	var err error
 
 	atClaims := jwt.MapClaims{}
 	atClaims["authorized"] = true
-	atClaims["access_uuid"] = td.AccessUUID
+	atClaims["access_uuid"] = at.UUID
 	atClaims["user_id"] = user.ID
 	atClaims["remote_addr"] = r.RemoteAddr
 	atClaims["user_agent"] = r.Header.Get("User-Agent")
-	atClaims["exp"] = td.AccessTokenExpires
+	atClaims["exp"] = at.Expire
 
-	at := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
-	if td.AccessToken, err = at.SignedString([]byte(os.Getenv("AUTH_ACCESS_SECRET"))); err != nil {
-		return nil, err
+	atJWT := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
+	if at.Token, err = atJWT.SignedString([]byte(os.Getenv("AUTH_ACCESS_SECRET"))); err != nil {
+		return nil, nil, err
 	}
 
 	rtClaims := jwt.MapClaims{}
-	rtClaims["refresh_uuid"] = td.RefreshUUID
+	rtClaims["refresh_uuid"] = rt.UUID
 	rtClaims["user_id"] = user.ID
-	rtClaims["exp"] = td.RefreshTokenExpires
+	rtClaims["exp"] = rt.Expire
 
-	rt := jwt.NewWithClaims(jwt.SigningMethodHS256, rtClaims)
-	if td.RefreshToken, err = rt.SignedString([]byte(os.Getenv("AUTH_REFRESH_SECRET"))); err != nil {
-		return nil, err
+	rtJWT := jwt.NewWithClaims(jwt.SigningMethodHS256, rtClaims)
+	if rt.Token, err = rtJWT.SignedString([]byte(os.Getenv("AUTH_REFRESH_SECRET"))); err != nil {
+		return nil, nil, err
 	}
-	return td, nil
+
+	return at, rt, nil
 }
 
 // TokenFromCookie ...
@@ -117,7 +119,7 @@ func (s *tokenService) IsTokenValid(r *http.Request) error {
 	return nil
 }
 
-func (s *tokenService) ExtractTokenMetadata(r *http.Request) (*models.AccessDetails, error) {
+func (s *tokenService) GetAccessDetailsFromToken(r *http.Request) (*models.AccessDetails, error) {
 	token, err := s.VerifyToken(r)
 	if err != nil {
 		return nil, err

@@ -11,8 +11,9 @@ import (
 
 // AuthService service
 type AuthService interface {
-	CreateAuthCache(userID uint, tokenDetails *models.TokenDetails) error
-	FetchAuth(authDetails *models.AccessDetails) (uint, error)
+	CreateAuthCache(userID uint, at *models.AccessToken, rt *models.RefreshToken) error
+	GetAuthCache(authDetails *models.AccessDetails) (uint, error)
+	DeleteAuthCache(at *models.AccessToken, rt *models.RefreshToken) error
 }
 
 type authService struct {
@@ -32,26 +33,30 @@ func NewAuthService() AuthService {
 }
 
 // CreateAuthCache creates auth object on cache database.
-func (s *authService) CreateAuthCache(userID uint, tokenDetails *models.TokenDetails) error {
-	at := time.Unix(tokenDetails.AccessTokenExpires, 0)
-	rt := time.Unix(tokenDetails.RefreshTokenExpires, 0)
+func (s *authService) CreateAuthCache(
+	userID uint,
+	at *models.AccessToken,
+	rt *models.RefreshToken,
+) error {
+	atExpire := time.Unix(at.Expire, 0)
+	rtExpire := time.Unix(rt.Expire, 0)
 
 	now := time.Now()
 	userIDstr := strconv.Itoa(int(userID))
 
-	if err := s.r.Set(tokenDetails.AccessUUID, userIDstr, at.Sub(now)); err != nil {
+	if err := s.r.Set(at.UUID, userIDstr, atExpire.Sub(now)); err != nil {
 		return err
 	}
 
-	if err := s.r.Set(tokenDetails.RefreshUUID, userIDstr, rt.Sub(now)); err != nil {
+	if err := s.r.Set(rt.UUID, userIDstr, rtExpire.Sub(now)); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-// FetchAuth gets auth object from cache
-func (s *authService) FetchAuth(authDetails *models.AccessDetails) (uint, error) {
+// GetAuthCache gets auth object from cache
+func (s *authService) GetAuthCache(authDetails *models.AccessDetails) (uint, error) {
 	userid, err := s.r.Get(authDetails.AccessUUID)
 	if err != nil {
 		return 0, err
@@ -60,14 +65,14 @@ func (s *authService) FetchAuth(authDetails *models.AccessDetails) (uint, error)
 	return uint(userID), nil
 }
 
-// Clear clears auth objects on cache database.
-func (s *authService) Clear(authDetails *models.TokenDetails) error {
-	deletedAt, err := s.r.Del(authDetails.AccessUUID)
+// DeleteAuthCache clears auth objects on cache database.
+func (s *authService) DeleteAuthCache(at *models.AccessToken, rt *models.RefreshToken) error {
+	deletedAt, err := s.r.Del(at.UUID)
 	if err != nil {
 		return err
 	}
 
-	deletedRt, err := s.r.Del(authDetails.RefreshUUID)
+	deletedRt, err := s.r.Del(rt.UUID)
 	if err != nil {
 		return err
 	}

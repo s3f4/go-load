@@ -76,12 +76,12 @@ func (h *authHandler) Signin(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *authHandler) Signout(w http.ResponseWriter, r *http.Request) {
-	metadata, err := h.ts.ExtractTokenMetadata(r)
+	metadata, err := h.ts.GetAccessDetailsFromToken(r)
 	if err != nil {
 		R401(w, "unauthorized")
 		return
 	}
-	delErr := h.as.Clear(metadata)
+	delErr := h.as.DeleteAuthCache(metadata)
 	if delErr != nil {
 		R401(w, delErr.Error())
 		return

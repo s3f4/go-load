@@ -1,13 +1,17 @@
 package models
 
-// TokenDetails model
-type TokenDetails struct {
-	AccessToken         string
-	RefreshToken        string
-	AccessUUID          string
-	RefreshUUID         string
-	AccessTokenExpires  int64
-	RefreshTokenExpires int64
+// AccessToken model
+type AccessToken struct {
+	Token  string
+	UUID   string
+	Expire int64
+}
+
+// RefreshToken model
+type RefreshToken struct {
+	Token  string
+	UUID   string
+	Expire int64
 }
 
 // AccessDetails model

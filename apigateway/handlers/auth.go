@@ -24,6 +24,7 @@ type authHandlerInterface interface {
 type authHandler struct {
 	ur repository.UserRepository
 	as services.AuthService
+	ts services.TokenService
 }
 
 var (
@@ -31,6 +32,7 @@ var (
 	AuthHandler authHandlerInterface = &authHandler{
 		ur: repository.NewUserRepository(),
 		as: services.NewAuthService(),
+		ts: services.NewTokenService(),
 	}
 )
 
@@ -47,18 +49,22 @@ func (h *authHandler) Signin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tokenDetails, err := h.as.CreateToken(r, user)
+	tokenDetails, err := h.ts.CreateToken(r, user)
 	if err != nil {
 		R401(w, "unauthorized")
 		return
 	}
 
-	h.as.CreateAuthCache()
+	if err := h.as.CreateAuthCache(user.ID, tokenDetails); err != nil {
+		R401(w, "unauthorized")
+		return
+	}
 
 	cookie := http.Cookie{
-		Name:    "rt",
-		Value:   tokenDetails.RefreshToken,
-		Expires: time.Now().Add(time.Hour * 24 * 7),
+		HttpOnly: true,
+		Name:     "rt",
+		Value:    tokenDetails.RefreshToken,
+		Expires:  time.Unix(tokenDetails.RefreshTokenExpires, 0),
 	}
 
 	if os.Getenv("APP_ENV") == "production" {
@@ -70,12 +76,12 @@ func (h *authHandler) Signin(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *authHandler) Signout(w http.ResponseWriter, r *http.Request) {
-	metadata, err := h.as.ExtractTokenMetadata(r)
+	metadata, err := h.ts.ExtractTokenMetadata(r)
 	if err != nil {
 		R401(w, "unauthorized")
 		return
 	}
-	delErr := h.as.DeleteTokens(metadata)
+	delErr := h.as.Clear(metadata)
 	if delErr != nil {
 		R401(w, delErr.Error())
 		return

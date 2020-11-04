@@ -1,14 +1,12 @@
 package services
 
 import (
-	"context"
 	"errors"
-	"os"
 	"strconv"
 	"time"
 
-	"github.com/go-redis/redis/v8"
 	"github.com/s3f4/go-load/apigateway/models"
+	"github.com/s3f4/go-load/apigateway/repository"
 )
 
 // AuthService service
@@ -18,61 +16,43 @@ type AuthService interface {
 }
 
 type authService struct {
-	client *redis.Client
+	r repository.RedisRepository
 }
 
 var authServiceObject *authService
-var redisClient *redis.Client
 
 // NewAuthService creates new AuthService object
 func NewAuthService() AuthService {
 	if authServiceObject == nil {
 		return &authService{
-			client: ConnectRedis(),
+			r: repository.NewRedisRepository(),
 		}
 	}
 	return authServiceObject
 }
 
-// ConnectRedis connect redis
-func ConnectRedis() *redis.Client {
-	dsn := os.Getenv("REDIS_DSN")
-	if len(dsn) == 0 {
-		dsn = "redis:6379"
-	}
-
-	client := redis.NewClient(&redis.Options{
-		Addr:     dsn,
-		Password: os.Getenv("REDIS_SERVER_PASSWORD"),
-		DB:       0,
-	})
-
-	if _, err := client.Ping(context.Background()).Result(); err != nil {
-		panic(err)
-	}
-	return client
-}
-
+// CreateAuthCache creates auth object on cache database.
 func (s *authService) CreateAuthCache(userID uint, tokenDetails *models.TokenDetails) error {
 	at := time.Unix(tokenDetails.AccessTokenExpires, 0)
 	rt := time.Unix(tokenDetails.RefreshTokenExpires, 0)
 
 	now := time.Now()
-	ctx := context.Background()
+	userIDstr := strconv.Itoa(int(userID))
 
-	if errAccess := s.client.Set(ctx, tokenDetails.AccessUUID, strconv.Itoa(int(userID)), at.Sub(now)).Err(); errAccess != nil {
-		return errAccess
+	if err := s.r.Set(tokenDetails.AccessUUID, userIDstr, at.Sub(now)); err != nil {
+		return err
 	}
 
-	if errRefresh := s.client.Set(ctx, tokenDetails.RefreshUUID, strconv.Itoa(int(userID)), rt.Sub(now)).Err(); errRefresh != nil {
-		return errRefresh
+	if err := s.r.Set(tokenDetails.RefreshUUID, userIDstr, rt.Sub(now)); err != nil {
+		return err
 	}
 
 	return nil
 }
 
+// FetchAuth gets auth object from cache
 func (s *authService) FetchAuth(authDetails *models.AccessDetails) (uint, error) {
-	userid, err := s.client.Get(context.Background(), authDetails.AccessUUID).Result()
+	userid, err := s.r.Get(authDetails.AccessUUID)
 	if err != nil {
 		return 0, err
 	}
@@ -80,14 +60,14 @@ func (s *authService) FetchAuth(authDetails *models.AccessDetails) (uint, error)
 	return uint(userID), nil
 }
 
+// Clear clears auth objects on cache database.
 func (s *authService) Clear(authDetails *models.TokenDetails) error {
-	ctx := context.Background()
-	deletedAt, err := s.client.Del(ctx, authDetails.AccessUUID).Result()
+	deletedAt, err := s.r.Del(authDetails.AccessUUID)
 	if err != nil {
 		return err
 	}
 
-	deletedRt, err := s.client.Del(ctx, authDetails.RefreshUUID).Result()
+	deletedRt, err := s.r.Del(authDetails.RefreshUUID)
 	if err != nil {
 		return err
 	}
@@ -97,13 +77,4 @@ func (s *authService) Clear(authDetails *models.TokenDetails) error {
 	}
 
 	return nil
-}
-
-// Delete redis entry with key
-func (s *authService) Del(key string) (int64, error) {
-	deleted, err := s.client.Del(context.Background(), key).Result()
-	if err != nil {
-		return 0, err
-	}
-	return deleted, nil
 }

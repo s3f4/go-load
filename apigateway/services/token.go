@@ -52,7 +52,7 @@ func (s *tokenService) CreateToken(r *http.Request, user *models.User) (*models.
 	atClaims["user_id"] = user.ID
 	atClaims["remote_addr"] = r.RemoteAddr
 	atClaims["user_agent"] = r.Header.Get("User-Agent")
-	atClaims["exp"] = time.Now().Add(time.Minute * 15).Unix()
+	atClaims["exp"] = td.AccessTokenExpires
 
 	at := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
 	if td.AccessToken, err = at.SignedString([]byte(os.Getenv("AUTH_ACCESS_SECRET"))); err != nil {

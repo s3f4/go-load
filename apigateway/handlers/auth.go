@@ -49,13 +49,13 @@ func (h *authHandler) Signin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tokenDetails, err := h.ts.CreateToken(r, user)
+	at, rt, err := h.ts.CreateToken(r, user)
 	if err != nil {
 		R401(w, "unauthorized")
 		return
 	}
 
-	if err := h.as.CreateAuthCache(user.ID, tokenDetails); err != nil {
+	if err := h.as.CreateAuthCache(user.ID, at, rt); err != nil {
 		R401(w, "unauthorized")
 		return
 	}
@@ -63,8 +63,8 @@ func (h *authHandler) Signin(w http.ResponseWriter, r *http.Request) {
 	cookie := http.Cookie{
 		HttpOnly: true,
 		Name:     "rt",
-		Value:    tokenDetails.RefreshToken,
-		Expires:  time.Unix(tokenDetails.RefreshTokenExpires, 0),
+		Value:    rt.Token,
+		Expires:  time.Unix(rt.Expire, 0),
 	}
 
 	if os.Getenv("APP_ENV") == "production" {
@@ -76,22 +76,32 @@ func (h *authHandler) Signin(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *authHandler) Signout(w http.ResponseWriter, r *http.Request) {
-	metadata, err := h.ts.GetAccessDetailsFromToken(r)
+	access, err := h.ts.GetDetailsFromToken(r, "header")
 	if err != nil {
 		R401(w, "unauthorized")
 		return
 	}
-	delErr := h.as.DeleteAuthCache(metadata)
-	if delErr != nil {
-		R401(w, delErr.Error())
+
+	refresh, err := h.ts.GetDetailsFromToken(r, "cookie")
+	if err != nil {
+		R401(w, "unauthorized")
 		return
 	}
+
+	if err = h.as.DeleteAuthCache(
+		&models.AccessToken{UUID: access.UUID},
+		&models.RefreshToken{UUID: refresh.UUID},
+	); err != nil {
+		R401(w, err.Error())
+		return
+	}
+
 	R200(w, "Successfully logged out")
 }
 
 func (h *authHandler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 	// Read refresh token
-	var refreshToken string
+	refreshToken := h.ts.TokenFromCookie(r)
 
 	//verify the token
 	token, err := jwt.Parse(refreshToken, func(token *jwt.Token) (interface{}, error) {
@@ -114,7 +124,7 @@ func (h *authHandler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if ok && token.Valid {
-		refreshUUID, ok := claims["refresh_uuid"].(string)
+		refreshUUID, ok := claims["uuid"].(string)
 		if !ok {
 			R422(w, err)
 			return
@@ -125,13 +135,13 @@ func (h *authHandler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		deleted, delErr := h.as.Clean(refreshUUID)
+		deleted, delErr := h.as.DeleteAuthCache(refreshUUID)
 		if delErr != nil || deleted == 0 {
 			R401(w, "unauthorized")
 			return
 		}
 
-		ts, createErr := h.as.CreateToken(uint(userID))
+		ts, createErr := h.ts.CreateToken(r, uint(userID))
 		if createErr != nil {
 			R403(w, createErr.Error())
 			return

@@ -12,7 +12,7 @@ import (
 // AuthService service
 type AuthService interface {
 	CreateAuthCache(userID uint, at *models.AccessToken, rt *models.RefreshToken) error
-	GetAuthCache(authDetails *models.AccessDetails) (uint, error)
+	GetAuthCache(details *models.Details) (uint, error)
 	DeleteAuthCache(at *models.AccessToken, rt *models.RefreshToken) error
 }
 
@@ -56,8 +56,8 @@ func (s *authService) CreateAuthCache(
 }
 
 // GetAuthCache gets auth object from cache
-func (s *authService) GetAuthCache(authDetails *models.AccessDetails) (uint, error) {
-	userid, err := s.r.Get(authDetails.AccessUUID)
+func (s *authService) GetAuthCache(details *models.Details) (uint, error) {
+	userid, err := s.r.Get(details.UUID)
 	if err != nil {
 		return 0, err
 	}

@@ -19,7 +19,7 @@ func AuthCtx(next http.Handler) http.Handler {
 			return
 		}
 
-		access, err := ts.GetAccessDetailsFromToken(r)
+		access, err := ts.GetDetailsFromToken(r, "header")
 		if err != nil {
 			R401(w, err)
 			return

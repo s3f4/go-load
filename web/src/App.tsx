@@ -5,7 +5,7 @@ import Workers from "./pages/workers";
 import Stats from "./pages/stats";
 import Swarm from "./pages/swarm";
 import Tests from "./pages/tests";
-import Login from "./pages/login";
+import Login from "./pages/signin";
 import NotFound from "./pages/not_found";
 
 const App: React.FC = () => {

@@ -14,8 +14,8 @@ type RefreshToken struct {
 	Expire int64
 }
 
-// AccessDetails model
-type AccessDetails struct {
-	AccessUUID string
-	UserID     uint
+// Details model
+type Details struct {
+	UUID   string
+	UserID uint
 }

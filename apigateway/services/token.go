@@ -18,9 +18,9 @@ type TokenService interface {
 	CreateToken(r *http.Request, user *models.User) (*models.AccessToken, *models.RefreshToken, error)
 	TokenFromCookie(r *http.Request) string
 	TokenFromHeader(r *http.Request) string
-	VerifyToken(r *http.Request) (*jwt.Token, error)
+	VerifyToken(r *http.Request, from ...string) (*jwt.Token, error)
 	IsTokenValid(r *http.Request) error
-	GetAccessDetailsFromToken(r *http.Request) (*models.AccessDetails, error)
+	GetDetailsFromToken(r *http.Request, from string) (*models.Details, error)
 }
 
 type tokenService struct{}
@@ -49,7 +49,7 @@ func (s *tokenService) CreateToken(r *http.Request, user *models.User) (*models.
 
 	atClaims := jwt.MapClaims{}
 	atClaims["authorized"] = true
-	atClaims["access_uuid"] = at.UUID
+	atClaims["uuid"] = at.UUID
 	atClaims["user_id"] = user.ID
 	atClaims["remote_addr"] = r.RemoteAddr
 	atClaims["user_agent"] = r.Header.Get("User-Agent")
@@ -61,7 +61,7 @@ func (s *tokenService) CreateToken(r *http.Request, user *models.User) (*models.
 	}
 
 	rtClaims := jwt.MapClaims{}
-	rtClaims["refresh_uuid"] = rt.UUID
+	rtClaims["uuid"] = rt.UUID
 	rtClaims["user_id"] = user.ID
 	rtClaims["exp"] = rt.Expire
 
@@ -92,11 +92,24 @@ func (s *tokenService) TokenFromHeader(r *http.Request) string {
 }
 
 // VerifyToken
-func (s *tokenService) VerifyToken(r *http.Request) (*jwt.Token, error) {
-	tokenString := s.TokenFromCookie(r)
+func (s *tokenService) VerifyToken(r *http.Request, from ...string) (*jwt.Token, error) {
+	var tokenStr string
+
+	if from == nil {
+		tokenStr = s.TokenFromHeader(r)
+	} else {
+		for _, t := range from {
+			switch t {
+			case "cookie":
+				tokenStr = s.TokenFromCookie(r)
+			case "header":
+				tokenStr = s.TokenFromHeader(r)
+			}
+		}
+	}
 
 	var err error
-	if token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+	if token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method %v", token.Header["alg"])
 		}
@@ -119,27 +132,25 @@ func (s *tokenService) IsTokenValid(r *http.Request) error {
 	return nil
 }
 
-func (s *tokenService) GetAccessDetailsFromToken(r *http.Request) (*models.AccessDetails, error) {
-	token, err := s.VerifyToken(r)
+func (s *tokenService) GetDetailsFromToken(r *http.Request, from string) (*models.Details, error) {
+	token, err := s.VerifyToken(r, from)
 	if err != nil {
 		return nil, err
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if ok && token.Valid {
-		accessUUID, ok := claims["access_uuid"].(string)
+		UUID, ok := claims["uuid"].(string)
 		if !ok {
 			return nil, err
 		}
 
-		userID, err := strconv.ParseUint(fmt.Sprintf("%.f", claims["user_id"]), 10, 64)
-		if err != nil {
-			return nil, err
+		if userID, err := strconv.ParseUint(fmt.Sprintf("%.f", claims["user_id"]), 10, 64); err == nil {
+			return &models.Details{
+				UUID:   UUID,
+				UserID: uint(userID),
+			}, nil
 		}
-		return &models.AccessDetails{
-			AccessUUID: accessUUID,
-			UserID:     uint(userID),
-		}, nil
 	}
 	return nil, err
 }

@@ -5,10 +5,14 @@ export interface User {
   password: string;
 }
 
-export const login = async (user: User) => {
-  return await makeReq("/login", "POST", user);
+export const signIn = async (user: User) => {
+  return await makeReq("/signin", "POST", user);
 };
 
-export const logout = async () => {
-  return await makeReq("/logout");
+export const signOut = async () => {
+  return await makeReq("/signout");
+};
+
+export const refresh = async () => {
+  return await makeReq("/_rt");
 };

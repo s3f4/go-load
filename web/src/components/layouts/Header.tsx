@@ -54,7 +54,7 @@ const Header: React.FC<Props> = (props: Props) => {
         </div>
         <div>
           <div css={authLink}>
-            <Link css={headerLink(false)} to="/signin">
+            <Link css={headerLink(false)} to="/auth/signin">
               <FiUser style={headerLinkStyle} />
               Sign In
             </Link>

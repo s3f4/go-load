@@ -1,8 +1,6 @@
 package repository
 
 import (
-	"fmt"
-
 	"github.com/s3f4/go-load/apigateway/models"
 	"gorm.io/gorm"
 )
@@ -64,7 +62,6 @@ func (r *testGroupRepository) List() ([]models.TestGroup, error) {
 		Preload("Tests.TransportConfig").
 		Preload("Tests.RunTests").
 		Find(&testReq).Error; err != nil {
-		fmt.Println(err)
 		return nil, err
 	}
 	return testReq, nil

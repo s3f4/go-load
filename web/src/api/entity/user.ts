@@ -5,6 +5,10 @@ export interface User {
   password: string;
 }
 
+export const signUp = async (user: User) => {
+  return await makeReq("/user/signin", "POST", user);
+};
+
 export const signIn = async (user: User) => {
   return await makeReq("/user/signin", "POST", user);
 };

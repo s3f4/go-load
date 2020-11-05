@@ -31,6 +31,7 @@ func routeMap(*chi.Mux) {
 
 	router.Route("/user", func(router chi.Router) {
 		router.Post("/signin", handlers.AuthHandler.Signin)
+		router.Post("/signup", handlers.AuthHandler.Signup)
 		router.Get("/signout", handlers.AuthHandler.Signout)
 	})
 

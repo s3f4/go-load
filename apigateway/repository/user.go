@@ -10,6 +10,7 @@ type UserRepository interface {
 	DB() *gorm.DB
 	Create(*models.User) error
 	GetByEmailAndPassword(*models.User) (*models.User, error)
+	List() ([]*models.User, error)
 }
 
 type userRepository struct {
@@ -42,4 +43,12 @@ func (r *userRepository) GetByEmailAndPassword(user *models.User) (*models.User,
 		return nil, err
 	}
 	return &dbUser, nil
+}
+
+func (r *userRepository) List() ([]*models.User, error) {
+	var users []*models.User
+	if err := r.DB().Find(&users).Error; err != nil {
+		return nil, err
+	}
+	return users, nil
 }

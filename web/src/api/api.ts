@@ -19,16 +19,14 @@ export const makeReq = async (url: string, method?: any, body?: any) => {
     (request.config as any).body = JSON.stringify(body);
   }
 
-  return await fetch(request.url, request.config)
-    .then((response) => {
-      if (response.ok) {
-        return response.json();
-      } else {
-        return Promise.reject({
-          status: response.status,
-          statusText: response.statusText,
-        });
-      }
-    })
-    .catch((error) => console.log(error));
+  return await fetch(request.url, request.config).then((response) => {
+    if (response.ok) {
+      return response.json();
+    } else {
+      return Promise.reject({
+        status: response.status,
+        statusText: response.statusText,
+      });
+    }
+  });
 };

@@ -17,6 +17,7 @@ import (
 
 type authHandlerInterface interface {
 	Signin(w http.ResponseWriter, r *http.Request)
+	Signup(w http.ResponseWriter, r *http.Request)
 	Signout(w http.ResponseWriter, r *http.Request)
 	RefreshToken(w http.ResponseWriter, r *http.Request)
 }
@@ -36,6 +37,45 @@ var (
 	}
 )
 
+func (h *authHandler) Signup(w http.ResponseWriter, r *http.Request) {
+	var user models.User
+	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+		R400(w, "Bad Request")
+		return
+	}
+
+	if err := h.ur.Create(&user); err != nil {
+		R500(w, err)
+		return
+	}
+
+	at, rt, err := h.ts.CreateToken(r, &user)
+	if err != nil {
+		R401(w, "unauthorized")
+		return
+	}
+
+	if err := h.as.CreateAuthCache(user.ID, at, rt); err != nil {
+		R401(w, "unauthorized")
+		return
+	}
+
+	cookie := http.Cookie{
+		HttpOnly: true,
+		Name:     "rt",
+		Value:    rt.Token,
+		Expires:  time.Unix(rt.Expire, 0),
+	}
+
+	if os.Getenv("APP_ENV") == "production" {
+		cookie.Domain = os.Getenv("DOMAIN")
+	}
+
+	http.SetCookie(w, &cookie)
+	R200(w, "Successfully signed up.")
+
+}
+
 func (h *authHandler) Signin(w http.ResponseWriter, r *http.Request) {
 	var userRequest models.User
 	if err := json.NewDecoder(r.Body).Decode(&userRequest); err != nil {
@@ -43,12 +83,8 @@ func (h *authHandler) Signin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(userRequest)
-
 	user, err := h.ur.GetByEmailAndPassword(&userRequest)
 	if err != nil {
-		fmt.Println(user)
-		fmt.Println(err)
 		R404(w, "User Not Found")
 		return
 	}
@@ -76,7 +112,7 @@ func (h *authHandler) Signin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.SetCookie(w, &cookie)
-
+	R200(w, "Successfully signed in.")
 }
 
 func (h *authHandler) Signout(w http.ResponseWriter, r *http.Request) {

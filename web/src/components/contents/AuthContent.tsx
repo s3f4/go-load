@@ -4,21 +4,28 @@ import { jsx, css } from "@emotion/core";
 import TextInput from "../basic/TextInput";
 import Button from "../basic/Button";
 import { MediaQuery } from "../style";
-import { signIn } from "../../api/entity/user";
+import { signIn, signUp } from "../../api/entity/user";
 import Message from "../basic/Message";
+import { Link } from "react-router-dom";
 
-const initialLoginState = {
+const initialUserState = {
   email: "",
   password: "",
 };
 
-const SigninContent: React.FC = () => {
-  const [user, setUser] = useState(initialLoginState);
+interface Props {
+  type: string;
+}
+
+const AuthContent: React.FC<Props> = (props: Props) => {
+  const [user, setUser] = useState(initialUserState);
   const [error, setError] = useState<string>("");
   const [isValid, setIsValid] = useState<any>({
     email: true,
     password: true,
   });
+
+  console.log(props);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUser({
@@ -44,11 +51,54 @@ const SigninContent: React.FC = () => {
       });
   };
 
+  const onSignUp = () => {
+    signUp(user)
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => {
+        setError(error);
+        console.log(error);
+      });
+  };
+
+  const button = () => {
+    let buttonText = "Sign In";
+    let buttonFunc = onSignIn;
+    let text = (
+      <React.Fragment>
+        If you don't have an account <Link to="/auth/signup">Sign Up</Link>
+      </React.Fragment>
+    );
+
+    if (props.type === "signup") {
+      buttonText = "Sign Up";
+      buttonFunc = onSignUp;
+      text = (
+        <React.Fragment>
+          If you already have an account <Link to="/auth/signin">Sign In</Link>
+        </React.Fragment>
+      );
+    }
+    return (
+      <React.Fragment>
+        <Button
+          text={buttonText}
+          onClick={buttonFunc}
+          disabled={!isValid["email"] || !isValid["password"]}
+        />
+        <span css={buttonRightText}>{text}</span>
+      </React.Fragment>
+    );
+  };
+
   const signInForm = () => {
     return (
       <div css={container}>
         <div css={formDiv}>
-          <h2 css={formTitle}>Sign In</h2>
+          <h2 css={formTitle}>
+            {props.type === "signin" ? "Sign In" : "Sign Up"}
+          </h2>
           <Message type="error" message={error} />
           <TextInput
             name="email"
@@ -79,13 +129,7 @@ const SigninContent: React.FC = () => {
             isValid={isValid["password"]}
           />
 
-          <div css={buttons}>
-            <Button
-              text="Sign In"
-              onClick={onSignIn}
-              disabled={!isValid["email"] || !isValid["password"]}
-            />
-          </div>
+          <div css={buttons}>{button()}</div>
         </div>
       </div>
     );
@@ -122,4 +166,8 @@ const buttons = css`
   height: 6.5rem;
 `;
 
-export default SigninContent;
+const buttonRightText = css`
+  font-size: 1.5rem;
+`;
+
+export default AuthContent;

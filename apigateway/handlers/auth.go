@@ -43,8 +43,12 @@ func (h *authHandler) Signin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	fmt.Println(userRequest)
+
 	user, err := h.ur.GetByEmailAndPassword(&userRequest)
 	if err != nil {
+		fmt.Println(user)
+		fmt.Println(err)
 		R404(w, "User Not Found")
 		return
 	}
@@ -88,10 +92,7 @@ func (h *authHandler) Signout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err = h.as.DeleteAuthCache(
-		&models.AccessToken{UUID: access.UUID},
-		&models.RefreshToken{UUID: refresh.UUID},
-	); err != nil {
+	if err = h.as.DeleteAuthCache(access.UUID, refresh.UUID); err != nil {
 		R401(w, err.Error())
 		return
 	}
@@ -135,8 +136,7 @@ func (h *authHandler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		deleted, err := h.as.DeleteAuthCache(refreshUUID)
-		if err != nil || deleted == 0 {
+		if err := h.as.DeleteAuthCache(refreshUUID, ""); err != nil {
 			R401(w, "unauthorized")
 			return
 		}

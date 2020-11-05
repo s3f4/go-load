@@ -5,7 +5,7 @@ import Workers from "./pages/workers";
 import Stats from "./pages/stats";
 import Swarm from "./pages/swarm";
 import Tests from "./pages/tests";
-import Login from "./pages/signin";
+import Signin from "./pages/signin";
 import NotFound from "./pages/not_found";
 
 const App: React.FC = () => {
@@ -27,8 +27,8 @@ const App: React.FC = () => {
         <Route exact path="/swarm">
           <Swarm />
         </Route>
-        <Route exact path="/login">
-          <Login />
+        <Route exact path="/signin">
+          <Signin />
         </Route>
         <Route exact path="/">
           <Instances />

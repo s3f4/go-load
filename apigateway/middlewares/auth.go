@@ -25,7 +25,7 @@ func AuthCtx(next http.Handler) http.Handler {
 			return
 		}
 
-		userID, err := as.GetAuthCache(access)
+		userID, err := as.GetAuthCache(access.UUID)
 		if err != nil {
 			R401(w, err)
 			return

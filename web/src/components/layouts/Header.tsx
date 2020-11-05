@@ -53,10 +53,12 @@ const Header: React.FC<Props> = (props: Props) => {
           </Link>
         </div>
         <div>
-          <Link css={headerLink(location.pathname === "/login")} to="/login">
-            <FiUser style={headerLinkStyle} />
-            Login
-          </Link>
+          <div css={authLink}>
+            <Link css={headerLink(false)} to="/signin">
+              <FiUser style={headerLinkStyle} />
+              Sign In
+            </Link>
+          </div>
         </div>
       </div>
     </React.Fragment>
@@ -153,6 +155,10 @@ const headerLink = (selected?: boolean) => css`
   ${MediaQuery[1]} {
     flex-direction: row;
   }
+`;
+
+const authLink = css`
+  min-width: 10rem;
 `;
 
 export default Header;

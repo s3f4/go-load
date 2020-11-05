@@ -37,9 +37,9 @@ func (r *userRepository) Create(user *models.User) error {
 }
 
 func (r *userRepository) GetByEmailAndPassword(user *models.User) (*models.User, error) {
-	var dbUser *models.User
-	if err := r.DB().Where("email=? AND password=?", user.Email, user.Password).Take(dbUser).Error; err != nil {
+	var dbUser models.User
+	if err := r.DB().Where("email=? AND password=?", user.Email, user.Password).Take(&dbUser).Error; err != nil {
 		return nil, err
 	}
-	return dbUser, nil
+	return &dbUser, nil
 }

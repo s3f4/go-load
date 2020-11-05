@@ -6,13 +6,13 @@ export interface User {
 }
 
 export const signIn = async (user: User) => {
-  return await makeReq("/signin", "POST", user);
+  return await makeReq("/user/signin", "POST", user);
 };
 
 export const signOut = async () => {
-  return await makeReq("/signout");
+  return await makeReq("/user/signout");
 };
 
 export const refresh = async () => {
-  return await makeReq("/_rt");
+  return await makeReq("/user/_rt");
 };

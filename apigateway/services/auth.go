@@ -12,8 +12,8 @@ import (
 // AuthService service
 type AuthService interface {
 	CreateAuthCache(userID uint, at *models.AccessToken, rt *models.RefreshToken) error
-	GetAuthCache(details *models.Details) (uint, error)
-	DeleteAuthCache(at *models.AccessToken, rt *models.RefreshToken) error
+	GetAuthCache(UUID string) (uint, error)
+	DeleteAuthCache(atUUID, rtUUID string) error
 }
 
 type authService struct {
@@ -56,8 +56,8 @@ func (s *authService) CreateAuthCache(
 }
 
 // GetAuthCache gets auth object from cache
-func (s *authService) GetAuthCache(details *models.Details) (uint, error) {
-	userid, err := s.r.Get(details.UUID)
+func (s *authService) GetAuthCache(UUID string) (uint, error) {
+	userid, err := s.r.Get(UUID)
 	if err != nil {
 		return 0, err
 	}
@@ -66,13 +66,13 @@ func (s *authService) GetAuthCache(details *models.Details) (uint, error) {
 }
 
 // DeleteAuthCache clears auth objects on cache database.
-func (s *authService) DeleteAuthCache(at *models.AccessToken, rt *models.RefreshToken) error {
-	deletedAt, err := s.r.Del(at.UUID)
+func (s *authService) DeleteAuthCache(atUUID, rtUUID string) error {
+	deletedAt, err := s.r.Del(atUUID)
 	if err != nil {
 		return err
 	}
 
-	deletedRt, err := s.r.Del(rt.UUID)
+	deletedRt, err := s.r.Del(rtUUID)
 	if err != nil {
 		return err
 	}

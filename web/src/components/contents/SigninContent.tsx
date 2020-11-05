@@ -81,7 +81,7 @@ const SigninContent: React.FC = () => {
 
           <div css={buttons}>
             <Button
-              text="Login"
+              text="Sign In"
               onClick={onSignIn}
               disabled={!isValid["email"] || !isValid["password"]}
             />

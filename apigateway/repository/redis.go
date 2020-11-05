@@ -39,9 +39,8 @@ func ConnectRedis() *redis.Client {
 	}
 
 	client := redis.NewClient(&redis.Options{
-		Addr:     dsn,
-		Password: os.Getenv("REDIS_SERVER_PASSWORD"),
-		DB:       0,
+		Addr: dsn,
+		DB:   0,
 	})
 
 	if _, err := client.Ping(context.Background()).Result(); err != nil {

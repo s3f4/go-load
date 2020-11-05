@@ -135,30 +135,41 @@ func (h *authHandler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		deleted, delErr := h.as.DeleteAuthCache(refreshUUID)
-		if delErr != nil || deleted == 0 {
+		deleted, err := h.as.DeleteAuthCache(refreshUUID)
+		if err != nil || deleted == 0 {
 			R401(w, "unauthorized")
 			return
 		}
 
-		ts, createErr := h.ts.CreateToken(r, uint(userID))
-		if createErr != nil {
-			R403(w, createErr.Error())
+		at, rt, err := h.ts.CreateToken(r, &models.User{ID: uint(userID)})
+		if err != nil {
+			R403(w, err.Error())
 			return
 		}
 
-		saveErr := h.as.CreateAuthCache(uint(userID), ts)
-		if saveErr != nil {
-			R403(w, saveErr.Error())
+		if err := h.as.CreateAuthCache(uint(userID), at, rt); err != nil {
+			R403(w, err.Error())
 			return
 		}
+
 		tokens := map[string]string{
-			"access_token":  ts.AccessToken,
-			"refresh_token": ts.RefreshToken,
+			"access_token": at.Token,
 		}
 
+		cookie := http.Cookie{
+			HttpOnly: true,
+			Name:     "rt",
+			Value:    rt.Token,
+			Expires:  time.Unix(rt.Expire, 0),
+		}
+
+		if os.Getenv("APP_ENV") == "production" {
+			cookie.Domain = os.Getenv("DOMAIN")
+		}
+
+		http.SetCookie(w, &cookie)
 		R200(w, tokens)
 	} else {
-		R401(w, "refresh expired")
+		R401(w, "refresh token is expired")
 	}
 }

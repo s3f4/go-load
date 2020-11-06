@@ -4,7 +4,7 @@ import "time"
 
 // Response model
 type Response struct {
-	ID            uint      `json:"id" gorm:"primaryKey"`
+	ID            uint      `json:"id" gorm:"id;primaryKey;autoIncrement"`
 	RunTestID     uint      `json:"run_test_id" gorm:"run_test_id"`
 	TotalTime     int64     `json:"total_time" gorm:"total_time"`
 	FirstByte     time.Time `json:"first_byte" gorm:"first_byte"`

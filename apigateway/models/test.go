@@ -2,7 +2,7 @@ package models
 
 // Test config to make requests
 type Test struct {
-	ID                   uint            `json:"id" gorm:"primaryKey;column:id"`
+	ID                   uint            `json:"id" gorm:"id;primaryKey;autoIncrement"`
 	TestGroupID          uint            `json:"test_group_id"`
 	URL                  string          `json:"url" gorm:"url"`
 	Method               string          `json:"method" gorm:"method"`

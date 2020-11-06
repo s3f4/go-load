@@ -20,7 +20,11 @@ const Message: React.FC<Props> = (props: Props) => {
       </div>
     );
   };
-  return props.message.length ? messageContent() : <React.Fragment />;
+  return props.message && props.message.length > 0 ? (
+    messageContent()
+  ) : (
+    <React.Fragment />
+  );
 };
 
 const container = (type: string) => css`

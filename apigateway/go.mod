@@ -11,8 +11,10 @@ require (
 	github.com/docker/go-units v0.4.0 // indirect
 	github.com/go-chi/chi v4.1.2+incompatible
 	github.com/go-chi/cors v1.1.1
+	github.com/go-playground/validator/v10 v10.4.1
 	github.com/go-redis/redis/v8 v8.3.3
 	github.com/gorilla/securecookie v1.1.1
+	github.com/lib/pq v1.8.0 // indirect
 	github.com/myesui/uuid v1.0.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect

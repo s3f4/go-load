@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -39,8 +38,8 @@ var (
 
 func (h *authHandler) Signup(w http.ResponseWriter, r *http.Request) {
 	var user models.User
-	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
-		R400(w, "Bad Request")
+	if err := parse(r, &user); err != nil {
+		R400(w, fmt.Errorf("Bad Request"))
 		return
 	}
 
@@ -69,6 +68,7 @@ func (h *authHandler) Signup(w http.ResponseWriter, r *http.Request) {
 
 	if os.Getenv("APP_ENV") == "production" {
 		cookie.Domain = os.Getenv("DOMAIN")
+		cookie.Secure = true
 	}
 
 	http.SetCookie(w, &cookie)
@@ -77,25 +77,25 @@ func (h *authHandler) Signup(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *authHandler) Signin(w http.ResponseWriter, r *http.Request) {
-	var userRequest models.User
-	if err := json.NewDecoder(r.Body).Decode(&userRequest); err != nil {
-		R400(w, "Bad Request")
+	var user models.User
+	if err := parse(r, &user); err != nil {
+		R400(w, fmt.Errorf("Bad Request"))
 		return
 	}
 
-	user, err := h.ur.GetByEmailAndPassword(&userRequest)
+	dbUser, err := h.ur.GetByEmailAndPassword(&user)
 	if err != nil {
 		R404(w, "User Not Found")
 		return
 	}
 
-	at, rt, err := h.ts.CreateToken(r, user)
+	at, rt, err := h.ts.CreateToken(r, dbUser)
 	if err != nil {
 		R401(w, "unauthorized")
 		return
 	}
 
-	if err := h.as.CreateAuthCache(user.ID, at, rt); err != nil {
+	if err := h.as.CreateAuthCache(dbUser.ID, at, rt); err != nil {
 		R401(w, "unauthorized")
 		return
 	}
@@ -109,6 +109,7 @@ func (h *authHandler) Signin(w http.ResponseWriter, r *http.Request) {
 
 	if os.Getenv("APP_ENV") == "production" {
 		cookie.Domain = os.Getenv("DOMAIN")
+		cookie.Secure = true
 	}
 
 	http.SetCookie(w, &cookie)

@@ -46,7 +46,7 @@ const AuthContent: React.FC<Props> = (props: Props) => {
         console.log(response);
       })
       .catch((error) => {
-        setError(error);
+        setError(error.statusText);
         console.log(error);
       });
   };
@@ -57,7 +57,7 @@ const AuthContent: React.FC<Props> = (props: Props) => {
         console.log(response);
       })
       .catch((error) => {
-        setError(error);
+        setError(error.message);
         console.log(error);
       });
   };
@@ -121,7 +121,7 @@ const AuthContent: React.FC<Props> = (props: Props) => {
             onChange={handleChange}
             value={user.password}
             validate={{
-              minLength: 6,
+              minLength: 4,
               maxLength: 9,
               message: "Please provide a valid passowrd",
               validationFunction: validation("password"),

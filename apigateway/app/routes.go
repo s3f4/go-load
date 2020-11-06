@@ -29,7 +29,7 @@ func applyMiddlewares() {
 func routeMap(*chi.Mux) {
 	applyMiddlewares()
 
-	router.Route("/user", func(router chi.Router) {
+	router.Route("/auth", func(router chi.Router) {
 		router.Post("/signin", handlers.AuthHandler.Signin)
 		router.Post("/signup", handlers.AuthHandler.Signup)
 		router.Get("/signout", handlers.AuthHandler.Signout)

@@ -7,6 +7,7 @@ import { MediaQuery } from "../style";
 import { signIn, signUp } from "../../api/entity/user";
 import Message from "../basic/Message";
 import { Link } from "react-router-dom";
+import Cookies from "js-cookie";
 
 const initialUserState = {
   email: "",
@@ -43,10 +44,11 @@ const AuthContent: React.FC<Props> = (props: Props) => {
   const onSignIn = () => {
     signIn(user)
       .then((response) => {
+        console.log(Cookies.get());
         console.log(response);
       })
       .catch((error) => {
-        setError(error.statusText);
+        setError(error.message);
         console.log(error);
       });
   };

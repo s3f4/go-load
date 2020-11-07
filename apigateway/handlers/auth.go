@@ -59,7 +59,13 @@ func (h *authHandler) Signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cookie := http.Cookie{
+	atCookie := http.Cookie{
+		Name:    "at",
+		Value:   at.Token,
+		Expires: time.Unix(at.Expire, 0),
+	}
+
+	rtCookie := http.Cookie{
 		HttpOnly: true,
 		Name:     "rt",
 		Value:    rt.Token,
@@ -67,11 +73,12 @@ func (h *authHandler) Signup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if os.Getenv("APP_ENV") == "production" {
-		cookie.Domain = os.Getenv("DOMAIN")
-		cookie.Secure = true
+		rtCookie.Domain = os.Getenv("DOMAIN")
+		rtCookie.Secure = true
 	}
 
-	http.SetCookie(w, &cookie)
+	http.SetCookie(w, &rtCookie)
+	http.SetCookie(w, &atCookie)
 	R200(w, "Successfully signed up.")
 
 }
@@ -100,7 +107,13 @@ func (h *authHandler) Signin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cookie := http.Cookie{
+	atCookie := http.Cookie{
+		Name:    "at",
+		Value:   at.Token,
+		Expires: time.Unix(at.Expire, 0),
+	}
+
+	rtCookie := http.Cookie{
 		HttpOnly: true,
 		Name:     "rt",
 		Value:    rt.Token,
@@ -108,11 +121,12 @@ func (h *authHandler) Signin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if os.Getenv("APP_ENV") == "production" {
-		cookie.Domain = os.Getenv("DOMAIN")
-		cookie.Secure = true
+		rtCookie.Domain = os.Getenv("DOMAIN")
+		rtCookie.Secure = true
 	}
 
-	http.SetCookie(w, &cookie)
+	http.SetCookie(w, &rtCookie)
+	http.SetCookie(w, &atCookie)
 	R200(w, "Successfully signed in.")
 }
 

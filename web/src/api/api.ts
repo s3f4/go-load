@@ -15,6 +15,8 @@ export const makeReq = async (url: string, method?: any, body?: any) => {
   const request = {
     url: `${URL}${url}`,
     config: {
+      allowedOrigins: URL,
+      credentials: "same-origin" as RequestCredentials,
       method: method ? method : "GET",
       headers: {
         Accept: "application/json",

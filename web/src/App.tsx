@@ -7,13 +7,16 @@ import Swarm from "./pages/swarm";
 import Tests from "./pages/tests";
 import Auth from "./pages/auth";
 import NotFound from "./pages/not_found";
+import PrivateRoute from "./components/basic/PrivateRoute";
 
 const App: React.FC = () => {
   return (
     <Router>
       <Switch>
         <Route exact path="/instances">
-          <Instances />
+          <PrivateRoute>
+            <Instances />
+          </PrivateRoute>
         </Route>
         <Route path="/tests">
           <Tests />

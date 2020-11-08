@@ -50,12 +50,12 @@ func (h *authHandler) Signup(w http.ResponseWriter, r *http.Request) {
 
 	at, rt, err := h.ts.CreateToken(r, &user)
 	if err != nil {
-		R401(w, "unauthorized")
+		R401(w, fmt.Errorf("Unauthorized"))
 		return
 	}
 
 	if err := h.as.CreateAuthCache(user.ID, at, rt); err != nil {
-		R401(w, "unauthorized")
+		R401(w, fmt.Errorf("Unauthorized"))
 		return
 	}
 
@@ -98,12 +98,12 @@ func (h *authHandler) Signin(w http.ResponseWriter, r *http.Request) {
 
 	at, rt, err := h.ts.CreateToken(r, dbUser)
 	if err != nil {
-		R401(w, "unauthorized")
+		R401(w, fmt.Errorf("Unauthorized"))
 		return
 	}
 
 	if err := h.as.CreateAuthCache(dbUser.ID, at, rt); err != nil {
-		R401(w, "unauthorized")
+		R401(w, fmt.Errorf("Unauthorized"))
 		return
 	}
 
@@ -133,13 +133,13 @@ func (h *authHandler) Signin(w http.ResponseWriter, r *http.Request) {
 func (h *authHandler) Signout(w http.ResponseWriter, r *http.Request) {
 	access, err := h.ts.GetDetailsFromToken(r, "header")
 	if err != nil {
-		R401(w, "unauthorized")
+		R401(w, fmt.Errorf("Unauthorized"))
 		return
 	}
 
 	refresh, err := h.ts.GetDetailsFromToken(r, "cookie")
 	if err != nil {
-		R401(w, "unauthorized")
+		R401(w, fmt.Errorf("Unauthorized"))
 		return
 	}
 
@@ -188,7 +188,7 @@ func (h *authHandler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if err := h.as.DeleteAuthCache(refreshUUID, ""); err != nil {
-			R401(w, "unauthorized")
+			R401(w, fmt.Errorf("Unauthorized"))
 			return
 		}
 

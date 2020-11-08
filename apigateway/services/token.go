@@ -108,17 +108,18 @@ func (s *tokenService) VerifyToken(r *http.Request, from ...string) (*jwt.Token,
 		}
 	}
 
-	var err error
-	if token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method %v", token.Header["alg"])
 		}
 		return []byte(os.Getenv("AUTH_ACCESS_SECRET")), nil
-	}); err == nil {
-		return token, nil
+	})
+
+	if err != nil {
+		return nil, err
 	}
 
-	return nil, err
+	return token, nil
 }
 
 func (s *tokenService) IsTokenValid(r *http.Request) error {
@@ -126,9 +127,11 @@ func (s *tokenService) IsTokenValid(r *http.Request) error {
 	if err != nil {
 		return err
 	}
+
 	if _, ok := token.Claims.(jwt.Claims); !ok && !token.Valid {
 		return err
 	}
+
 	return nil
 }
 

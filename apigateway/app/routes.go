@@ -36,6 +36,9 @@ func routeMap(*chi.Mux) {
 	})
 
 	router.Group(func(router chi.Router) {
+		router.Use(middlewares.AuthCtx)
+		router.Post("/user/current_user", handlers.AuthHandler.CurrentUser)
+
 		router.Route("/instances", func(router chi.Router) {
 			router.Post("/", handlers.InstanceHandler.SpinUp)
 			router.Get("/", handlers.InstanceHandler.GetInstanceInfo)

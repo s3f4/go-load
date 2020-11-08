@@ -6,7 +6,7 @@ import Button from "../basic/Button";
 import { MediaQuery } from "../style";
 import { signIn, signUp } from "../../api/entity/user";
 import Message from "../basic/Message";
-import { Link } from "react-router-dom";
+import { Link, Router, useHistory } from "react-router-dom";
 import Cookies from "js-cookie";
 
 const initialUserState = {
@@ -25,8 +25,7 @@ const AuthContent: React.FC<Props> = (props: Props) => {
     email: true,
     password: true,
   });
-
-  console.log(props);
+  const history = useHistory();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUser({
@@ -44,7 +43,9 @@ const AuthContent: React.FC<Props> = (props: Props) => {
   const onSignIn = () => {
     signIn(user)
       .then((response) => {
-        console.log(Cookies.get());
+        setUser(response.data);
+        history.push("/instances");
+        console.log(Cookies.get("at"));
         console.log(response);
       })
       .catch((error) => {

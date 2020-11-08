@@ -15,7 +15,7 @@ func applyMiddlewares() {
 	router.Use(middleware.Recoverer)
 
 	cors := cors.New(cors.Options{
-		AllowedOrigins:   []string{"*"},
+		AllowedOrigins:   []string{"http://localhost:3000"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		ExposedHeaders:   []string{"Link"},
@@ -33,6 +33,7 @@ func routeMap(*chi.Mux) {
 		router.Post("/signin", handlers.AuthHandler.Signin)
 		router.Post("/signup", handlers.AuthHandler.Signup)
 		router.Get("/signout", handlers.AuthHandler.Signout)
+		router.Post("/_rt", handlers.AuthHandler.RefreshToken)
 	})
 
 	router.Group(func(router chi.Router) {

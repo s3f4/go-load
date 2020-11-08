@@ -12,6 +12,7 @@ import {
 } from "react-icons/fi";
 import { MediaQuery } from "../style";
 import { useLocation } from "react-router-dom";
+import { getUserObj, signOut } from "../../api/entity/user";
 
 const headerLinkStyle = {
   width: "2rem",
@@ -22,6 +23,18 @@ interface Props {}
 
 const Header: React.FC<Props> = (props: Props) => {
   const location = useLocation();
+  const user = getUserObj();
+
+  const onSignOut = (e: React.FormEvent) => {
+    e.preventDefault();
+    signOut()
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
   return (
     <React.Fragment>
       <div css={header}>
@@ -54,10 +67,21 @@ const Header: React.FC<Props> = (props: Props) => {
         </div>
         <div>
           <div css={authLink}>
-            <Link css={headerLink(false)} to="/auth/signin">
-              <FiUser style={headerLinkStyle} />
-              Sign In
-            </Link>
+            {user ? (
+              <Link
+                onClick={onSignOut}
+                css={headerLink(false)}
+                to="/auth/signin"
+              >
+                <FiUser style={headerLinkStyle} />
+                Sign Out
+              </Link>
+            ) : (
+              <Link css={headerLink(false)} to="/auth/signin">
+                <FiUser style={headerLinkStyle} />
+                Sign In
+              </Link>
+            )}
           </div>
         </div>
       </div>

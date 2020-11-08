@@ -6,6 +6,8 @@ type ctxKey int
 const (
 	// TestCtxKey for getting test with id
 	TestCtxKey ctxKey = iota
-	//RunTestCtxKey ...
+	// RunTestCtxKey ...
 	RunTestCtxKey
+	// UserIDKey ...
+	UserIDKey
 )

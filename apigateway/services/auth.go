@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 	"time"
 
@@ -67,9 +68,19 @@ func (s *authService) GetAuthCache(UUID string) (uint, error) {
 
 // DeleteAuthCache clears auth objects on cache database.
 func (s *authService) DeleteAuthCache(atUUID, rtUUID string) error {
-	deletedAt, err := s.r.Del(atUUID)
-	if err != nil {
-		return err
+
+	// If this call comes from refresh token
+	// there may not be an atUUID at cache server
+	if len(atUUID) > 0 {
+		deletedAt, err := s.r.Del(atUUID)
+		if err != nil {
+			return err
+		}
+
+		if deletedAt != 1 {
+			fmt.Printf("deleted access token: %#v", deletedAt)
+			return errors.New("something went wrong")
+		}
 	}
 
 	deletedRt, err := s.r.Del(rtUUID)
@@ -77,9 +88,6 @@ func (s *authService) DeleteAuthCache(atUUID, rtUUID string) error {
 		return err
 	}
 
-	if deletedAt != 1 || deletedRt != 1 {
-		return errors.New("something went wrong")
-	}
-
+	fmt.Printf("deleted refresh token: %#v", deletedRt)
 	return nil
 }

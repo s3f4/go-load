@@ -15,7 +15,7 @@ interface Props extends BasicProps {
 
 const TextInput: React.FC<Props> = (props: Props) => {
   React.useEffect(() => {
-    if (props.validate) validate(props.value, props.validate);
+    if (props.validate && props.value) validate(props.value, props.validate);
   }, [props.value]);
 
   return (

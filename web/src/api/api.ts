@@ -1,9 +1,12 @@
+import { getUser, getUserObj } from "./entity/user";
+
 const URL = `http://${process.env.REACT_APP_API_BASE_URL}`;
 
 export interface ServerResponse {
   status: boolean;
   data?: any;
   message?: string;
+  status_code: number;
 }
 
 // makeReq makes requests
@@ -16,13 +19,19 @@ export const makeReq = async (url: string, method?: any, body?: any) => {
     url: `${URL}${url}`,
     config: {
       allowedOrigins: URL,
-      credentials: "same-origin" as RequestCredentials,
+      credentials: "include" as RequestCredentials,
       method: method ? method : "GET",
       headers: {
         Accept: "application/json",
+        Authorization: "",
       },
     },
   };
+
+  const user = getUserObj();
+  if (user) {
+    request.config.headers.Authorization = `Bearer ${user.token}`;
+  }
 
   if (body && request.config.method !== "GET") {
     (request.config as any).body = JSON.stringify(body);
@@ -33,13 +42,20 @@ export const makeReq = async (url: string, method?: any, body?: any) => {
       response
         .json()
         .then((json: ServerResponse) => {
+          json.status_code = response.status;
           if (response.ok) {
             resolve(json);
           } else {
             reject(json);
           }
         })
-        .catch((error) => reject({ status: response.status, message: error }));
+        .catch((error) =>
+          reject({
+            status: response.status,
+            message: error,
+            status_code: response.status,
+          }),
+        );
     });
   });
 };

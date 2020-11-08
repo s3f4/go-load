@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/s3f4/go-load/apigateway/middlewares"
 	"github.com/s3f4/go-load/apigateway/models"
 	"github.com/s3f4/go-load/apigateway/repository"
 	"github.com/s3f4/go-load/apigateway/services"
@@ -19,6 +20,7 @@ type authHandlerInterface interface {
 	Signup(w http.ResponseWriter, r *http.Request)
 	Signout(w http.ResponseWriter, r *http.Request)
 	RefreshToken(w http.ResponseWriter, r *http.Request)
+	CurrentUser(w http.ResponseWriter, r *http.Request)
 }
 
 type authHandler struct {
@@ -107,12 +109,6 @@ func (h *authHandler) Signin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	atCookie := http.Cookie{
-		Name:    "at",
-		Value:   at.Token,
-		Expires: time.Unix(at.Expire, 0),
-	}
-
 	rtCookie := http.Cookie{
 		HttpOnly: true,
 		Name:     "rt",
@@ -124,10 +120,11 @@ func (h *authHandler) Signin(w http.ResponseWriter, r *http.Request) {
 		rtCookie.Domain = os.Getenv("DOMAIN")
 		rtCookie.Secure = true
 	}
-
 	http.SetCookie(w, &rtCookie)
-	http.SetCookie(w, &atCookie)
-	R200(w, "Successfully signed in.")
+	R200(w, map[string]string{
+		"token": at.Token,
+		"email": dbUser.Email,
+	})
 }
 
 func (h *authHandler) Signout(w http.ResponseWriter, r *http.Request) {
@@ -154,6 +151,7 @@ func (h *authHandler) Signout(w http.ResponseWriter, r *http.Request) {
 func (h *authHandler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 	// Read refresh token
 	refreshToken := h.ts.TokenFromCookie(r)
+	fmt.Println(refreshToken)
 
 	//verify the token
 	token, err := jwt.Parse(refreshToken, func(token *jwt.Token) (interface{}, error) {
@@ -188,6 +186,7 @@ func (h *authHandler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if err := h.as.DeleteAuthCache(refreshUUID, ""); err != nil {
+			fmt.Println(err)
 			R401(w, fmt.Errorf("Unauthorized"))
 			return
 		}
@@ -199,12 +198,13 @@ func (h *authHandler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if err := h.as.CreateAuthCache(uint(userID), at, rt); err != nil {
+			fmt.Println(err)
 			R403(w, err.Error())
 			return
 		}
 
 		tokens := map[string]string{
-			"access_token": at.Token,
+			"token": at.Token,
 		}
 
 		cookie := http.Cookie{
@@ -223,4 +223,14 @@ func (h *authHandler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 	} else {
 		R401(w, "refresh token is expired")
 	}
+}
+
+func (h *authHandler) CurrentUser(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	userID, ok := ctx.Value(middlewares.UserIDKey).(uint)
+	if !ok {
+		R422(w, "unprocessable entity")
+		return
+	}
+	R200(w, userID)
 }

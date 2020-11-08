@@ -43,14 +43,11 @@ const AuthContent: React.FC<Props> = (props: Props) => {
   const onSignIn = () => {
     signIn(user)
       .then((response) => {
-        setUser(response.data);
-        history.push("/instances");
         console.log(Cookies.get("at"));
-        console.log(response);
+        history.push("/instances");
       })
       .catch((error) => {
         setError(error.message);
-        console.log(error);
       });
   };
 

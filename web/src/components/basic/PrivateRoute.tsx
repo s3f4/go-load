@@ -1,6 +1,5 @@
 import React, { ReactNode } from "react";
 import { Route, Redirect } from "react-router-dom";
-import {  getUser } from "../../api/entity/user";
 
 export interface Props {
   children: ReactNode;
@@ -10,7 +9,7 @@ const PrivateRoute: React.FC<Props> = ({ children, ...rest }: Props) => (
   <Route
     {...rest}
     render={(props) => {
-      const user = getUser();
+      const user = "";
 
       if (!user) {
         return (

@@ -1,5 +1,3 @@
-import { getUser, getUserObj } from "./entity/user";
-
 const URL = `http://${process.env.REACT_APP_API_BASE_URL}`;
 
 export interface ServerResponse {
@@ -28,9 +26,9 @@ export const makeReq = async (url: string, method?: any, body?: any) => {
     },
   };
 
-  const user = getUserObj();
-  if (user) {
-    request.config.headers.Authorization = `Bearer ${user.token}`;
+  const token = "bearer";
+  if (token) {
+    request.config.headers.Authorization = `Bearer ${token}`;
   }
 
   if (body && request.config.method !== "GET") {

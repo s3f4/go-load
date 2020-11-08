@@ -21,6 +21,7 @@ type authHandlerInterface interface {
 	Signout(w http.ResponseWriter, r *http.Request)
 	RefreshToken(w http.ResponseWriter, r *http.Request)
 	CurrentUser(w http.ResponseWriter, r *http.Request)
+	ResponseWithCookie(http.ResponseWriter, *models.AccessToken, *models.RefreshToken)
 }
 
 type authHandler struct {
@@ -61,28 +62,7 @@ func (h *authHandler) Signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	atCookie := http.Cookie{
-		Name:    "at",
-		Value:   at.Token,
-		Expires: time.Unix(at.Expire, 0),
-	}
-
-	rtCookie := http.Cookie{
-		HttpOnly: true,
-		Name:     "rt",
-		Value:    rt.Token,
-		Expires:  time.Unix(rt.Expire, 0),
-	}
-
-	if os.Getenv("APP_ENV") == "production" {
-		rtCookie.Domain = os.Getenv("DOMAIN")
-		rtCookie.Secure = true
-	}
-
-	http.SetCookie(w, &rtCookie)
-	http.SetCookie(w, &atCookie)
-	R200(w, "Successfully signed up.")
-
+	h.ResponseWithCookie(w, at, rt)
 }
 
 func (h *authHandler) Signin(w http.ResponseWriter, r *http.Request) {
@@ -109,32 +89,19 @@ func (h *authHandler) Signin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rtCookie := http.Cookie{
-		HttpOnly: true,
-		Name:     "rt",
-		Value:    rt.Token,
-		Expires:  time.Unix(rt.Expire, 0),
-	}
-
-	if os.Getenv("APP_ENV") == "production" {
-		rtCookie.Domain = os.Getenv("DOMAIN")
-		rtCookie.Secure = true
-	}
-	http.SetCookie(w, &rtCookie)
-	R200(w, map[string]string{
-		"token": at.Token,
-		"email": dbUser.Email,
-	})
+	h.ResponseWithCookie(w, at, rt)
 }
 
 func (h *authHandler) Signout(w http.ResponseWriter, r *http.Request) {
 	access, err := h.ts.GetDetailsFromToken(r, "header")
+
 	if err != nil {
 		R401(w, fmt.Errorf("Unauthorized"))
 		return
 	}
 
 	refresh, err := h.ts.GetDetailsFromToken(r, "cookie")
+
 	if err != nil {
 		R401(w, fmt.Errorf("Unauthorized"))
 		return
@@ -203,23 +170,7 @@ func (h *authHandler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		tokens := map[string]string{
-			"token": at.Token,
-		}
-
-		cookie := http.Cookie{
-			HttpOnly: true,
-			Name:     "rt",
-			Value:    rt.Token,
-			Expires:  time.Unix(rt.Expire, 0),
-		}
-
-		if os.Getenv("APP_ENV") == "production" {
-			cookie.Domain = os.Getenv("DOMAIN")
-		}
-
-		http.SetCookie(w, &cookie)
-		R200(w, tokens)
+		h.ResponseWithCookie(w, at, rt)
 	} else {
 		R401(w, "refresh token is expired")
 	}
@@ -233,4 +184,24 @@ func (h *authHandler) CurrentUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	R200(w, userID)
+}
+
+func (h *authHandler) ResponseWithCookie(w http.ResponseWriter, at *models.AccessToken, rt *models.RefreshToken) {
+	rtCookie := http.Cookie{
+		HttpOnly: true,
+		Name:     "rt",
+		Value:    rt.Token,
+		Expires:  time.Unix(rt.Expire, 0),
+	}
+
+	if os.Getenv("APP_ENV") == "production" {
+		rtCookie.Domain = os.Getenv("DOMAIN")
+		rtCookie.Secure = true
+	}
+
+	http.SetCookie(w, &rtCookie)
+
+	R200(w, map[string]string{
+		"token": at.Token,
+	})
 }

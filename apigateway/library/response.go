@@ -3,8 +3,6 @@ package library
 import (
 	"encoding/json"
 	"net/http"
-
-	"github.com/gorilla/csrf"
 )
 
 // Response is used to create an http response
@@ -16,7 +14,6 @@ type Response struct {
 
 //SendResponse returns json response
 func SendResponse(w http.ResponseWriter, r *http.Request, statusCode int, message interface{}) {
-	w.Header().Set("X-CSRF-Token", csrf.Token(r))
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
 

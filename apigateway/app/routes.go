@@ -1,6 +1,7 @@
 package app
 
 import (
+	"encoding/json"
 	"net/http"
 	"os"
 
@@ -22,7 +23,17 @@ func applyMiddlewares() {
 		[]byte(os.Getenv("CSRF_KEY")),
 		csrf.TrustedOrigins([]string{"localhost:3000", "localhost:3001"}),
 		csrf.Secure(secure),
-		csrf.SameSite(csrf.SameSiteNoneMode),
+		csrf.ErrorHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusForbidden)
+			resp, _ := json.Marshal(map[string]interface{}{
+				"status":  false,
+				"message": csrf.FailureReason(r).Error(),
+				"headers": r.Header,
+			})
+
+			w.Write(resp)
+		})),
 	)
 
 	router.Use(middleware.RequestID)
@@ -50,7 +61,7 @@ func routeMap(*chi.Mux) {
 		w.Header().Set("X-CSRF-Token", csrf.Token(r))
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(200)
-		w.Write([]byte(`{"message":"hello"}`))
+		w.Write([]byte(csrf.TemplateField(r)))
 	})
 
 	router.Route("/auth", func(router chi.Router) {

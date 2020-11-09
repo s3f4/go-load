@@ -23,7 +23,6 @@ export const makeReq = async (url: string, method?: any, body?: any) => {
       headers: {
         Accept: "application/json",
         Authorization: "",
-        "X-CSRF-Token": csrf ? csrf : "",
       },
     },
   };
@@ -37,15 +36,19 @@ export const makeReq = async (url: string, method?: any, body?: any) => {
     (request.config as any).body = JSON.stringify(body);
   }
 
+  if (["POST", "PUT", "DELETE", "PATCH"].includes(request.config.method)) {
+    request.config.headers["X-CSRF-Token"] = csrf ?? "";
+    console.log(request.url);
+    console.log(request.config.headers);
+  }
+
   return await fetch(request.url, request.config).then((response: Response) => {
     return new Promise<ServerResponse>((resolve, reject) => {
-      for (var pair of response.headers.entries()) {
-        console.log(pair);
+      if (request.config.method === "GET") {
+        csrf = response.headers.get("X-CSRF-Token");
+        console.log(request.url, csrf);
       }
 
-      csrf = response.headers.get("X-CSRF-Token");
-
-      console.log(csrf);
       response
         .json()
         .then((json: ServerResponse) => {

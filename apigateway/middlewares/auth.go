@@ -4,8 +4,9 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/gorilla/csrf"
+	"github.com/s3f4/go-load/apigateway/library"
 	"github.com/s3f4/go-load/apigateway/services"
-	. "github.com/s3f4/mu"
 )
 
 // AuthCtx gets test with given id
@@ -14,20 +15,24 @@ func AuthCtx(next http.Handler) http.Handler {
 		ts := services.NewTokenService()
 		as := services.NewAuthService()
 
+		if r.Method == "GET" {
+			w.Header().Set("X-CSRF-Token", csrf.Token(r))
+		}
+
 		if err := ts.IsTokenValid(r); err != nil {
-			R401(w, err)
+			library.R401(w, r, err)
 			return
 		}
 
 		access, err := ts.GetDetailsFromToken(r, "header")
 		if err != nil {
-			R401(w, err)
+			library.R401(w, r, err)
 			return
 		}
 
 		userID, err := as.GetAuthCache(access.UUID)
 		if err != nil {
-			R401(w, err)
+			library.R401(w, r, err)
 			return
 		}
 

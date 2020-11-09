@@ -116,6 +116,7 @@ func (h *authHandler) Signout(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *authHandler) RefreshToken(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(r.Header)
 	// Read refresh token
 	refreshToken := h.ts.TokenFromCookie(r)
 	fmt.Println(refreshToken)

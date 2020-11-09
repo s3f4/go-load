@@ -23,7 +23,7 @@ interface Props {}
 
 const Header: React.FC<Props> = (props: Props) => {
   const location = useLocation();
-  const user = "user";
+  const user = "";
 
   const onSignOut = (e: React.FormEvent) => {
     e.preventDefault();

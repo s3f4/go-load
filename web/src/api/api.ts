@@ -1,4 +1,5 @@
 const URL = `http://${process.env.REACT_APP_API_BASE_URL}`;
+export let csrf: string | null = "";
 
 export interface ServerResponse {
   status: boolean;
@@ -22,6 +23,7 @@ export const makeReq = async (url: string, method?: any, body?: any) => {
       headers: {
         Accept: "application/json",
         Authorization: "",
+        "X-CSRF-Token": csrf ? csrf : "",
       },
     },
   };
@@ -37,6 +39,13 @@ export const makeReq = async (url: string, method?: any, body?: any) => {
 
   return await fetch(request.url, request.config).then((response: Response) => {
     return new Promise<ServerResponse>((resolve, reject) => {
+      for (var pair of response.headers.entries()) {
+        console.log(pair);
+      }
+
+      csrf = response.headers.get("X-CSRF-Token");
+
+      console.log(csrf);
       response
         .json()
         .then((json: ServerResponse) => {

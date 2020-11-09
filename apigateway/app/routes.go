@@ -1,6 +1,7 @@
 package app
 
 import (
+	"net/http"
 	"os"
 
 	"github.com/go-chi/chi"
@@ -12,28 +13,45 @@ import (
 )
 
 func applyMiddlewares() {
-	csrfMiddleware := csrf.Protect([]byte(os.Getenv("CSRF_KEY")))
+	secure := true
+	if os.Getenv("APP_ENV") == "development" {
+		secure = false
+	}
 
-	router.Use(csrfMiddleware)
+	csrfMiddleware := csrf.Protect(
+		[]byte(os.Getenv("CSRF_KEY")),
+		csrf.TrustedOrigins([]string{"localhost:3000", "localhost:3001"}),
+		csrf.Secure(secure),
+		csrf.SameSite(csrf.SameSiteNoneMode),
+	)
+
 	router.Use(middleware.RequestID)
 	router.Use(middleware.RealIP)
 	//router.Use(middleware.Logger)
 	router.Use(middleware.Recoverer)
 
 	cors := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3000"},
+		AllowedOrigins:   []string{"http://localhost:3000", "http://localhost:3001"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
-		ExposedHeaders:   []string{"Link"},
+		ExposedHeaders:   []string{"Link", "X-CSRF-Token"},
 		AllowCredentials: true,
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	})
 	router.Use(cors.Handler)
+	router.Use(csrfMiddleware)
 }
 
 // routeMap initializes routes.
 func routeMap(*chi.Mux) {
 	applyMiddlewares()
+
+	router.Get("/csrf", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("X-CSRF-Token", csrf.Token(r))
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(200)
+		w.Write([]byte(`{"message":"hello"}`))
+	})
 
 	router.Route("/auth", func(router chi.Router) {
 		router.Post("/signin", handlers.AuthHandler.Signin)
@@ -44,7 +62,7 @@ func routeMap(*chi.Mux) {
 
 	router.Group(func(router chi.Router) {
 		router.Use(middlewares.AuthCtx)
-		router.Post("/user/current_user", handlers.AuthHandler.CurrentUser)
+		router.Get("/user/current_user", handlers.AuthHandler.CurrentUser)
 
 		router.Route("/instances", func(router chi.Router) {
 			router.Post("/", handlers.InstanceHandler.SpinUp)

@@ -19,7 +19,7 @@ export const signOut = async () => {
 };
 
 export const currentUser = async () => {
-  return await makeReq("/user/current_user", "POST");
+  return await makeReq("/user/current_user");
 };
 
 export const refresh = async () => {

@@ -9,6 +9,7 @@ import Auth from "./pages/auth";
 import NotFound from "./pages/not_found";
 import PrivateRoute from "./components/basic/PrivateRoute";
 import { currentUser, refresh, User } from "./api/entity/user";
+import { makeReq } from "./api/api";
 
 const App: React.FC = () => {
   const [user, setUser] = React.useState<User>();
@@ -30,8 +31,6 @@ const App: React.FC = () => {
         }
       });
   }, []);
-
-  console.log(user);
 
   return (
     <Router>

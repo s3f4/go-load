@@ -39,6 +39,7 @@ services:
       - AUTH_ACCESS_SECRET=abc13253
       - AUTH_REFRESH_SECRET=abc13253
       - REDIS_SERVER_PASSWORD=redisPass123
+      - CSRF_KEY=abc13253
 
   eventhandler:
     image: eventhandler

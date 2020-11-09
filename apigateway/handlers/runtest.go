@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/s3f4/go-load/apigateway/library"
 	"github.com/s3f4/go-load/apigateway/middlewares"
 	"github.com/s3f4/go-load/apigateway/models"
 	"github.com/s3f4/go-load/apigateway/services"
-	. "github.com/s3f4/mu"
 )
 
 type runTestHandlerInterface interface {
@@ -33,48 +33,48 @@ func (h *runTestHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var runTest models.RunTest
 	if err := json.NewDecoder(r.Body).Decode(&runTest); err != nil {
 		fmt.Println(err)
-		R400(w, "Bad Request")
+		library.R400(w, r, "Bad Request")
 		return
 	}
 
 	err := h.service.Create(&runTest)
 	if err != nil {
 		fmt.Println(err)
-		R500(w, err)
+		library.R500(w, r, err)
 		return
 	}
-	R200(w, runTest)
+	library.R200(w, r, runTest)
 }
 
 func (h *runTestHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	var runTest models.RunTest
 	if err := json.NewDecoder(r.Body).Decode(&runTest); err != nil {
-		R400(w, "Bad Request")
+		library.R400(w, r, "Bad Request")
 		return
 	}
 
 	err := h.service.Delete(&runTest)
 	if err != nil {
-		R500(w, err)
+		library.R500(w, r, err)
 		return
 	}
-	R200(w, runTest)
+	library.R200(w, r, runTest)
 }
 
 func (h *runTestHandler) Get(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	runTest, ok := ctx.Value(middlewares.RunTestCtxKey).(*models.RunTest)
 	if !ok {
-		R422(w, "unprocessable entity")
+		library.R422(w, r, "unprocessable entity")
 		return
 	}
-	R200(w, runTest)
+	library.R200(w, r, runTest)
 }
 func (h *runTestHandler) List(w http.ResponseWriter, r *http.Request) {
 	runTest, err := h.service.List()
 	if err != nil {
-		R500(w, err)
+		library.R500(w, r, err)
 		return
 	}
-	R200(w, runTest)
+	library.R200(w, r, runTest)
 }

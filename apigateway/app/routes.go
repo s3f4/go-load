@@ -1,14 +1,20 @@
 package app
 
 import (
+	"os"
+
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
+	"github.com/gorilla/csrf"
 	"github.com/s3f4/go-load/apigateway/handlers"
 	"github.com/s3f4/go-load/apigateway/middlewares"
 )
 
 func applyMiddlewares() {
+	csrfMiddleware := csrf.Protect([]byte(os.Getenv("CSRF_KEY")))
+
+	router.Use(csrfMiddleware)
 	router.Use(middleware.RequestID)
 	router.Use(middleware.RealIP)
 	//router.Use(middleware.Logger)

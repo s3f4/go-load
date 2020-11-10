@@ -38,15 +38,12 @@ export const makeReq = async (url: string, method?: any, body?: any) => {
 
   if (["POST", "PUT", "DELETE", "PATCH"].includes(request.config.method)) {
     request.config.headers["X-CSRF-Token"] = csrf ?? "";
-    console.log(request.url);
-    console.log(request.config.headers);
   }
 
   return await fetch(request.url, request.config).then((response: Response) => {
     return new Promise<ServerResponse>((resolve, reject) => {
       if (request.config.method === "GET") {
         csrf = response.headers.get("X-CSRF-Token");
-        console.log(request.url, csrf);
       }
 
       response

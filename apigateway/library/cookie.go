@@ -12,22 +12,23 @@ var blockKey = []byte(os.Getenv("COOKIE_BLOCK_KEY"))
 
 var s = securecookie.New(hashKey, blockKey)
 
-// SetCookieHandler ...
-func SetCookieHandler(w http.ResponseWriter, key string, values map[string]string) {
-	if encoded, err := s.Encode(key, values); err == nil {
+// SetCookie ...
+func SetCookie(w http.ResponseWriter, c *http.Cookie, values map[string]string) {
+	if encoded, err := s.Encode(c.Name, values); err == nil {
 		cookie := &http.Cookie{
-			Name:     key,
+			Name:     c.Name,
 			Value:    encoded,
 			Path:     "/",
-			Secure:   true,
-			HttpOnly: true,
+			Secure:   c.Secure,
+			HttpOnly: c.HttpOnly,
+			Expires:  c.Expires,
 		}
 		http.SetCookie(w, cookie)
 	}
 }
 
-// ReadCookieHandler ...
-func ReadCookieHandler(r *http.Request, key string) map[string]string {
+// GetCookie ...
+func GetCookie(r *http.Request, key string) map[string]string {
 	if cookie, err := r.Cookie(key); err == nil {
 		value := make(map[string]string)
 		if err = s.Decode(key, cookie.Value, &value); err == nil {

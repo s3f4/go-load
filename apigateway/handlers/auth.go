@@ -188,19 +188,28 @@ func (h *authHandler) CurrentUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *authHandler) ResponseWithCookie(w http.ResponseWriter, r *http.Request, at *models.AccessToken, rt *models.RefreshToken) {
+
+	atCookie := http.Cookie{
+		HttpOnly: true,
+		Name:     "at",
+		Expires:  time.Unix(rt.Expire, 0),
+	}
+
 	rtCookie := http.Cookie{
 		HttpOnly: true,
 		Name:     "rt",
-		Value:    rt.Token,
 		Expires:  time.Unix(rt.Expire, 0),
 	}
 
 	if os.Getenv("APP_ENV") == "production" {
 		rtCookie.Domain = os.Getenv("DOMAIN")
 		rtCookie.Secure = true
+		atCookie.Domain = os.Getenv("DOMAIN")
+		atCookie.Secure = true
 	}
 
-	http.SetCookie(w, &rtCookie)
+	library.SetCookie(w, &atCookie, map[string]string{"at": at.Token})
+	library.SetCookie(w, &rtCookie, map[string]string{"rt": rt.Token})
 
 	library.R200(w, r, map[string]string{
 		"token": at.Token,

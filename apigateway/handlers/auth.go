@@ -13,6 +13,7 @@ import (
 	"github.com/s3f4/go-load/apigateway/models"
 	"github.com/s3f4/go-load/apigateway/repository"
 	"github.com/s3f4/go-load/apigateway/services"
+	"github.com/s3f4/mu/log"
 )
 
 type authHandlerInterface interface {
@@ -68,23 +69,27 @@ func (h *authHandler) Signup(w http.ResponseWriter, r *http.Request) {
 func (h *authHandler) Signin(w http.ResponseWriter, r *http.Request) {
 	var user models.User
 	if err := parse(r, &user); err != nil {
+		log.Debug(err)
 		library.R400(w, r, fmt.Errorf("Bad Request"))
 		return
 	}
 
 	dbUser, err := h.ur.GetByEmailAndPassword(&user)
 	if err != nil {
+		log.Debug(err)
 		library.R404(w, r, "User Not Found")
 		return
 	}
 
 	at, rt, err := h.ts.CreateToken(r, dbUser)
 	if err != nil {
+		log.Debug(err)
 		library.R401(w, r, fmt.Errorf("Unauthorized"))
 		return
 	}
 
 	if err := h.as.CreateAuthCache(dbUser.ID, at, rt); err != nil {
+		log.Debug(err)
 		library.R401(w, r, fmt.Errorf("Unauthorized"))
 		return
 	}
@@ -93,21 +98,24 @@ func (h *authHandler) Signin(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *authHandler) Signout(w http.ResponseWriter, r *http.Request) {
-	access, err := h.ts.GetDetailsFromToken(r, "header")
+	access, err := h.ts.GetDetailsFromToken(r, "at")
 
 	if err != nil {
+		log.Debug(err)
 		library.R401(w, r, fmt.Errorf("Unauthorized"))
 		return
 	}
 
-	refresh, err := h.ts.GetDetailsFromToken(r, "cookie")
+	refresh, err := h.ts.GetDetailsFromToken(r, "rt")
 
 	if err != nil {
+		log.Debug(err)
 		library.R401(w, r, fmt.Errorf("Unauthorized"))
 		return
 	}
 
 	if err = h.as.DeleteAuthCache(access.UUID, refresh.UUID); err != nil {
+		log.Debug(err)
 		library.R401(w, r, err.Error())
 		return
 	}
@@ -128,7 +136,7 @@ func (h *authHandler) Signout(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *authHandler) RefreshToken(w http.ResponseWriter, r *http.Request) {
-	refreshToken := h.ts.TokenFromCookie(r)
+	refreshToken := h.ts.TokenFromCookie(r, "rt")
 
 	token, err := jwt.Parse(refreshToken, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -200,12 +208,11 @@ func (h *authHandler) CurrentUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *authHandler) ResponseWithCookie(w http.ResponseWriter, r *http.Request, user *models.User, at *models.AccessToken, rt *models.RefreshToken) {
-
 	atCookie := http.Cookie{
 		HttpOnly: true,
 		Name:     "at",
 		Path:     "/",
-		Expires:  time.Unix(rt.Expire, 0),
+		Expires:  time.Unix(at.Expire, 0),
 	}
 
 	rtCookie := http.Cookie{
@@ -222,8 +229,13 @@ func (h *authHandler) ResponseWithCookie(w http.ResponseWriter, r *http.Request,
 		atCookie.Secure = true
 	}
 
-	library.SetCookie(w, &atCookie, map[string]string{"at": at.Token})
-	library.SetCookie(w, &rtCookie, map[string]string{"rt": rt.Token})
-	
+	if err := library.SetCookie(w, &atCookie, map[string]string{"at": at.Token}); err != nil {
+		log.Debug(err)
+	}
+
+	if err := library.SetCookie(w, &rtCookie, map[string]string{"rt": rt.Token}); err != nil {
+		log.Debug(err)
+	}
+
 	library.R200(w, r, user)
 }

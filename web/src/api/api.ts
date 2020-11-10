@@ -1,3 +1,5 @@
+import { refresh } from "./entity/user";
+
 const URL = `http://${process.env.REACT_APP_API_BASE_URL}`;
 export let csrf: string | null = "";
 

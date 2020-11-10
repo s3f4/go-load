@@ -8,8 +8,13 @@ import Tests from "./pages/tests";
 import Auth from "./pages/auth";
 import NotFound from "./pages/not_found";
 import PrivateRoute from "./components/basic/PrivateRoute";
+import { currentUser } from "./api/entity/user";
 
 const App: React.FC = () => {
+  currentUser()
+    .then((response) => console.log(response.data))
+    .catch((error) => console.log(error));
+  
   return (
     <Router>
       <Switch>

@@ -42,7 +42,7 @@ const AuthContent: React.FC<Props> = (props: Props) => {
 
   const onSignIn = () => {
     signIn(user)
-      .then((response) => {
+    .then((response) => {
         setUserStorage(response.data);
         history.push("/instances");
       })

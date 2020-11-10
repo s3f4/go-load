@@ -2,48 +2,59 @@ package library
 
 import (
 	"net/http"
-	"os"
 
 	"github.com/gorilla/securecookie"
+	"github.com/s3f4/mu/log"
 )
 
-var hashKey = []byte(os.Getenv("COOKIE_HASH_KEY"))
-var blockKey = []byte(os.Getenv("COOKIE_BLOCK_KEY"))
+var hashKey, _ = random(32)
+var blockKey, _ = random(32)
 
 var s = securecookie.New(hashKey, blockKey)
 
 // SetCookie ...
-func SetCookie(w http.ResponseWriter, c *http.Cookie, values map[string]string) {
-	if encoded, err := s.Encode(c.Name, values); err == nil {
-		cookie := &http.Cookie{
-			Name:     c.Name,
-			Value:    encoded,
-			Secure:   c.Secure,
-			HttpOnly: c.HttpOnly,
-			Expires:  c.Expires,
-		}
-
-		if c.Path != "" {
-			cookie.Path = c.Path
-		} else {
-			cookie.Path = "/"
-		}
-
-		if c.Domain != "" {
-			cookie.Domain = c.Domain
-		}
-
-		http.SetCookie(w, cookie)
+func SetCookie(w http.ResponseWriter, c *http.Cookie, values map[string]string) error {
+	encoded, err := s.Encode(c.Name, values)
+	if err != nil {
+		return err
 	}
+
+	cookie := &http.Cookie{
+		Name:     c.Name,
+		Value:    encoded,
+		Secure:   c.Secure,
+		HttpOnly: c.HttpOnly,
+		Expires:  c.Expires,
+	}
+
+	if c.Path != "" {
+		cookie.Path = c.Path
+	} else {
+		cookie.Path = "/"
+	}
+
+	if c.Domain != "" {
+		cookie.Domain = c.Domain
+	}
+
+	http.SetCookie(w, cookie)
+	return nil
+
 }
 
 // GetCookie ...
-func GetCookie(r *http.Request, key string) map[string]string {
-	if cookie, err := r.Cookie(key); err == nil {
-		value := make(map[string]string)
-		if err = s.Decode(key, cookie.Value, &value); err == nil {
-			return value
-		}
+func GetCookie(r *http.Request, key string) (map[string]string, error) {
+	cookie, err := r.Cookie(key)
+	if err != nil {
+		log.Debug("GetCookie value error:", err)
+		return nil, err
 	}
-	return nil
+
+	value := make(map[string]string)
+	if err = s.Decode(key, cookie.Value, &value); err != nil {
+		log.Debug("GetCookie s.Decode error:", err)
+		return nil, err
+	}
+
+	return value, nil
 }

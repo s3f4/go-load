@@ -16,6 +16,8 @@ type RefreshToken struct {
 
 // Details model
 type Details struct {
-	UUID   string
-	UserID uint
+	UUID       string
+	UserID     uint
+	RemoteAddr string
+	UserAgent  string
 }

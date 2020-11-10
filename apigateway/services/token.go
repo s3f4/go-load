@@ -11,6 +11,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/s3f4/go-load/apigateway/library"
 	"github.com/s3f4/go-load/apigateway/models"
+	"github.com/s3f4/mu/log"
 	"github.com/twinj/uuid"
 )
 
@@ -19,8 +20,7 @@ type TokenService interface {
 	CreateToken(r *http.Request, user *models.User) (*models.AccessToken, *models.RefreshToken, error)
 	TokenFromCookie(r *http.Request, key string) string
 	TokenFromHeader(r *http.Request) string
-	VerifyToken(r *http.Request, from ...string) (*jwt.Token, error)
-	IsTokenValid(r *http.Request) error
+	VerifyToken(r *http.Request, key string) (*jwt.Token, error)
 	GetDetailsFromToken(r *http.Request, from string) (*models.Details, error)
 }
 
@@ -76,7 +76,15 @@ func (s *tokenService) CreateToken(r *http.Request, user *models.User) (*models.
 
 // TokenFromCookie ...
 func (s *tokenService) TokenFromCookie(r *http.Request, key string) string {
-	return library.GetCookie(r, key)["rt"]
+	vals, err := library.GetCookie(r, key)
+	if err != nil {
+		fmt.Println(err)
+		fmt.Println("cookie not found")
+		log.Debug(err)
+		return ""
+	}
+
+	return vals[key]
 }
 
 // TokenFromHeader ...
@@ -89,23 +97,8 @@ func (s *tokenService) TokenFromHeader(r *http.Request) string {
 }
 
 // VerifyToken
-func (s *tokenService) VerifyToken(r *http.Request, from ...string) (*jwt.Token, error) {
-	var tokenStr string
-
-	if from == nil {
-		tokenStr = s.TokenFromHeader(r)
-	} else {
-		for _, t := range from {
-			switch t {
-			case "cookie":
-				tokenStr = s.TokenFromCookie(r, "rt")
-			case "header":
-				tokenStr = s.TokenFromHeader(r)
-			}
-		}
-	}
-
-	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
+func (s *tokenService) VerifyToken(r *http.Request, key string) (*jwt.Token, error) {
+	token, err := jwt.Parse(s.TokenFromCookie(r, key), func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method %v", token.Header["alg"])
 		}
@@ -116,24 +109,15 @@ func (s *tokenService) VerifyToken(r *http.Request, from ...string) (*jwt.Token,
 		return nil, err
 	}
 
+	if _, ok := token.Claims.(jwt.Claims); !ok && !token.Valid {
+		return nil, err
+	}
+
 	return token, nil
 }
 
-func (s *tokenService) IsTokenValid(r *http.Request) error {
-	token, err := s.VerifyToken(r)
-	if err != nil {
-		return err
-	}
-
-	if _, ok := token.Claims.(jwt.Claims); !ok && !token.Valid {
-		return err
-	}
-
-	return nil
-}
-
-func (s *tokenService) GetDetailsFromToken(r *http.Request, from string) (*models.Details, error) {
-	token, err := s.VerifyToken(r, from)
+func (s *tokenService) GetDetailsFromToken(r *http.Request, key string) (*models.Details, error) {
+	token, err := s.VerifyToken(r, key)
 	if err != nil {
 		return nil, err
 	}
@@ -143,6 +127,27 @@ func (s *tokenService) GetDetailsFromToken(r *http.Request, from string) (*model
 		UUID, ok := claims["uuid"].(string)
 		if !ok {
 			return nil, err
+		}
+
+		if key == "at" {
+			remoteAddr, ok := claims["remote_addr"].(string)
+			if !ok {
+				return nil, err
+			}
+
+			userAgent, ok := claims["user_agent"].(string)
+			if !ok {
+				return nil, err
+			}
+
+			if userID, err := strconv.ParseUint(fmt.Sprintf("%.f", claims["user_id"]), 10, 64); err == nil {
+				return &models.Details{
+					UUID:       UUID,
+					UserID:     uint(userID),
+					RemoteAddr: remoteAddr,
+					UserAgent:  userAgent,
+				}, nil
+			}
 		}
 
 		if userID, err := strconv.ParseUint(fmt.Sprintf("%.f", claims["user_id"]), 10, 64); err == nil {

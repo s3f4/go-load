@@ -12,7 +12,7 @@ import {
 } from "react-icons/fi";
 import { MediaQuery } from "../style";
 import { useLocation } from "react-router-dom";
-import { signOut } from "../../api/entity/user";
+import { getUserFromStorage, signOut } from "../../api/entity/user";
 
 const headerLinkStyle = {
   width: "2rem",
@@ -23,7 +23,7 @@ interface Props {}
 
 const Header: React.FC<Props> = (props: Props) => {
   const location = useLocation();
-  const user = "";
+  const user = getUserFromStorage();
 
   const onSignOut = (e: React.FormEvent) => {
     e.preventDefault();

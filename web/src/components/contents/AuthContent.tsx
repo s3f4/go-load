@@ -4,7 +4,7 @@ import { jsx, css } from "@emotion/core";
 import TextInput from "../basic/TextInput";
 import Button from "../basic/Button";
 import { MediaQuery } from "../style";
-import { signIn, signUp } from "../../api/entity/user";
+import { setUserStorage, signIn, signUp } from "../../api/entity/user";
 import Message from "../basic/Message";
 import { Link, Router, useHistory } from "react-router-dom";
 import Cookies from "js-cookie";
@@ -43,7 +43,7 @@ const AuthContent: React.FC<Props> = (props: Props) => {
   const onSignIn = () => {
     signIn(user)
       .then((response) => {
-        console.log(Cookies.get("at"));
+        setUserStorage(response.data);
         history.push("/instances");
       })
       .catch((error) => {
@@ -54,7 +54,8 @@ const AuthContent: React.FC<Props> = (props: Props) => {
   const onSignUp = () => {
     signUp(user)
       .then((response) => {
-        console.log(response);
+        setUserStorage(response.data);
+        history.push("/instances");
       })
       .catch((error) => {
         setError(error.message);

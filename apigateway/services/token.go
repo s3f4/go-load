@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/s3f4/go-load/apigateway/library"
 	"github.com/s3f4/go-load/apigateway/models"
 	"github.com/twinj/uuid"
 )
@@ -16,7 +17,7 @@ import (
 // TokenService using for jwt token methods.
 type TokenService interface {
 	CreateToken(r *http.Request, user *models.User) (*models.AccessToken, *models.RefreshToken, error)
-	TokenFromCookie(r *http.Request) string
+	TokenFromCookie(r *http.Request, key string) string
 	TokenFromHeader(r *http.Request) string
 	VerifyToken(r *http.Request, from ...string) (*jwt.Token, error)
 	IsTokenValid(r *http.Request) error
@@ -74,12 +75,8 @@ func (s *tokenService) CreateToken(r *http.Request, user *models.User) (*models.
 }
 
 // TokenFromCookie ...
-func (s *tokenService) TokenFromCookie(r *http.Request) string {
-	cookie, err := r.Cookie("rt")
-	if err != nil {
-		return ""
-	}
-	return cookie.Value
+func (s *tokenService) TokenFromCookie(r *http.Request, key string) string {
+	return library.GetCookie(r, key)["rt"]
 }
 
 // TokenFromHeader ...
@@ -101,7 +98,7 @@ func (s *tokenService) VerifyToken(r *http.Request, from ...string) (*jwt.Token,
 		for _, t := range from {
 			switch t {
 			case "cookie":
-				tokenStr = s.TokenFromCookie(r)
+				tokenStr = s.TokenFromCookie(r, "rt")
 			case "header":
 				tokenStr = s.TokenFromHeader(r)
 			}

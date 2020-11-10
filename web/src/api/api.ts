@@ -22,15 +22,15 @@ export const makeReq = async (url: string, method?: any, body?: any) => {
       method: method ? method : "GET",
       headers: {
         Accept: "application/json",
-        Authorization: "",
+        // Authorization: "",
       },
     },
   };
 
-  const token = "bearer";
-  if (token) {
-    request.config.headers.Authorization = `Bearer ${token}`;
-  }
+  // const token = "bearer";
+  // if (token) {
+  // request.config.headers.Authorization = `Bearer ${token}`;
+  // }
 
   if (body && request.config.method !== "GET") {
     (request.config as any).body = JSON.stringify(body);

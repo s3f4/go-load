@@ -9,6 +9,7 @@ import (
 type UserRepository interface {
 	DB() *gorm.DB
 	Create(*models.User) error
+	Get(ID uint) (*models.User, error)
 	GetByEmailAndPassword(*models.User) (*models.User, error)
 	List() ([]*models.User, error)
 }
@@ -35,6 +36,14 @@ func (r *userRepository) DB() *gorm.DB {
 
 func (r *userRepository) Create(user *models.User) error {
 	return r.DB().Create(user).Error
+}
+
+func (r *userRepository) Get(ID uint) (*models.User, error) {
+	var dbUser models.User
+	if err := r.DB().First(&dbUser, ID).Error; err != nil {
+		return nil, err
+	}
+	return &dbUser, nil
 }
 
 func (r *userRepository) GetByEmailAndPassword(user *models.User) (*models.User, error) {

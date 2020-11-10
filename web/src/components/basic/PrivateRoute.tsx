@@ -1,5 +1,6 @@
 import React, { ReactNode } from "react";
 import { Route, Redirect } from "react-router-dom";
+import { getUserFromStorage } from "../../api/entity/user";
 
 export interface Props {
   children: ReactNode;
@@ -9,7 +10,7 @@ const PrivateRoute: React.FC<Props> = ({ children, ...rest }: Props) => (
   <Route
     {...rest}
     render={(props) => {
-      const user = "";
+      const user = getUserFromStorage();
 
       if (!user) {
         return (

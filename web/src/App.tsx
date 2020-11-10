@@ -8,30 +8,8 @@ import Tests from "./pages/tests";
 import Auth from "./pages/auth";
 import NotFound from "./pages/not_found";
 import PrivateRoute from "./components/basic/PrivateRoute";
-import { currentUser, refresh, User } from "./api/entity/user";
-import { makeReq } from "./api/api";
 
 const App: React.FC = () => {
-  const [user, setUser] = React.useState<User>();
-
-  useEffect(() => {
-    currentUser()
-      .then((response) => {
-        setUser(response.data);
-      })
-      .catch((error) => {
-        if (error.status_code == 401) {
-          refresh()
-            .then((response) => {
-              setUser(response.data);
-            })
-            .catch((error) => {
-              console.log(error);
-            });
-        }
-      });
-  }, []);
-
   return (
     <Router>
       <Switch>

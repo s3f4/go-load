@@ -21,7 +21,7 @@ type authHandlerInterface interface {
 	Signout(w http.ResponseWriter, r *http.Request)
 	RefreshToken(w http.ResponseWriter, r *http.Request)
 	CurrentUser(w http.ResponseWriter, r *http.Request)
-	ResponseWithCookie(http.ResponseWriter, *http.Request, *models.AccessToken, *models.RefreshToken)
+	ResponseWithCookie(http.ResponseWriter, *http.Request, *models.User, *models.AccessToken, *models.RefreshToken)
 }
 
 type authHandler struct {
@@ -62,7 +62,7 @@ func (h *authHandler) Signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.ResponseWithCookie(w, r, at, rt)
+	h.ResponseWithCookie(w, r, &user, at, rt)
 }
 
 func (h *authHandler) Signin(w http.ResponseWriter, r *http.Request) {
@@ -89,7 +89,7 @@ func (h *authHandler) Signin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.ResponseWithCookie(w, r, at, rt)
+	h.ResponseWithCookie(w, r, dbUser, at, rt)
 }
 
 func (h *authHandler) Signout(w http.ResponseWriter, r *http.Request) {
@@ -112,18 +112,25 @@ func (h *authHandler) Signout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	http.SetCookie(w, &http.Cookie{
+		MaxAge:  -1,
+		Name:    "at",
+		Expires: time.Now().Add(time.Hour * -100),
+	})
+
+	http.SetCookie(w, &http.Cookie{
+		MaxAge:  -1,
+		Name:    "rt",
+		Expires: time.Now().Add(time.Hour * -100),
+	})
+
 	library.R200(w, r, "Successfully logged out")
 }
 
 func (h *authHandler) RefreshToken(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(r.Header)
-	// Read refresh token
 	refreshToken := h.ts.TokenFromCookie(r)
-	fmt.Println(refreshToken)
 
-	//verify the token
 	token, err := jwt.Parse(refreshToken, func(token *jwt.Token) (interface{}, error) {
-		//Make sure that the token method conform to "SigningMethodHMAC"
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
@@ -171,7 +178,12 @@ func (h *authHandler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		h.ResponseWithCookie(w, r, at, rt)
+		if user, err := h.ur.Get(uint(userID)); err != nil {
+			h.ResponseWithCookie(w, r, user, at, rt)
+		}
+
+		library.R401(w, r, "refresh token is expired")
+
 	} else {
 		library.R401(w, r, "refresh token is expired")
 	}
@@ -187,17 +199,19 @@ func (h *authHandler) CurrentUser(w http.ResponseWriter, r *http.Request) {
 	library.R200(w, r, userID)
 }
 
-func (h *authHandler) ResponseWithCookie(w http.ResponseWriter, r *http.Request, at *models.AccessToken, rt *models.RefreshToken) {
+func (h *authHandler) ResponseWithCookie(w http.ResponseWriter, r *http.Request, user *models.User, at *models.AccessToken, rt *models.RefreshToken) {
 
 	atCookie := http.Cookie{
 		HttpOnly: true,
 		Name:     "at",
+		Path:     "/",
 		Expires:  time.Unix(rt.Expire, 0),
 	}
 
 	rtCookie := http.Cookie{
 		HttpOnly: true,
 		Name:     "rt",
+		Path:     "/",
 		Expires:  time.Unix(rt.Expire, 0),
 	}
 
@@ -210,8 +224,6 @@ func (h *authHandler) ResponseWithCookie(w http.ResponseWriter, r *http.Request,
 
 	library.SetCookie(w, &atCookie, map[string]string{"at": at.Token})
 	library.SetCookie(w, &rtCookie, map[string]string{"rt": rt.Token})
-
-	library.R200(w, r, map[string]string{
-		"token": at.Token,
-	})
+	
+	library.R200(w, r, user)
 }

@@ -18,11 +18,21 @@ func SetCookie(w http.ResponseWriter, c *http.Cookie, values map[string]string) 
 		cookie := &http.Cookie{
 			Name:     c.Name,
 			Value:    encoded,
-			Path:     "/",
 			Secure:   c.Secure,
 			HttpOnly: c.HttpOnly,
 			Expires:  c.Expires,
 		}
+
+		if c.Path != "" {
+			cookie.Path = c.Path
+		} else {
+			cookie.Path = "/"
+		}
+
+		if c.Domain != "" {
+			cookie.Domain = c.Domain
+		}
+
 		http.SetCookie(w, cookie)
 	}
 }

@@ -3,7 +3,6 @@ package services
 import (
 	"errors"
 	"fmt"
-	"strconv"
 	"time"
 
 	"github.com/s3f4/go-load/apigateway/models"
@@ -12,9 +11,9 @@ import (
 
 // AuthService service
 type AuthService interface {
-	CreateAuthCache(userID uint, at *models.AccessToken, rt *models.RefreshToken) error
-	GetAuthCache(UUID string) (uint, error)
-	DeleteAuthCache(atUUID, rtUUID string) error
+	CreateAuthCache(at *models.AccessToken, rt *models.RefreshToken) error
+	GetAuthCache(UUID string) (string, error)
+	DeleteAuthCache(UUID string) error
 }
 
 type authService struct {
@@ -34,22 +33,12 @@ func NewAuthService() AuthService {
 }
 
 // CreateAuthCache creates auth object on cache database.
-func (s *authService) CreateAuthCache(
-	userID uint,
-	at *models.AccessToken,
-	rt *models.RefreshToken,
-) error {
-	atExpire := time.Unix(at.Expire, 0)
+func (s *authService) CreateAuthCache(at *models.AccessToken, rt *models.RefreshToken) error {
 	rtExpire := time.Unix(rt.Expire, 0)
 
 	now := time.Now()
-	userIDstr := strconv.Itoa(int(userID))
 
-	if err := s.r.Set(at.UUID, userIDstr, atExpire.Sub(now)); err != nil {
-		return err
-	}
-
-	if err := s.r.Set(rt.UUID, userIDstr, rtExpire.Sub(now)); err != nil {
+	if err := s.r.Set(rt.UUID, at.Token, rtExpire.Sub(now)); err != nil {
 		return err
 	}
 
@@ -57,37 +46,25 @@ func (s *authService) CreateAuthCache(
 }
 
 // GetAuthCache gets auth object from cache
-func (s *authService) GetAuthCache(UUID string) (uint, error) {
-	userid, err := s.r.Get(UUID)
+func (s *authService) GetAuthCache(UUID string) (string, error) {
+	token, err := s.r.Get(UUID)
 	if err != nil {
-		return 0, err
+		return "", err
 	}
-	userID, _ := strconv.ParseUint(userid, 10, 64)
-	return uint(userID), nil
+	return token, nil
 }
 
 // DeleteAuthCache clears auth objects on cache database.
-func (s *authService) DeleteAuthCache(atUUID, rtUUID string) error {
-
-	// If this call comes from refresh token
-	// there may not be an atUUID at cache server
-	if len(atUUID) > 0 {
-		deletedAt, err := s.r.Del(atUUID)
-		if err != nil {
-			return err
-		}
-
-		if deletedAt != 1 {
-			fmt.Printf("deleted access token: %#v", deletedAt)
-			return errors.New("something went wrong")
-		}
-	}
-
+func (s *authService) DeleteAuthCache(rtUUID string) error {
 	deletedRt, err := s.r.Del(rtUUID)
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("deleted refresh token: %#v", deletedRt)
+	if deletedRt != 1 {
+		fmt.Printf("deleted access token: %#v", deletedRt)
+		return errors.New("something went wrong")
+	}
+
 	return nil
 }

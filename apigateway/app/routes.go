@@ -10,6 +10,7 @@ import (
 	"github.com/go-chi/cors"
 	"github.com/gorilla/csrf"
 	"github.com/s3f4/go-load/apigateway/handlers"
+	"github.com/s3f4/go-load/apigateway/library"
 	"github.com/s3f4/go-load/apigateway/middlewares"
 )
 
@@ -58,11 +59,8 @@ func applyMiddlewares() {
 func routeMap(*chi.Mux) {
 	applyMiddlewares()
 
-	router.Get("/csrf", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("X-CSRF-Token", csrf.Token(r))
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(200)
-		w.Write([]byte(csrf.TemplateField(r)))
+	router.Get("/form", func(w http.ResponseWriter, r *http.Request) {
+		library.R200(w, r, csrf.Token(r))
 	})
 
 	router.Route("/auth", func(router chi.Router) {

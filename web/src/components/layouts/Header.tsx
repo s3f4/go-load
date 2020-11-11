@@ -13,6 +13,7 @@ import {
 import { MediaQuery } from "../style";
 import { useLocation } from "react-router-dom";
 import { getUserFromStorage, signOut } from "../../api/entity/user";
+import { setToken, token } from "../../api/entity/jwt";
 
 const headerLinkStyle = {
   width: "2rem",
@@ -29,9 +30,13 @@ const Header: React.FC<Props> = (props: Props) => {
     e.preventDefault();
     signOut()
       .then((response) => {
+        localStorage.removeItem("user");
+        setToken("");
         console.log(response);
       })
       .catch((error) => {
+        localStorage.removeItem("user");
+        setToken("");
         console.log(error);
       });
   };
@@ -67,7 +72,7 @@ const Header: React.FC<Props> = (props: Props) => {
         </div>
         <div>
           <div css={authLink}>
-            {user ? (
+            {user && token ? (
               <Link
                 onClick={onSignOut}
                 css={headerLink(false)}

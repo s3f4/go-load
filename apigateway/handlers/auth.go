@@ -58,7 +58,7 @@ func (h *authHandler) Signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.as.CreateAuthCache(user.ID, at, rt); err != nil {
+	if err := h.as.CreateAuthCache(at, rt); err != nil {
 		library.R401(w, r, fmt.Errorf("Unauthorized"))
 		return
 	}
@@ -88,7 +88,7 @@ func (h *authHandler) Signin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.as.CreateAuthCache(dbUser.ID, at, rt); err != nil {
+	if err := h.as.CreateAuthCache(at, rt); err != nil {
 		log.Debug(err)
 		library.R401(w, r, fmt.Errorf("Unauthorized"))
 		return
@@ -98,14 +98,6 @@ func (h *authHandler) Signin(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *authHandler) Signout(w http.ResponseWriter, r *http.Request) {
-	access, err := h.ts.GetDetailsFromToken(r, "at")
-
-	if err != nil {
-		log.Debug(err)
-		library.R401(w, r, fmt.Errorf("Unauthorized"))
-		return
-	}
-
 	refresh, err := h.ts.GetDetailsFromToken(r, "rt")
 
 	if err != nil {
@@ -114,17 +106,11 @@ func (h *authHandler) Signout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err = h.as.DeleteAuthCache(access.UUID, refresh.UUID); err != nil {
+	if err = h.as.DeleteAuthCache(refresh.UUID); err != nil {
 		log.Debug(err)
 		library.R401(w, r, err.Error())
 		return
 	}
-
-	http.SetCookie(w, &http.Cookie{
-		MaxAge:  -1,
-		Name:    "at",
-		Expires: time.Now().Add(time.Hour * -100),
-	})
 
 	http.SetCookie(w, &http.Cookie{
 		MaxAge:  -1,
@@ -150,7 +136,8 @@ func (h *authHandler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if _, ok := token.Claims.(jwt.Claims); !ok && !token.Valid {
+	if _, ok := token.Claims.(jwt.Claims); !ok || !token.Valid {
+		log.Debug(err)
 		library.R401(w, r, err)
 		return
 	}
@@ -159,38 +146,43 @@ func (h *authHandler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 	if ok && token.Valid {
 		refreshUUID, ok := claims["uuid"].(string)
 		if !ok {
+			log.Debug(err)
 			library.R422(w, r, err)
 			return
 		}
 		userID, err := strconv.ParseUint(fmt.Sprintf("%.f", claims["user_id"]), 10, 64)
 		if err != nil {
+			log.Debug(err)
 			library.R422(w, r, err)
 			return
 		}
 
-		if err := h.as.DeleteAuthCache(refreshUUID, ""); err != nil {
-			fmt.Println(err)
+		if err := h.as.DeleteAuthCache(refreshUUID); err != nil {
+			log.Debug(err)
 			library.R401(w, r, fmt.Errorf("Unauthorized"))
 			return
 		}
 
 		at, rt, err := h.ts.CreateToken(r, &models.User{ID: uint(userID)})
 		if err != nil {
-			library.R403(w, r, err.Error())
+			library.R401(w, r, err.Error())
 			return
 		}
 
-		if err := h.as.CreateAuthCache(uint(userID), at, rt); err != nil {
-			fmt.Println(err)
-			library.R403(w, r, err.Error())
+		if err := h.as.CreateAuthCache(at, rt); err != nil {
+			log.Debug(err)
+			library.R401(w, r, err.Error())
 			return
 		}
 
-		if user, err := h.ur.Get(uint(userID)); err != nil {
-			h.ResponseWithCookie(w, r, user, at, rt)
+		user, err := h.ur.Get(uint(userID))
+		if err != nil {
+			log.Debug(err)
+			library.R401(w, r, "refresh token is expired")
+			return
 		}
 
-		library.R401(w, r, "refresh token is expired")
+		h.ResponseWithCookie(w, r, user, at, rt)
 
 	} else {
 		library.R401(w, r, "refresh token is expired")
@@ -208,13 +200,6 @@ func (h *authHandler) CurrentUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *authHandler) ResponseWithCookie(w http.ResponseWriter, r *http.Request, user *models.User, at *models.AccessToken, rt *models.RefreshToken) {
-	atCookie := http.Cookie{
-		HttpOnly: true,
-		Name:     "at",
-		Path:     "/",
-		Expires:  time.Unix(at.Expire, 0),
-	}
-
 	rtCookie := http.Cookie{
 		HttpOnly: true,
 		Name:     "rt",
@@ -225,17 +210,14 @@ func (h *authHandler) ResponseWithCookie(w http.ResponseWriter, r *http.Request,
 	if os.Getenv("APP_ENV") == "production" {
 		rtCookie.Domain = os.Getenv("DOMAIN")
 		rtCookie.Secure = true
-		atCookie.Domain = os.Getenv("DOMAIN")
-		atCookie.Secure = true
-	}
-
-	if err := library.SetCookie(w, &atCookie, map[string]string{"at": at.Token}); err != nil {
-		log.Debug(err)
 	}
 
 	if err := library.SetCookie(w, &rtCookie, map[string]string{"rt": rt.Token}); err != nil {
 		log.Debug(err)
 	}
 
-	library.R200(w, r, user)
+	library.R200(w, r, map[string]interface{}{
+		"token": at.Token,
+		"user":  user,
+	})
 }

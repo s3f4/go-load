@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { jsx, css } from "@emotion/core";
 import TextInput from "../basic/TextInput";
 import Button from "../basic/Button";
@@ -8,6 +8,8 @@ import { setUserStorage, signIn, signUp } from "../../api/entity/user";
 import Message from "../basic/Message";
 import { Link, Router, useHistory } from "react-router-dom";
 import Cookies from "js-cookie";
+import { setToken } from "../../api/entity/jwt";
+import { getCsrfToken } from "../../api/entity/csrf";
 
 const initialUserState = {
   email: "",
@@ -42,7 +44,8 @@ const AuthContent: React.FC<Props> = (props: Props) => {
 
   const onSignIn = () => {
     signIn(user)
-    .then((response) => {
+      .then((response) => {
+        setToken(response.data.token);
         setUserStorage(response.data);
         history.push("/instances");
       })
@@ -54,6 +57,7 @@ const AuthContent: React.FC<Props> = (props: Props) => {
   const onSignUp = () => {
     signUp(user)
       .then((response) => {
+        setToken(response.data.token);
         setUserStorage(response.data);
         history.push("/instances");
       })

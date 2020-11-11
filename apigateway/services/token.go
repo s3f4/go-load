@@ -11,7 +11,6 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/s3f4/go-load/apigateway/library"
 	"github.com/s3f4/go-load/apigateway/models"
-	"github.com/s3f4/mu/log"
 	"github.com/twinj/uuid"
 )
 
@@ -44,7 +43,7 @@ func (s *tokenService) CreateToken(r *http.Request, user *models.User) (*models.
 	at.UUID = uuid.NewV4().String()
 
 	rt.Expire = time.Now().Add(time.Hour * 24 * 7).Unix()
-	rt.UUID = uuid.NewV4().String()
+	rt.UUID = at.UUID
 
 	var err error
 
@@ -78,9 +77,6 @@ func (s *tokenService) CreateToken(r *http.Request, user *models.User) (*models.
 func (s *tokenService) TokenFromCookie(r *http.Request, key string) string {
 	vals, err := library.GetCookie(r, key)
 	if err != nil {
-		fmt.Println(err)
-		fmt.Println("cookie not found")
-		log.Debug(err)
 		return ""
 	}
 
@@ -98,7 +94,14 @@ func (s *tokenService) TokenFromHeader(r *http.Request) string {
 
 // VerifyToken
 func (s *tokenService) VerifyToken(r *http.Request, key string) (*jwt.Token, error) {
-	token, err := jwt.Parse(s.TokenFromCookie(r, key), func(token *jwt.Token) (interface{}, error) {
+	var tokenStr string
+	if key == "at" {
+		tokenStr = s.TokenFromHeader(r)
+	} else {
+		tokenStr = s.TokenFromCookie(r, key)
+	}
+
+	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method %v", token.Header["alg"])
 		}

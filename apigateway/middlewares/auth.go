@@ -4,7 +4,6 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/gorilla/csrf"
 	"github.com/s3f4/go-load/apigateway/library"
 	"github.com/s3f4/go-load/apigateway/services"
 	"github.com/s3f4/mu/log"
@@ -16,11 +15,9 @@ func AuthCtx(next http.Handler) http.Handler {
 		ts := services.NewTokenService()
 		as := services.NewAuthService()
 
-		if r.Method == "GET" {
-			w.Header().Set("X-CSRF-Token", csrf.Token(r))
-		}
+		jwtToken, err := ts.VerifyToken(r, "at")
 
-		if _, err := ts.VerifyToken(r, "at"); err != nil {
+		if err != nil {
 			log.Debug(err)
 			library.R401(w, r, err)
 			return
@@ -33,8 +30,8 @@ func AuthCtx(next http.Handler) http.Handler {
 			return
 		}
 
-		userID, err := as.GetAuthCache(access.UUID)
-		if err != nil {
+		accessToken, err := as.GetAuthCache(access.UUID)
+		if err != nil || accessToken != jwtToken.Raw {
 			log.Debug(err)
 			library.R401(w, r, err)
 			return
@@ -49,7 +46,7 @@ func AuthCtx(next http.Handler) http.Handler {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), UserIDKey, userID)
+		ctx := context.WithValue(r.Context(), UserIDKey, access.UserID)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

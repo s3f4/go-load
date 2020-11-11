@@ -113,9 +113,12 @@ func (h *authHandler) Signout(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.SetCookie(w, &http.Cookie{
-		MaxAge:  -1,
-		Name:    "rt",
-		Expires: time.Now().Add(time.Hour * -100),
+		MaxAge:   -1,
+		Name:     "rt",
+		Value:    "",
+		Path:     "/",
+		HttpOnly: true,
+		Expires:  time.Now().Add(-100 * time.Hour),
 	})
 
 	library.R200(w, r, "Successfully logged out")

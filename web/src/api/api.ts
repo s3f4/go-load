@@ -1,5 +1,5 @@
 import { getCsrfToken } from "./entity/csrf";
-import { refresh } from "./entity/user";
+import { token } from "./entity/jwt";
 
 const URL = `http://${process.env.REACT_APP_API_BASE_URL}`;
 
@@ -24,15 +24,14 @@ export const makeReq = async (url: string, method?: any, body?: any) => {
       method: method ? method : "GET",
       headers: {
         Accept: "application/json",
-        // Authorization: "",
+        Authorization: "",
       },
     },
   };
 
-  // const token = "bearer";
-  // if (token) {
-  // request.config.headers.Authorization = `Bearer ${token}`;
-  // }
+  if (token) {
+    request.config.headers.Authorization = `Bearer ${token}`;
+  }
 
   if (body && request.config.method !== "GET") {
     (request.config as any).body = JSON.stringify(body);

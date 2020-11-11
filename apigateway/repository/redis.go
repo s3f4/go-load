@@ -58,9 +58,5 @@ func (r *redisRepository) Get(key string) (string, error) {
 }
 
 func (r *redisRepository) Del(key string) (int64, error) {
-	deleted, err := r.client.Del(context.Background(), key).Result()
-	if err != nil {
-		return 0, err
-	}
-	return deleted, nil
+	return r.client.Del(context.Background(), key).Result()
 }

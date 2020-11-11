@@ -11,7 +11,7 @@ import {
   FiUser,
 } from "react-icons/fi";
 import { MediaQuery } from "../style";
-import { useLocation } from "react-router-dom";
+import { useLocation, useHistory } from "react-router-dom";
 import { getUserFromStorage, signOut } from "../../api/entity/user";
 import { setToken, token } from "../../api/entity/jwt";
 
@@ -24,6 +24,7 @@ interface Props {}
 
 const Header: React.FC<Props> = (props: Props) => {
   const location = useLocation();
+  const history = useHistory();
   const user = getUserFromStorage();
 
   const onSignOut = (e: React.FormEvent) => {
@@ -32,11 +33,13 @@ const Header: React.FC<Props> = (props: Props) => {
       .then((response) => {
         localStorage.removeItem("user");
         setToken("");
+        history.push("/auth/signin");
         console.log(response);
       })
       .catch((error) => {
         localStorage.removeItem("user");
         setToken("");
+        history.push("/auth/signin");
         console.log(error);
       });
   };

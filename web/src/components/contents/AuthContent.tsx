@@ -6,10 +6,8 @@ import Button from "../basic/Button";
 import { MediaQuery } from "../style";
 import { setUserStorage, signIn, signUp } from "../../api/entity/user";
 import Message from "../basic/Message";
-import { Link, Router, useHistory } from "react-router-dom";
-import Cookies from "js-cookie";
+import { Link, useHistory } from "react-router-dom";
 import { setToken } from "../../api/entity/jwt";
-import { getCsrfToken } from "../../api/entity/csrf";
 
 const initialUserState = {
   email: "",

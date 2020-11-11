@@ -3,6 +3,7 @@ package middlewares
 import (
 	"context"
 	"net/http"
+	"os"
 
 	"github.com/s3f4/go-load/apigateway/library"
 	"github.com/s3f4/go-load/apigateway/services"
@@ -37,13 +38,11 @@ func AuthCtx(next http.Handler) http.Handler {
 			return
 		}
 
-		if r.RemoteAddr != access.RemoteAddr || r.UserAgent() != access.UserAgent {
-			log.Debugf("r.RemoteAddr: %s", r.RemoteAddr)
-			log.Debugf("access.RemoteAddr: %s", access.RemoteAddr)
-			log.Debugf("r.UserAgent: %s", r.UserAgent())
-			log.Debugf("access.UserAgent: %s", access.UserAgent)
-			library.R401(w, r, err)
-			return
+		if os.Getenv("APP_ENV") == "production" && len(os.Getenv("DOMAIN")) > 0 {
+			if r.RemoteAddr != access.RemoteAddr || r.UserAgent() != access.UserAgent {
+				library.R401(w, r, err)
+				return
+			}
 		}
 
 		ctx := context.WithValue(r.Context(), UserIDKey, access.UserID)

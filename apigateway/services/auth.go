@@ -7,6 +7,7 @@ import (
 
 	"github.com/s3f4/go-load/apigateway/models"
 	"github.com/s3f4/go-load/apigateway/repository"
+	"github.com/s3f4/mu/log"
 )
 
 // AuthService service
@@ -57,6 +58,8 @@ func (s *authService) GetAuthCache(UUID string) (string, error) {
 // DeleteAuthCache clears auth objects on cache database.
 func (s *authService) DeleteAuthCache(rtUUID string) error {
 	deletedRt, err := s.r.Del(rtUUID)
+	log.Debug(deletedRt)
+	log.Debug(err)
 	if err != nil {
 		return err
 	}

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Instances from "./pages/instaces";
 import Workers from "./pages/workers";
@@ -8,13 +8,8 @@ import Tests from "./pages/tests";
 import Auth from "./pages/auth";
 import NotFound from "./pages/not_found";
 import PrivateRoute from "./components/basic/PrivateRoute";
-import { getToken } from "./api/entity/jwt";
 
 const App: React.FC = () => {
-  useEffect(() => {
-    getToken();
-  }, []);
-
   return (
     <Router>
       <Switch>

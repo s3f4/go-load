@@ -1,5 +1,5 @@
 import { getCsrfToken } from "./entity/csrf";
-import { token } from "./entity/jwt";
+import { setToken, token } from "./entity/jwt";
 
 const URL = `http://${process.env.REACT_APP_API_BASE_URL}`;
 
@@ -51,6 +51,10 @@ export const makeReq = async (url: string, method?: any, body?: any) => {
           if (response.ok) {
             resolve(json);
           } else {
+            if (response.status === 401) {
+              localStorage.clear();
+              setToken("");
+            }
             reject(json);
           }
         })

@@ -11,9 +11,16 @@ const PrivateRoute: React.FC<Props> = ({ children, ...rest }: Props) => {
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
+    const silentRefresh = setInterval(() => {
+      console.log("time's up");
+      getToken();
+    }, 1000);
+
     loginCheck();
+    return () => clearInterval(silentRefresh);
   }, []);
 
+  // loginCheck will only fill the global token variable
   const loginCheck = () => {
     getToken()
       .then(() => {

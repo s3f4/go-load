@@ -15,7 +15,7 @@ import { useLocation, useHistory } from "react-router-dom";
 import { getUserFromStorage, signOut } from "../../api/entity/user";
 import { setToken, token } from "../../api/entity/jwt";
 
-const headerLinkStyle = {
+const headerIconStyle = {
   width: "2rem",
   height: "1.8rem",
 };
@@ -57,19 +57,19 @@ const Header: React.FC<Props> = (props: Props) => {
             css={headerLink(location.pathname === "/instances")}
             to="/instances"
           >
-            <FiServer style={headerLinkStyle} />
+            <FiServer style={headerIconStyle} />
             Instances
           </Link>
           <Link css={headerLink(location.pathname === "/tests")} to="/tests">
-            <FiClipboard style={headerLinkStyle} />
+            <FiClipboard style={headerIconStyle} />
             Tests
           </Link>
           <Link css={headerLink(location.pathname === "/swarm")} to="/swarm">
-            <FiMonitor style={headerLinkStyle} />
+            <FiMonitor style={headerIconStyle} />
             Swarm
           </Link>
           <Link css={headerLink(location.pathname === "/stats")} to="/stats">
-            <FiActivity style={headerLinkStyle} />
+            <FiActivity style={headerIconStyle} />
             Stats
           </Link>
         </div>
@@ -81,12 +81,12 @@ const Header: React.FC<Props> = (props: Props) => {
                 css={headerLink(false)}
                 to="/auth/signin"
               >
-                <FiUser style={headerLinkStyle} />
+                <FiUser style={headerIconStyle} />
                 Sign Out
               </Link>
             ) : (
               <Link css={headerLink(false)} to="/auth/signin">
-                <FiUser style={headerLinkStyle} />
+                <FiUser style={headerIconStyle} />
                 Sign In
               </Link>
             )}
@@ -190,7 +190,9 @@ const headerLink = (selected?: boolean) => css`
 `;
 
 const authLink = css`
-  min-width: 10rem;
+  min-width: 12rem;
+  font-size: 2rem;
+  font-weight: 500;
 `;
 
 export default Header;

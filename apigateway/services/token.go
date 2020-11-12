@@ -39,10 +39,13 @@ func (s *tokenService) CreateToken(r *http.Request, user *models.User) (*models.
 	at := &models.AccessToken{}
 	rt := &models.RefreshToken{}
 
-	at.Expire = time.Now().Add(time.Minute * 15).Unix()
+	atExpireMinutes, _ := strconv.Atoi(os.Getenv("AT_EXPIRE_MINUTES"))
+	rtExpireMinutes, _ := strconv.Atoi(os.Getenv("RT_EXPIRE_MINUTES"))
+
+	at.Expire = time.Now().Add(time.Minute * time.Duration(atExpireMinutes)).Unix()
 	at.UUID = uuid.NewV4().String()
 
-	rt.Expire = time.Now().Add(time.Hour * 24 * 7).Unix()
+	rt.Expire = time.Now().Add(time.Minute * time.Duration(rtExpireMinutes)).Unix()
 	rt.UUID = at.UUID
 
 	var err error

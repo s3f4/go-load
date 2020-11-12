@@ -12,9 +12,8 @@ const PrivateRoute: React.FC<Props> = ({ children, ...rest }: Props) => {
 
   useEffect(() => {
     const silentRefresh = setInterval(() => {
-      console.log("time's up");
-      getToken();
-    }, 1000);
+      getToken(true);
+    }, 60000);
 
     loginCheck();
     return () => clearInterval(silentRefresh);

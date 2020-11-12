@@ -6,9 +6,9 @@ export const setToken = (t: string) => {
   token = t;
 };
 
-export const getToken = (): Promise<String> => {
+export const getToken = (silentRefresh?: boolean): Promise<String> => {
   return new Promise((resolve, reject) => {
-    if (token === "") {
+    if (token === "" || silentRefresh) {
       refresh()
         .then((response) => {
           setToken(response.data.token);

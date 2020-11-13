@@ -9,35 +9,31 @@ interface Props extends BasicProps {
   label?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   validate?: Validate;
-  isValid?: boolean;
   disabled?: boolean;
 }
 
 const TextInput: React.FC<Props> = (props: Props) => {
-  const [valid, setValid] = useState<boolean>(false);
+  const [valid, setValid] = useState<boolean>(true);
 
-  const onChange = React.useCallback(() => {
+  React.useEffect(() => {
     if (props.validate && props.value) {
       setValid(validate(props.value, props.validate));
     }
+  }, [props.value, setValid]);
 
-    return props.onChange;
-  }, [props.value]);
-
-  console.log(props.name);
   return (
     <React.Fragment>
       <div css={inputDiv}>
         {props.label ? <label css={label}>{props.label}</label> : ""}
         <input
           name={props.name}
-          css={textInput(valid ?? true)}
+          css={textInput(valid)}
           type={props.type ?? "text"}
           value={props.value}
-          onChange={onChange()}
+          onChange={props.onChange}
           disabled={props.disabled}
         />
-        {!props.isValid && props.validate?.message ? (
+        {!valid && props.validate?.message ? (
           <span css={validateMessage}>{props.validate.message}</span>
         ) : (
           ""

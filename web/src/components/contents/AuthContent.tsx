@@ -112,9 +112,7 @@ const AuthContent: React.FC<Props> = (props: Props) => {
             validate={{
               email: true,
               message: "Provide a valid email",
-              validationFunction: validation("email"),
             }}
-            isValid={isValid["email"]}
           />
 
           <TextInput
@@ -127,9 +125,7 @@ const AuthContent: React.FC<Props> = (props: Props) => {
               minLength: 4,
               maxLength: 9,
               message: "Please provide a valid passowrd",
-              validationFunction: validation("password"),
             }}
-            isValid={isValid["password"]}
           />
 
           <div css={buttons}>{button()}</div>

@@ -31,6 +31,27 @@ const initialTest: Test = {
   transport_config: { disable_keep_alives: true },
 };
 
+const urlValidate = {
+  url: true,
+  message: "Please write a valid URL",
+};
+
+const requestCountValidate = {
+  min: 1,
+  message: "Request must be greather than 0.",
+};
+
+const methodValidate = {
+  minLength: 3,
+  message: "Please select a method for HTTP requests.",
+};
+
+const goroutineValidate = {
+  min: 1,
+  max: 10,
+  message: "Goroutine count must be less than or equal to 10",
+};
+
 const TestForm = (props: Props) => {
   const [test, setTest] = React.useState<Test>(initialTest);
   const [isValid, setIsValid] = React.useState<any>({
@@ -44,21 +65,14 @@ const TestForm = (props: Props) => {
     props.test && setTest(props.test);
   }, [props.test]);
 
-  const validation = (name: string) => (value: boolean) =>
-    setIsValid({
-      ...isValid,
-      [name]: value,
-    });
-
-  const validate = () => {
-    let valid = true;
-    Object.keys(isValid).forEach(function (key) {
-      if (!isValid[key]) {
-        valid = false;
-      }
-    });
-    return valid;
-  };
+  const validation = React.useCallback(
+    (name: string) => (value: boolean) =>
+      setIsValid({
+        ...isValid,
+        [name]: value,
+      }),
+    [],
+  );
 
   const handleChange = React.useCallback(
     (e: React.ChangeEvent<HTMLInputElement> | any) => {
@@ -87,26 +101,27 @@ const TestForm = (props: Props) => {
             : e.target.value,
       });
     },
+    [test],
+  );
+
+  const onHeaderHandle = React.useCallback(
+    (header: Header) => (e: React.ChangeEvent<HTMLInputElement>) => {
+      e.preventDefault();
+      header[e.target.name] = e.target.value;
+      setTest({
+        ...test,
+        headers: test.headers!.map((h: Header) => {
+          if (h.id === header.id) {
+            return header;
+          }
+          return h;
+        }),
+      });
+    },
     [],
   );
 
-  const onHeaderHandle = (header: Header) => (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    e.preventDefault();
-    header[e.target.name] = e.target.value;
-    setTest({
-      ...test,
-      headers: test.headers!.map((h: Header) => {
-        if (h.id === header.id) {
-          return header;
-        }
-        return h;
-      }),
-    });
-  };
-
-  const onAddHeader = (e: React.FormEvent) => {
+  const onAddHeader = React.useCallback((e: React.FormEvent) => {
     e.preventDefault();
     const header: Header = {
       id: Date.now(),
@@ -117,7 +132,7 @@ const TestForm = (props: Props) => {
       ...test,
       headers: [...test.headers!, header],
     });
-  };
+  }, []);
 
   console.log(test);
 
@@ -133,24 +148,14 @@ const TestForm = (props: Props) => {
             label="Target URL"
             name="url"
             value={test.url}
-            validate={{
-              url: true,
-              message: "Please write a valid URL",
-              validationFunction: validation("url"),
-            }}
-            isValid={isValid["url"]}
+            validate={urlValidate}
           />
           <TextInput
             onChange={handleChange}
             label="Total Request"
             name="request_count"
             value={test.request_count}
-            validate={{
-              min: 1,
-              validationFunction: validation("request_count"),
-              message: "Request must be greather than 0.",
-            }}
-            isValid={isValid["request_count"]}
+            validate={requestCountValidate}
           />
           <SelectBox
             name="method"
@@ -164,11 +169,7 @@ const TestForm = (props: Props) => {
               { value: "DELETE", label: "DELETE" },
             ]}
             value={test.method}
-            validate={{
-              minLength: 3,
-              validationFunction: validation("method"),
-              message: "Please select a method for HTTP requests.",
-            }}
+            validate={methodValidate}
             isValid={isValid["method"]}
           />
           <TextInput
@@ -195,13 +196,7 @@ const TestForm = (props: Props) => {
             label="Goroutine per worker (up to 10)"
             name="goroutine_count"
             value={test.goroutine_count}
-            validate={{
-              min: 1,
-              max: 10,
-              message: "Goroutine count must be less than or equal to 10",
-              validationFunction: validation("goroutine_count"),
-            }}
-            isValid={isValid["goroutine_count"]}
+            validate={goroutineValidate}
           />
           <SelectBox
             name={"disable_keep_alives"}
@@ -246,7 +241,6 @@ const TestForm = (props: Props) => {
                 setTest(initialTest);
               }}
               disabled={
-                !validate() ||
                 typeof props.testGroup === "undefined" ||
                 props.testGroup.name.length === 0
               }
@@ -259,7 +253,6 @@ const TestForm = (props: Props) => {
                 setTest(initialTest);
               }}
               disabled={
-                !validate() ||
                 typeof props.testGroup === "undefined" ||
                 props.testGroup.name.length === 0
               }

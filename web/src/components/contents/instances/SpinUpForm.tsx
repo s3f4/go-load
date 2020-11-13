@@ -184,9 +184,7 @@ const SpinUp: React.FC<Props> = (props: Props) => {
               min: 1,
               max: instanceLimit,
               message: "Your can create " + instanceLimit + " instances.",
-              validationFunction: validation("count"),
             }}
-            isValid={isValid["count"]}
           />
 
           <SelectBox
@@ -198,7 +196,6 @@ const SpinUp: React.FC<Props> = (props: Props) => {
             validate={{
               minLength: 3,
               message: "Please choose a region",
-              validationFunction: validation("region"),
             }}
             isValid={isValid["region"]}
           />

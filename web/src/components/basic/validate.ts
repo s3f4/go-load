@@ -8,7 +8,6 @@ export interface Validate {
   message?: string;
   url?: boolean;
   email?: boolean;
-  validationFunction: (condition: boolean) => void;
 }
 
 // validate is using to validation message

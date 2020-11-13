@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { jsx, css } from "@emotion/core";
 import { Borders, Sizes, Colors } from "../style";
 import BasicProps from "./basicProps";
-import { IsValid, validate, Validate } from "./validate";
+import { ValidationResult, validate } from "./validate";
 
 interface Props extends BasicProps {
   label?: string;
@@ -14,7 +14,7 @@ interface Props extends BasicProps {
 }
 
 const TextInput: React.FC<Props> = (props: Props) => {
-  const [isValid, setIsValid] = useState<IsValid>();
+  const [isValid, setIsValid] = useState<ValidationResult>();
 
   React.useEffect(() => {
     if (!props.validate) {

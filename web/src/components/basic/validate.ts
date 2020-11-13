@@ -10,7 +10,7 @@ export interface Validate {
   email?: boolean;
 }
 
-export interface IsValid {
+export interface ValidationResult {
   isValid: boolean;
   message?: string;
 }
@@ -35,7 +35,10 @@ const parseValidationRules = (validate: string): Validate => {
 };
 
 // validate is using to validation message
-export const validate = (value: any, validationStr: string): IsValid => {
+export const validate = (
+  value: any,
+  validationStr: string,
+): ValidationResult => {
   const validate = parseValidationRules(validationStr);
   if (validate.min && toNum(value) < validate.min) {
     return { message: validate.message, isValid: false };

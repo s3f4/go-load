@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import React from "react";
+import React, { useState } from "react";
 import { jsx, css } from "@emotion/core";
 import { Borders, Sizes, Colors } from "../style";
 import BasicProps from "./basicProps";
@@ -14,20 +14,27 @@ interface Props extends BasicProps {
 }
 
 const TextInput: React.FC<Props> = (props: Props) => {
-  React.useEffect(() => {
-    if (props.validate && props.value) validate(props.value, props.validate);
+  const [valid, setValid] = useState<boolean>(false);
+
+  const onChange = React.useCallback(() => {
+    if (props.validate && props.value) {
+      setValid(validate(props.value, props.validate));
+    }
+
+    return props.onChange;
   }, [props.value]);
 
+  console.log(props.name);
   return (
     <React.Fragment>
       <div css={inputDiv}>
         {props.label ? <label css={label}>{props.label}</label> : ""}
         <input
           name={props.name}
-          css={textInput(props.isValid ?? true)}
+          css={textInput(valid ?? true)}
           type={props.type ?? "text"}
           value={props.value}
-          onChange={props.onChange}
+          onChange={onChange()}
           disabled={props.disabled}
         />
         {!props.isValid && props.validate?.message ? (
@@ -69,4 +76,4 @@ const textInput = (valid: boolean) => css`
   padding: ${Sizes.textInputPadding};
 `;
 
-export default TextInput;
+export default React.memo(TextInput);

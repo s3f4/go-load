@@ -146,4 +146,4 @@ const text = css`
   display: inline-block;
 `;
 
-export default Button;
+export default React.memo(Button);

@@ -60,32 +60,35 @@ const TestForm = (props: Props) => {
     return valid;
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement> | any) => {
-    props.setMessage && props.setMessage();
+  const handleChange = React.useCallback(
+    (e: React.ChangeEvent<HTMLInputElement> | any) => {
+      props.setMessage && props.setMessage();
 
-    if (!e.target && e.hasOwnProperty("value") && e.hasOwnProperty("label")) {
-      if (e.value === "true" || e.value === "false") {
+      if (!e.target && e.hasOwnProperty("value") && e.hasOwnProperty("label")) {
+        if (e.value === "true" || e.value === "false") {
+          setTest({
+            ...test,
+            transport_config: { disable_keep_alives: e.value === "true" },
+          });
+          return;
+        }
         setTest({
           ...test,
-          transport_config: { disable_keep_alives: e.value === "true" },
+          method: e.value,
         });
         return;
       }
+
       setTest({
         ...test,
-        method: e.value,
+        [e.target.name]:
+          typeof test[e.target.name] === "number"
+            ? toNum(e.target.value)
+            : e.target.value,
       });
-      return;
-    }
-
-    setTest({
-      ...test,
-      [e.target.name]:
-        typeof test[e.target.name] === "number"
-          ? toNum(e.target.value)
-          : e.target.value,
-    });
-  };
+    },
+    [],
+  );
 
   const onHeaderHandle = (header: Header) => (
     e: React.ChangeEvent<HTMLInputElement>,

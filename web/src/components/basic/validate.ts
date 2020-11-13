@@ -12,22 +12,18 @@ export interface Validate {
 }
 
 // validate is using to validation message
-export const validate = (value: any, validate: Validate): void => {
+export const validate = (value: any, validate: Validate): boolean => {
   if (validate.min && toNum(value) < validate.min) {
-    validate.validationFunction(false);
-    return;
+    return false;
   }
   if (validate.max && toNum(value) > validate.max) {
-    validate.validationFunction(false);
-    return;
+    return false;
   }
   if (validate.minLength && value.length < validate.minLength) {
-    validate.validationFunction(false);
-    return;
+    return false;
   }
   if (validate.maxLength && value.length > validate.maxLength) {
-    validate.validationFunction(false);
-    return;
+    return false;
   }
 
   if (validate.url) {
@@ -36,8 +32,7 @@ export const validate = (value: any, validate: Validate): void => {
     );
 
     if (!value.match(regex)) {
-      validate.validationFunction(false);
-      return;
+      return false;
     }
   }
 
@@ -47,10 +42,9 @@ export const validate = (value: any, validate: Validate): void => {
     );
 
     if (!value.match(regex)) {
-      validate.validationFunction(false);
-      return;
+      return false;
     }
   }
 
-  validate.validationFunction(true);
+  return true;
 };

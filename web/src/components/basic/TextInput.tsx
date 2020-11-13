@@ -3,23 +3,29 @@ import React, { useState } from "react";
 import { jsx, css } from "@emotion/core";
 import { Borders, Sizes, Colors } from "../style";
 import BasicProps from "./basicProps";
-import { validate, Validate } from "./validate";
+import { IsValid, validate, Validate } from "./validate";
 
 interface Props extends BasicProps {
   label?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  validate?: Validate;
+  validate?: string;
   disabled?: boolean;
+  validation?: (name: string, value: boolean) => void;
 }
 
 const TextInput: React.FC<Props> = (props: Props) => {
-  const [valid, setValid] = useState<boolean>(true);
+  const [isValid, setIsValid] = useState<IsValid>();
 
   React.useEffect(() => {
-    if (props.validate && props.value) {
-      setValid(validate(props.value, props.validate));
+    if (!props.validate) {
+      setIsValid({ isValid: true });
     }
-  }, [props.value, setValid]);
+    if (props.validate && props.value !== undefined) {
+      const validObj = validate(props.value, props.validate);
+      setIsValid(validObj);
+      props.validation?.(props.name, validObj.isValid);
+    }
+  }, [props.value, setIsValid]);
 
   return (
     <React.Fragment>
@@ -27,14 +33,14 @@ const TextInput: React.FC<Props> = (props: Props) => {
         {props.label ? <label css={label}>{props.label}</label> : ""}
         <input
           name={props.name}
-          css={textInput(valid)}
+          css={textInput(isValid?.isValid!)}
           type={props.type ?? "text"}
           value={props.value}
           onChange={props.onChange}
           disabled={props.disabled}
         />
-        {!valid && props.validate?.message ? (
-          <span css={validateMessage}>{props.validate.message}</span>
+        {!isValid?.isValid && isValid?.message ? (
+          <span css={validateMessage}>{isValid.message}</span>
         ) : (
           ""
         )}
@@ -72,4 +78,4 @@ const textInput = (valid: boolean) => css`
   padding: ${Sizes.textInputPadding};
 `;
 
-export default React.memo(TextInput);
+export default TextInput;

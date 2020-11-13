@@ -195,4 +195,4 @@ const authLink = css`
   font-weight: 500;
 `;
 
-export default Header;
+export default React.memo(Header);

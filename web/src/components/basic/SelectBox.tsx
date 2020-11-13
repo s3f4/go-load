@@ -1,10 +1,10 @@
 /** @jsx jsx */
-import React from "react";
+import React, { useState } from "react";
 import { jsx, css } from "@emotion/core";
 import { Borders, Colors, Sizes } from "../style";
 import BasicProps from "./basicProps";
 import Select from "react-select";
-import { validate, Validate } from "./validate";
+import { IsValid, validate, Validate } from "./validate";
 
 interface SelectBoxData {
   value: string;
@@ -15,27 +15,35 @@ interface Props extends BasicProps {
   options: SelectBoxData[];
   value: string;
   onChange?: (e: any) => void;
-  validate?: Validate;
-  isValid?: boolean;
+  validate?: string;
+  validation?: (name: string, value: boolean) => void;
 }
 
 const SelectBox = (props: Props) => {
+  const [isValid, setIsValid] = useState<IsValid>();
+
   React.useEffect(() => {
-    if (props.validate) validate(props.value, props.validate);
-  }, [props.value]);
+    if (!props.validate) {
+      setIsValid({ isValid: true });
+    }
+    if (props.validate && props.value !== undefined) {
+      const validObj = validate(props.value, props.validate);
+      setIsValid(validObj);
+      props.validation?.(props.name, validObj.isValid);
+    }
+  }, [props.value, setIsValid]);
 
   return (
     <div css={container}>
       {props.label ? <label css={label}>{props.label}</label> : ""}
       <Select
-        css={selectBox(props.isValid ?? true)}
+        css={selectBox(isValid?.isValid!)}
         value={props.options.filter((option) => option.value === props.value)}
         styles={{
           control: (base) => ({
             ...base,
             outline: "none !important",
-            border:
-              Borders.textInputBorder(props.isValid ?? true) + " !important",
+            border: Borders.textInputBorder(isValid?.isValid!) + " !important",
             fontSize: Sizes.textInputFontSize + " !important",
             boxShadow: "none !important",
           }),
@@ -44,8 +52,8 @@ const SelectBox = (props: Props) => {
         name={props.name}
         options={props.options}
       />
-      {!props.isValid && props.validate?.message ? (
-        <span css={validateMessage}>{props.validate.message}</span>
+      {!isValid?.isValid && isValid?.message ? (
+        <span css={validateMessage}>{isValid.message}</span>
       ) : (
         ""
       )}

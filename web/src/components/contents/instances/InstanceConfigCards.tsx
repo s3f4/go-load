@@ -55,4 +55,4 @@ const instanceTitle = css`
   font-weight: bold;
 `;
 
-export default InstanceConfigCards;
+export default React.memo(InstanceConfigCards);

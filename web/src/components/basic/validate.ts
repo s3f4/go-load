@@ -10,19 +10,44 @@ export interface Validate {
   email?: boolean;
 }
 
+export interface IsValid {
+  isValid: boolean;
+  message?: string;
+}
+
+const parseValidationRules = (validate: string): Validate => {
+  const validateObj: Validate = {};
+
+  const rules = validate.split("|");
+  rules.forEach((rule) => {
+    const ruleArr = rule.split(":");
+    if (ruleArr.length === 1) {
+      validateObj[ruleArr[0]] = true;
+    } else if (ruleArr.length === 2) {
+      if (ruleArr[0].includes("min") || ruleArr[0].includes("max")) {
+        validateObj[ruleArr[0]] = toNum(ruleArr[1].trim());
+      } else {
+        validateObj[ruleArr[0]] = ruleArr[1].trim();
+      }
+    }
+  });
+  return validateObj;
+};
+
 // validate is using to validation message
-export const validate = (value: any, validate: Validate): boolean => {
+export const validate = (value: any, validationStr: string): IsValid => {
+  const validate = parseValidationRules(validationStr);
   if (validate.min && toNum(value) < validate.min) {
-    return false;
+    return { message: validate.message, isValid: false };
   }
   if (validate.max && toNum(value) > validate.max) {
-    return false;
+    return { message: validate.message, isValid: false };
   }
   if (validate.minLength && value.length < validate.minLength) {
-    return false;
+    return { message: validate.message, isValid: false };
   }
   if (validate.maxLength && value.length > validate.maxLength) {
-    return false;
+    return { message: validate.message, isValid: false };
   }
 
   if (validate.url) {
@@ -31,7 +56,7 @@ export const validate = (value: any, validate: Validate): boolean => {
     );
 
     if (!value.match(regex)) {
-      return false;
+      return { message: validate.message, isValid: false };
     }
   }
 
@@ -41,9 +66,9 @@ export const validate = (value: any, validate: Validate): boolean => {
     );
 
     if (!value.match(regex)) {
-      return false;
+      return { message: validate.message, isValid: false };
     }
   }
 
-  return true;
+  return { message: undefined, isValid: true };
 };

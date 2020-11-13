@@ -180,11 +180,7 @@ const SpinUp: React.FC<Props> = (props: Props) => {
             type="text"
             onChange={handleChange}
             value={count}
-            validate={{
-              min: 1,
-              max: instanceLimit,
-              message: "Your can create " + instanceLimit + " instances.",
-            }}
+            validate={`min:1|max:${instanceLimit}|message:Your can create ${instanceLimit} instances.`}
           />
 
           <SelectBox
@@ -193,11 +189,7 @@ const SpinUp: React.FC<Props> = (props: Props) => {
             onChange={handleChange}
             options={regions}
             value={region}
-            validate={{
-              minLength: 3,
-              message: "Please choose a region",
-            }}
-            isValid={isValid["region"]}
+            validate="minLength: 3|message:Please choose a region"
           />
 
           <div css={buttons}>

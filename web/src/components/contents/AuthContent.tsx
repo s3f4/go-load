@@ -109,10 +109,7 @@ const AuthContent: React.FC<Props> = (props: Props) => {
             type="text"
             onChange={handleChange}
             value={user.email}
-            validate={{
-              email: true,
-              message: "Provide a valid email",
-            }}
+            validate="email|message:Provide a valid email"
           />
 
           <TextInput
@@ -121,11 +118,7 @@ const AuthContent: React.FC<Props> = (props: Props) => {
             type="password"
             onChange={handleChange}
             value={user.password}
-            validate={{
-              minLength: 4,
-              maxLength: 9,
-              message: "Please provide a valid passowrd",
-            }}
+            validate="minLength:4|maxLength:9|message:Please provide a valid passowrd"
           />
 
           <div css={buttons}>{button()}</div>

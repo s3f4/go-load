@@ -4,7 +4,7 @@ import { jsx, css } from "@emotion/core";
 import TextInput from "../../basic/TextInput";
 import Button from "../../basic/Button";
 import { toNum } from "../../basic/helper";
-import { BaseForm } from "../../basic/BaseForm";
+import { BaseForm, validateAll } from "../../basic/BaseForm";
 import SelectBox from "../../basic/SelectBox";
 import { Header, Test } from "../../../api/entity/test";
 import { TestGroup } from "../../../api/entity/test_group";
@@ -213,6 +213,7 @@ const TestForm = (props: Props) => {
                 setTest(initialTest);
               }}
               disabled={
+                !validateAll(isValid) ||
                 typeof props.testGroup === "undefined" ||
                 props.testGroup.name.length === 0
               }
@@ -225,6 +226,7 @@ const TestForm = (props: Props) => {
                 setTest(initialTest);
               }}
               disabled={
+                !validateAll(isValid) ||
                 typeof props.testGroup === "undefined" ||
                 props.testGroup.name.length === 0
               }

@@ -6,7 +6,7 @@ import Button from "../../basic/Button";
 import SelectBox from "../../basic/SelectBox";
 import { toNum } from "../../basic/helper";
 import Loader from "../../basic/Loader";
-import { BaseForm } from "../../basic/BaseForm";
+import { BaseForm, validateAll } from "../../basic/BaseForm";
 import {
   spinUp,
   listAvailableRegions,
@@ -181,6 +181,7 @@ const SpinUp: React.FC<Props> = (props: Props) => {
             onChange={handleChange}
             value={count}
             validate={`min:1|max:${instanceLimit}|message:Your can create ${instanceLimit} instances.`}
+            validation={validation}
           />
 
           <SelectBox
@@ -190,6 +191,7 @@ const SpinUp: React.FC<Props> = (props: Props) => {
             options={regions}
             value={region}
             validate="minLength: 3|message:Please choose a region"
+            validation={validation}
           />
 
           <div css={buttons}>
@@ -198,8 +200,7 @@ const SpinUp: React.FC<Props> = (props: Props) => {
               text="Add New Instance"
               onClick={addNewInstance}
               disabled={
-                !isValid["count"] ||
-                !isValid["region"] ||
+                validateAll(isValid) ||
                 totalInstanceCount() + count > instanceLimit
               }
             />
@@ -208,8 +209,7 @@ const SpinUp: React.FC<Props> = (props: Props) => {
               text="Spin Up"
               onClick={sendRequest}
               disabled={
-                !isValid["count"] ||
-                !isValid["region"] ||
+                validateAll(isValid) ||
                 configs.length === 0 ||
                 totalInstanceCount() > instanceLimit
               }

@@ -8,6 +8,7 @@ import { setUserStorage, signIn, signUp } from "../../api/entity/user";
 import Message from "../basic/Message";
 import { Link, useHistory } from "react-router-dom";
 import { setToken } from "../../api/entity/jwt";
+import { validateAll } from "../basic/BaseForm";
 
 const initialUserState = {
   email: "",
@@ -88,7 +89,7 @@ const AuthContent: React.FC<Props> = (props: Props) => {
         <Button
           text={buttonText}
           onClick={buttonFunc}
-          disabled={!isValid["email"] || !isValid["password"]}
+          disabled={validateAll(isValid)}
         />
         <span css={buttonRightText}>{text}</span>
       </React.Fragment>
@@ -110,6 +111,7 @@ const AuthContent: React.FC<Props> = (props: Props) => {
             onChange={handleChange}
             value={user.email}
             validate="email|message:Provide a valid email"
+            validation={validation}
           />
 
           <TextInput
@@ -119,6 +121,7 @@ const AuthContent: React.FC<Props> = (props: Props) => {
             onChange={handleChange}
             value={user.password}
             validate="minLength:4|maxLength:9|message:Please provide a valid passowrd"
+            validation={validation}
           />
 
           <div css={buttons}>{button()}</div>

@@ -9,6 +9,7 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/s3f4/go-load/apigateway/library"
+	res "github.com/s3f4/go-load/apigateway/library/response"
 	"github.com/s3f4/go-load/apigateway/middlewares"
 	"github.com/s3f4/go-load/apigateway/models"
 	"github.com/s3f4/go-load/apigateway/repository"
@@ -43,23 +44,23 @@ var (
 func (h *authHandler) Signup(w http.ResponseWriter, r *http.Request) {
 	var user models.User
 	if err := parse(r, &user); err != nil {
-		library.R400(w, r, fmt.Errorf("Bad Request"))
+		res.R400(w, r, fmt.Errorf("Bad Request"))
 		return
 	}
 
 	if err := h.ur.Create(&user); err != nil {
-		library.R500(w, r, err)
+		res.R500(w, r, err)
 		return
 	}
 
 	at, rt, err := h.ts.CreateToken(r, &user)
 	if err != nil {
-		library.R401(w, r, fmt.Errorf("Unauthorized"))
+		res.R401(w, r, fmt.Errorf("Unauthorized"))
 		return
 	}
 
 	if err := h.as.CreateAuthCache(at, rt); err != nil {
-		library.R401(w, r, fmt.Errorf("Unauthorized"))
+		res.R401(w, r, fmt.Errorf("Unauthorized"))
 		return
 	}
 
@@ -70,27 +71,27 @@ func (h *authHandler) Signin(w http.ResponseWriter, r *http.Request) {
 	var user models.User
 	if err := parse(r, &user); err != nil {
 		log.Debug(err)
-		library.R400(w, r, fmt.Errorf("Bad Request"))
+		res.R400(w, r, fmt.Errorf("Bad Request"))
 		return
 	}
 
 	dbUser, err := h.ur.GetByEmailAndPassword(&user)
 	if err != nil {
 		log.Debug(err)
-		library.R404(w, r, "User Not Found")
+		res.R404(w, r, "User Not Found")
 		return
 	}
 
 	at, rt, err := h.ts.CreateToken(r, dbUser)
 	if err != nil {
 		log.Debug(err)
-		library.R401(w, r, fmt.Errorf("Unauthorized"))
+		res.R401(w, r, fmt.Errorf("Unauthorized"))
 		return
 	}
 
 	if err := h.as.CreateAuthCache(at, rt); err != nil {
 		log.Debug(err)
-		library.R401(w, r, fmt.Errorf("Unauthorized"))
+		res.R401(w, r, fmt.Errorf("Unauthorized"))
 		return
 	}
 
@@ -102,13 +103,13 @@ func (h *authHandler) Signout(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		log.Debug(err)
-		library.R401(w, r, fmt.Errorf("Unauthorized"))
+		res.R401(w, r, fmt.Errorf("Unauthorized"))
 		return
 	}
 
 	if err = h.as.DeleteAuthCache(refresh.UUID); err != nil {
 		log.Debug(err)
-		library.R401(w, r, err.Error())
+		res.R401(w, r, err.Error())
 		return
 	}
 
@@ -121,7 +122,7 @@ func (h *authHandler) Signout(w http.ResponseWriter, r *http.Request) {
 		Expires:  time.Now().Add(-100 * time.Hour),
 	})
 
-	library.R200(w, r, "Successfully logged out")
+	res.R200(w, r, "Successfully logged out")
 }
 
 func (h *authHandler) RefreshToken(w http.ResponseWriter, r *http.Request) {
@@ -135,13 +136,13 @@ func (h *authHandler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if err != nil {
-		library.R401(w, r, "Refresh token expired")
+		res.R401(w, r, "Refresh token expired")
 		return
 	}
 
 	if _, ok := token.Claims.(jwt.Claims); !ok || !token.Valid {
 		log.Debug(err)
-		library.R401(w, r, err)
+		res.R401(w, r, err)
 		return
 	}
 
@@ -150,45 +151,45 @@ func (h *authHandler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 		refreshUUID, ok := claims["uuid"].(string)
 		if !ok {
 			log.Debug(err)
-			library.R422(w, r, err)
+			res.R422(w, r, err)
 			return
 		}
 		userID, err := strconv.ParseUint(fmt.Sprintf("%.f", claims["user_id"]), 10, 64)
 		if err != nil {
 			log.Debug(err)
-			library.R422(w, r, err)
+			res.R422(w, r, err)
 			return
 		}
 
 		if err := h.as.DeleteAuthCache(refreshUUID); err != nil {
 			log.Debug(err)
-			library.R401(w, r, fmt.Errorf("Unauthorized"))
+			res.R401(w, r, fmt.Errorf("Unauthorized"))
 			return
 		}
 
 		at, rt, err := h.ts.CreateToken(r, &models.User{ID: uint(userID)})
 		if err != nil {
-			library.R401(w, r, err.Error())
+			res.R401(w, r, err.Error())
 			return
 		}
 
 		if err := h.as.CreateAuthCache(at, rt); err != nil {
 			log.Debug(err)
-			library.R401(w, r, err.Error())
+			res.R401(w, r, err.Error())
 			return
 		}
 
 		user, err := h.ur.Get(uint(userID))
 		if err != nil {
 			log.Debug(err)
-			library.R401(w, r, "refresh token is expired")
+			res.R401(w, r, "refresh token is expired")
 			return
 		}
 
 		h.ResponseWithCookie(w, r, user, at, rt)
 
 	} else {
-		library.R401(w, r, "refresh token is expired")
+		res.R401(w, r, "refresh token is expired")
 	}
 }
 
@@ -196,10 +197,10 @@ func (h *authHandler) CurrentUser(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	userID, ok := ctx.Value(middlewares.UserIDKey).(uint)
 	if !ok {
-		library.R422(w, r, "unprocessable entity")
+		res.R422(w, r, "unprocessable entity")
 		return
 	}
-	library.R200(w, r, userID)
+	res.R200(w, r, userID)
 }
 
 func (h *authHandler) ResponseWithCookie(w http.ResponseWriter, r *http.Request, user *models.User, at *models.AccessToken, rt *models.RefreshToken) {
@@ -219,7 +220,7 @@ func (h *authHandler) ResponseWithCookie(w http.ResponseWriter, r *http.Request,
 		log.Debug(err)
 	}
 
-	library.R200(w, r, map[string]interface{}{
+	res.R200(w, r, map[string]interface{}{
 		"token": at.Token,
 		"user":  user,
 	})

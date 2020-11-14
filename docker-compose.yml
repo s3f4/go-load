@@ -40,7 +40,7 @@ services:
       - AUTH_REFRESH_SECRET=abc13253
       - REDIS_SERVER_PASSWORD=redisPass123
       - CSRF_KEY=abc13253
-      - AT_EXPIRE_MINUTES=1
+      - AT_EXPIRE_MINUTES=10
       - RT_EXPIRE_MINUTES=10080
 
   eventhandler:

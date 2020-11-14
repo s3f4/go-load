@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi"
-	"github.com/s3f4/go-load/apigateway/library"
+	res "github.com/s3f4/go-load/apigateway/library/response"
 	"github.com/s3f4/go-load/apigateway/repository"
 )
 
@@ -15,14 +15,14 @@ func TestCtx(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		testID, err := strconv.Atoi(chi.URLParam(r, "ID"))
 		if err != nil {
-			library.R400(w, r, err)
+			res.R400(w, r, err)
 			return
 
 		}
 		tr := repository.NewTestRepository()
 		test, err := tr.Get(uint(testID))
 		if err != nil {
-			library.R404(w, r, err)
+			res.R404(w, r, err)
 			return
 		}
 		ctx := context.WithValue(r.Context(), TestCtxKey, test)

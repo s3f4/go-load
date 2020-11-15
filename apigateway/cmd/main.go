@@ -4,9 +4,9 @@ import (
 	"os"
 
 	"github.com/s3f4/go-load/apigateway/app"
+	"github.com/s3f4/go-load/apigateway/library/log"
 	"github.com/s3f4/go-load/apigateway/template"
 	"github.com/s3f4/mu"
-	"github.com/s3f4/mu/log"
 )
 
 func sshTpl() {

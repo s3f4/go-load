@@ -89,7 +89,7 @@ const AuthContent: React.FC<Props> = (props: Props) => {
         <Button
           text={buttonText}
           onClick={buttonFunc}
-          disabled={validateAll(isValid)}
+          disabled={!validateAll(isValid)}
         />
         <span css={buttonRightText}>{text}</span>
       </React.Fragment>

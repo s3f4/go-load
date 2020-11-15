@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/securecookie"
-	"github.com/s3f4/mu/log"
+	"github.com/s3f4/go-load/apigateway/library/log"
 )
 
 var hashKey, _ = random(32)

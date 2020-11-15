@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/s3f4/go-load/apigateway/library/log"
 	res "github.com/s3f4/go-load/apigateway/library/response"
 	"github.com/s3f4/go-load/apigateway/services"
-	"github.com/s3f4/mu/log"
 )
 
 // AuthCtx gets test with given id

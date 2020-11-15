@@ -23,7 +23,9 @@ infra/base/inventory.txt
 *.tfvars
 *.tfstate
 *vendor
-*log
+apigateway/log
+eventhandler/log
+worker/log
 go-load.code-workspace
 *.crt
 *.key

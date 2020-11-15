@@ -10,6 +10,7 @@ import (
 	"github.com/go-chi/cors"
 	"github.com/gorilla/csrf"
 	"github.com/s3f4/go-load/apigateway/handlers"
+	res "github.com/s3f4/go-load/apigateway/library/response"
 	"github.com/s3f4/go-load/apigateway/middlewares"
 )
 

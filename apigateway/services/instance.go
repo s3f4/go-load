@@ -7,12 +7,13 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
-	"os/exec"
 	"strings"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/swarm"
 	"github.com/docker/docker/client"
+	"github.com/s3f4/go-load/apigateway/library"
+	"github.com/s3f4/go-load/apigateway/library/log"
 	"github.com/s3f4/go-load/apigateway/models"
 	"github.com/s3f4/go-load/apigateway/repository"
 	"github.com/s3f4/go-load/apigateway/template"
@@ -78,27 +79,31 @@ func (s *instanceService) BuildTemplate(iReq models.InstanceConfig) error {
 
 // Spin Up instances
 func (s *instanceService) SpinUp() error {
-	if _, err := RunCommands("cd infra;terraform apply -auto-approve;"); err != nil {
+	if _, err := library.RunCommands("cd infra;terraform apply -auto-approve;"); err != nil {
+		log.Info(err)
 		return err
 	}
 
-	RunCommands("echo 'sleeping 20 secs for initializing'; sleep 20;")
+	library.RunCommands("echo 'sleeping 20 secs for initializing'; sleep 20;")
 
 	if err := s.installDockerToWNodes(); err != nil {
+		log.Info(err)
 		return err
 	}
 
-	// output, err := RunCommands("cd ./infra/ansible; ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.txt known_hosts.yml;")
-	// fmt.Println(string(output))
+	// output, err := library.RunCommands("cd ./infra/ansible; ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.txt known_hosts.yml;")
+	// log.Info(string(output))
 	// if err != nil {
 	// 	return err
 	// }
 
 	if err := s.runAnsibleCommands(); err != nil {
+		log.Info(err)
 		return err
 	}
 
 	if err := s.joinWNodesToSwarm(); err != nil {
+		log.Info(err)
 		return err
 	}
 
@@ -107,8 +112,8 @@ func (s *instanceService) SpinUp() error {
 
 // installDockerToWNodes installs docker to worker nodes to join swarm
 func (s *instanceService) installDockerToWNodes() error {
-	output, err := RunCommands(buildAnsibleCommand("docker-playbook.yml", ""))
-	fmt.Println(string(output))
+	output, err := library.RunCommands(buildAnsibleCommand("docker-playbook.yml", ""))
+	log.Info(string(output))
 	return err
 }
 
@@ -117,6 +122,7 @@ func (s *instanceService) swarmInspect() (swarm.Swarm, error) {
 	context := context.Background()
 	cli, err := client.NewEnvClient()
 	if err != nil {
+		log.Info(err)
 		return swarm.Swarm{}, err
 	}
 
@@ -128,14 +134,14 @@ func (s *instanceService) joinWNodesToSwarm() error {
 
 	swarm, err := s.swarmInspect()
 	if err != nil {
+		log.Info(err)
 		return err
 	}
 
 	token := swarm.JoinTokens.Worker
 	var addr string
-	fmt.Println(os.Getenv("APP_ENV"))
+
 	if os.Getenv("APP_ENV") != "development" {
-		os.Getenv("APP_ENV")
 		// If environment is production, read master ip address from inventory file
 		addr, err = s.parseInventoryFile()
 	} else {
@@ -145,20 +151,23 @@ func (s *instanceService) joinWNodesToSwarm() error {
 	}
 
 	if err != nil {
+		log.Info(err)
 		return nil
 	}
 
-	output, err := RunCommands(buildAnsibleCommand("swarm-join.yml", fmt.Sprintf("--extra-vars '{\"token\":\"%s\",\"addr\": \"%s\"}'", token, addr)))
-	fmt.Println(string(output))
+	output, err := library.RunCommands(buildAnsibleCommand("swarm-join.yml", fmt.Sprintf("--extra-vars '{\"token\":\"%s\",\"addr\": \"%s\"}'", token, addr)))
+	log.Info(err)
+	log.Info(string(output))
 	return err
 }
 
 // runAnsibleCommands cert copies cert file to worker nodes to registry service
 // hosts adds registry domain to /etc/hosts file
 func (s *instanceService) runAnsibleCommands() error {
-	output, err := RunCommands(buildAnsibleCommand("cert.yml", ""))
-	fmt.Println(string(output))
+	output, err := library.RunCommands(buildAnsibleCommand("cert.yml", ""))
+	log.Debug(string(output))
 	if err != nil {
+		log.Info(err)
 		return err
 	}
 	var addr string
@@ -169,12 +178,13 @@ func (s *instanceService) runAnsibleCommands() error {
 	}
 
 	if err != nil {
+		log.Info(err)
 		return err
 	}
 
-	output, err = RunCommands(buildAnsibleCommand("hosts.yml", fmt.Sprintf("--extra-vars '{\"addr\": \"%s\"}'", addr)))
-	fmt.Println(string(output))
+	output, err = library.RunCommands(buildAnsibleCommand("hosts.yml", fmt.Sprintf("--extra-vars '{\"addr\": \"%s\"}'", addr)))
 	if err != nil {
+		log.Info(err)
 		return err
 	}
 
@@ -183,9 +193,9 @@ func (s *instanceService) runAnsibleCommands() error {
 
 // Destroy destroys worker instances
 func (s *instanceService) Destroy() error {
-	RunCommands("cd infra;terraform destroy -auto-approve")
-	RunCommands("cd infra;rm -rf .terraform")
-	RunCommands("cd infra;rm -f terraform.tfstate*")
+	library.RunCommands("cd infra;terraform destroy -auto-approve")
+	library.RunCommands("cd infra;rm -rf .terraform")
+	library.RunCommands("cd infra;rm -f terraform.tfstate*")
 	t := template.NewInfraBuilder(
 		"template/workers.tpl",
 		"infra/workers.tf",
@@ -196,12 +206,14 @@ func (s *instanceService) Destroy() error {
 	)
 
 	if err := t.Write(); err != nil {
+		log.Info(err)
 		return err
 	}
 
-	RunCommands("cd infra;terraform init;terraform apply -auto-approve")
+	library.RunCommands("cd infra;terraform init;terraform apply -auto-approve")
 
 	if err := s.repository.Delete(&models.InstanceConfig{}); err != nil {
+		log.Info(err)
 		return err
 	}
 
@@ -212,6 +224,7 @@ func (s *instanceService) Destroy() error {
 func (s *instanceService) parseInventoryFile() (string, error) {
 	data, err := ioutil.ReadFile("./infra/ansible/inventory.tmpl")
 	if err != nil {
+		log.Info(err)
 		return "", err
 	}
 
@@ -221,15 +234,15 @@ func (s *instanceService) parseInventoryFile() (string, error) {
 
 // Terraform shows available regions
 func (s *instanceService) ShowRegions() (string, error) {
-	output, err := RunCommands("cd infra;terraform output -json regions")
-	fmt.Println(string(output))
+	output, err := library.RunCommands("cd infra;terraform output -json regions")
+	log.Info(string(output))
 	return string(output), err
 }
 
 // Terraform shows total droplet limit
 func (s *instanceService) ShowAccount() (string, error) {
-	output, err := RunCommands("cd infra;terraform output -json account")
-	fmt.Println(string(output))
+	output, err := library.RunCommands("cd infra;terraform output -json account")
+	log.Info(string(output))
 	return string(output), err
 }
 
@@ -261,11 +274,13 @@ func (s *instanceService) AddLabels() error {
 	var options types.NodeListOptions
 	nodes, err := cli.NodeList(context, options)
 	if err != nil {
+		log.Info(err)
 		return err
 	}
 
 	swarm, err := cli.SwarmInspect(context)
 	if err != nil {
+		log.Info(err)
 		return err
 	}
 
@@ -274,6 +289,7 @@ func (s *instanceService) AddLabels() error {
 		if strings.HasPrefix(node.Description.Hostname, "worker") {
 			node.Spec.Annotations.Labels["role"] = "worker"
 			if err := cli.NodeUpdate(context, node.ID, swarm.Version, node.Spec); err != nil {
+				log.Info(err)
 				return err
 			}
 		}
@@ -287,27 +303,14 @@ func (s *instanceService) GetInstanceInfo() (*models.InstanceConfig, error) {
 
 func buildAnsibleCommand(file string, extraVars string) string {
 	c := fmt.Sprintf("cd ./infra/ansible; ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.txt %s %s", file, extraVars)
-	fmt.Println(c)
+	log.Info(c)
 	return c
-}
-
-// RunCommands runs multiple commands
-func RunCommands(command string) ([]byte, error) {
-	cmd := exec.Command("/bin/sh", "-c", command)
-	output, err := cmd.CombinedOutput()
-
-	if err != nil {
-		fmt.Println(string(output))
-		return output, err
-	}
-	fmt.Println(string(output))
-	return output, nil
 }
 
 func getIP() (string, error) {
 	resp, err := http.Get("https://www.mapper.ntppool.org/json")
 	if err != nil {
-		fmt.Println(err)
+		log.Info(err)
 		return "", err
 	}
 
@@ -315,7 +318,7 @@ func getIP() (string, error) {
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Println(err)
+		log.Info(err)
 		return "", err
 	}
 
@@ -326,7 +329,7 @@ func getIP() (string, error) {
 	}{}
 
 	if err = json.Unmarshal(body, &ip); err != nil {
-		fmt.Println(err)
+		log.Info(err)
 		return "", err
 	}
 

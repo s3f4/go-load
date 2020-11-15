@@ -40,6 +40,8 @@ func AuthCtx(next http.Handler) http.Handler {
 
 		if os.Getenv("APP_ENV") == "production" && len(os.Getenv("DOMAIN")) > 0 {
 			if r.RemoteAddr != access.RemoteAddr || r.UserAgent() != access.UserAgent {
+				log.Infof("r.RemoteAddr:%s\naccess.RemoteAddr:%s\n", r.RemoteAddr, access.RemoteAddr)
+				log.Infof("r.UserAgent():%s\naccess.UserAgent:%s\n", r.UserAgent(), access.UserAgent)
 				res.R401(w, r, err)
 				return
 			}

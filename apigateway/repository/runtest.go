@@ -1,8 +1,7 @@
 package repository
 
 import (
-	"fmt"
-
+	"github.com/s3f4/go-load/apigateway/library/log"
 	"github.com/s3f4/go-load/apigateway/models"
 	"gorm.io/gorm"
 )
@@ -55,7 +54,7 @@ func (r *runTestRepository) Get(id uint) (*models.RunTest, error) {
 func (r *runTestRepository) List() ([]models.RunTest, error) {
 	var testReq []models.RunTest
 	if err := r.DB().Find(&testReq).Error; err != nil {
-		fmt.Println(err)
+		log.Debug(err)
 		return nil, err
 	}
 	return testReq, nil

@@ -2,9 +2,9 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
+	"github.com/s3f4/go-load/apigateway/library/log"
 	res "github.com/s3f4/go-load/apigateway/library/response"
 	"github.com/s3f4/go-load/apigateway/middlewares"
 	"github.com/s3f4/go-load/apigateway/models"
@@ -32,14 +32,14 @@ var (
 func (h *runTestHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var runTest models.RunTest
 	if err := json.NewDecoder(r.Body).Decode(&runTest); err != nil {
-		fmt.Println(err)
+		log.Info(err)
 		res.R400(w, r, "Bad Request")
 		return
 	}
 
 	err := h.service.Create(&runTest)
 	if err != nil {
-		fmt.Println(err)
+		log.Info(err)
 		res.R500(w, r, err)
 		return
 	}
@@ -49,12 +49,14 @@ func (h *runTestHandler) Create(w http.ResponseWriter, r *http.Request) {
 func (h *runTestHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	var runTest models.RunTest
 	if err := json.NewDecoder(r.Body).Decode(&runTest); err != nil {
+		log.Info(err)
 		res.R400(w, r, "Bad Request")
 		return
 	}
 
 	err := h.service.Delete(&runTest)
 	if err != nil {
+		log.Info(err)
 		res.R500(w, r, err)
 		return
 	}
@@ -73,6 +75,7 @@ func (h *runTestHandler) Get(w http.ResponseWriter, r *http.Request) {
 func (h *runTestHandler) List(w http.ResponseWriter, r *http.Request) {
 	runTest, err := h.service.List()
 	if err != nil {
+		log.Info(err)
 		res.R500(w, r, err)
 		return
 	}

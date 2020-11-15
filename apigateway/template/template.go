@@ -3,13 +3,13 @@ package template
 import (
 	"bufio"
 	"bytes"
-	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"os"
 	"strings"
 	"text/template"
+
+	"github.com/s3f4/go-load/apigateway/library/log"
 )
 
 // InfraBuilderService is used to build new
@@ -38,14 +38,14 @@ func NewInfraBuilder(templatePath, targetPath string, vars map[string]interface{
 func (ib *infraBuilder) Parse() (*bytes.Buffer, error) {
 	t, err := template.ParseFiles(ib.TemplatePath)
 	if err != nil {
-		log.Print(err)
+		log.Info(err)
 		return nil, nil
 	}
 
 	var tpl bytes.Buffer
 	err = t.Execute(&tpl, ib.Vars)
 	if err != nil {
-		log.Print("execute: ", err)
+		log.Info("execute: ", err)
 		return nil, err
 	}
 	return &tpl, nil
@@ -66,7 +66,7 @@ func (ib *infraBuilder) Write() error {
 
 	reader := bufio.NewReader(tpl)
 	b, _ := ioutil.ReadAll(reader)
-	fmt.Println(string(b))
+	log.Info(string(b))
 	io.Copy(f, strings.NewReader(string(b)))
 
 	return nil

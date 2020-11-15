@@ -2,8 +2,9 @@ package services
 
 import (
 	"fmt"
-	"log"
 	"os"
+
+	"github.com/s3f4/go-load/apigateway/library/log"
 
 	"github.com/streadway/amqp"
 )
@@ -99,11 +100,11 @@ func (r *rabbitMQService) Listen(queue string) {
 	block := make(chan struct{})
 	go func() {
 		for d := range msgs {
-			log.Printf("Received a message: %s", d.Body)
+			log.Debugf("Received a message: %s", d.Body)
 			ch.Ack(d.DeliveryTag, d.Redelivered)
 		}
-		fmt.Println("test")
+		log.Info("exit.")
 	}()
-	fmt.Println("finishing...")
+	log.Info("finishing listening...")
 	<-block
 }

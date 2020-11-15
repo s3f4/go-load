@@ -2,7 +2,6 @@ package services
 
 import (
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/s3f4/go-load/apigateway/library/log"
@@ -58,14 +57,13 @@ func (s *authService) GetAuthCache(UUID string) (string, error) {
 // DeleteAuthCache clears auth objects on cache database.
 func (s *authService) DeleteAuthCache(rtUUID string) error {
 	deletedRt, err := s.r.Del(rtUUID)
-	log.Debug(deletedRt)
-	log.Debug(err)
 	if err != nil {
+		log.Debug(err)
 		return err
 	}
 
 	if deletedRt != 1 {
-		fmt.Printf("deleted access token: %#v", deletedRt)
+		log.Debugf("deleted access token: %#v", deletedRt)
 		return errors.New("something went wrong")
 	}
 

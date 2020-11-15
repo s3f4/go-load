@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/s3f4/go-load/apigateway/library/log"
@@ -50,15 +49,14 @@ func (h *testGroupHandler) Start(w http.ResponseWriter, r *http.Request) {
 func (h *testGroupHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var testConfig models.TestGroup
 	if err := json.NewDecoder(r.Body).Decode(&testConfig); err != nil {
-		fmt.Println(err)
+		log.Debug(err)
 		res.R400(w, r, "Bad Request")
 		return
 	}
 
-	fmt.Printf("%#v", testConfig)
 	err := h.service.Create(&testConfig)
 	if err != nil {
-		fmt.Println(err)
+		log.Debug(err)
 		res.R500(w, r, err)
 		return
 	}

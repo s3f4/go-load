@@ -35,7 +35,9 @@ const AuthContent: React.FC<Props> = (props: Props) => {
     });
   };
 
-  const validation = (name: string) => (value: boolean) =>
+  console.log(isValid);
+
+  const validation = (name: string, value: boolean) =>
     setIsValid({
       ...isValid,
       [name]: value,
@@ -95,6 +97,10 @@ const AuthContent: React.FC<Props> = (props: Props) => {
       </React.Fragment>
     );
   };
+
+  console.log("validateall");
+  console.log(isValid);
+  console.log(validateAll(isValid));
 
   const signInForm = () => {
     return (

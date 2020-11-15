@@ -40,15 +40,15 @@ const TestForm = (props: Props) => {
     goroutine_count: true,
   });
 
+  React.useEffect(() => {
+    props.test && setTest(props.test);
+  }, [props.test]);
+
   const validation = (name: string, value: boolean) =>
     setIsValid({
       ...isValid,
       [name]: value,
     });
-
-  React.useEffect(() => {
-    props.test && setTest(props.test);
-  }, [props.test]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement> | any) => {
     props.setMessage && props.setMessage();

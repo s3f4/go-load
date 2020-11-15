@@ -31,6 +31,7 @@ const parseValidationRules = (validate: string): Validate => {
       }
     }
   });
+  console.log(validateObj);
   return validateObj;
 };
 

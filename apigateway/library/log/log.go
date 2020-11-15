@@ -46,8 +46,7 @@ func BuildLogger(env string) {
 		ErrorOutputPaths: []string{"stderr"},
 	}
 
-
-	logger, err := config.Build()
+	logger, err := config.Build(zap.AddCallerSkip(1))
 	if err != nil {
 		panic(err)
 	}

@@ -6,8 +6,8 @@ import (
 )
 
 func TestSetOutputPaths(t *testing.T) {
-	os.Setenv(APP_ENV, "development")
-	BuildLogger(os.Getenv(APP_ENV))
+	os.Setenv(APPENV, "development")
+	BuildLogger(os.Getenv(APPENV))
 	Error("test", "test")
 	Debug("test", "test")
 }

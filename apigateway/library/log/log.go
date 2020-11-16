@@ -10,14 +10,15 @@ import (
 
 var log *zap.SugaredLogger
 var config zap.Config
+var logger *zap.Logger
 
 var (
-	//APP_ENV for config
-	APP_ENV = "APP_ENV"
+	//APPENV for config
+	APPENV = "APP_ENV"
 )
 
 func init() {
-	BuildLogger(os.Getenv(APP_ENV))
+	BuildLogger(os.Getenv(APPENV))
 }
 
 // BuildLogger builds log config
@@ -46,12 +47,18 @@ func BuildLogger(env string) {
 		ErrorOutputPaths: []string{"stderr"},
 	}
 
-	logger, err := config.Build(zap.AddCallerSkip(1))
+	l, err := config.Build(zap.AddCallerSkip(1))
 	if err != nil {
 		panic(err)
 	}
 
-	log = logger.Sugar()
+	logger = l
+	log = l.Sugar()
+}
+
+// GetLogger returns zap.logger object
+func GetLogger() *zap.Logger {
+	return logger
 }
 
 // SetOutputPaths creates log directory

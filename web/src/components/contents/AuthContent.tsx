@@ -98,10 +98,6 @@ const AuthContent: React.FC<Props> = (props: Props) => {
     );
   };
 
-  console.log("validateall");
-  console.log(isValid);
-  console.log(validateAll(isValid));
-
   const signInForm = () => {
     return (
       <div css={container}>

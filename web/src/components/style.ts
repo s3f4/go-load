@@ -128,3 +128,23 @@ export const cardTitle = css`
   height: 100;
   padding: 0.5rem;
 `;
+
+export const leftColumn = css`
+  background-color: #e3e3e3;
+  width: 100%;
+  padding: 2rem;
+
+  ${MediaQuery[1]} {
+    width: 25%;
+    min-height: 50rem;
+  }
+`;
+
+export const rightColumn = css`
+  width: 100%;
+  ${MediaQuery[1]} {
+    width: 75%;
+    min-height: 50rem;
+  }
+  padding: 2rem;
+`;

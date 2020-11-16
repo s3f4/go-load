@@ -11,7 +11,7 @@ import TestForm from "./test_form";
 import { Test } from "../../../api/entity/test";
 import { saveTestGroup, TestGroup } from "../../../api/entity/test_group";
 import { FiTrash2, FiEdit } from "react-icons/fi";
-import { MediaQuery } from "../../style";
+import { leftColumn, MediaQuery, rightColumn } from "../../style";
 
 interface Props {}
 
@@ -251,26 +251,6 @@ const container = css`
   ${MediaQuery[1]} {
     flex-direction: row;
   }
-`;
-
-const leftColumn = css`
-  background-color: #e3e3e3;
-  width: 100%;
-  padding: 2rem;
-
-  ${MediaQuery[1]} {
-    width: 30%;
-    min-height: 50rem;
-  }
-`;
-
-const rightColumn = css`
-  width: 100%;
-  ${MediaQuery[1]} {
-    width: 70%;
-    min-height: 50rem;
-  }
-  padding: 2rem;
 `;
 
 const leftConfigDiv = css`

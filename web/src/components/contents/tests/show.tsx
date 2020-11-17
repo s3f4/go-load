@@ -22,7 +22,14 @@ import {
   updateTest,
 } from "../../../api/entity/test";
 import TextInput from "../../basic/TextInput";
-import { FiPlay, FiTrash2, FiEdit } from "react-icons/fi";
+import {
+  FiPlay,
+  FiTrash2,
+  FiEdit,
+  FiPlayCircle,
+  FiEdit2,
+  FiPlusCircle,
+} from "react-icons/fi";
 
 interface Props {
   testGroup?: TestGroup;
@@ -249,13 +256,25 @@ const Show: React.FC<Props> = (props: Props) => {
               <React.Fragment>
                 <Button
                   text="Add New Test"
+                  colorType={ButtonColorType.primary}
+                  type={ButtonType.iconTextButton}
+                  icon={<FiPlusCircle />}
                   onClick={() => {
                     setAddNewTest(true);
                   }}
                 />
-                <Button text="Run" onClick={run(selectedTestGroup)} />
                 <Button
-                  text="Update"
+                  text="Run All"
+                  colorType={ButtonColorType.success}
+                  type={ButtonType.iconTextButton}
+                  icon={<FiPlayCircle />}
+                  onClick={run(selectedTestGroup)}
+                />
+                <Button
+                  text="Update Test Group Name"
+                  colorType={ButtonColorType.secondary}
+                  type={ButtonType.iconTextButton}
+                  icon={<FiEdit2 />}
                   onClick={() => {
                     setUpdateSelectedGroupName(selectedTestGroup.name);
                   }}

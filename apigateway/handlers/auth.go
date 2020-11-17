@@ -44,22 +44,26 @@ var (
 func (h *authHandler) Signup(w http.ResponseWriter, r *http.Request) {
 	var user models.User
 	if err := parse(r, &user); err != nil {
-		res.R400(w, r, fmt.Errorf("Bad Request"))
+		log.Debug(err)
+		res.R400(w, r, library.ErrBadRequest)
 		return
 	}
 
 	if err := h.ur.Create(&user); err != nil {
+		log.Debug(err)
 		res.R500(w, r, err)
 		return
 	}
 
 	at, rt, err := h.ts.CreateToken(r, &user)
 	if err != nil {
+		log.Debug(err)
 		res.R401(w, r, library.ErrUnauthorized)
 		return
 	}
 
 	if err := h.as.CreateAuthCache(at, rt); err != nil {
+		log.Debug(err)
 		res.R401(w, r, library.ErrUnauthorized)
 		return
 	}

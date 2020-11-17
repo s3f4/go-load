@@ -75,10 +75,11 @@ func (h *runTestHandler) Get(w http.ResponseWriter, r *http.Request) {
 	}
 	res.R200(w, r, runTest)
 }
+
 func (h *runTestHandler) List(w http.ResponseWriter, r *http.Request) {
 	runTest, err := h.service.List()
 	if err != nil {
-		log.Error(err)
+		log.Info(err)
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			res.R404(w, r, library.ErrNotFound)
 			return

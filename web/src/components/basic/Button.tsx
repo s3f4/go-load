@@ -63,6 +63,16 @@ interface Props {
 }
 
 const Button: React.FC<Props> = (props: Props) => {
+  const renderContent = () => {
+    if (!props.loading && props.type === ButtonType.iconTextButton) {
+      return <span css={icon}>{props.icon}</span>;
+    }
+
+    if (props.loading) {
+      return <Loader inlineLoading={true} />;
+    }
+  };
+
   return (
     <React.Fragment>
       <button
@@ -75,13 +85,11 @@ const Button: React.FC<Props> = (props: Props) => {
         onClick={props.onClick}
         disabled={props.loading || props.disabled}
       >
-        {(props.type !== ButtonType.iconButton && props.icon) ?? ""}
-        {props.loading ? <Loader inlineLoading={true} /> : ""}
-
+        {renderContent()}
         {props.type === ButtonType.iconButton ? (
           props.icon
         ) : (
-          <div css={text}>{props.text}</div>
+          <span css={text}>{props.text}</span>
         )}
       </button>
     </React.Fragment>
@@ -132,6 +140,13 @@ const button = (
         min-height: 4rem;
         font-size: 1.6rem;
       `;
+    case ButtonType.iconTextButton:
+      return css`
+        ${gen}
+        min-width: 10rem;
+        min-height: 4rem;
+        font-size: 1.6rem;
+      `;
     default:
       return css`
         ${gen}
@@ -144,6 +159,12 @@ const button = (
 
 const text = css`
   display: inline-block;
+`;
+
+const icon = css`
+  display: inline-block;
+  font-size: 1.6rem;
+  margin: 0 0.4rem 0 0;
 `;
 
 export default React.memo(Button);

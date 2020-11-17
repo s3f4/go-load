@@ -7,6 +7,7 @@ import (
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
+	"github.com/s3f4/go-load/apigateway/library"
 	"github.com/s3f4/go-load/apigateway/library/log"
 	res "github.com/s3f4/go-load/apigateway/library/response"
 	"github.com/s3f4/go-load/apigateway/models"
@@ -29,18 +30,21 @@ var (
 func (h *workerHandler) Stop(w http.ResponseWriter, r *http.Request) {
 	var worker models.Worker
 	if err := json.NewDecoder(r.Body).Decode(&worker); err != nil {
-		res.R400(w, r, "Bad Request")
+		log.Debug(err)
+		res.R400(w, r, library.ErrBadRequest)
 		return
 	}
 
 	cli, err := client.NewEnvClient()
 	if err != nil {
 		log.Errorf("docker client err: %s", err)
+		res.R500(w, r, library.ErrInternalServerError)
+		return
 	}
 
 	if err := cli.ContainerStop(context.Background(), worker.ID, nil); err != nil {
 		log.Errorf("docker client stop err: %s", err)
-		res.R500(w, r, "internal server error")
+		res.R500(w, r, library.ErrInternalServerError)
 		return
 	}
 
@@ -50,14 +54,16 @@ func (h *workerHandler) Stop(w http.ResponseWriter, r *http.Request) {
 func (h *workerHandler) List(w http.ResponseWriter, r *http.Request) {
 	cli, err := client.NewEnvClient()
 	if err != nil {
-		res.R500(w, r, "internal server error")
+		log.Debug(err)
+		res.R500(w, r, library.ErrInternalServerError)
 		return
 	}
 
 	//Retrieve a list of containers
 	containers, err := cli.ContainerList(context.Background(), types.ContainerListOptions{})
 	if err != nil {
-		res.R500(w, r, "internal server error")
+		log.Debug(err)
+		res.R500(w, r, library.ErrInternalServerError)
 		return
 	}
 

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 
 	"github.com/s3f4/go-load/apigateway/library"
@@ -10,6 +11,7 @@ import (
 	"github.com/s3f4/go-load/apigateway/middlewares"
 	"github.com/s3f4/go-load/apigateway/models"
 	"github.com/s3f4/go-load/apigateway/services"
+	"gorm.io/gorm"
 )
 
 type runTestHandlerInterface interface {
@@ -33,7 +35,7 @@ var (
 func (h *runTestHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var runTest models.RunTest
 	if err := json.NewDecoder(r.Body).Decode(&runTest); err != nil {
-		log.Info(err)
+		log.Error(err)
 		res.R400(w, r, library.ErrBadRequest)
 		return
 	}
@@ -68,7 +70,7 @@ func (h *runTestHandler) Get(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	runTest, ok := ctx.Value(middlewares.RunTestCtxKey).(*models.RunTest)
 	if !ok {
-		res.R422(w, r, "unprocessable entity")
+		res.R422(w, r, library.ErrUnprocessableEntity)
 		return
 	}
 	res.R200(w, r, runTest)
@@ -76,7 +78,11 @@ func (h *runTestHandler) Get(w http.ResponseWriter, r *http.Request) {
 func (h *runTestHandler) List(w http.ResponseWriter, r *http.Request) {
 	runTest, err := h.service.List()
 	if err != nil {
-		log.Info(err)
+		log.Error(err)
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			res.R404(w, r, library.ErrNotFound)
+			return
+		}
 		res.R500(w, r, err)
 		return
 	}

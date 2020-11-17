@@ -2,12 +2,15 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 
+	"github.com/s3f4/go-load/apigateway/library"
 	"github.com/s3f4/go-load/apigateway/library/log"
 	res "github.com/s3f4/go-load/apigateway/library/response"
 	"github.com/s3f4/go-load/apigateway/models"
 	"github.com/s3f4/go-load/apigateway/services"
+	"gorm.io/gorm"
 )
 
 type testGroupHandlerInterface interface {
@@ -33,13 +36,14 @@ var (
 func (h *testGroupHandler) Start(w http.ResponseWriter, r *http.Request) {
 	var run models.TestGroup
 	if err := json.NewDecoder(r.Body).Decode(&run); err != nil {
-		res.R400(w, r, "Bad Request")
+		log.Debug(err)
+		res.R400(w, r, library.ErrBadRequest)
 		return
 	}
 
 	if err := h.service.Start(&run); err != nil {
 		log.Errorf("Worker Service Error: %s", err)
-		res.R500(w, r, "worker service error")
+		res.R500(w, r, library.ErrInternalServerError)
 		return
 	}
 
@@ -50,14 +54,14 @@ func (h *testGroupHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var testConfig models.TestGroup
 	if err := json.NewDecoder(r.Body).Decode(&testConfig); err != nil {
 		log.Debug(err)
-		res.R400(w, r, "Bad Request")
+		res.R400(w, r, library.ErrBadRequest)
 		return
 	}
 
 	err := h.service.Create(&testConfig)
 	if err != nil {
 		log.Debug(err)
-		res.R500(w, r, err)
+		res.R500(w, r, library.ErrBadRequest)
 		return
 	}
 	res.R200(w, r, testConfig)
@@ -66,11 +70,13 @@ func (h *testGroupHandler) Create(w http.ResponseWriter, r *http.Request) {
 func (h *testGroupHandler) Update(w http.ResponseWriter, r *http.Request) {
 	var testConfig models.TestGroup
 	if err := json.NewDecoder(r.Body).Decode(&testConfig); err != nil {
-		res.R400(w, r, "Bad Request")
+		log.Debug(err)
+		res.R400(w, r, library.ErrBadRequest)
 		return
 	}
 	err := h.service.Update(&testConfig)
 	if err != nil {
+		log.Debug(err)
 		res.R500(w, r, err)
 		return
 	}
@@ -80,12 +86,14 @@ func (h *testGroupHandler) Update(w http.ResponseWriter, r *http.Request) {
 func (h *testGroupHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	var testConfig models.TestGroup
 	if err := json.NewDecoder(r.Body).Decode(&testConfig); err != nil {
-		res.R400(w, r, "Bad Request")
+		log.Debug(err)
+		res.R400(w, r, library.ErrBadRequest)
 		return
 	}
 
 	err := h.service.Delete(&testConfig)
 	if err != nil {
+		log.Debug(err)
 		res.R500(w, r, err)
 		return
 	}
@@ -95,13 +103,15 @@ func (h *testGroupHandler) Delete(w http.ResponseWriter, r *http.Request) {
 func (h *testGroupHandler) Get(w http.ResponseWriter, r *http.Request) {
 	var testConfig models.TestGroup
 	if err := json.NewDecoder(r.Body).Decode(&testConfig); err != nil {
-		res.R400(w, r, "Bad Request")
+		log.Debug(err)
+		res.R400(w, r, library.ErrBadRequest)
 		return
 	}
 
 	tc, err := h.service.Get(&testConfig)
 	if err != nil {
-		res.R500(w, r, err)
+		log.Debug(err)
+		res.R500(w, r, library.ErrInternalServerError)
 		return
 	}
 	res.R200(w, r, tc)
@@ -110,7 +120,12 @@ func (h *testGroupHandler) Get(w http.ResponseWriter, r *http.Request) {
 func (h *testGroupHandler) List(w http.ResponseWriter, r *http.Request) {
 	testConfig, err := h.service.List()
 	if err != nil {
-		res.R500(w, r, err)
+		log.Debug(err)
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			res.R404(w, r, library.ErrNotFound)
+			return
+		}
+		res.R500(w, r, library.ErrInternalServerError)
 		return
 	}
 	res.R200(w, r, testConfig)

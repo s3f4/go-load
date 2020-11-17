@@ -71,14 +71,14 @@ func (h *authHandler) Signin(w http.ResponseWriter, r *http.Request) {
 	var user models.User
 	if err := parse(r, &user); err != nil {
 		log.Debug(err)
-		res.R400(w, r, fmt.Errorf("Bad Request"))
+		res.R400(w, r, library.ErrBadRequest)
 		return
 	}
 
 	dbUser, err := h.ur.GetByEmailAndPassword(&user)
 	if err != nil {
 		log.Debug(err)
-		res.R404(w, r, "User Not Found")
+		res.R404(w, r, library.ErrNotFound)
 		return
 	}
 
@@ -182,14 +182,14 @@ func (h *authHandler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 		user, err := h.ur.Get(uint(userID))
 		if err != nil {
 			log.Debug(err)
-			res.R401(w, r, "refresh token is expired")
+			res.R401(w, r, library.ErrRefreshTokenExpire)
 			return
 		}
 
 		h.ResponseWithCookie(w, r, user, at, rt)
 
 	} else {
-		res.R401(w, r, "refresh token is expired")
+		res.R401(w, r, library.ErrRefreshTokenExpire)
 	}
 }
 
@@ -197,7 +197,7 @@ func (h *authHandler) CurrentUser(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	userID, ok := ctx.Value(middlewares.UserIDKey).(uint)
 	if !ok {
-		res.R422(w, r, "unprocessable entity")
+		res.R422(w, r, library.ErrUnprocessableEntity)
 		return
 	}
 	res.R200(w, r, userID)

@@ -13,4 +13,8 @@ var (
 	ErrUnprocessableEntity = errors.New("Bad Request")
 	// ErrBadRequest for bad requests
 	ErrBadRequest = errors.New("Bad Request")
+	// ErrRefreshTokenExpire refresh token expired
+	ErrRefreshTokenExpire = errors.New("Refresh token is expired")
+	// ErrInternalServerError internal errors
+	ErrInternalServerError = errors.New("Internal server error")
 )

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/s3f4/go-load/apigateway/library"
 	"github.com/s3f4/go-load/apigateway/library/log"
 	res "github.com/s3f4/go-load/apigateway/library/response"
 	"github.com/s3f4/go-load/apigateway/middlewares"
@@ -33,7 +34,7 @@ func (h *runTestHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var runTest models.RunTest
 	if err := json.NewDecoder(r.Body).Decode(&runTest); err != nil {
 		log.Info(err)
-		res.R400(w, r, "Bad Request")
+		res.R400(w, r, library.ErrBadRequest)
 		return
 	}
 
@@ -50,7 +51,7 @@ func (h *runTestHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	var runTest models.RunTest
 	if err := json.NewDecoder(r.Body).Decode(&runTest); err != nil {
 		log.Info(err)
-		res.R400(w, r, "Bad Request")
+		res.R400(w, r, library.ErrBadRequest)
 		return
 	}
 

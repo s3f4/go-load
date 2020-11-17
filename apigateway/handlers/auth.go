@@ -55,12 +55,12 @@ func (h *authHandler) Signup(w http.ResponseWriter, r *http.Request) {
 
 	at, rt, err := h.ts.CreateToken(r, &user)
 	if err != nil {
-		res.R401(w, r, fmt.Errorf("Unauthorized"))
+		res.R401(w, r, library.ErrUnauthorized)
 		return
 	}
 
 	if err := h.as.CreateAuthCache(at, rt); err != nil {
-		res.R401(w, r, fmt.Errorf("Unauthorized"))
+		res.R401(w, r, library.ErrUnauthorized)
 		return
 	}
 
@@ -85,13 +85,13 @@ func (h *authHandler) Signin(w http.ResponseWriter, r *http.Request) {
 	at, rt, err := h.ts.CreateToken(r, dbUser)
 	if err != nil {
 		log.Debug(err)
-		res.R401(w, r, fmt.Errorf("Unauthorized"))
+		res.R401(w, r, library.ErrUnauthorized)
 		return
 	}
 
 	if err := h.as.CreateAuthCache(at, rt); err != nil {
 		log.Debug(err)
-		res.R401(w, r, fmt.Errorf("Unauthorized"))
+		res.R401(w, r, library.ErrUnauthorized)
 		return
 	}
 
@@ -103,7 +103,7 @@ func (h *authHandler) Signout(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		log.Debug(err)
-		res.R401(w, r, fmt.Errorf("Unauthorized"))
+		res.R401(w, r, library.ErrUnauthorized)
 		return
 	}
 
@@ -163,7 +163,7 @@ func (h *authHandler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 
 		if err := h.as.DeleteAuthCache(refreshUUID); err != nil {
 			log.Debug(err)
-			res.R401(w, r, fmt.Errorf("Unauthorized"))
+			res.R401(w, r, library.ErrUnauthorized)
 			return
 		}
 

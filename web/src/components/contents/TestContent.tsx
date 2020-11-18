@@ -24,6 +24,8 @@ const TestContent: React.FC<Props> = (props: Props) => {
       });
   };
 
+  console.log(instanceConfig);
+
   if (!instanceConfig?.configs) {
     return <Redirect to="/instances" />;
   }

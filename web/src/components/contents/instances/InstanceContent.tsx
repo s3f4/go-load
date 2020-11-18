@@ -37,26 +37,26 @@ const InstanceContent: React.FC = () => {
   };
 
   // spinUpForm
-  const spinUpForm: React.ReactNode = (
-    <SpinUp afterSubmit={spinUpAfterHandle} />
-  );
+  const spinUpForm = () => <SpinUp afterSubmit={spinUpAfterHandle} />;
 
   const onDestroyAll = () => {
     setLoading(true);
     destroyAll()
       .then((response) => {
+        debugger;
         setLoading(false);
         console.log(response);
         setShowInstances(false);
       })
       .catch((error) => {
+        debugger;
         setLoading(false);
         console.log(error);
         setShowInstances(false);
       });
   };
 
-  const instances: React.ReactNode = (
+  const instanceList = () => (
     <div>
       <div css={center}>
         <Button loading={loading} text="Destroy All" onClick={onDestroyAll} />
@@ -76,15 +76,11 @@ const InstanceContent: React.FC = () => {
     </div>
   );
 
-  const content = () => {
-    if (instanceInfo) {
-      return instances;
-    } else {
-      return showInstances ? instances : spinUpForm;
-    }
-  };
-
-  return <React.Fragment>{content()}</React.Fragment>;
+  return (
+    <React.Fragment>
+      {showInstances ? instanceList() : spinUpForm()}
+    </React.Fragment>
+  );
 };
 
 const center = css`

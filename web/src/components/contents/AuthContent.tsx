@@ -35,8 +35,6 @@ const AuthContent: React.FC<Props> = (props: Props) => {
     });
   };
 
-  console.log(isValid);
-
   const validation = (name: string, value: boolean) =>
     setIsValid({
       ...isValid,

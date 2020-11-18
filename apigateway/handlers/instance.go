@@ -41,13 +41,20 @@ func (h *instanceHandler) SpinUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.service.BuildTemplate(instanceConfig); err != nil {
+	workerCount, err := h.service.BuildTemplate(instanceConfig)
+	if err != nil {
 		log.Errorf(err.Error())
 		res.R500(w, r, library.ErrInternalServerError)
 		return
 	}
 
 	if err := h.service.SpinUp(); err != nil {
+		log.Errorf(err.Error())
+		res.R500(w, r, library.ErrInternalServerError)
+		return
+	}
+
+	if err := h.service.ScaleWorkers(workerCount); err != nil {
 		log.Errorf(err.Error())
 		res.R500(w, r, library.ErrInternalServerError)
 		return
@@ -64,6 +71,8 @@ func (h *instanceHandler) Destroy(w http.ResponseWriter, r *http.Request) {
 		res.R500(w, r, library.ErrInternalServerError)
 		return
 	}
+
+	res.R200(w, r, "Workers destroyed")
 }
 
 func (h *instanceHandler) ShowRegions(w http.ResponseWriter, r *http.Request) {
@@ -99,7 +108,7 @@ func (h *instanceHandler) ShowSwarmNodes(w http.ResponseWriter, r *http.Request)
 func (h *instanceHandler) GetInstanceInfo(w http.ResponseWriter, r *http.Request) {
 	instanceConfig, err := h.service.GetInstanceInfo()
 	if err != nil {
-		res.R500(w, r, library.ErrInternalServerError)
+		res.R404(w, r, library.ErrNotFound)
 		return
 	}
 	res.R200(w, r, instanceConfig)

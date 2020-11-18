@@ -3,11 +3,14 @@ package services
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"strings"
+
+	"github.com/docker/docker/api/types/filters"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/swarm"
@@ -21,9 +24,10 @@ import (
 
 // InstanceService ...
 type InstanceService interface {
-	BuildTemplate(iReq models.InstanceConfig) error
+	BuildTemplate(iReq models.InstanceConfig) (int, error)
 	SpinUp() error
 	Destroy() error
+	ScaleWorkers(workerCount int) error
 	ShowRegions() (string, error)
 	ShowAccount() (string, error)
 	ShowSwarmNodes() ([]swarm.Node, error)
@@ -43,10 +47,10 @@ func NewInstanceService() InstanceService {
 	}
 }
 
-func (s *instanceService) BuildTemplate(iReq models.InstanceConfig) error {
+func (s *instanceService) BuildTemplate(iReq models.InstanceConfig) (int, error) {
 	f, err := os.OpenFile("./infra/workers.tf", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	defer f.Close()
 	index := 0
@@ -68,14 +72,15 @@ func (s *instanceService) BuildTemplate(iReq models.InstanceConfig) error {
 	)
 
 	if err := t.Write(); err != nil {
-		return err
+		return 0, err
 	}
 
 	if err := s.repository.Create(&iReq); err != nil {
-		return err
+		return 0, err
 	}
 
-	return nil
+	// returns how many worker will be created.
+	return index, nil
 }
 
 // Spin Up instances
@@ -87,24 +92,24 @@ func (s *instanceService) SpinUp() error {
 
 	library.RunCommands("echo 'sleeping 20 secs for initializing'; sleep 20;")
 
-	if err := s.installDockerToWNodes(); err != nil {
-		log.Info(err)
-		return err
-	}
+	// don't try to join worker nodes to swarm
+	// if env is development
+	if os.Getenv("APP_ENV") != "development" {
+		// install docker to worker nodes
+		if err := s.installDockerToWNodes(); err != nil {
+			log.Info(err)
+			return err
+		}
 
-	if err := s.runAnsibleCommands(); err != nil {
-		log.Info(err)
-		return err
-	}
+		if err := s.runAnsibleCommands(); err != nil {
+			log.Info(err)
+			return err
+		}
 
-	if err := s.joinWNodesToSwarm(); err != nil {
-		log.Info(err)
-		return err
-	}
-
-	if err := s.ScaleWorkers(); err != nil {
-		log.Info(err)
-		return err
+		if err := s.joinWNodesToSwarm(); err != nil {
+			log.Info(err)
+			return err
+		}
 	}
 
 	return nil
@@ -129,24 +134,61 @@ func (s *instanceService) swarmInspect() (swarm.Swarm, error) {
 	return cli.SwarmInspect(context)
 }
 
-func (s *instanceService) ScaleWorkers() error {
+func (s *instanceService) ScaleWorkers2(workerCount int) error {
+	// todo i can't find which methods of docker sdk will be used for service sclae.
+	command := fmt.Sprintf("docker service scale go-load_worker=%d", workerCount)
+	output, err := library.RunCommands(command)
+	log.Info(output)
+	return err
+}
+
+func (s *instanceService) ScaleWorkers(workerCount int) error {
+	context := context.Background()
+	cli, err := client.NewEnvClient()
+	if err != nil {
+		log.Error(err)
+		return err
+	}
+
+	service, err := s.getService("go-load_worker")
+	if err != nil {
+		log.Error(err)
+		return err
+	}
+
+	options := types.ServiceUpdateOptions{}
+	wc := uint64(workerCount)
+
+	service.Spec.Mode.Replicated.Replicas = &wc
+	if _, err := cli.ServiceUpdate(context, service.ID, service.Version, service.Spec, options); err != nil {
+		log.Error(err)
+		return err
+	}
+	return nil
+}
+
+func (s *instanceService) getService(name string) (*swarm.Service, error) {
 	context := context.Background()
 	cli, err := client.NewEnvClient()
 	if err != nil {
 		log.Info(err)
-		return err
+		return nil, err
 	}
 
-	service := swarm.ServiceSpec{}
-	options := types.ServiceCreateOptions{}
+	args := filters.NewArgs()
+	args.Add("name", name)
 
-	cli.ServiceCreate(context, service, options)
-	return nil
+	services, err := cli.ServiceList(context, types.ServiceListOptions{Filters: args})
+
+	if services == nil || len(services) == 0 {
+		return nil, errors.New("No matching service found for name " + name)
+	}
+
+	return &services[0], err
 }
 
 // joinWNodesToSwarm command runs ansible to join all workers to swarm
 func (s *instanceService) joinWNodesToSwarm() error {
-
 	swarm, err := s.swarmInspect()
 	if err != nil {
 		log.Info(err)

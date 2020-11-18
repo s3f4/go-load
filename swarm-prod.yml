@@ -99,7 +99,7 @@ services:
       - RABBITMQ_HOST=queue
       - RABBITMQ_PORT=5672
     deploy:
-      replicas: 1
+      replicas: 0
       placement:
         max_replicas_per_node: 1
         constraints:

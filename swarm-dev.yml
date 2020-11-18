@@ -27,6 +27,13 @@ services:
       - RABBITMQ_PASSWORD=password
       - RABBITMQ_HOST=queue
       - RABBITMQ_PORT=5672
+      - WAIT_HOSTS_TIMEOUT=120
+      - AUTH_ACCESS_SECRET=abc13253
+      - AUTH_REFRESH_SECRET=abc13253
+      - REDIS_SERVER_PASSWORD=redisPass123
+      - CSRF_KEY=abc13253
+      - AT_EXPIRE_MINUTES=10
+      - RT_EXPIRE_MINUTES=10080
     deploy:
       replicas: 1
       placement:
@@ -59,7 +66,7 @@ services:
   web:
     image: registry.dev:5000/web
     ports:
-      - 80:3000
+      - 3000:3000
     environment:
       - CHOKIDAR_USEPOLLING=true
       - env_file=.env
@@ -81,11 +88,7 @@ services:
       - RABBITMQ_HOST=queue
       - RABBITMQ_PORT=5672
     deploy:
-      replicas: 1
-      placement:
-        max_replicas_per_node: 1
-        constraints:
-          - "node.labels.role==worker"
+      replicas: 0
       restart_policy:
         condition: on-failure
 
@@ -166,3 +169,10 @@ services:
       timeout: 120s
       interval: 10s
       retries: 10
+    
+  redis:
+      image: redis
+      container_name: redis
+      restart: always
+      ports:
+        - 6379:6379

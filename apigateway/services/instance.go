@@ -92,18 +92,17 @@ func (s *instanceService) SpinUp() error {
 		return err
 	}
 
-	// output, err := library.RunCommands("cd ./infra/ansible; ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.txt known_hosts.yml;")
-	// log.Info(string(output))
-	// if err != nil {
-	// 	return err
-	// }
-
 	if err := s.runAnsibleCommands(); err != nil {
 		log.Info(err)
 		return err
 	}
 
 	if err := s.joinWNodesToSwarm(); err != nil {
+		log.Info(err)
+		return err
+	}
+
+	if err := s.ScaleWorkers(); err != nil {
 		log.Info(err)
 		return err
 	}

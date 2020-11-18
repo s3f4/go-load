@@ -28,6 +28,7 @@ type InstanceService interface {
 	ShowAccount() (string, error)
 	ShowSwarmNodes() ([]swarm.Node, error)
 	GetInstanceInfo() (*models.InstanceConfig, error)
+	GetInstanceInfoFromTerraform() (string, error)
 	AddLabels() error
 }
 
@@ -127,6 +128,21 @@ func (s *instanceService) swarmInspect() (swarm.Swarm, error) {
 	}
 
 	return cli.SwarmInspect(context)
+}
+
+func (s *instanceService) ScaleWorkers() error {
+	context := context.Background()
+	cli, err := client.NewEnvClient()
+	if err != nil {
+		log.Info(err)
+		return err
+	}
+
+	service := swarm.ServiceSpec{}
+	options := types.ServiceCreateOptions{}
+
+	cli.ServiceCreate(context, service, options)
+	return nil
 }
 
 // joinWNodesToSwarm command runs ansible to join all workers to swarm
@@ -299,6 +315,12 @@ func (s *instanceService) AddLabels() error {
 
 func (s *instanceService) GetInstanceInfo() (*models.InstanceConfig, error) {
 	return s.repository.Get()
+}
+
+func (s *instanceService) GetInstanceInfoFromTerraform() (string, error) {
+	output, err := library.RunCommands("cd infra;terraform output -json workers")
+	log.Info(string(output))
+	return string(output), err
 }
 
 func buildAnsibleCommand(file string, extraVars string) string {

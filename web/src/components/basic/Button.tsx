@@ -143,6 +143,7 @@ const button = (
     case ButtonType.iconTextButton:
       return css`
         ${gen}
+        display:inline-flex;
         min-width: 10rem;
         min-height: 4rem;
         font-size: 1.6rem;

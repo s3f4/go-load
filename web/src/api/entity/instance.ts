@@ -19,6 +19,10 @@ export const getInstanceInfo = async () => {
   return await makeReq(`/instances`);
 };
 
+export const getInstanceInfoFromTerraform = async () => {
+  return await makeReq(`/instances/terraform`);
+};
+
 export const destroyAll = async () => {
   return await makeReq(`/instances`, "DELETE");
 };

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/s3f4/go-load/apigateway/library"
@@ -18,6 +19,7 @@ type instanceHandlerInterface interface {
 	ShowAccount(w http.ResponseWriter, r *http.Request)
 	ShowSwarmNodes(w http.ResponseWriter, r *http.Request)
 	GetInstanceInfo(w http.ResponseWriter, r *http.Request)
+	GetInstanceInfoFromTerraform(w http.ResponseWriter, r *http.Request)
 }
 
 type instanceHandler struct {
@@ -101,6 +103,12 @@ func (h *instanceHandler) GetInstanceInfo(w http.ResponseWriter, r *http.Request
 		return
 	}
 	res.R200(w, r, instanceConfig)
+}
+
+func (h *instanceHandler) GetInstanceInfoFromTerraform(w http.ResponseWriter, r *http.Request) {
+	instanceConfStr, err := h.service.GetInstanceInfoFromTerraform()
+	fmt.Println(instanceConfStr, err)
+	res.R200(w, r, instanceConfStr)
 }
 
 func (h *instanceHandler) AddLabels(w http.ResponseWriter, r *http.Request) {

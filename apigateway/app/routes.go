@@ -77,6 +77,7 @@ func routeMap(*chi.Mux) {
 		router.Route("/instances", func(router chi.Router) {
 			router.Post("/", handlers.InstanceHandler.SpinUp)
 			router.Get("/", handlers.InstanceHandler.GetInstanceInfo)
+			router.Get("/terraform", handlers.InstanceHandler.GetInstanceInfoFromTerraform)
 			router.Get("/regions", handlers.InstanceHandler.ShowRegions)
 			router.Get("/account", handlers.InstanceHandler.ShowAccount)
 			router.Get("/swarm-nodes", handlers.InstanceHandler.ShowSwarmNodes)

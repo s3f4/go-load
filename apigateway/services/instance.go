@@ -134,14 +134,6 @@ func (s *instanceService) swarmInspect() (swarm.Swarm, error) {
 	return cli.SwarmInspect(context)
 }
 
-func (s *instanceService) ScaleWorkers2(workerCount int) error {
-	// todo i can't find which methods of docker sdk will be used for service sclae.
-	command := fmt.Sprintf("docker service scale go-load_worker=%d", workerCount)
-	output, err := library.RunCommands(command)
-	log.Info(output)
-	return err
-}
-
 func (s *instanceService) ScaleWorkers(workerCount int) error {
 	context := context.Background()
 	cli, err := client.NewEnvClient()

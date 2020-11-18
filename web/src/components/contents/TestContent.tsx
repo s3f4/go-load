@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Redirect, Route, Switch } from "react-router-dom";
+import { Redirect, Route, Switch, useHistory } from "react-router-dom";
 import { getInstanceInfo, InstanceConfig } from "../../api/entity/instance";
 import Create from "./tests/create";
 import Show from "./tests/show";
@@ -7,28 +7,21 @@ import Show from "./tests/show";
 interface Props {}
 
 const TestContent: React.FC<Props> = (props: Props) => {
-  const [instanceConfig, setInstanceConfig] = useState<InstanceConfig>();
+  const history = useHistory();
 
   useEffect(() => {
-    listInstances();
-    return () => {};
-  }, []);
-
-  const listInstances = () => {
     getInstanceInfo()
       .then((response) => {
-        setInstanceConfig(response.data);
+        const conf = response.data;
+        if (!conf.data && !conf.data.configs.length) {
+          history.push("/instances");
+        }
       })
-      .catch((error) => {
-        console.log(error);
+      .catch(() => {
+        history.push("/instances");
       });
-  };
-
-  console.log(instanceConfig);
-
-  if (!instanceConfig?.configs) {
-    return <Redirect to="/instances" />;
-  }
+    return () => {};
+  }, []);
 
   return (
     <Switch>

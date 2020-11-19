@@ -11,6 +11,20 @@ export interface Instance {
   region: string;
 }
 
+export interface InstanceTerra {
+  id: string;
+  name: string;
+  created_at: Date;
+  disk: number;
+  image: string;
+  ipv4_address: string;
+  ipv4_address_private: string;
+  memory: number;
+  region: string;
+  size: string;
+  status: string;
+}
+
 export const spinUp = async (instanceConfig: InstanceConfig) => {
   return await makeReq("/instances", "POST", instanceConfig);
 };

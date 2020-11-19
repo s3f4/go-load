@@ -1,3 +1,5 @@
+/** @jsx jsx */
+import { jsx, css } from "@emotion/core";
 import React from "react";
 import { Worker } from "../../api/entity/worker";
 import Loader from "../basic/Loader";

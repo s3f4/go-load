@@ -1,6 +1,6 @@
 variable regions {
   default = [
-    { index : 0, reg : "sgp1", instance_number : 1 },
+    { index : 0, reg : "nyc1", instance_number : 1 },
   ]
 }
 

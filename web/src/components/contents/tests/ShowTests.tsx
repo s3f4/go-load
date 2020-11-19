@@ -13,7 +13,7 @@ import Table from "../../basic/Table";
 import Button, { ButtonColorType, ButtonType } from "../../basic/Button";
 import { leftColumn, leftContent, MediaQuery, rightColumn } from "../../style";
 import Message, { MessageObj } from "../../basic/Message";
-import TestForm from "./test_form";
+import TestForm from "./TestForm";
 import {
   runTest,
   deleteTest,
@@ -32,12 +32,7 @@ import {
 } from "react-icons/fi";
 import { getInstanceInfo, Instance } from "../../../api/entity/instance";
 
-interface Props {
-  instances?: Instance[];
-  testGroup?: TestGroup;
-}
-
-const Show: React.FC<Props> = (props: Props) => {
+const ShowTests: React.FC = () => {
   const [instances, setInstances] = useState<Instance[] | undefined>();
   const [testGroups, setTestGroups] = useState<TestGroup[]>();
   const [selectedTestGroup, setSelectedTestGroup] = useState<TestGroup>({
@@ -344,4 +339,4 @@ const h3title = css`
   padding-bottom: 0.5rem;
 `;
 
-export default Show;
+export default ShowTests;

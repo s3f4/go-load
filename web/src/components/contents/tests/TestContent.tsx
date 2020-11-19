@@ -1,16 +1,16 @@
 import React from "react";
 import { Route, Switch } from "react-router-dom";
-import Create from "./tests/create";
-import Show from "./tests/show";
+import CreateTest from "./CreateTest";
+import ShowTests from "./ShowTests";
 
 const TestContent: React.FC = () => {
   return (
     <Switch>
       <Route exact path={"/tests/create"}>
-        <Create />
+        <CreateTest />
       </Route>
       <Route exact path={"/tests"}>
-        <Show />
+        <ShowTests />
       </Route>
     </Switch>
   );

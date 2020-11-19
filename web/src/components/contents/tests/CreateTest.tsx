@@ -7,7 +7,7 @@ import Message from "../../basic/Message";
 import Table from "../../basic/Table";
 import { useHistory } from "react-router-dom";
 import { map, omit, isEqual } from "lodash";
-import TestForm from "./test_form";
+import TestForm from "./TestForm";
 import { Test } from "../../../api/entity/test";
 import { saveTestGroup, TestGroup } from "../../../api/entity/test_group";
 import { FiTrash2, FiEdit } from "react-icons/fi";
@@ -15,7 +15,7 @@ import { leftColumn, MediaQuery, rightColumn } from "../../style";
 
 interface Props {}
 
-const Create: React.FC<Props> = (props: Props) => {
+const CreateTest: React.FC<Props> = (props: Props) => {
   const [editTest, setEditTest] = useState<Test | undefined>(undefined);
   const [message, setMessage] = useState<string>("");
   const [testGroupName, setTestGroupName] = useState<string>("");
@@ -213,7 +213,7 @@ const Create: React.FC<Props> = (props: Props) => {
               label={"Test Group Name"}
               onChange={handleChange}
             />
-            <Button text="Create" onClick={setConfig} />
+            <Button text="CreateTest" onClick={setConfig} />
           </React.Fragment>
         )}
       </div>
@@ -266,4 +266,4 @@ const h3title = css`
   padding-bottom: 0.5rem;
 `;
 
-export default Create;
+export default CreateTest;

@@ -1,6 +1,6 @@
 import React from "react";
 import MainLayout from "../components/layouts/MainLayout";
-import TestContent from "../components/contents/TestContent";
+import TestContent from "../components/contents/tests/TestContent";
 
 const Tests: React.FC = () => {
   return (

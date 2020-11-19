@@ -13,26 +13,32 @@ import Button from "../../basic/Button";
 
 const InstanceContent: React.FC = () => {
   const [loading, setLoading] = React.useState<boolean>(false);
-  const [showInstances, setShowInstances] = React.useState<boolean>();
+  const [showInstances, setShowInstances] = React.useState<boolean>(false);
   const [instanceInfo, setInstanceInfo] = React.useState<InstanceConfig | null>(
     null,
   );
 
   React.useEffect(() => {
     let mount = true;
-    getInstanceInfo()
-      .then((response) => {
-        if (mount) {
-          setInstanceInfo(response.data);
-        }
-      })
-      .catch(() => {});
+    onGetInstanceInfo(mount);
     return () => {
       mount = false;
     };
   }, []);
 
+  const onGetInstanceInfo = (mount?: boolean) => {
+    getInstanceInfo()
+      .then((response) => {
+        if (mount) {
+          setInstanceInfo(response.data);
+          setShowInstances(true);
+        }
+      })
+      .catch(() => {});
+  };
+
   const spinUpAfterHandle = () => {
+    onGetInstanceInfo();
     setShowInstances(true);
   };
 
@@ -76,9 +82,7 @@ const InstanceContent: React.FC = () => {
 
   return (
     <React.Fragment>
-      {showInstances || instanceInfo?.configs?.length
-        ? instanceList()
-        : spinUpForm()}
+      {showInstances ? instanceList() : spinUpForm()}
     </React.Fragment>
   );
 };

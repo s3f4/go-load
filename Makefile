@@ -4,32 +4,32 @@ default:
 	@echo "=============Building============="
 	#docker build -f worker/Dockerfile.dev -t worker .
 
-up: default
+up-dev: default
 	@echo "=============Compose Up============="
 	docker-compose -f docker-compose.yml up -d  --build --remove-orphans
 
-up-dev:
-	@echo "=============Initializing local docker swarm============="
-	docker swarm init 
-	./build-dev.sh
-	docker stack deploy -c swarm-dev.yml go-load
-
 down-dev:
-	docker swarm leave --force
-
-logs:
-	docker-compose logs -f
-
-down:
 	rm -rf apigateway/infra/.terraform && \
 	rm -f apigateway/infra/.terraform* && \
 	rm -f apigateway/infra/terraform.tfstate* && \
 	docker-compose -f docker-compose.yml down
 
+dev-logs:
+	docker-compose logs -f
+
+up-swarm-dev:
+	@echo "=============Initializing local docker swarm============="
+	docker swarm init 
+	./build-dev.sh
+	docker stack deploy -c swarm-dev.yml go-load
+
+down-swarm-dev:
+	docker swarm leave --force
+
 test:
 	go test -v -cover ./...
 
-clean: down
+clean-dev: down-dev
 	@echo "=============cleaning up============="
 	rm -rf web/build
 	#rm -rf web/node_modules
@@ -75,8 +75,7 @@ upload-inventory:
 
 ansible-ping: 
 	cd infra/base && master=$$(terraform output master_ipv4_address) && ssh -t root@$$master 'cd /etc/ansible && ansible all -i inventory.txt -m ping'
-
-
+	
 swarm-prepare:
 	cd infra/base && master=$$(terraform output master_ipv4_address) && \
 	ssh -t root@$$master "echo 'REACT_APP_API_BASE_URL=$$master:3001' >> /root/app/web/.env && \
@@ -91,7 +90,7 @@ swarm-prepare:
 	ansible-playbook -i inventory.txt swarm-join.yml --extra-vars 'token=$$token addr=$$master' && \
 	ansible-playbook -i inventory.txt label.yml"
 
-swarm: destroy up-instances upload-inventory swarm-prepare
+up: destroy up-instances upload-inventory swarm-prepare
 	
 
 ssh-copy:

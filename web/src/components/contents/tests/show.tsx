@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { jsx, css } from "@emotion/core";
 import { Link } from "react-router-dom";
 import {
@@ -30,12 +30,15 @@ import {
   FiEdit2,
   FiPlusCircle,
 } from "react-icons/fi";
+import { getInstanceInfo, Instance } from "../../../api/entity/instance";
 
 interface Props {
+  instances?: Instance[];
   testGroup?: TestGroup;
 }
 
 const Show: React.FC<Props> = (props: Props) => {
+  const [instances, setInstances] = useState<Instance[] | undefined>();
   const [testGroups, setTestGroups] = useState<TestGroup[]>();
   const [selectedTestGroup, setSelectedTestGroup] = useState<TestGroup>({
     name: "",
@@ -48,7 +51,16 @@ const Show: React.FC<Props> = (props: Props) => {
   >("");
   const [addNewTest, setAddNewTest] = useState<boolean>(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
+    getInstanceInfo()
+      .then((response) => {
+        setInstances(response.data.configs);
+      })
+      .catch(() => {});
+    return () => {};
+  }, []);
+
+  useEffect(() => {
     listTestGroup()
       .then((response) => {
         setTestGroups(response.data);
@@ -93,6 +105,7 @@ const Show: React.FC<Props> = (props: Props) => {
             colorType={ButtonColorType.success}
             type={ButtonType.iconButton}
             icon={<FiPlay />}
+            disabled={!instances}
             onClick={(e: React.FormEvent) => {
               e.preventDefault();
               onRunTest(test!);
@@ -217,6 +230,14 @@ const Show: React.FC<Props> = (props: Props) => {
         </Link>
       </div>
       <div css={rightColumn}>
+        {!instances ? (
+          <Message
+            type="error"
+            message={"You must create instances to run tests"}
+          />
+        ) : (
+          ""
+        )}
         {message ? <Message type="error" message={message.message} /> : ""}
         {selectedTestGroup && selectedTestGroup.tests.length > 0 ? (
           <React.Fragment>
@@ -269,6 +290,7 @@ const Show: React.FC<Props> = (props: Props) => {
                   type={ButtonType.iconTextButton}
                   icon={<FiPlayCircle />}
                   onClick={run(selectedTestGroup)}
+                  disabled={!instances}
                 />
                 <Button
                   text="Update Test Group Name"

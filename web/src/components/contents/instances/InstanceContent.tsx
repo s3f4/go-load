@@ -37,18 +37,18 @@ const InstanceContent: React.FC = () => {
   };
 
   // spinUpForm
-  const spinUpForm = () => <SpinUp afterSubmit={spinUpAfterHandle} />;
+  const spinUpForm = () => {
+    return <SpinUp afterSubmit={spinUpAfterHandle} />;
+  };
 
   const onDestroyAll = () => {
     setLoading(true);
     destroyAll()
       .then(() => {
-        debugger;
         setLoading(false);
-        setShowInstances(true);
+        setShowInstances(false);
       })
       .catch(() => {
-        debugger;
         setLoading(false);
         setShowInstances(false);
       });

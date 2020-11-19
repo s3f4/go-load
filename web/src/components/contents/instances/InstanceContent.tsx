@@ -4,31 +4,26 @@ import { jsx, css } from "@emotion/core";
 import SpinUp from "./SpinUpForm";
 import {
   destroyAll,
-  getInstanceInfo,
   getInstanceInfoFromTerraform,
-  InstanceConfig,
   InstanceTerra,
 } from "../../../api/entity/instance";
 import { card, cardTitle, cardContainer } from "../../style";
 import Button from "../../basic/Button";
 
 const InstanceContent: React.FC = () => {
-  const [loading, setLoading] = useState<boolean>(false);
-  const [showInstances, setShowInstances] = useState<boolean>(false);
-  const [instanceInfo, setInstanceInfo] = useState<InstanceConfig | null>(null);
-
-  const [instanceTerra, setInstanceTerra] = useState<InstanceTerra[]>();
+  const [loading, setLoading] = useState<boolean>(true);
+  const [instances, setInstances] = useState<InstanceTerra[]>();
 
   useEffect(() => {
     let mount = true;
-    onGetInstanceInfo(mount);
-    onGetInstanceInfoFromTerraform(true);
+    onGetInstances(mount);
     return () => {
       mount = false;
     };
   }, []);
 
-  const onGetInstanceInfoFromTerraform = (mount?: boolean) => {
+  const onGetInstances = (mount?: boolean) => {
+    setLoading(true);
     getInstanceInfoFromTerraform()
       .then((response) => {
         if (mount) {
@@ -38,30 +33,25 @@ const InstanceContent: React.FC = () => {
             arr.push(obj[key]);
             return arr;
           });
-          setInstanceTerra(arr);
+          setInstances(arr);
+          setLoading(false);
         }
       })
-      .catch(() => {});
-  };
-
-  const onGetInstanceInfo = (mount?: boolean) => {
-    getInstanceInfo()
-      .then((response) => {
-        if (mount) {
-          setInstanceInfo(response.data);
-          setShowInstances(true);
-        }
-      })
-      .catch(() => {});
+      .catch(() => {
+        setLoading(false);
+      });
   };
 
   const spinUpAfterHandle = () => {
-    onGetInstanceInfo();
-    setShowInstances(true);
+    onGetInstances(true);
   };
 
   // spinUpForm
   const spinUpForm = () => {
+    if (loading) {
+      return "";
+    }
+
     return <SpinUp afterSubmit={spinUpAfterHandle} />;
   };
 
@@ -69,12 +59,12 @@ const InstanceContent: React.FC = () => {
     setLoading(true);
     destroyAll()
       .then(() => {
+        onGetInstances(true);
         setLoading(false);
-        setShowInstances(false);
       })
       .catch(() => {
+        onGetInstances(true);
         setLoading(false);
-        setShowInstances(false);
       });
   };
 
@@ -84,9 +74,9 @@ const InstanceContent: React.FC = () => {
         <Button loading={loading} text="Destroy All" onClick={onDestroyAll} />
       </div>
       <div css={cardContainer}>
-        {instanceTerra &&
-          instanceTerra.length > 0 &&
-          instanceTerra.map((instance: InstanceTerra) => {
+        {instances &&
+          instances.length > 0 &&
+          instances.map((instance: InstanceTerra) => {
             return (
               <div css={card} key={instance.region}>
                 <h1 css={cardTitle}>{instance.name}</h1>
@@ -107,7 +97,7 @@ const InstanceContent: React.FC = () => {
 
   return (
     <React.Fragment>
-      {showInstances ? instanceList() : spinUpForm()}
+      {instances && instances.length ? instanceList() : spinUpForm()}
     </React.Fragment>
   );
 };

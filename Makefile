@@ -14,6 +14,16 @@ down-dev:
 	rm -f apigateway/infra/terraform.tfstate* && \
 	docker-compose -f docker-compose.yml down
 
+clean-dev: down-dev
+	@echo "=============cleaning up============="
+	rm -rf web/build
+	#rm -rf web/node_modules
+	rm -rf worker/cmd/worker
+	rm -rf apigateway/cmd/apigateway
+	rm -rf eventhandler/cmd/eventhandler
+	docker system prune -f
+	docker volume prune -f
+
 dev-logs:
 	docker-compose logs -f
 
@@ -28,17 +38,6 @@ down-swarm-dev:
 
 test:
 	go test -v -cover ./...
-
-clean-dev: down-dev
-	@echo "=============cleaning up============="
-	rm -rf web/build
-	#rm -rf web/node_modules
-	rm -rf worker/cmd/worker
-	rm -rf apigateway/cmd/apigateway
-	rm -rf eventhandler/cmd/eventhandler
-	docker system prune -f
-	docker volume prune -f
-
 
 create_ssh_for_master:
 	ssh-keygen -t rsa -b 4096 -N '' -C "sefa@dehaa.com" -f ~/.ssh/id_rsa_for_master 
@@ -75,7 +74,7 @@ upload-inventory:
 
 ansible-ping: 
 	cd infra/base && master=$$(terraform output master_ipv4_address) && ssh -t root@$$master 'cd /etc/ansible && ansible all -i inventory.txt -m ping'
-	
+
 swarm-prepare:
 	cd infra/base && master=$$(terraform output master_ipv4_address) && \
 	ssh -t root@$$master "echo 'REACT_APP_API_BASE_URL=$$master:3001' >> /root/app/web/.env && \
@@ -92,7 +91,6 @@ swarm-prepare:
 
 up: destroy up-instances upload-inventory swarm-prepare
 	
-
 ssh-copy:
 	@echo this command creates ssh key and copy the key other instances
 	cd infra/base && master=$$(terraform output master_ipv4_address) && ssh -t root@$$master 'ssh-keygen' 

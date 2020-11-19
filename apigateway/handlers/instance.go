@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/s3f4/go-load/apigateway/library"
 	"github.com/s3f4/go-load/apigateway/library/log"
@@ -54,10 +55,13 @@ func (h *instanceHandler) SpinUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.service.ScaleWorkers(workerCount); err != nil {
-		log.Errorf(err.Error())
-		res.R500(w, r, library.ErrInternalServerError)
-		return
+	// scale worker services on swarm
+	if os.Getenv("APP_ENV") != "development" {
+		if err := h.service.ScaleWorkers(workerCount); err != nil {
+			log.Errorf(err.Error())
+			res.R500(w, r, library.ErrInternalServerError)
+			return
+		}
 	}
 
 	res.R200(w, r, map[string]interface{}{

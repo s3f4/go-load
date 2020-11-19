@@ -42,16 +42,14 @@ const InstanceContent: React.FC = () => {
   const onDestroyAll = () => {
     setLoading(true);
     destroyAll()
-      .then((response) => {
+      .then(() => {
         debugger;
         setLoading(false);
-        console.log(response);
-        setShowInstances(false);
+        setShowInstances(true);
       })
-      .catch((error) => {
+      .catch(() => {
         debugger;
         setLoading(false);
-        console.log(error);
         setShowInstances(false);
       });
   };
@@ -78,7 +76,9 @@ const InstanceContent: React.FC = () => {
 
   return (
     <React.Fragment>
-      {showInstances ? instanceList() : spinUpForm()}
+      {showInstances || instanceInfo?.configs?.length
+        ? instanceList()
+        : spinUpForm()}
     </React.Fragment>
   );
 };

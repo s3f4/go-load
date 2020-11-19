@@ -1,19 +1,17 @@
-import React, { useEffect, useState } from "react";
-import { Redirect, Route, Switch, useHistory } from "react-router-dom";
-import { getInstanceInfo, InstanceConfig } from "../../api/entity/instance";
+import React, { useEffect } from "react";
+import { Route, Switch, useHistory } from "react-router-dom";
+import { getInstanceInfo } from "../../api/entity/instance";
 import Create from "./tests/create";
 import Show from "./tests/show";
 
-interface Props {}
-
-const TestContent: React.FC<Props> = (props: Props) => {
+const TestContent: React.FC = () => {
   const history = useHistory();
 
   useEffect(() => {
     getInstanceInfo()
       .then((response) => {
         const conf = response.data;
-        if (!conf.data && !conf.data.configs.length) {
+        if (!conf && !conf.configs.length) {
           history.push("/instances");
         }
       })

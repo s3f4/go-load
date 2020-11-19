@@ -1,5 +1,6 @@
 variable regions {
   default = [
+    { index : 0, reg : "sgp1", instance_number : 1 },
   ]
 }
 
@@ -17,6 +18,6 @@ resource "digitalocean_droplet" "workers" {
   image    = "ubuntu-18-04-x64"
 
   ssh_keys = [
-    digitalocean_ssh_key.for_master.id
+	  digitalocean_ssh_key.for_master.id
   ]
 }

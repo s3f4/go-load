@@ -12,7 +12,7 @@ services:
       - ~/.ssh/id_rsa:/root/.ssh/id_rsa
       - ~/.ssh/id_rsa.pub:/root/.ssh/id_rsa.pub
     environment:
-      - APP_ENV=development
+      - APP_ENV=development-swarm
       - MYSQL_HOST=mysql
       - MYSQL_PORT=3306
       - MYSQL_DATABASE=go-load
@@ -45,7 +45,7 @@ services:
   eventhandler:
     image: registry.dev:5000/eventhandler
     environment:
-      - APP_ENV=development
+      - APP_ENV=development-swarm
       - RABBITMQ_USER=user
       - RABBITMQ_PASSWORD=password
       - RABBITMQ_HOST=queue
@@ -82,7 +82,7 @@ services:
   worker:
     image: registry.dev:5000/worker
     environment:
-      - APP_ENV=development
+      - APP_ENV=development-swarm
       - RABBITMQ_USER=user
       - RABBITMQ_PASSWORD=password
       - RABBITMQ_HOST=queue

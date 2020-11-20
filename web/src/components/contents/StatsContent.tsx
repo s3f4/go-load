@@ -4,10 +4,11 @@ import { jsx, css } from "@emotion/core";
 import { stats, Response } from "../../api/entity/stats";
 import moment from "moment";
 import { Line } from "react-chartjs-2";
-import { preciseFormat } from "../basic/helper";
+import { defaultFormat, preciseFormat } from "../basic/helper";
 import { getTest, Test } from "../../api/entity/test";
 import { Borders, MediaQuery } from "../style";
 import { RunTest } from "../../api/entity/runtest";
+import { FiArrowRight } from "react-icons/fi";
 
 interface Props {
   testID: number;
@@ -93,8 +94,18 @@ const StatsContent: React.FC<Props> = (props: Props) => {
                   onClick={onSelectRunTest(runTest)}
                   key={runTest.id}
                 >
-                  Start Time: {runTest.start_time} - End Time:{" "}
-                  {runTest.end_time} - Passed: {runTest.passed}
+                  <div css={runTestRow}>
+                    <div>
+                      <FiArrowRight />
+                    </div>
+                    <div>
+                      Start Time:{" "}
+                      {moment(runTest.start_time).format(defaultFormat())} - End
+                      Time:
+                      {moment(runTest.end_time).format(defaultFormat())} -
+                      Passed: {runTest.passed}
+                    </div>
+                  </div>
                   <br />
                 </div>
               );
@@ -192,6 +203,10 @@ const title = css`
   font-size: 2.2rem;
   padding: 0 0 0.5rem 1rem;
   margin-bottom: 2rem;
+`;
+
+const runTestRow = css`
+  display: flex;
 `;
 
 export default StatsContent;

@@ -8,7 +8,7 @@ import { defaultFormat, preciseFormat } from "../basic/helper";
 import { getTest, Test } from "../../api/entity/test";
 import { Borders, MediaQuery } from "../style";
 import { RunTest } from "../../api/entity/runtest";
-import { FiArrowRight } from "react-icons/fi";
+import { FiArrowRight, FiArrowRightCircle } from "react-icons/fi";
 
 interface Props {
   testID: number;
@@ -95,18 +95,20 @@ const StatsContent: React.FC<Props> = (props: Props) => {
                   key={runTest.id}
                 >
                   <div css={runTestRow}>
-                    <div>
-                      <FiArrowRight />
+                    <div css={runTestRowLeft}>
+                      <FiArrowRightCircle
+                        size="2.1rem"
+                        color={runTest.passed ? "green" : "red"}
+                      />
                     </div>
                     <div>
-                      Start Time:{" "}
+                      {runTest.id}-Start Time:{" "}
                       {moment(runTest.start_time).format(defaultFormat())} - End
                       Time:
                       {moment(runTest.end_time).format(defaultFormat())} -
                       Passed: {runTest.passed}
                     </div>
                   </div>
-                  <br />
                 </div>
               );
             })}
@@ -195,6 +197,9 @@ const table = css`
 const runTestDiv = css`
   display: block;
   cursor: pointer;
+  & :hover {
+    background-color: lightgray;
+  }
 `;
 
 const title = css`
@@ -207,6 +212,10 @@ const title = css`
 
 const runTestRow = css`
   display: flex;
+`;
+
+const runTestRowLeft = css`
+  margin-right: 1rem;
 `;
 
 export default StatsContent;

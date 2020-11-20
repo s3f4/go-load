@@ -8,6 +8,7 @@ import Tests from "./pages/tests";
 import Auth from "./pages/auth";
 import NotFound from "./pages/not_found";
 import PrivateRoute from "./components/basic/PrivateRoute";
+import Services from "./pages/services";
 
 const App: React.FC = () => {
   return (
@@ -25,6 +26,9 @@ const App: React.FC = () => {
           </Route>
           <Route exact path="/workers">
             <Workers />
+          </Route>
+          <Route exact path="/services">
+            <Services />
           </Route>
           <Route exact path="/stats/:id">
             <Stats />

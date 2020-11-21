@@ -2,10 +2,12 @@ import React from "react";
 import MainLayout from "../components/layouts/MainLayout";
 import ServicesContent from "../components/contents/ServicesContent";
 import { list, Service } from "../api/entity/service";
+import { MessageObj } from "../components/basic/Message";
 
 const Services: React.FC = () => {
   const [services, setServices] = React.useState<Service[]>([]);
   const [loader, setLoader] = React.useState<boolean>(false);
+  const [message, setMessage] = React.useState<MessageObj>();
 
   React.useEffect(() => {
     setLoader(true);
@@ -16,7 +18,10 @@ const Services: React.FC = () => {
       })
       .catch((err) => {
         setLoader(false);
-        console.log(err);
+        setMessage({
+          type: "error",
+          message: err.message,
+        });
       });
     return () => {};
   }, []);
@@ -24,7 +29,13 @@ const Services: React.FC = () => {
   return (
     <React.Fragment>
       <MainLayout
-        content={<ServicesContent loader={loader} services={services} />}
+        content={
+          <ServicesContent
+            loader={loader}
+            services={services}
+            message={message}
+          />
+        }
       />
     </React.Fragment>
   );

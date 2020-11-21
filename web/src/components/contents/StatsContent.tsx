@@ -8,7 +8,7 @@ import { defaultFormat, preciseFormat } from "../basic/helper";
 import { getTest, Test } from "../../api/entity/test";
 import { Borders, MediaQuery } from "../style";
 import { RunTest } from "../../api/entity/runtest";
-import { FiArrowRight, FiArrowRightCircle } from "react-icons/fi";
+import { FiArrowRightCircle } from "react-icons/fi";
 
 interface Props {
   testID: number;

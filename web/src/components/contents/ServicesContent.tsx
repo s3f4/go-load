@@ -4,15 +4,24 @@ import React from "react";
 import Loader from "../basic/Loader";
 import { card, cardContainer, cardTitle } from "../style";
 import { Service } from "../../api/entity/service";
+import Message, { MessageObj } from "../basic/Message";
 
 interface Props {
   services?: Service[];
   loader: boolean;
+  message?: MessageObj;
 }
 
 const ServicesContent: React.FC<Props> = (props: Props) => {
-  const servicesDiv = () =>
-    props.services?.map((service: Service) => {
+  const servicesDiv = () => {
+    if (props.message) {
+      console.log(props.message);
+      return (
+        <Message message={props.message.message} type={props.message.type} />
+      );
+    }
+
+    return props.services?.map((service: Service) => {
       return (
         <div css={card} key={service.Id}>
           <h1 css={cardTitle}>{service.Names[0].substr(1)}</h1>
@@ -24,6 +33,7 @@ const ServicesContent: React.FC<Props> = (props: Props) => {
         </div>
       );
     });
+  };
 
   return (
     <div css={cardContainer}>

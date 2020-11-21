@@ -9,6 +9,7 @@ import {
   FiActivity,
   FiMonitor,
   FiUser,
+  FiHexagon,
 } from "react-icons/fi";
 import { MediaQuery } from "../style";
 import { useLocation, useHistory } from "react-router-dom";
@@ -67,6 +68,13 @@ const Header: React.FC<Props> = (props: Props) => {
           <Link css={headerLink(location.pathname === "/swarm")} to="/swarm">
             <FiMonitor style={headerIconStyle} />
             Swarm
+          </Link>
+          <Link
+            css={headerLink(location.pathname === "/services")}
+            to="/services"
+          >
+            <FiHexagon style={headerIconStyle} />
+            Services
           </Link>
           <Link css={headerLink(location.pathname === "/stats")} to="/stats">
             <FiActivity style={headerIconStyle} />

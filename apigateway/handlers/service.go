@@ -6,7 +6,6 @@ import (
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
-	"github.com/s3f4/go-load/apigateway/library"
 	"github.com/s3f4/go-load/apigateway/library/log"
 	res "github.com/s3f4/go-load/apigateway/library/response"
 )
@@ -28,7 +27,7 @@ func (h *serviceHandler) List(w http.ResponseWriter, r *http.Request) {
 	cli, err := client.NewEnvClient()
 	if err != nil {
 		log.Debug(err)
-		res.R500(w, r, library.ErrInternalServerError)
+		res.R500(w, r, err)
 		return
 	}
 
@@ -36,7 +35,7 @@ func (h *serviceHandler) List(w http.ResponseWriter, r *http.Request) {
 	services, err := cli.ServiceList(context.Background(), types.ServiceListOptions{})
 	if err != nil {
 		log.Debug(err)
-		res.R500(w, r, library.ErrInternalServerError)
+		res.R500(w, r, err)
 		return
 	}
 

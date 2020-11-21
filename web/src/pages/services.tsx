@@ -2,12 +2,12 @@ import React from "react";
 import MainLayout from "../components/layouts/MainLayout";
 import ServicesContent from "../components/contents/ServicesContent";
 import { list, Service } from "../api/entity/service";
-import { MessageObj } from "../components/basic/Message";
+import { IMessage } from "../components/basic/Message";
 
 const Services: React.FC = () => {
   const [services, setServices] = React.useState<Service[]>([]);
   const [loader, setLoader] = React.useState<boolean>(false);
-  const [message, setMessage] = React.useState<MessageObj>();
+  const [message, setMessage] = React.useState<IMessage>();
 
   React.useEffect(() => {
     setLoader(true);

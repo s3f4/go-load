@@ -12,7 +12,7 @@ import {
 import Table from "../../basic/Table";
 import Button, { ButtonColorType, ButtonType } from "../../basic/Button";
 import { leftColumn, leftContent, MediaQuery, rightColumn } from "../../style";
-import Message, { MessageObj } from "../../basic/Message";
+import Message, { IMessage } from "../../basic/Message";
 import TestForm from "./TestForm";
 import {
   runTest,
@@ -40,10 +40,11 @@ const ShowTests: React.FC = () => {
     tests: [],
   });
   const [selectedTest, setSelectedTest] = useState<Test | null>(null);
-  const [message, setMessage] = useState<MessageObj>();
-  const [updateSelectedGroupName, setUpdateSelectedGroupName] = useState<
-    string
-  >("");
+  const [message, setMessage] = useState<IMessage>();
+  const [
+    updateSelectedGroupName,
+    setUpdateSelectedGroupName,
+  ] = useState<string>("");
   const [addNewTest, setAddNewTest] = useState<boolean>(false);
 
   useEffect(() => {

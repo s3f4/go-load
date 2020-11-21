@@ -4,18 +4,17 @@ import React from "react";
 import Loader from "../basic/Loader";
 import { card, cardContainer, cardTitle } from "../style";
 import { Service } from "../../api/entity/service";
-import Message, { MessageObj } from "../basic/Message";
+import Message, { IMessage } from "../basic/Message";
 
 interface Props {
   services?: Service[];
   loader: boolean;
-  message?: MessageObj;
+  message?: IMessage;
 }
 
 const ServicesContent: React.FC<Props> = (props: Props) => {
   const servicesDiv = () => {
     if (props.message) {
-      console.log(props.message);
       return (
         <Message message={props.message.message} type={props.message.type} />
       );

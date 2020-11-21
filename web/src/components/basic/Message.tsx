@@ -3,7 +3,7 @@ import React from "react";
 import { jsx, css } from "@emotion/core";
 
 type messageType = "success" | "error" | "warning";
-export interface MessageObj {
+export interface IMessage {
   type: messageType;
   message: string;
 }

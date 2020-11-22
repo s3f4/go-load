@@ -145,6 +145,6 @@ export const rightColumn = css`
   ${MediaQuery[1]} {
     width: 75%;
     min-height: 50rem;
+    padding: 2rem;
   }
-  padding: 2rem;
 `;

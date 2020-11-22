@@ -8,7 +8,8 @@ import {
   InstanceTerra,
 } from "../../../api/entity/instance";
 import { card, cardTitle, cardContainer } from "../../style";
-import Button from "../../basic/Button";
+import Button, { ButtonColorType, ButtonType } from "../../basic/Button";
+import { FiX } from "react-icons/fi";
 
 const InstanceContent: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
@@ -71,7 +72,14 @@ const InstanceContent: React.FC = () => {
   const instanceList = () => (
     <div>
       <div css={center}>
-        <Button loading={loading} text="Destroy All" onClick={onDestroyAll} />
+        <Button
+          type={ButtonType.iconTextButton}
+          colorType={ButtonColorType.danger}
+          icon={<FiX />}
+          loading={loading}
+          text="Destroy All"
+          onClick={onDestroyAll}
+        />
       </div>
       <div css={cardContainer}>
         {instances &&

@@ -9,7 +9,6 @@ import {
   TestGroup,
   updateTestGroup,
 } from "../../../api/entity/test_group";
-import Table from "../../basic/Table";
 import Button, { ButtonColorType, ButtonType } from "../../basic/Button";
 import { leftColumn, leftContent, MediaQuery, rightColumn } from "../../style";
 import Message, { IMessage } from "../../basic/Message";

@@ -90,9 +90,13 @@ func routeMap(*chi.Mux) {
 
 		router.Route("/test_group", func(router chi.Router) {
 			router.Post("/", handlers.TestGroupHandler.Create)
-			router.Get("/", handlers.TestGroupHandler.List)
 			router.Put("/", handlers.TestGroupHandler.Update)
 			router.Delete("/", handlers.TestGroupHandler.Delete)
+
+			router.Route("/", func(router chi.Router) {
+				router.Use(middlewares.QueryCtx)
+				router.Get("/", handlers.TestGroupHandler.List)
+			})
 
 			router.Route("/{ID}", func(router chi.Router) {
 				router.Post("/start", handlers.TestGroupHandler.Start)
@@ -102,7 +106,10 @@ func routeMap(*chi.Mux) {
 
 		router.Route("/test", func(router chi.Router) {
 			router.Post("/", handlers.TestHandler.Create)
-			router.Get("/", handlers.TestHandler.List)
+			router.Route("/", func(router chi.Router) {
+				router.Use(middlewares.QueryCtx)
+				router.Get("/", handlers.TestHandler.List)
+			})
 
 			router.Route("/{ID}", func(router chi.Router) {
 				router.Use(middlewares.TestCtx)

@@ -3,11 +3,13 @@ package handlers
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/s3f4/go-load/apigateway/library"
 	"github.com/s3f4/go-load/apigateway/library/log"
 	res "github.com/s3f4/go-load/apigateway/library/response"
+	"github.com/s3f4/go-load/apigateway/middlewares"
 	"github.com/s3f4/go-load/apigateway/models"
 	"github.com/s3f4/go-load/apigateway/services"
 	"gorm.io/gorm"
@@ -118,6 +120,17 @@ func (h *testGroupHandler) Get(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *testGroupHandler) List(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	query, ok := ctx.Value(middlewares.QueryCtxKey).(*library.QueryBuilder)
+	if !ok {
+		res.R422(w, r, library.ErrUnprocessableEntity)
+		return
+	}
+
+	fmt.Println(query)
+	fmt.Println(query)
+	fmt.Println(query)
+
 	testConfig, err := h.service.List()
 	if err != nil {
 		log.Debug(err)

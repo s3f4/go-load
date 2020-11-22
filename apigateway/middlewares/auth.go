@@ -47,7 +47,7 @@ func AuthCtx(next http.Handler) http.Handler {
 			}
 		}
 
-		ctx := context.WithValue(r.Context(), UserIDKey, access.UserID)
+		ctx := context.WithValue(r.Context(), UserIDCtxKey, access.UserID)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/s3f4/go-load/apigateway/library"
@@ -95,6 +96,15 @@ func (h *testHandler) Get(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *testHandler) List(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	query, ok := ctx.Value(middlewares.QueryCtxKey).(*library.QueryBuilder)
+	if !ok {
+		res.R422(w, r, library.ErrUnprocessableEntity)
+		return
+	}
+
+	fmt.Println(query)
+
 	tests, err := h.tr.List()
 	if err != nil {
 		log.Debug(err)

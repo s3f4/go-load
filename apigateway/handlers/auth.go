@@ -199,7 +199,7 @@ func (h *authHandler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 
 func (h *authHandler) CurrentUser(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	userID, ok := ctx.Value(middlewares.UserIDKey).(uint)
+	userID, ok := ctx.Value(middlewares.UserIDCtxKey).(uint)
 	if !ok {
 		res.R422(w, r, library.ErrUnprocessableEntity)
 		return

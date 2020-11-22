@@ -31,6 +31,7 @@ import {
   FiPlusCircle,
 } from "react-icons/fi";
 import { getInstanceInfo, Instance } from "../../../api/entity/instance";
+import RTable from "../../basic/RTable";
 
 const ShowTests: React.FC = () => {
   const [instances, setInstances] = useState<Instance[] | undefined>();
@@ -82,9 +83,11 @@ const ShowTests: React.FC = () => {
           test.url,
           test.method,
           test.request_count,
-          buttons("Run", test),
-          buttons("Edit", test),
-          buttons("Delete", test),
+          <div>
+            {buttons("Run", test)}
+            {buttons("Edit", test)}
+            {buttons("Delete", test)}
+          </div>,
         ];
         content.push(row);
       });
@@ -299,8 +302,8 @@ const ShowTests: React.FC = () => {
                 />
               </React.Fragment>
             )}
-            <Table
-              title={["URL", "Method", "Requests Count", "", "", ""]}
+            <RTable
+              title={["URL", "Method", "Requests Count", "Actions"]}
               content={buildTable()}
             />
           </React.Fragment>

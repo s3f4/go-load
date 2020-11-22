@@ -1,7 +1,7 @@
 /** @jsx jsx */
-import React from "react";
+import React, { Fragment } from "react";
 import { jsx, css } from "@emotion/core";
-import { Colors } from "../style";
+import { Colors, MediaQuery } from "../style";
 
 interface Props {
   title: any[];
@@ -10,59 +10,103 @@ interface Props {
 
 const RTable: React.FC<Props> = (props: Props) => {
   return (
-    <div css={container}>
-      <div css={table}>
-        {props.title.map((title, index) => (
-          <th key={index}>{title}</th>
-        ))}
+    <Fragment>
+      <div css={container}>
+        <div css={row(true)}>
+          {props.title.map((title, index) => (
+            <div css={columnStyle} key={index}>
+              <b>{title}</b>
+            </div>
+          ))}
+        </div>
 
-        {props.content.map((rows, index) =>
-          rows.map((column, colIndex) => (
-            <td css={td(colIndex)} key={colIndex}>
-              {column}
-            </td>
-          )),
-        )}
+        {props.content.map((rows, index) => {
+          return (
+            <div key={index} css={row(false)}>
+              {rows.map((column, colIndex) => (
+                <div css={columnStyle} key={colIndex}>
+                  {column}
+                </div>
+              ))}
+            </div>
+          );
+        })}
       </div>
-    </div>
+
+      <div css={mobileContainer}>
+        {props.content.map((rows, index) => {
+          return (
+            <div key={index} css={mobileRow}>
+              {rows.map((column, colIndex) => (
+                <div css={mobileFlex} key={colIndex}>
+                  <b>{props.title[colIndex]}</b>
+                  {column}
+                </div>
+              ))}
+            </div>
+          );
+        })}
+      </div>
+    </Fragment>
   );
 };
 
-const container = css`
-  overflow-x: auto;
+const mobileContainer = css`
+  display: block;
+  ${MediaQuery[1]} {
+    display: none;
+  }
   width: 100%;
   border: 1px solid #e1e1e1;
   border-radius: 0.5rem;
-  background-color: #e1e1e1;
   text-align: left;
   padding: 1rem 1rem 1rem 1rem;
 `;
 
-const table = css`
-  width: 100%;
-  border-collapse: collapse;
+const mobileFlex = css`
+  display: flex;
+  justify-content: space-between;
+  flex: 0 0 5rem;
+  min-height: 4rem;
 `;
 
-const trTitle = css`
-  background-color: #007d9c;
-  border: 0.1rem solid #e1e1e1;
-  height: 4rem;
-  color: white;
-  text-align: center;
+const mobileRow = css`
+  margin-top: 1rem;
+  padding: 2rem;
+  background-color: #e1e1e1;
 `;
 
-const th = css``;
-
-const tr = css`
-  height: 4rem;
-  border-bottom: 0.1rem solid ${Colors.borderPrimary};
+const row = (title?: boolean) => css`
+  display: flex;
+  justify-content: space-between;
+  flex: 0 0 4.5rem;
+  border-bottom: 1px solid black;
+  background-color: ${title ? "#007d9c" : "none"};
+  color: ${title ? "white" : "none"};
 `;
 
-const td = (index?: number) => css`
-  width: 33%;
-  ${index === 0
-    ? "padding-left:2rem;"
-    : "text-align:center;font-weight:bold;text-transform:uppercase;"}
+const columnStyle = css`
+  flex: 0 1 20rem;
+  padding-left: 1rem;
+  padding-top: 0.5rem;
+`;
+
+const container = css`
+  display: none;
+  ${MediaQuery[1]} {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    border: 1px solid #e1e1e1;
+    border-radius: 0.5rem;
+    background-color: #e1e1e1;
+    text-align: left;
+    padding: 1rem 1rem 1rem 1rem;
+  }
+`;
+
+const tableTitle = css`
+  font-weight: bold;
 `;
 
 export default RTable;

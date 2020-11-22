@@ -53,7 +53,7 @@ const RTable: React.FC<Props> = (props: Props) => {
 
 const mobileContainer = css`
   display: block;
-  ${MediaQuery[1]} {
+  ${MediaQuery[2]} {
     display: none;
   }
   width: 100%;
@@ -88,12 +88,14 @@ const row = (title?: boolean) => css`
 const columnStyle = css`
   flex: 0 1 20rem;
   padding-left: 1rem;
-  padding-top: 0.5rem;
+  padding-top: 1rem;
+  text-align: center;
+  width: 7rem;
 `;
 
 const container = css`
   display: none;
-  ${MediaQuery[1]} {
+  ${MediaQuery[2]} {
     display: flex;
     flex-direction: column;
     width: 100%;

@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import React, { useState } from "react";
+import React, { Fragment, useState } from "react";
 import { jsx, css } from "@emotion/core";
 import { stats, Response } from "../../api/entity/stats";
 import moment from "moment";
@@ -9,6 +9,7 @@ import { getTest, Test } from "../../api/entity/test";
 import { Borders, MediaQuery } from "../style";
 import { RunTest } from "../../api/entity/runtest";
 import { FiArrowRightCircle } from "react-icons/fi";
+import RTable from "../basic/RTable";
 
 interface Props {
   testID: number;
@@ -121,46 +122,40 @@ const StatsContent: React.FC<Props> = (props: Props) => {
     if (!responses || !selectedRunTest) {
       return;
     }
+    const content: any[][] = [];
+    responses.map((response) => {
+      content.push([
+        moment(response.first_byte).format(preciseFormat()),
+        moment(response.connect_start).format(preciseFormat()),
+        moment(response.connect_done).format(preciseFormat()),
+        moment(response.dns_start).format(preciseFormat()),
+        moment(response.dns_done).format(preciseFormat()),
+        moment(response.tls_start).format(preciseFormat()),
+        moment(response.tls_done).format(preciseFormat()),
+        response.status_code,
+        response.total_time / 1000000,
+        byteSize(response.body),
+      ]);
+    });
+
     return (
-      <table css={table}>
-        <thead>
-          <tr>
-            <th>FirstByte</th>
-            <th>ConnectStart</th>
-            <th>ConnectDone</th>
-            <th>DNSStart</th>
-            <th>DNSDone</th>
-            <th>TLSStart</th>
-            <th>TLSDone</th>
-            <th>StatusCode</th>
-            <th>TotalTime</th>
-            <th>Body</th>
-          </tr>
-        </thead>
-        <tbody>
-          {responses &&
-            responses.map((response: Response, key: number) => {
-              return (
-                <tr key={key}>
-                  <td>{moment(response.first_byte).format(preciseFormat())}</td>
-                  <td>
-                    {moment(response.connect_start).format(preciseFormat())}
-                  </td>
-                  <td>
-                    {moment(response.connect_done).format(preciseFormat())}
-                  </td>
-                  <td>{moment(response.dns_start).format(preciseFormat())}</td>
-                  <td>{moment(response.dns_done).format(preciseFormat())}</td>
-                  <td>{moment(response.tls_start).format(preciseFormat())}</td>
-                  <td>{moment(response.tls_done).format(preciseFormat())}</td>
-                  <td>{response.status_code}</td>
-                  <td>{response.total_time / 1000000}</td>
-                  <td>{byteSize(response.body)}</td>
-                </tr>
-              );
-            })}
-        </tbody>
-      </table>
+      <Fragment>
+        <RTable
+          content={content}
+          title={[
+            "FirstByte",
+            "ConnectStart",
+            "ConnectDone",
+            "DNSStart",
+            "DNSDone",
+            "TLSStart",
+            "TLSDone",
+            "StatusCode",
+            "TotalTime(ms)",
+            "Body",
+          ]}
+        />
+      </Fragment>
     );
   };
 

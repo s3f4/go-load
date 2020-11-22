@@ -28,6 +28,7 @@ const Header: React.FC<Props> = (props: Props) => {
   const history = useHistory();
   const user = getUserFromStorage();
 
+  
   const onSignOut = (e: React.FormEvent) => {
     e.preventDefault();
     signOut()

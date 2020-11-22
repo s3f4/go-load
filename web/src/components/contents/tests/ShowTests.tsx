@@ -272,7 +272,7 @@ const ShowTests: React.FC = () => {
             ) : (
               <React.Fragment>
                 <Button
-                  text="Add New Test"
+                  text="New Test"
                   colorType={ButtonColorType.primary}
                   type={ButtonType.iconTextButton}
                   icon={<FiPlusCircle />}
@@ -289,7 +289,7 @@ const ShowTests: React.FC = () => {
                   disabled={!instances}
                 />
                 <Button
-                  text="Update Test Group Name"
+                  text="Update Name"
                   colorType={ButtonColorType.secondary}
                   type={ButtonType.iconTextButton}
                   icon={<FiEdit2 />}

@@ -8,29 +8,22 @@ interface Props {
   content: any[][];
 }
 
-const Table: React.FC<Props> = (props: Props) => {
+const RTable: React.FC<Props> = (props: Props) => {
   return (
     <div css={container}>
-      <table css={table}>
-        <thead css={th}>
-          <tr css={trTitle}>
-            {props.title.map((title, index) => (
-              <th key={index}>{title}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {props.content.map((rows, index) => (
-            <tr css={tr} key={index}>
-              {rows.map((column, colIndex) => (
-                <td css={td(colIndex)} key={colIndex}>
-                  {column}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div css={table}>
+        {props.title.map((title, index) => (
+          <th key={index}>{title}</th>
+        ))}
+
+        {props.content.map((rows, index) =>
+          rows.map((column, colIndex) => (
+            <td css={td(colIndex)} key={colIndex}>
+              {column}
+            </td>
+          )),
+        )}
+      </div>
     </div>
   );
 };
@@ -72,4 +65,4 @@ const td = (index?: number) => css`
     : "text-align:center;font-weight:bold;text-transform:uppercase;"}
 `;
 
-export default Table;
+export default RTable;

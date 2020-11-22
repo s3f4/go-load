@@ -1,6 +1,7 @@
 /** @jsx jsx */
 import React from "react";
 import { jsx, css } from "@emotion/core";
+import { MediaQuery } from "../style";
 
 type messageType = "success" | "error" | "warning";
 export interface IMessage {
@@ -34,7 +35,10 @@ const container = (type: string) => css`
   border-radius: 0.5rem;
   text-align: center;
   font-size: 1.5rem;
-  height: 8rem;
+  min-height: 10rem;
+  ${MediaQuery[1]} {
+    min-height: 8rem;
+  }
   width: 100%;
   padding: 4rem;
   background-color: ${type === "success"

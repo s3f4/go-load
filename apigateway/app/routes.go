@@ -99,8 +99,12 @@ func routeMap(*chi.Mux) {
 			})
 
 			router.Route("/{ID}", func(router chi.Router) {
+				router.Use(middlewares.TestGroupCtx)
 				router.Post("/start", handlers.TestGroupHandler.Start)
-				router.Get("/", handlers.TestHandler.List)
+				router.Route("/tests", func(router chi.Router) {
+					router.Use(middlewares.QueryCtx)
+					router.Get("/", handlers.TestHandler.ListByTestGroupID)
+				})
 			})
 		})
 

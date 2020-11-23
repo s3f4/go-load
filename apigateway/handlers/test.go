@@ -22,6 +22,7 @@ type testHandlerInterface interface {
 	Update(w http.ResponseWriter, r *http.Request)
 	Get(w http.ResponseWriter, r *http.Request)
 	List(w http.ResponseWriter, r *http.Request)
+	ListByTestGroupID(w http.ResponseWriter, r *http.Request)
 	Start(w http.ResponseWriter, r *http.Request)
 }
 
@@ -105,8 +106,38 @@ func (h *testHandler) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fmt.Printf("%#v", query)
-	tests, total, err := h.tr.List(query)
+	tests, total, err := h.tr.List(query, "")
 
+	if err != nil {
+		log.Debug(err)
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			res.R404(w, r, library.ErrNotFound)
+			return
+		}
+		res.R500(w, r, library.ErrInternalServerError)
+		return
+	}
+	res.R200(w, r, map[string]interface{}{
+		"total": total,
+		"data":  tests,
+	})
+}
+
+func (h *testHandler) ListByTestGroupID(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	query, ok := ctx.Value(middlewares.QueryCtxKey).(*library.QueryBuilder)
+	if !ok {
+		res.R422(w, r, library.ErrUnprocessableEntity)
+		return
+	}
+
+	testGroup, ok := ctx.Value(middlewares.TestGroupCtxKey).(*models.TestGroup)
+	if !ok {
+		res.R422(w, r, library.ErrUnprocessableEntity)
+		return
+	}
+
+	tests, total, err := h.tr.List(query, "test_group_id=?", testGroup.ID)
 	if err != nil {
 		log.Debug(err)
 		if errors.Is(err, gorm.ErrRecordNotFound) {

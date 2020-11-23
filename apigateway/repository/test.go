@@ -13,7 +13,7 @@ type TestRepository interface {
 	Update(*models.Test) error
 	Delete(*models.Test) error
 	Get(id uint) (*models.Test, error)
-	List(*library.QueryBuilder) ([]models.Test, int64, error)
+	List(*library.QueryBuilder, string, ...interface{}) ([]models.Test, int64, error)
 }
 
 type testRepository struct {
@@ -64,13 +64,18 @@ func (r *testRepository) Get(id uint) (*models.Test, error) {
 	return &testReq, nil
 }
 
-func (r *testRepository) List(query *library.QueryBuilder) ([]models.Test, int64, error) {
+func (r *testRepository) List(query *library.QueryBuilder, conditionStr string, where ...interface{}) ([]models.Test, int64, error) {
 	var testReq []models.Test
 	var total int64
-	r.DB().Model(&testReq).Count(&total)
+	if len(conditionStr) > 0 && where != nil {
+		r.DB().Where(conditionStr, where...).Model(&testReq).Count(&total)
+	} else {
+		r.DB().Model(&testReq).Count(&total)
+	}
 
 	if err := query.SetDB(r.DB()).
 		SetPreloads("Headers", "RunTests", "TransportConfig").
+		SetWhere(conditionStr, where...).
 		List(&testReq); err != nil {
 		return nil, 0, err
 	}

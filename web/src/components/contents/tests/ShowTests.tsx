@@ -19,7 +19,7 @@ import {
   saveTest,
   Test,
   updateTest,
-  listTests,
+  listTestsOfTestGroup,
 } from "../../../api/entity/test";
 import TextInput from "../../basic/TextInput";
 import {
@@ -57,15 +57,6 @@ const ShowTests: React.FC = () => {
       .catch(() => {});
     return () => {};
   }, []);
-
-  // useEffect(() => {
-  //   listTestGroup()
-  //     .then((response) => {
-  //       setTestGroups(response.data);
-  //       setSelectedTestGroup(response.data[0]);
-  //     })
-  //     .catch((error) => console.log(error));
-  // }, []);
 
   const run = (testConfig: TestGroup) => (e: React.FormEvent) => {
     e.preventDefault();
@@ -203,7 +194,6 @@ const ShowTests: React.FC = () => {
     setSelectedTest(test);
   };
 
-  console.log(testGroups);
   return (
     <div css={container}>
       <div css={leftColumn}>
@@ -313,7 +303,7 @@ const ShowTests: React.FC = () => {
             <RTable
               builder={buildTable}
               setter={() => {}}
-              fetcher={listTests}
+              fetcher={listTestsOfTestGroup(selectedTestGroup?.id!)}
               title={[
                 {
                   header: "URL",

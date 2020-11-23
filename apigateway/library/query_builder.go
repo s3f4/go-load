@@ -32,7 +32,9 @@ func (q *QueryBuilder) SetModel(model interface{}) *QueryBuilder {
 
 // SetWhere ...
 func (q *QueryBuilder) SetWhere(conditionStr string, values ...interface{}) *QueryBuilder {
-	q.tx = q.tx.Where(conditionStr, values)
+	if len(conditionStr) > 0 && values != nil {
+		q.tx = q.tx.Where(conditionStr, values)
+	}
 	return q
 }
 

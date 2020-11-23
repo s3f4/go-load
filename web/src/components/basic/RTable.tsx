@@ -35,7 +35,7 @@ const RTable: React.FC<Props> = (props: Props) => {
       setContent(props.builder(response.data.data));
     });
     return () => {};
-  }, [query]);
+  }, [props.fetcher, query]);
 
   const onChangePage = (page: number) => (e: React.FormEvent) => {
     e.preventDefault();

@@ -45,6 +45,12 @@ export const listTests = async (query?: Query) => {
   return await makeReq(`/test?${QueryString(query)}`);
 };
 
+export const listTestsOfTestGroup = (testID: number) => async (
+  query?: Query,
+) => {
+  return await makeReq(`/test_group/${testID}/tests?${QueryString(query)}`);
+};
+
 export const deleteTest = async (test: Test) => {
   return await makeReq("/test", "DELETE", test);
 };

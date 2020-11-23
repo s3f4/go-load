@@ -28,16 +28,6 @@ const StatsContent: React.FC<Props> = (props: Props) => {
       .catch((error) => console.log(error));
   }, [props.testID]);
 
-  const listResponses = () => {
-    if (selectedRunTest) {
-      stats(selectedRunTest.id!)
-        .then((response) => {
-          setResponses(response.data);
-        })
-        .catch((error) => console.log(error));
-    }
-  };
-
   const byteSize = (str: string) => new Blob([str]).size;
 
   const chartData = () => {
@@ -74,7 +64,6 @@ const StatsContent: React.FC<Props> = (props: Props) => {
   const onSelectRunTest = (runTest: RunTest) => (e: React.FormEvent) => {
     e.preventDefault();
     setSelectedRunTest(runTest);
-    listResponses();
   };
 
   const testContent = (test: Test) => {
@@ -118,12 +107,9 @@ const StatsContent: React.FC<Props> = (props: Props) => {
     );
   };
 
-  const responseTable = () => {
-    if (!responses || !selectedRunTest) {
-      return;
-    }
+  const buildTable = (responses: any) => {
     const content: any[][] = [];
-    responses.map((response) => {
+    responses.map((response: any) => {
       content.push([
         moment(response.first_byte).format(preciseFormat()),
         moment(response.connect_start).format(preciseFormat()),
@@ -137,22 +123,75 @@ const StatsContent: React.FC<Props> = (props: Props) => {
         byteSize(response.body),
       ]);
     });
+    return content;
+  };
+
+  const responseTable = () => {
+    if (!responses || !selectedRunTest) {
+      return;
+    }
 
     return (
       <Fragment>
         <RTable
-          content={content}
+          setter={setResponses}
+          fetcher={stats(selectedRunTest.id!)}
+          builder={buildTable}
           title={[
-            "FirstByte",
-            "ConnectStart",
-            "ConnectDone",
-            "DNSStart",
-            "DNSDone",
-            "TLSStart",
-            "TLSDone",
-            "StatusCode",
-            "TotalTime(ms)",
-            "Body",
+            {
+              header: "FirstByte",
+              accessor: "FirstByte",
+              sortable: true,
+            },
+            {
+              header: "ConnectStart",
+              accessor: "ConnectStart",
+              sortable: true,
+            },
+            {
+              header: "ConnectDone",
+              accessor: "ConnectDone",
+              sortable: true,
+            },
+            {
+              header: "DNSStart",
+              accessor: "DNSStart",
+              sortable: true,
+            },
+            {
+              header: "DNSDone",
+              accessor: "DNSDone",
+              sortable: true,
+            },
+            {
+              header: "TLSStart",
+              accessor: "TLSStart",
+              sortable: true,
+            },
+            {
+              header: "TLSDone",
+              accessor: "TLSDone",
+              sortable: true,
+            },
+            {
+              header: "StatusCode",
+              accessor: "StatusCode",
+              sortable: true,
+            },
+            {
+              header: "TotalTime(ms)",
+              accessor: "TotalTime",
+              sortable: true,
+            },
+            {
+              header: "TLSDone",
+              accessor: "TLSDone",
+              sortable: true,
+            },
+            {
+              header: "Body",
+              sortable: false,
+            },
           ]}
         />
       </Fragment>

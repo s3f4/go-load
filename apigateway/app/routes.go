@@ -100,7 +100,7 @@ func routeMap(*chi.Mux) {
 
 			router.Route("/{ID}", func(router chi.Router) {
 				router.Post("/start", handlers.TestGroupHandler.Start)
-				router.Get("/", handlers.TestGroupHandler.List)
+				router.Get("/", handlers.TestHandler.List)
 			})
 		})
 

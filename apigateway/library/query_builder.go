@@ -11,10 +11,17 @@ import (
 
 // QueryBuilder ...
 type QueryBuilder struct {
+	tx     *gorm.DB
 	Limit  int
 	Offset int
 	Sort   string
 	Model  interface{}
+}
+
+// SetDB ..
+func (q *QueryBuilder) SetDB(db *gorm.DB) *QueryBuilder {
+	q.tx = db
+	return q
 }
 
 // SetModel ...
@@ -23,24 +30,32 @@ func (q *QueryBuilder) SetModel(model interface{}) *QueryBuilder {
 	return q
 }
 
+// SetWhere ...
+func (q *QueryBuilder) SetWhere(conditionStr string, values ...interface{}) *QueryBuilder {
+	q.tx = q.tx.Where(conditionStr, values)
+	return q
+}
+
+// SetPreloads ...
+func (q *QueryBuilder) SetPreloads(preloads ...string) *QueryBuilder {
+	if len(preloads) > 0 {
+		for _, preload := range preloads {
+			q.tx = q.tx.Preload(preload)
+		}
+	}
+	return q
+}
+
 // List function
-func (q *QueryBuilder) List(db *gorm.DB, out interface{}, preloads ...string) (*gorm.DB, error) {
-	db = db.Limit(q.Limit).Offset(q.Offset)
+func (q *QueryBuilder) List(out interface{}) error {
+	q.tx.Limit(q.Limit).Offset(q.Offset)
 
 	// Check column that will be sorted is exists
 	if len(q.Sort) > 0 && IsIn(strings.Split(q.Sort, " ")[0], q.Model) {
-		db = db.Order(q.Sort)
+		q.tx.Order(q.Sort)
 	}
 
-	if len(preloads) > 0 {
-		for _, preload := range preloads {
-			db = db.Preload(preload)
-		}
-	}
-
-	db = db.Find(out)
-
-	return db, db.Error
+	return q.tx.Find(out).Error
 }
 
 func checkParam(param []string) (int, bool) {

@@ -36,7 +36,9 @@ const Paginator: React.FC<Props> = (props: Props) => {
 
   const pages = () => {
     const buttons = [];
-    for (let i = 1; i <= Math.ceil(total / query.limit); i++) {
+    const p = total / query.limit;
+    const page = p > 1 ? Math.ceil(p) : p;
+    for (let i = 1; i <= page; i++) {
       buttons.push(
         <button onClick={onChangePage(i)} key={i}>
           {i}

@@ -1,4 +1,5 @@
-import { makeReq } from "../api";
+import { Query } from "../../components/basic/query";
+import { makeReq, QueryString } from "../api";
 import { RunTest } from "./runtest";
 import { TestGroup } from "./test_group";
 
@@ -38,6 +39,10 @@ export const saveTest = async (test: Test) => {
 
 export const getTest = async (testID: number) => {
   return await makeReq(`/test/${testID}`, "GET");
+};
+
+export const listTests = async (query?: Query) => {
+  return await makeReq(`/test?${QueryString(query)}`);
 };
 
 export const deleteTest = async (test: Test) => {

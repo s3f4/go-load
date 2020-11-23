@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -12,6 +13,7 @@ import (
 	"github.com/s3f4/go-load/apigateway/models"
 	"github.com/s3f4/go-load/apigateway/repository"
 	"github.com/s3f4/go-load/apigateway/services"
+	"gorm.io/gorm"
 )
 
 type testHandlerInterface interface {
@@ -102,16 +104,22 @@ func (h *testHandler) List(w http.ResponseWriter, r *http.Request) {
 		res.R422(w, r, library.ErrUnprocessableEntity)
 		return
 	}
+	fmt.Printf("%#v", query)
+	tests, total, err := h.tr.List(query)
 
-	fmt.Println(query)
-
-	tests, err := h.tr.List()
 	if err != nil {
 		log.Debug(err)
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			res.R404(w, r, library.ErrNotFound)
+			return
+		}
 		res.R500(w, r, library.ErrInternalServerError)
 		return
 	}
-	res.R200(w, r, tests)
+	res.R200(w, r, map[string]interface{}{
+		"total": total,
+		"data":  tests,
+	})
 }
 
 func (h *testHandler) Start(w http.ResponseWriter, r *http.Request) {

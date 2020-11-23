@@ -70,9 +70,13 @@ export const makeReq = async (url: string, method?: any, body?: any) => {
   });
 };
 
-export const QueryString = (params: any) =>
-  Object.keys(params)
-    .map(function (key) {
-      return key + "=" + params[key];
-    })
-    .join("&");
+export const QueryString = (params: any) => {
+  if (params) {
+    return Object.keys(params)
+      .map(function (key) {
+        return key + "=" + params[key];
+      })
+      .join("&");
+  }
+  return "";
+};

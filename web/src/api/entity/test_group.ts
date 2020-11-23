@@ -21,7 +21,7 @@ export const runTestGroup = async (testGroup: TestGroup) => {
 };
 
 export const listTestGroup = async (query?: Query) => {
-  return await makeReq(`/test_group?${QueryString(query)}`, "Get");
+  return await makeReq(`/test_group?${QueryString(query)}`);
 };
 
 export const deleteTestGroup = async (testGroup: TestGroup) => {

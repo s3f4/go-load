@@ -19,6 +19,7 @@ import {
   saveTest,
   Test,
   updateTest,
+  listTests,
 } from "../../../api/entity/test";
 import TextInput from "../../basic/TextInput";
 import {
@@ -74,24 +75,22 @@ const ShowTests: React.FC = () => {
       .catch(() => {});
   };
 
-  const buildTable = () => {
+  const buildTable = (tests: Test[]): any[][] => {
     const content: any[] = [];
 
-    if (selectedTestGroup) {
-      selectedTestGroup.tests.forEach((test: Test) => {
-        const row: any[] = [
-          test.url,
-          test.method,
-          test.request_count,
-          <div>
-            {buttons("Run", test)}
-            {buttons("Edit", test)}
-            {buttons("Delete", test)}
-          </div>,
-        ];
-        content.push(row);
-      });
-    }
+    tests.forEach((test: Test) => {
+      const row: any[] = [
+        test.url,
+        test.method,
+        test.request_count,
+        <div>
+          {buttons("Run", test)}
+          {buttons("Edit", test)}
+          {buttons("Delete", test)}
+        </div>,
+      ];
+      content.push(row);
+    });
 
     return content;
   };
@@ -312,8 +311,30 @@ const ShowTests: React.FC = () => {
               </React.Fragment>
             )}
             <RTable
-              title={["URL", "Method", "Requests Count", "Actions"]}
-              content={buildTable()}
+              builder={buildTable}
+              setter={() => {}}
+              fetcher={listTests}
+              title={[
+                {
+                  header: "URL",
+                  accessor: "Url",
+                  sortable: true,
+                },
+                {
+                  header: "Method",
+                  accessor: "Method",
+                  sortable: true,
+                },
+                {
+                  header: "Request Count",
+                  accessor: "Request Count",
+                  sortable: true,
+                },
+                {
+                  header: "Actions",
+                  sortable: false,
+                },
+              ]}
             />
           </React.Fragment>
         ) : (

@@ -1,4 +1,5 @@
-import { makeReq } from "../api";
+import { Query } from "../../components/basic/query";
+import { makeReq, QueryString } from "../api";
 
 export interface Response {
   run_test_id: number;
@@ -18,6 +19,6 @@ export interface Response {
   body: string;
 }
 
-export const stats = async (runTestID: number) => {
-  return await makeReq(`/run_test/${runTestID}/stats`);
+export const stats = (runTestID: number) => async (query?: Query) => {
+  return await makeReq(`/run_test/${runTestID}/stats?${QueryString(query)}`);
 };

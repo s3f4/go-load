@@ -11,6 +11,7 @@ import (
 	res "github.com/s3f4/go-load/apigateway/library/response"
 	"github.com/s3f4/go-load/apigateway/middlewares"
 	"github.com/s3f4/go-load/apigateway/models"
+	"github.com/s3f4/go-load/apigateway/repository"
 	"github.com/s3f4/go-load/apigateway/services"
 	"gorm.io/gorm"
 )
@@ -25,13 +26,15 @@ type testGroupHandlerInterface interface {
 }
 
 type testGroupHandler struct {
-	service services.TestGroupService
+	service    services.TestGroupService
+	repository repository.TestGroupRepository
 }
 
 var (
 	//TestGroupHandler .
 	TestGroupHandler testGroupHandlerInterface = &testGroupHandler{
-		service: services.NewTestGroupService(),
+		service:    services.NewTestGroupService(),
+		repository: repository.NewTestGroupRepository(),
 	}
 )
 
@@ -126,12 +129,9 @@ func (h *testGroupHandler) List(w http.ResponseWriter, r *http.Request) {
 		res.R422(w, r, library.ErrUnprocessableEntity)
 		return
 	}
+	fmt.Printf("%#v", query)
+	testConfig, total, err := h.repository.List(query)
 
-	fmt.Println(query)
-	fmt.Println(query)
-	fmt.Println(query)
-
-	testConfig, err := h.service.List()
 	if err != nil {
 		log.Debug(err)
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -141,5 +141,8 @@ func (h *testGroupHandler) List(w http.ResponseWriter, r *http.Request) {
 		res.R500(w, r, library.ErrInternalServerError)
 		return
 	}
-	res.R200(w, r, testConfig)
+	res.R200(w, r, map[string]interface{}{
+		"total": total,
+		"data":  testConfig,
+	})
 }

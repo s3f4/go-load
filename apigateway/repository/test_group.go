@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"github.com/s3f4/go-load/apigateway/library"
 	"github.com/s3f4/go-load/apigateway/models"
 	"gorm.io/gorm"
 )
@@ -12,7 +13,7 @@ type TestGroupRepository interface {
 	Update(*models.TestGroup) error
 	Delete(*models.TestGroup) error
 	Get(id uint) (*models.TestGroup, error)
-	List() ([]models.TestGroup, error)
+	List(*library.QueryBuilder) ([]models.TestGroup, int64, error)
 }
 
 type testGroupRepository struct {
@@ -55,14 +56,12 @@ func (r *testGroupRepository) Get(id uint) (*models.TestGroup, error) {
 	return &testReq, nil
 }
 
-func (r *testGroupRepository) List() ([]models.TestGroup, error) {
+func (r *testGroupRepository) List(query *library.QueryBuilder) ([]models.TestGroup, int64, error) {
 	var testReq []models.TestGroup
-	if err := r.DB().Preload("Tests").
-		Preload("Tests.Headers").
-		Preload("Tests.TransportConfig").
-		Preload("Tests.RunTests").
-		Find(&testReq).Error; err != nil {
-		return nil, err
+	var total int64
+	r.DB().Model(&testReq).Count(&total)
+	if _, err := query.List(r.DB(), &testReq, "Tests", "Tests.Headers", "Tests.TransportConfig", "Tests.RunTests"); err != nil {
+		return nil, 0, err
 	}
-	return testReq, nil
+	return testReq, total, nil
 }

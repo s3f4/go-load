@@ -6,6 +6,7 @@ const URL = `http://${process.env.REACT_APP_API_BASE_URL}`;
 export interface ServerResponse {
   status: boolean;
   data?: any;
+  total?: any;
   message?: string;
   status_code: number;
 }
@@ -68,3 +69,10 @@ export const makeReq = async (url: string, method?: any, body?: any) => {
     });
   });
 };
+
+export const QueryString = (params: any) =>
+  Object.keys(params)
+    .map(function (key) {
+      return key + "=" + params[key];
+    })
+    .join("&");

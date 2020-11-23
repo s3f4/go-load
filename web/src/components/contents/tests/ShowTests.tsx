@@ -31,6 +31,7 @@ import {
 } from "react-icons/fi";
 import { getInstanceInfo, Instance } from "../../../api/entity/instance";
 import RTable from "../../basic/RTable";
+import Paginator from "../../basic/Paginator";
 
 const ShowTests: React.FC = () => {
   const [instances, setInstances] = useState<Instance[] | undefined>();
@@ -56,14 +57,14 @@ const ShowTests: React.FC = () => {
     return () => {};
   }, []);
 
-  useEffect(() => {
-    listTestGroup()
-      .then((response) => {
-        setTestGroups(response.data);
-        setSelectedTestGroup(response.data[0]);
-      })
-      .catch((error) => console.log(error));
-  }, []);
+  // useEffect(() => {
+  //   listTestGroup()
+  //     .then((response) => {
+  //       setTestGroups(response.data);
+  //       setSelectedTestGroup(response.data[0]);
+  //     })
+  //     .catch((error) => console.log(error));
+  // }, []);
 
   const run = (testConfig: TestGroup) => (e: React.FormEvent) => {
     e.preventDefault();
@@ -203,26 +204,35 @@ const ShowTests: React.FC = () => {
     setSelectedTest(test);
   };
 
+  console.log(testGroups);
   return (
     <div css={container}>
       <div css={leftColumn}>
         <h3 css={h3title}>Test Groups</h3>
-        {testGroups?.map((config: TestGroup) => (
-          <div
-            css={leftContent(config.id === selectedTestGroup.id)}
-            key={config.id}
-            onClick={(e: React.MouseEvent) => {
-              e.preventDefault();
-              setSelectedTestGroup(config);
-            }}
-          >
-            <div>
-              <span>
-                <b>{config.name}</b>
-              </span>
+        {testGroups &&
+          testGroups.map((config: TestGroup) => (
+            <div
+              css={leftContent(config.id === selectedTestGroup.id)}
+              key={config.id}
+              onClick={(e: React.MouseEvent) => {
+                e.preventDefault();
+                setSelectedTestGroup(config);
+              }}
+            >
+              <div>
+                <span>
+                  <b>{config.name}</b>
+                </span>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        <Paginator
+          fetcher={listTestGroup}
+          setter={(data) => {
+            setTestGroups(data);
+            setSelectedTestGroup(data[0]);
+          }}
+        />
         <Link to="/tests/create">
           <Button text="New Test Group" />
         </Link>

@@ -1,4 +1,5 @@
-import { makeReq } from "../api";
+import { Query } from "../../components/basic/query";
+import { makeReq, QueryString } from "../api";
 import { Test } from "./test";
 
 export interface TestGroup {
@@ -19,8 +20,8 @@ export const runTestGroup = async (testGroup: TestGroup) => {
   return await makeReq("/test_group/start", "POST", testGroup);
 };
 
-export const listTestGroup = async () => {
-  return await makeReq("/test_group", "Get");
+export const listTestGroup = async (query?: Query) => {
+  return await makeReq(`/test_group?${QueryString(query)}`, "Get");
 };
 
 export const deleteTestGroup = async (testGroup: TestGroup) => {

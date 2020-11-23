@@ -1,14 +1,24 @@
 /** @jsx jsx */
-import React, { Fragment } from "react";
+import React, { Fragment, useState } from "react";
 import { jsx, css } from "@emotion/core";
 import { Colors, MediaQuery } from "../style";
 
+export interface TableTitle {
+  header: string;
+  accessor: string;
+  sortable: boolean;
+  row: object;
+}
 interface Props {
   title: any[];
   content: any[][];
 }
 
 const RTable: React.FC<Props> = (props: Props) => {
+  const [total, setTotal] = useState<number>();
+  const [page, setPage] = useState<number>();
+  const [sort, setSort] = useState<string>();
+
   return (
     <Fragment>
       <div css={container}>

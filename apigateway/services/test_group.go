@@ -16,7 +16,6 @@ type TestGroupService interface {
 	Get(*models.TestGroup) (*models.TestGroup, error)
 	Update(*models.TestGroup) error
 	Delete(*models.TestGroup) error
-	List() ([]models.TestGroup, error)
 }
 
 type testGroupService struct {
@@ -109,9 +108,4 @@ func (s *testGroupService) Update(testGroup *models.TestGroup) error {
 // Delete
 func (s *testGroupService) Delete(testGroup *models.TestGroup) error {
 	return s.tgr.Delete(testGroup)
-}
-
-// List
-func (s *testGroupService) List() ([]models.TestGroup, error) {
-	return s.tgr.List()
 }

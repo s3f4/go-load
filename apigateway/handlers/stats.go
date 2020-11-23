@@ -35,7 +35,13 @@ func (h *statsHandler) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	responses, err := h.repository.List(runTest.ID)
+	query, ok := ctx.Value(middlewares.QueryCtxKey).(*library.QueryBuilder)
+	if !ok {
+		res.R422(w, r, library.ErrUnprocessableEntity)
+		return
+	}
+
+	responses, total, err := h.repository.List(query, "run_test_id=?", runTest.ID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			res.R404(w, r, library.ErrNotFound)
@@ -44,5 +50,9 @@ func (h *statsHandler) List(w http.ResponseWriter, r *http.Request) {
 		res.R500(w, r, err)
 		return
 	}
-	res.R200(w, r, responses)
+
+	res.R200(w, r, map[string]interface{}{
+		"total": total,
+		"data":  responses,
+	})
 }

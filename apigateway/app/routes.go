@@ -129,7 +129,11 @@ func routeMap(*chi.Mux) {
 				router.Use(middlewares.RunTestCtx)
 				router.Get("/", handlers.RunTestHandler.Get)
 				router.Delete("/", handlers.RunTestHandler.Delete)
-				router.Get("/stats", handlers.StatsHandler.List)
+
+				router.Route("/stats", func(router chi.Router) {
+					router.Use(middlewares.QueryCtx)
+					router.Get("/", handlers.StatsHandler.List)
+				})
 			})
 			router.Get("/run_test", handlers.RunTestHandler.List)
 		})

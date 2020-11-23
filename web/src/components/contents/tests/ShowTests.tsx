@@ -302,7 +302,6 @@ const ShowTests: React.FC = () => {
             )}
             <RTable
               builder={buildTable}
-              setter={() => {}}
               fetcher={listTestsOfTestGroup(selectedTestGroup?.id!)}
               title={[
                 {

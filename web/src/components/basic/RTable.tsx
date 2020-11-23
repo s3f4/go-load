@@ -16,7 +16,6 @@ interface Props {
   title: TableTitle[];
   builder: (data: any) => any[][];
   fetcher: (query?: Query) => Promise<any>;
-  setter: (val: any) => any;
   limit?: number;
 }
 
@@ -31,7 +30,6 @@ const RTable: React.FC<Props> = (props: Props) => {
   useEffect(() => {
     props.fetcher(query).then((response: ServerResponse) => {
       setTotal(response.data.total);
-      props.setter(response.data.data);
       setContent(props.builder(response.data.data));
     });
     return () => {};

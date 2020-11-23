@@ -1,7 +1,7 @@
 /** @jsx jsx */
 import React, { Fragment, useState } from "react";
 import { jsx, css } from "@emotion/core";
-import { stats, Response } from "../../api/entity/stats";
+import { listResponses, Response } from "../../api/entity/stats";
 import moment from "moment";
 import { Line } from "react-chartjs-2";
 import { defaultFormat, preciseFormat } from "../basic/helper";
@@ -17,6 +17,7 @@ interface Props {
 
 const StatsContent: React.FC<Props> = (props: Props) => {
   const [responses, setResponses] = useState<Response[]>([]);
+  const [graphResponses, setGraphResponses] = useState<Response[]>([]);
   const [test, setTest] = useState<Test>();
   const [selectedRunTest, setSelectedRunTest] = useState<RunTest>();
 
@@ -30,10 +31,10 @@ const StatsContent: React.FC<Props> = (props: Props) => {
 
   const byteSize = (str: string) => new Blob([str]).size;
 
-  const chartData = () => {
+  const chartData = React.useCallback((r) => {
     const datum: any[] = [];
     const labels: any[] = [];
-    responses.map((response: Response, index: number) => {
+    r.map((response: Response, index: number) => {
       datum.push(response.dns_time / 100000);
       labels.push("request_" + index);
       return null;
@@ -42,28 +43,33 @@ const StatsContent: React.FC<Props> = (props: Props) => {
       datum,
       labels,
     };
-  };
+  }, []);
 
-  const graph = () => {
-    if (!responses || !selectedRunTest) {
+  console.log("abc");
+
+  const graph = React.useCallback(() => {
+    if (!graphResponses || !selectedRunTest) {
       return;
     }
 
     const data = {
       datasets: [
         {
-          data: chartData().datum,
+          data: chartData(graphResponses).datum,
           label: "Latency", // for legend
         },
       ],
-      labels: chartData().labels,
+      labels: chartData(graphResponses).labels,
     };
     return <Line data={data} />;
-  };
+  }, [selectedRunTest, graphResponses]);
 
   const onSelectRunTest = (runTest: RunTest) => (e: React.FormEvent) => {
     e.preventDefault();
     setSelectedRunTest(runTest);
+    listResponses(runTest.id!)().then((response) => {
+      setGraphResponses(response.data.data);
+    });
   };
 
   const testContent = (test: Test) => {
@@ -107,9 +113,9 @@ const StatsContent: React.FC<Props> = (props: Props) => {
     );
   };
 
-  const buildTable = (responses: any) => {
+  const buildTable = (r: any) => {
     const content: any[][] = [];
-    responses.map((response: any) => {
+    r.map((response: any) => {
       content.push([
         moment(response.first_byte).format(preciseFormat()),
         moment(response.connect_start).format(preciseFormat()),
@@ -122,6 +128,7 @@ const StatsContent: React.FC<Props> = (props: Props) => {
         response.total_time / 1000000,
         byteSize(response.body),
       ]);
+      return null;
     });
     return content;
   };
@@ -134,8 +141,7 @@ const StatsContent: React.FC<Props> = (props: Props) => {
     return (
       <Fragment>
         <RTable
-          setter={setResponses}
-          fetcher={stats(selectedRunTest.id!)}
+          fetcher={listResponses(selectedRunTest.id!)}
           builder={buildTable}
           title={[
             {
@@ -222,10 +228,6 @@ const testDiv = css`
   padding: 3rem 2rem 3rem 2rem;
   background-color: #efefef;
   border-bottom: ${Borders.border1};
-`;
-
-const table = css`
-  width: 100%;
 `;
 
 const runTestDiv = css`

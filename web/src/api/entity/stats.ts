@@ -19,6 +19,6 @@ export interface Response {
   body: string;
 }
 
-export const stats = (runTestID: number) => async (query?: Query) => {
+export const listResponses = (runTestID: number) => async (query?: Query) => {
   return await makeReq(`/run_test/${runTestID}/stats?${QueryString(query)}`);
 };

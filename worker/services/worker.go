@@ -39,6 +39,7 @@ func (s *workerService) Start(event *models.Event) error {
 		Result:   &payload,
 		TagName:  "json",
 	}
+	
 	decoder, err := mapstructure.NewDecoder(cfg)
 	if err != nil {
 		log.Errorf("mapstructrure.decode", err)

@@ -1,6 +1,6 @@
 /** @jsx jsx */
-import React, { Fragment, ReactNode, useEffect, useState } from "react";
-import { jsx, css } from "@emotion/core";
+import React, { Fragment, useEffect, useState } from "react";
+import { jsx } from "@emotion/core";
 import { Query } from "./query";
 import { ServerResponse } from "../../api/api";
 

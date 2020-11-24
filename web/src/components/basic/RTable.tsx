@@ -40,7 +40,6 @@ const RTable: React.FC<Props> = (props: Props) => {
   }, [props.fetcher, query]);
 
   const onOrder = (col: string) => (e: FormEvent) => {
-    debugger;
     e.preventDefault();
     setIncrement(!increment);
     setOrderCol(col);

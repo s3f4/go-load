@@ -92,6 +92,8 @@ services:
     build:
       context: ./worker
       dockerfile: Dockerfile.dev
+    volumes:
+      - /etc/hostname:/etc/hostname
     environment:
       - APP_ENV=production
       - RABBITMQ_USER=user

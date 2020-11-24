@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/s3f4/go-load/worker/models"
+	"github.com/s3f4/mu"
 	"github.com/s3f4/mu/log"
 )
 
@@ -21,24 +22,8 @@ type Client struct {
 	Headers         []*models.Header
 }
 
-// HTTPTrace load testing with HTTPTrace tool of golang.
-func (c *Client) HTTPTrace() (*models.Response, error) {
-	req, err := http.NewRequest("GET", c.URL, nil)
-
-	if err != nil {
-		log.Errorf("HTTPTrace Error: %v\n", err)
-		return nil, err
-	}
-
-	log.Debugf("%#v\n", c)
-
-	var res models.Response
-	var start time.Time
-
-	transport := http.DefaultTransport.(*http.Transport)
-	transport.DisableKeepAlives = c.TransportConfig.DisableKeepAlives
-
-	trace := &httptrace.ClientTrace{
+func (c *Client) setTrace(res *models.Response) *httptrace.ClientTrace {
+	return &httptrace.ClientTrace{
 		DNSStart: func(dsi httptrace.DNSStartInfo) {
 			res.DNSStart = time.Now()
 		},
@@ -61,6 +46,36 @@ func (c *Client) HTTPTrace() (*models.Response, error) {
 			res.FirstByte = time.Now()
 		},
 	}
+}
+
+func (c *Client) calculateTimes(start time.Time, res *models.Response) {
+	res.FirstByteTime = int64(res.FirstByte.Sub(start))
+	res.DNSTime = int64(res.DNSDone.Sub(res.DNSStart))
+	res.TLSTime = int64(res.TLSDone.Sub(res.TLSStart))
+	res.ConnectTime = int64(res.ConnectDone.Sub(res.ConnectStart))
+	res.RunTestID = c.RunTestID
+	res.WorkerHostName = getHostname()
+	res.TotalTime = int64(time.Since(start))
+}
+
+// HTTPTrace load testing with HTTPTrace tool of golang.
+func (c *Client) HTTPTrace() (*models.Response, error) {
+	req, err := http.NewRequest("GET", c.URL, nil)
+
+	if err != nil {
+		log.Errorf("HTTPTrace Error: %v\n", err)
+		return nil, err
+	}
+
+	log.Debugf("%#v\n", c)
+
+	var res models.Response
+	var start time.Time
+
+	transport := http.DefaultTransport.(*http.Transport)
+	transport.DisableKeepAlives = c.TransportConfig.DisableKeepAlives
+
+	trace := c.setTrace(&res)
 
 	req = req.WithContext(httptrace.WithClientTrace(req.Context(), trace))
 	for _, header := range c.Headers {
@@ -75,18 +90,9 @@ func (c *Client) HTTPTrace() (*models.Response, error) {
 	}
 	defer response.Body.Close()
 
-	res.FirstByteTime = int64(res.FirstByte.Sub(start))
-	res.DNSTime = int64(res.DNSDone.Sub(res.DNSStart))
-	res.TLSTime = int64(res.TLSDone.Sub(res.TLSStart))
-	res.ConnectTime = int64(res.ConnectDone.Sub(res.ConnectStart))
-	res.RunTestID = c.RunTestID
-
-	if err != nil {
-		log.Error(err)
-		return nil, err
-	}
-	res.TotalTime = int64(time.Since(start))
+	c.calculateTimes(start, &res)
 	res.StatusCode = response.StatusCode
+
 	body, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		log.Error(err)
@@ -94,4 +100,10 @@ func (c *Client) HTTPTrace() (*models.Response, error) {
 	}
 	res.Body = string(body)
 	return &res, err
+}
+
+// getHostname is used for finding out which worker making this requests.
+func getHostname() string {
+	output, _ := mu.RunCommands("hostname")
+	return string(output)
 }

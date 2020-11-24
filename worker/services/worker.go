@@ -32,6 +32,7 @@ func NewWorkerService() WorkerService {
 	return workerServiceObj
 }
 
+// start gets started making requests.
 func (s *workerService) Start(event *models.Event) error {
 	var payload models.RequestPayload
 	cfg := &mapstructure.DecoderConfig{
@@ -39,7 +40,7 @@ func (s *workerService) Start(event *models.Event) error {
 		Result:   &payload,
 		TagName:  "json",
 	}
-	
+
 	decoder, err := mapstructure.NewDecoder(cfg)
 	if err != nil {
 		log.Errorf("mapstructrure.decode", err)
@@ -60,6 +61,7 @@ func (s *workerService) Start(event *models.Event) error {
 	return nil
 }
 
+// run
 func (s *workerService) run(
 	url, workerName string,
 	runTestID uint,

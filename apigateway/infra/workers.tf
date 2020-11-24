@@ -1,6 +1,5 @@
 variable regions {
   default = [
-    { index : 0, reg : "sgp1", instance_number : 1 },
   ]
 }
 

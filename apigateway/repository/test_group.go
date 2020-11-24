@@ -62,6 +62,7 @@ func (r *testGroupRepository) List(query *library.QueryBuilder) ([]models.TestGr
 	r.DB().Model(&testReq).Count(&total)
 	if err := query.
 		SetDB(r.DB()).
+		SetModel(models.TestGroup{}).
 		SetPreloads("Tests", "Tests.Headers", "Tests.TransportConfig", "Tests.RunTests").
 		List(&testReq); err != nil {
 		return nil, 0, err

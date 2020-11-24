@@ -4,6 +4,7 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/iancoleman/strcase"
 	"gorm.io/gorm"
 )
 
@@ -26,7 +27,8 @@ func IsIn(val string, x interface{}) bool {
 	if len(vals) != 2 {
 		return false
 	}
-	return Find(modelFields, vals[0]) != -1
+
+	return Find(modelFields, strcase.ToCamel(vals[0])) != -1
 }
 
 //Fields gets fields of Struct

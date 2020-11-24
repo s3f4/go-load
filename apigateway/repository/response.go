@@ -43,6 +43,7 @@ func (r *responseRepository) List(query *library.QueryBuilder, conditionStr stri
 	}
 
 	if err := query.SetDB(r.DB()).
+		SetModel(models.Response{}).
 		SetWhere(conditionStr, where...).
 		List(&responses); err != nil {
 		return nil, 0, err

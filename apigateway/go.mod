@@ -15,6 +15,7 @@ require (
 	github.com/go-redis/redis/v8 v8.3.3
 	github.com/gorilla/csrf v1.7.0
 	github.com/gorilla/securecookie v1.1.1
+	github.com/iancoleman/strcase v0.1.2
 	github.com/lib/pq v1.8.0 // indirect
 	github.com/mitchellh/mapstructure v1.3.3
 	github.com/myesui/uuid v1.0.0 // indirect

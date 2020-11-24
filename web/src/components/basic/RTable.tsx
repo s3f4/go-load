@@ -9,6 +9,7 @@ import Button, { ButtonColorType, ButtonType } from "./Button";
 
 export interface TableTitle {
   header: string;
+  // accessor is model column if there is one
   accessor?: string;
   sortable: boolean;
 }
@@ -39,10 +40,11 @@ const RTable: React.FC<Props> = (props: Props) => {
   }, [props.fetcher, query]);
 
   const onOrder = (col: string) => (e: FormEvent) => {
+    debugger;
     e.preventDefault();
     setIncrement(!increment);
     setOrderCol(col);
-    const incrementStr = !increment ? "+" : "-";
+    const incrementStr = !increment ? "i_" : "d_";
     setQuery({
       limit: props.limit ?? 10,
       offset: 0,

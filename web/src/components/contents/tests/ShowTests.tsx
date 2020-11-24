@@ -306,7 +306,7 @@ const ShowTests: React.FC = () => {
               title={[
                 {
                   header: "URL",
-                  accessor: "Url",
+                  accessor: "URL",
                   sortable: true,
                 },
                 {
@@ -316,7 +316,7 @@ const ShowTests: React.FC = () => {
                 },
                 {
                   header: "Request Count",
-                  accessor: "Request Count",
+                  accessor: "request_count",
                   sortable: true,
                 },
                 {

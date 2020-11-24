@@ -102,8 +102,8 @@ func (h *instanceHandler) ShowAccount(w http.ResponseWriter, r *http.Request) {
 func (h *instanceHandler) ShowSwarmNodes(w http.ResponseWriter, r *http.Request) {
 	nodes, err := h.service.ShowSwarmNodes()
 	if err != nil {
-		log.Errorf(err.Error())
-		res.R500(w, r, library.ErrInternalServerError)
+		log.Errorf("err: %v", err)
+		res.R500(w, r, err)
 		return
 	}
 	res.R200(w, r, nodes)

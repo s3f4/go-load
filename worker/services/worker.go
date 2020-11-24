@@ -7,7 +7,6 @@ import (
 	"github.com/mitchellh/mapstructure"
 	"github.com/s3f4/go-load/worker/client"
 	"github.com/s3f4/go-load/worker/models"
-	"github.com/s3f4/mu"
 	"github.com/s3f4/mu/log"
 )
 
@@ -85,9 +84,8 @@ func (s *workerService) run(
 }
 
 func (s *workerService) makeReq(client *client.Client, request uint64, dataBuf chan<- models.Response) {
-	url := client.URL
+	// todo request/goroutineCount
 	for i := uint64(0); i < request; i++ {
-		client.URL = url + "/?reqRef=" + mu.RandomString(5)
 		res, err := client.HTTPTrace()
 		if err != nil {
 			continue

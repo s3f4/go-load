@@ -16,7 +16,6 @@ interface Props {
 }
 
 const StatsContent: React.FC<Props> = (props: Props) => {
-  const [responses, setResponses] = useState<Response[]>([]);
   const [graphResponses, setGraphResponses] = useState<Response[]>([]);
   const [test, setTest] = useState<Test>();
   const [selectedRunTest, setSelectedRunTest] = useState<RunTest>();
@@ -134,7 +133,7 @@ const StatsContent: React.FC<Props> = (props: Props) => {
   };
 
   const responseTable = () => {
-    if (!responses || !selectedRunTest) {
+    if (!selectedRunTest) {
       return;
     }
 

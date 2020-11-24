@@ -1,11 +1,11 @@
 /** @jsx jsx */
-import React, { Fragment, useEffect, useState } from "react";
+import React, { FormEvent, Fragment, useEffect, useState } from "react";
 import { jsx, css } from "@emotion/core";
 import { MediaQuery } from "../style";
-import { FiArrowDown } from "react-icons/fi";
+import { FiArrowDown, FiArrowUp } from "react-icons/fi";
 import { ServerResponse } from "../../api/api";
 import { Query } from "./query";
-import Button, { ButtonType } from "./Button";
+import Button, { ButtonColorType, ButtonType } from "./Button";
 
 export interface TableTitle {
   header: string;
@@ -20,6 +20,9 @@ interface Props {
 }
 
 const RTable: React.FC<Props> = (props: Props) => {
+  const [increment, setIncrement] = useState<boolean>(false);
+  const [orderedCol, setOrderCol] = useState<string>();
+  const [selectedPage, setSelectedPage] = useState<number>(1);
   const [content, setContent] = useState<any[][]>([]);
   const [total, setTotal] = useState<number>(0);
   const [query, setQuery] = useState<Query>({
@@ -35,8 +38,21 @@ const RTable: React.FC<Props> = (props: Props) => {
     return () => {};
   }, [props.fetcher, query]);
 
-  const onChangePage = (page: number) => (e: React.FormEvent) => {
+  const onOrder = (col: string) => (e: FormEvent) => {
     e.preventDefault();
+    setIncrement(!increment);
+    setOrderCol(col);
+    const incrementStr = !increment ? "+" : "-";
+    setQuery({
+      limit: props.limit ?? 10,
+      offset: 0,
+      order: incrementStr + col,
+    });
+  };
+
+  const onChangePage = (page: number) => (e: FormEvent) => {
+    e.preventDefault();
+    setSelectedPage(page);
     setQuery({
       ...query,
       ["offset"]: (page - 1) * query.limit,
@@ -50,6 +66,11 @@ const RTable: React.FC<Props> = (props: Props) => {
     for (let i = 1; i <= page; i++) {
       buttons.push(
         <Button
+          colorType={
+            i === selectedPage
+              ? ButtonColorType.primary
+              : ButtonColorType.secondary
+          }
           type={ButtonType.small}
           text={i + ""}
           onClick={onChangePage(i)}
@@ -65,8 +86,21 @@ const RTable: React.FC<Props> = (props: Props) => {
       <div css={container}>
         <div css={row(true)}>
           {props.title.map((title: TableTitle, index) => (
-            <div css={columnStyle(true)} key={index}>
-              <b>{title.header}</b> <FiArrowDown />
+            <div
+              onClick={onOrder(title.accessor!)}
+              css={columnStyle(true)}
+              key={index}
+            >
+              <b>{title.header}</b>{" "}
+              {orderedCol === title.accessor ? (
+                increment ? (
+                  <FiArrowUp />
+                ) : (
+                  <FiArrowDown />
+                )
+              ) : (
+                ""
+              )}
             </div>
           ))}
         </div>

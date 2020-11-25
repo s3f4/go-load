@@ -30,7 +30,7 @@ const App: React.FC = () => {
           <Route exact path="/services">
             <Services />
           </Route>
-          <Route exact path="/stats/:id">
+          <Route path="/stats">
             <Stats />
           </Route>
           <Route exact path="/swarm">

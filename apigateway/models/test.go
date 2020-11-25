@@ -14,7 +14,8 @@ type Test struct {
 	TransportConfig      TransportConfig `json:"transport_config"`
 	TestGroup            *TestGroup      `json:"test_group"`
 	RunTests             []*RunTest      `json:"run_tests" gorm:"foreignKey:TestID"`
-	Headers              []*Header       `json:"headers" gorm:"foreignKey:TestID"`
+	RequestHeaders       []*Header       `json:"request_headers" gorm:"foreignKey:TestID"`
+	ExpectedHeaders      []*Header       `json:"expected_headers" gorm:"foreignKey:TestID"`
 }
 
 // Header holds request headers

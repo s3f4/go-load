@@ -15,7 +15,8 @@ export interface Test {
   expected_response_body: string;
   test_group?: TestGroup;
   transport_config: TransportConfig;
-  headers?: Header[];
+  request_headers?: Header[];
+  expected_headers?: Header[];
   run_tests?: RunTest[];
 }
 

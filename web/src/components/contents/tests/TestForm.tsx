@@ -27,7 +27,7 @@ const initialTest: Test = {
   expected_response_body: "",
   payload: "",
   goroutine_count: 1,
-  headers: [],
+  request_headers: [],
   transport_config: { disable_keep_alives: true },
 };
 
@@ -84,7 +84,7 @@ const TestForm = (props: Props) => {
     header[e.target.name] = e.target.value;
     setTest({
       ...test,
-      headers: test.headers!.map((h: Header) => {
+      request_headers: test.request_headers!.map((h: Header) => {
         if (h.id === header.id) {
           return header;
         }
@@ -102,7 +102,7 @@ const TestForm = (props: Props) => {
     };
     setTest({
       ...test,
-      headers: [...test.headers!, header],
+      request_headers: [...test.request_headers!, header],
     });
   };
 
@@ -152,19 +152,6 @@ const TestForm = (props: Props) => {
           />
           <TextInput
             onChange={handleChange}
-            label="Expected Response Code"
-            name="expected_response_code"
-            value={test.expected_response_code}
-          />
-          <TextInput
-            onChange={handleChange}
-            label="Expected Response Body"
-            name="expected_response_body"
-            value={test.expected_response_body}
-          />
-
-          <TextInput
-            onChange={handleChange}
             label="Goroutine per worker (up to 10)"
             name="goroutine_count"
             value={test.goroutine_count}
@@ -180,8 +167,8 @@ const TestForm = (props: Props) => {
             ]}
             value={test.transport_config.disable_keep_alives ? "true" : "false"}
           />
-          {test.headers &&
-            test.headers.map((header: Header) => {
+          {test.request_headers &&
+            test.request_headers.map((header: Header) => {
               return (
                 <div key={header.id!} css={flex}>
                   <div css={headerDiv(true)}>
@@ -203,8 +190,45 @@ const TestForm = (props: Props) => {
                 </div>
               );
             })}
-          <Button text="Add New Header" onClick={onAddHeader} />
+          <Button text="Add New Request Header" onClick={onAddHeader} />
+          <h3 css={formTitle}>Expected Values</h3>
+          <TextInput
+            onChange={handleChange}
+            label="Expected Response Code"
+            name="expected_response_code"
+            value={test.expected_response_code}
+          />
+          <TextInput
+            onChange={handleChange}
+            label="Expected Response Body"
+            name="expected_response_body"
+            value={test.expected_response_body}
+          />
 
+          {test.expected_headers &&
+            test.expected_headers.map((header: Header) => {
+              return (
+                <div key={header.id!} css={flex}>
+                  <div css={headerDiv(true)}>
+                    <TextInput
+                      label="Header key"
+                      name="key"
+                      value={header.key}
+                      onChange={onHeaderHandle(header)}
+                    />
+                  </div>
+                  <div css={headerDiv(false)}>
+                    <TextInput
+                      label="Header value"
+                      name="value"
+                      value={header.value}
+                      onChange={onHeaderHandle(header)}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          <Button text="Add Expected Response Header" onClick={onAddHeader} />
           {props.test ? (
             <Button
               text="Update"
@@ -220,7 +244,7 @@ const TestForm = (props: Props) => {
             />
           ) : (
             <Button
-              text="Add New Test"
+              text="Save"
               onClick={() => {
                 props.addTest?.(test);
                 setTest(initialTest);

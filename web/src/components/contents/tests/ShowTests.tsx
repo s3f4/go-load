@@ -41,7 +41,7 @@ const ShowTests: React.FC = () => {
     name: "",
     tests: [],
   });
-  const [selectedTest, setSelectedTest] = useState<Test | null>(null);
+  const [selectedTest, setSelectedTest] = useState<Test | undefined>(undefined);
   const [message, setMessage] = useState<IMessage>();
   const [
     updateSelectedGroupName,
@@ -192,6 +192,7 @@ const ShowTests: React.FC = () => {
 
   const editTest = (test: Test): void => {
     setSelectedTest(test);
+    setAddNewTest(false);
   };
 
   return (
@@ -279,6 +280,7 @@ const ShowTests: React.FC = () => {
                   icon={<FiPlusCircle />}
                   onClick={() => {
                     setAddNewTest(true);
+                    setSelectedTest(undefined);
                   }}
                 />
                 <Button
@@ -336,6 +338,7 @@ const ShowTests: React.FC = () => {
         {addNewTest && (
           <TestForm testGroup={selectedTestGroup} addTest={onAddTest} />
         )}
+
         {selectedTest && (
           <TestForm
             testGroup={selectedTestGroup}

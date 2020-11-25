@@ -83,7 +83,6 @@ const TestForm = (props: Props) => {
     e.preventDefault();
     header[e.target.name] = e.target.value;
     header.is_request_header = isReq;
-    
     setTest({
       ...test,
       headers: test.headers!.map((h: Header) => {

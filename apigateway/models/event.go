@@ -18,15 +18,14 @@ type Event struct {
 
 // RequestPayload paylaod of request event
 type RequestPayload struct {
-	RunTestID               uint            `json:"run_test_id"`
-	URL                     string          `json:"url"`
-	Method                  string          `json:"method"`
-	Payload                 string          `json:"payload,omitempty"`
-	RequestCount            uint64          `json:"request_count"`
-	GoroutineCount          uint8           `json:"goroutine_count"`
-	ExpectedResponseCode    uint            `json:"expected_response_code"`
-	ExpectedResponseBody    string          `json:"expected_response_body"`
-	ExpectedREsponseHeaders []*Header       `json:"expected_response_headers"`
-	TransportConfig         TransportConfig `json:"transport_config"`
-	RequestHeaders          []*Header       `json:"request_headers"`
+	RunTestID            uint            `json:"run_test_id"`
+	URL                  string          `json:"url"`
+	Method               string          `json:"method"`
+	Payload              string          `json:"payload,omitempty"`
+	RequestCount         uint64          `json:"request_count"`
+	GoroutineCount       uint8           `json:"goroutine_count"`
+	ExpectedResponseCode uint            `json:"expected_response_code"`
+	ExpectedResponseBody string          `json:"expected_response_body"`
+	TransportConfig      TransportConfig `json:"transport_config"`
+	Headers              []*Header       `json:"headers"`
 }

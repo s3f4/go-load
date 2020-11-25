@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"encoding/json"
 	"errors"
 	"net/http"
 
@@ -34,7 +33,7 @@ var (
 
 func (h *runTestHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var runTest models.RunTest
-	if err := json.NewDecoder(r.Body).Decode(&runTest); err != nil {
+	if err := parse(r, &runTest); err != nil {
 		log.Error(err)
 		res.R400(w, r, library.ErrBadRequest)
 		return
@@ -51,7 +50,7 @@ func (h *runTestHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 func (h *runTestHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	var runTest models.RunTest
-	if err := json.NewDecoder(r.Body).Decode(&runTest); err != nil {
+	if err := parse(r, &runTest); err != nil {
 		log.Info(err)
 		res.R400(w, r, library.ErrBadRequest)
 		return

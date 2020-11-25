@@ -1,9 +1,7 @@
 package handlers
 
 import (
-	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 
 	"github.com/s3f4/go-load/apigateway/library"
@@ -41,7 +39,7 @@ var (
 
 func (h *testHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var test models.Test
-	if err := json.NewDecoder(r.Body).Decode(&test); err != nil {
+	if err := parse(r, &test); err != nil {
 		log.Debug(err)
 		res.R400(w, r, library.ErrBadRequest)
 		return
@@ -80,7 +78,14 @@ func (h *testHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.tr.Update(test); err != nil {
+	var newTest models.Test
+	if err := parse(r, &newTest); err != nil {
+		log.Debug(err)
+		res.R400(w, r, library.ErrBadRequest)
+		return
+	}
+
+	if err := h.tr.Update(&newTest); err != nil {
 		log.Debug(err)
 		res.R500(w, r, library.ErrInternalServerError)
 		return
@@ -105,7 +110,7 @@ func (h *testHandler) List(w http.ResponseWriter, r *http.Request) {
 		res.R422(w, r, library.ErrUnprocessableEntity)
 		return
 	}
-	fmt.Printf("%#v", query)
+
 	tests, total, err := h.tr.List(query, "")
 
 	if err != nil {

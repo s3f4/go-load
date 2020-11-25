@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -40,7 +39,7 @@ var (
 
 func (h *testGroupHandler) Start(w http.ResponseWriter, r *http.Request) {
 	var run models.TestGroup
-	if err := json.NewDecoder(r.Body).Decode(&run); err != nil {
+	if err := parse(r, &run); err != nil {
 		log.Debug(err)
 		res.R400(w, r, library.ErrBadRequest)
 		return
@@ -57,7 +56,7 @@ func (h *testGroupHandler) Start(w http.ResponseWriter, r *http.Request) {
 
 func (h *testGroupHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var testConfig models.TestGroup
-	if err := json.NewDecoder(r.Body).Decode(&testConfig); err != nil {
+	if err := parse(r, &testConfig); err != nil {
 		log.Debug(err)
 		res.R400(w, r, library.ErrBadRequest)
 		return
@@ -74,7 +73,7 @@ func (h *testGroupHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 func (h *testGroupHandler) Update(w http.ResponseWriter, r *http.Request) {
 	var testConfig models.TestGroup
-	if err := json.NewDecoder(r.Body).Decode(&testConfig); err != nil {
+	if err := parse(r, &testConfig); err != nil {
 		log.Debug(err)
 		res.R400(w, r, library.ErrBadRequest)
 		return
@@ -90,7 +89,7 @@ func (h *testGroupHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 func (h *testGroupHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	var testConfig models.TestGroup
-	if err := json.NewDecoder(r.Body).Decode(&testConfig); err != nil {
+	if err := parse(r, &testConfig); err != nil {
 		log.Debug(err)
 		res.R400(w, r, library.ErrBadRequest)
 		return
@@ -107,7 +106,7 @@ func (h *testGroupHandler) Delete(w http.ResponseWriter, r *http.Request) {
 
 func (h *testGroupHandler) Get(w http.ResponseWriter, r *http.Request) {
 	var testConfig models.TestGroup
-	if err := json.NewDecoder(r.Body).Decode(&testConfig); err != nil {
+	if err := parse(r, &testConfig); err != nil {
 		log.Debug(err)
 		res.R400(w, r, library.ErrBadRequest)
 		return

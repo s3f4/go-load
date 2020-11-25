@@ -44,8 +44,6 @@ const StatsContent: React.FC<Props> = (props: Props) => {
     };
   }, []);
 
-  console.log("abc");
-
   const graph = React.useCallback(() => {
     if (!graphResponses || !selectedRunTest) {
       return;

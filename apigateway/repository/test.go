@@ -41,7 +41,7 @@ func (r *testRepository) Create(test *models.Test) error {
 }
 
 func (r *testRepository) Update(test *models.Test) error {
-	return r.DB().Model(test).Updates(test).Error
+	return r.DB().Session(&gorm.Session{FullSaveAssociations: true}).Updates(test).Error
 }
 
 func (r *testRepository) Delete(test *models.Test) error {

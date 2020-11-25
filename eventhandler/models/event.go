@@ -32,8 +32,9 @@ type RequestPayload struct {
 
 // Header holds request headers
 type Header struct {
-	Key   string `json:"key"`
-	Value string `json:"value"`
+	Key             string `json:"key"`
+	Value           string `json:"value"`
+	IsRequestHeader bool   `json:"is_request_header"`
 }
 
 // TransportConfig is used to specify how to make requests

@@ -57,5 +57,5 @@ export const deleteTest = async (test: Test) => {
 };
 
 export const updateTest = async (test: Test) => {
-  return await makeReq("/test", "PUT", test);
+  return await makeReq(`/test/${test.id}/`, "PUT", test);
 };

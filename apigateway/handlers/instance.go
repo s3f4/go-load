@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -36,7 +35,7 @@ var (
 
 func (h *instanceHandler) SpinUp(w http.ResponseWriter, r *http.Request) {
 	var instanceConfig models.InstanceConfig
-	if err := json.NewDecoder(r.Body).Decode(&instanceConfig); err != nil {
+	if err := parse(r, &instanceConfig); err != nil {
 		log.Errorf(err.Error())
 		res.R400(w, r, library.ErrBadRequest)
 		return

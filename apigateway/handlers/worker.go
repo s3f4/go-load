@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"context"
-	"encoding/json"
 	"net/http"
 
 	"github.com/docker/docker/api/types"
@@ -29,7 +28,7 @@ var (
 
 func (h *workerHandler) Stop(w http.ResponseWriter, r *http.Request) {
 	var worker models.Worker
-	if err := json.NewDecoder(r.Body).Decode(&worker); err != nil {
+	if err := parse(r, &worker); err != nil {
 		log.Debug(err)
 		res.R400(w, r, library.ErrBadRequest)
 		return

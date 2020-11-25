@@ -15,8 +15,7 @@ export interface Test {
   expected_response_body: string;
   test_group?: TestGroup;
   transport_config: TransportConfig;
-  request_headers?: Header[];
-  expected_headers?: Header[];
+  headers?: Header[];
   run_tests?: RunTest[];
 }
 
@@ -24,6 +23,7 @@ export interface Header {
   id?: number;
   key: string;
   value: string;
+  is_request_header: boolean;
 }
 
 export interface TransportConfig {

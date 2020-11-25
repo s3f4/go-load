@@ -57,16 +57,17 @@ func (s *testService) Start(test *models.Test) error {
 		event := models.Event{
 			Event: models.REQUEST,
 			Payload: models.RequestPayload{
-				RunTestID:            runTest.ID,
-				URL:                  test.URL,
-				RequestCount:         requestPerInstance,
-				Method:               test.Method,
-				Payload:              test.Payload,
-				GoroutineCount:       test.GoroutineCount,
-				ExpectedResponseBody: test.ExpectedResponseBody,
-				ExpectedResponseCode: test.ExpectedResponseCode,
-				TransportConfig:      test.TransportConfig,
-				Headers:              test.Headers,
+				RunTestID:               runTest.ID,
+				URL:                     test.URL,
+				RequestCount:            requestPerInstance,
+				Method:                  test.Method,
+				Payload:                 test.Payload,
+				GoroutineCount:          test.GoroutineCount,
+				ExpectedResponseBody:    test.ExpectedResponseBody,
+				ExpectedResponseCode:    test.ExpectedResponseCode,
+				ExpectedREsponseHeaders: test.ExpectedResponseHeaders,
+				TransportConfig:         test.TransportConfig,
+				RequestHeaders:          test.RequestHeaders,
 			},
 		}
 

@@ -14,16 +14,16 @@ type Test struct {
 	TransportConfig      TransportConfig `json:"transport_config"`
 	TestGroup            *TestGroup      `json:"test_group"`
 	RunTests             []*RunTest      `json:"run_tests" gorm:"foreignKey:TestID"`
-	RequestHeaders       []*Header       `json:"request_headers" gorm:"foreignKey:TestID"`
-	ExpectedHeaders      []*Header       `json:"expected_headers" gorm:"foreignKey:TestID"`
+	Headers              []*Header       `json:"headers" gorm:"foreignKey:TestID"`
 }
 
 // Header holds request headers
 type Header struct {
-	ID     uint   `json:"id" gorm:"primaryKey;column:id"`
-	TestID uint   `json:"test_id"`
-	Key    string `json:"key"`
-	Value  string `json:"value"`
+	ID              uint   `json:"id" gorm:"primaryKey;column:id"`
+	TestID          uint   `json:"test_id"`
+	Key             string `json:"key"`
+	Value           string `json:"value"`
+	IsRequestHeader bool   `json:"is_request_header"`
 }
 
 // TransportConfig is used to specify how to make requests

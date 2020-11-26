@@ -1,7 +1,7 @@
 /** @jsx jsx */
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { jsx, css } from "@emotion/core";
-import { Link, useHistory } from "react-router-dom";
+import {  useHistory } from "react-router-dom";
 import { listTestGroup, TestGroup } from "../../../api/entity/test_group";
 import Button, { ButtonColorType, ButtonType } from "../../basic/Button";
 import { leftColumn, leftContent, MediaQuery, rightColumn } from "../../style";

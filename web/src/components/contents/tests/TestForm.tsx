@@ -20,6 +20,7 @@ interface Props extends BaseForm {
 // type methodType = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
 const initialTest: Test = {
+  name: "",
   url: "",
   request_count: 1,
   method: "GET",
@@ -116,6 +117,14 @@ const TestForm = (props: Props) => {
           <h3 css={formTitle}>
             {props.test ? "Update the Test" : "Create New Test"}
           </h3>
+          <TextInput
+            onChange={handleChange}
+            label="Test Name"
+            name="name"
+            value={test.name}
+            validate="minLength:3|message:Please write a valid URL"
+            validation={validation}
+          />
           <TextInput
             onChange={handleChange}
             label="Target URL"

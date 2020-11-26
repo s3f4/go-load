@@ -5,6 +5,7 @@ import { TestGroup } from "./test_group";
 
 export interface Test {
   id?: number;
+  name: string;
   test_group_id?: number;
   request_count: number;
   goroutine_count: number;

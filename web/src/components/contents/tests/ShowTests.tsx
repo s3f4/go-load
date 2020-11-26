@@ -33,6 +33,7 @@ import {
 import { getInstanceInfo, Instance } from "../../../api/entity/instance";
 import RTable from "../../basic/RTable";
 import Paginator from "../../basic/Paginator";
+import Loader from "../../basic/Loader";
 
 const ShowTests: React.FC = () => {
   const [instances, setInstances] = useState<Instance[] | undefined>();
@@ -71,6 +72,7 @@ const ShowTests: React.FC = () => {
 
     tests.forEach((test: Test) => {
       const row: any[] = [
+        <Loader inlineLoading={true} />,
         test.url,
         test.method,
         test.request_count,
@@ -231,7 +233,7 @@ const ShowTests: React.FC = () => {
         {!instances ? (
           <Message
             type="error"
-            message={"You must create instances to run tests"}
+            message={"You have to create instances to run tests"}
           />
         ) : (
           ""
@@ -306,6 +308,10 @@ const ShowTests: React.FC = () => {
               builder={buildTable}
               fetcher={listTestsOfTestGroup(selectedTestGroup?.id!)}
               title={[
+                {
+                  header: "",
+                  sortable: false,
+                },
                 {
                   header: "URL",
                   accessor: "URL",

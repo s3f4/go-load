@@ -1,32 +1,32 @@
 /** @jsx jsx */
 import React, { Fragment, useState } from "react";
 import { jsx, css } from "@emotion/core";
-import { listResponses, Response } from "../../api/entity/stats";
+import { listResponses, Response } from "../../../api/entity/stats";
 import moment from "moment";
 import { Line } from "react-chartjs-2";
-import { defaultFormat, preciseFormat } from "../basic/helper";
-import { getTest, Test } from "../../api/entity/test";
-import { Borders, MediaQuery } from "../style";
-import { RunTest } from "../../api/entity/runtest";
+import { defaultFormat, preciseFormat } from "../../basic/helper";
+import { getTest, Test } from "../../../api/entity/test";
+import { Borders, MediaQuery } from "../../style";
+import { RunTest } from "../../../api/entity/runtest";
 import { FiArrowRightCircle } from "react-icons/fi";
-import RTable from "../basic/RTable";
+import RTable from "../../basic/RTable";
+import { useParams } from "react-router-dom";
 
-interface Props {
-  testID: number;
-}
+interface Props {}
 
 const StatsContent: React.FC<Props> = (props: Props) => {
   const [graphResponses, setGraphResponses] = useState<Response[]>([]);
   const [test, setTest] = useState<Test>();
   const [selectedRunTest, setSelectedRunTest] = useState<RunTest>();
+  const { id }: any = useParams();
 
   React.useEffect(() => {
-    getTest(props.testID)
+    getTest(id)
       .then((response) => {
         setTest(response.data);
       })
       .catch((error) => console.log(error));
-  }, [props.testID]);
+  }, [id]);
 
   const byteSize = (str: string) => new Blob([str]).size;
 
@@ -71,7 +71,7 @@ const StatsContent: React.FC<Props> = (props: Props) => {
 
   const testContent = (test: Test) => {
     return (
-      <React.Fragment>
+      <div css={container}>
         <div css={testDiv}>
           <div css={title}>{test.test_group?.name}</div>
           Test URL: {test.url} <br />
@@ -106,7 +106,7 @@ const StatsContent: React.FC<Props> = (props: Props) => {
               );
             })}
         </div>
-      </React.Fragment>
+      </div>
     );
   };
 
@@ -209,6 +209,15 @@ const StatsContent: React.FC<Props> = (props: Props) => {
     </div>
   );
 };
+
+const container = css`
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  ${MediaQuery[1]} {
+    flex-direction: row;
+  }
+`;
 
 const testContainer = css`
   margin: 1rem 0 1rem 0;

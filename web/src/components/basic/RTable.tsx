@@ -12,6 +12,7 @@ export interface TableTitle {
   // accessor is model column if there is one
   accessor?: string;
   sortable: boolean;
+  width?: string;
 }
 interface Props {
   title: TableTitle[];
@@ -89,11 +90,11 @@ const RTable: React.FC<Props> = (props: Props) => {
           {props.title.map((title: TableTitle, index) => (
             <div
               onClick={onOrder(title.accessor!)}
-              css={columnStyle(true)}
+              css={columnStyle(title.width, title.sortable)}
               key={index}
             >
               <b>{title.header}</b>{" "}
-              {orderedCol === title.accessor ? (
+              {title.sortable && orderedCol === title.accessor ? (
                 increment ? (
                   <FiArrowUp />
                 ) : (
@@ -110,7 +111,10 @@ const RTable: React.FC<Props> = (props: Props) => {
           return (
             <div key={index} css={row(false)}>
               {rows.map((column, colIndex) => (
-                <div css={columnStyle()} key={colIndex}>
+                <div
+                  css={columnStyle(props.title[colIndex].width)}
+                  key={colIndex}
+                >
                   {column}
                 </div>
               ))}
@@ -172,12 +176,14 @@ const row = (title?: boolean) => css`
   color: ${title ? "white" : "none"};
 `;
 
-const columnStyle = (sortable?: boolean) => css`
-  flex: 0 1 20rem;
+const columnStyle = (width?: string, sortable?: boolean) => css`
+  flex: 0 1 ${width ? width : "20rem"};
   padding-left: 1rem;
   padding-top: 1rem;
+  padding: 1rem 1rem 1rem 1rem;
   text-align: center;
   width: 7rem;
+  min-height: 2rem;
   ${sortable ? "cursor:pointer;" : ""}
 `;
 

@@ -1,14 +1,25 @@
 import React from "react";
-import StatsContent from "../components/contents/StatsContent";
+import StatsContent from "../components/contents/stats/StatsContent";
 import MainLayout from "../components/layouts/MainLayout";
-import { useParams } from "react-router-dom";
-
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  useRouteMatch,
+} from "react-router-dom";
+import ListStats from "../components/contents/stats/ListStats";
 const Stats: React.FC = () => {
-  const { id }: any = useParams();
+  let { path } = useRouteMatch();
+
   return (
-    <React.Fragment>
-      <MainLayout content={<StatsContent testID={id} />} />
-    </React.Fragment>
+    <Switch>
+      <Route exact path={`${path}`}>
+        <MainLayout content={<ListStats />} />
+      </Route>
+      <Route exact path={`${path}/:id`}>
+        <MainLayout content={<StatsContent />} />
+      </Route>
+    </Switch>
   );
 };
 

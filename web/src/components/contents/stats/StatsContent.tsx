@@ -143,52 +143,47 @@ const StatsContent: React.FC<Props> = (props: Props) => {
           title={[
             {
               header: "FirstByte",
-              accessor: "FirstByte",
+              accessor: "first_byte",
               sortable: true,
             },
             {
               header: "ConnectStart",
-              accessor: "ConnectStart",
+              accessor: "connect_start",
               sortable: true,
             },
             {
               header: "ConnectDone",
-              accessor: "ConnectDone",
+              accessor: "connect_done",
               sortable: true,
             },
             {
               header: "DNSStart",
-              accessor: "DNSStart",
+              accessor: "dns_start",
               sortable: true,
             },
             {
               header: "DNSDone",
-              accessor: "DNSDone",
+              accessor: "dns_done",
               sortable: true,
             },
             {
               header: "TLSStart",
-              accessor: "TLSStart",
+              accessor: "tls_start",
               sortable: true,
             },
             {
               header: "TLSDone",
-              accessor: "TLSDone",
+              accessor: "tls_done",
               sortable: true,
             },
             {
               header: "StatusCode",
-              accessor: "StatusCode",
+              accessor: "status_code",
               sortable: true,
             },
             {
               header: "TotalTime(ms)",
               accessor: "TotalTime",
-              sortable: true,
-            },
-            {
-              header: "TLSDone",
-              accessor: "TLSDone",
               sortable: true,
             },
             {

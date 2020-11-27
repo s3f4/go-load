@@ -1,7 +1,7 @@
 /** @jsx jsx */
 import React, { useState } from "react";
 import { jsx, css } from "@emotion/core";
-import {  useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { listTestGroup, TestGroup } from "../../../api/entity/test_group";
 import Button, { ButtonColorType, ButtonType } from "../../basic/Button";
 import { leftColumn, leftContent, MediaQuery, rightColumn } from "../../style";
@@ -23,7 +23,7 @@ const ListStats: React.FC = () => {
 
     tests.forEach((test: Test) => {
       const row: any[] = [
-        test.url,
+        test.name,
         test.method,
         test.request_count,
         <div>{buttons("Stats", test)}</div>,
@@ -86,8 +86,8 @@ const ListStats: React.FC = () => {
           fetcher={listTestsOfTestGroup(selectedTestGroup?.id!)}
           title={[
             {
-              header: "URL",
-              accessor: "URL",
+              header: "Name",
+              accessor: "name",
               sortable: true,
               width: "50%",
             },

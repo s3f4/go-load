@@ -72,8 +72,7 @@ const ShowTests: React.FC = () => {
 
     tests.forEach((test: Test) => {
       const row: any[] = [
-        <Loader inlineLoading={true} />,
-        test.url,
+        test.name,
         test.method,
         test.request_count,
         <div>
@@ -309,12 +308,8 @@ const ShowTests: React.FC = () => {
               fetcher={listTestsOfTestGroup(selectedTestGroup?.id!)}
               title={[
                 {
-                  header: "",
-                  sortable: false,
-                },
-                {
-                  header: "URL",
-                  accessor: "URL",
+                  header: "Name",
+                  accessor: "name",
                   sortable: true,
                 },
                 {

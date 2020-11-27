@@ -23,7 +23,7 @@ const ListStats: React.FC = () => {
 
     tests.forEach((test: Test) => {
       const row: any[] = [
-        test.name,
+        <b>{test.name}</b>,
         test.method,
         test.request_count,
         <div>{buttons("Stats", test)}</div>,
@@ -49,6 +49,13 @@ const ListStats: React.FC = () => {
           />
         );
     }
+  };
+
+  const fetcher = () => {
+    if (selectedTestGroup && selectedTestGroup.id) {
+      return listTestsOfTestGroup(selectedTestGroup?.id!);
+    }
+    return listTestsOfTestGroup(1);
   };
 
   return (
@@ -83,7 +90,7 @@ const ListStats: React.FC = () => {
       <div css={rightColumn}>
         <RTable
           builder={buildTable}
-          fetcher={listTestsOfTestGroup(selectedTestGroup?.id!)}
+          fetcher={fetcher()}
           title={[
             {
               header: "Name",

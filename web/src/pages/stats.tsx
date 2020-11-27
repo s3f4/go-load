@@ -1,13 +1,9 @@
 import React from "react";
 import StatsContent from "../components/contents/stats/StatsContent";
 import MainLayout from "../components/layouts/MainLayout";
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  useRouteMatch,
-} from "react-router-dom";
+import { Switch, Route, useRouteMatch } from "react-router-dom";
 import ListStats from "../components/contents/stats/ListStats";
+
 const Stats: React.FC = () => {
   let { path } = useRouteMatch();
 

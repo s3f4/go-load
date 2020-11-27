@@ -38,14 +38,14 @@ var (
 )
 
 func (h *testGroupHandler) Start(w http.ResponseWriter, r *http.Request) {
-	var run models.TestGroup
-	if err := parse(r, &run); err != nil {
-		log.Debug(err)
-		res.R400(w, r, library.ErrBadRequest)
+	ctx := r.Context()
+	testGroup, ok := ctx.Value(middlewares.TestCtxKey).(*models.TestGroup)
+	if !ok {
+		res.R422(w, r, library.ErrUnprocessableEntity)
 		return
 	}
 
-	if err := h.service.Start(&run); err != nil {
+	if err := h.service.Start(testGroup); err != nil {
 		log.Errorf("Worker Service Error: %s", err)
 		res.R500(w, r, library.ErrInternalServerError)
 		return
@@ -88,31 +88,31 @@ func (h *testGroupHandler) Update(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *testGroupHandler) Delete(w http.ResponseWriter, r *http.Request) {
-	var testConfig models.TestGroup
-	if err := parse(r, &testConfig); err != nil {
-		log.Debug(err)
-		res.R400(w, r, library.ErrBadRequest)
+	ctx := r.Context()
+	testGroup, ok := ctx.Value(middlewares.TestCtxKey).(*models.TestGroup)
+	if !ok {
+		res.R422(w, r, library.ErrUnprocessableEntity)
 		return
 	}
 
-	err := h.service.Delete(&testConfig)
+	err := h.service.Delete(testGroup)
 	if err != nil {
 		log.Debug(err)
 		res.R500(w, r, err)
 		return
 	}
-	res.R200(w, r, testConfig)
+	res.R200(w, r, testGroup)
 }
 
 func (h *testGroupHandler) Get(w http.ResponseWriter, r *http.Request) {
-	var testConfig models.TestGroup
-	if err := parse(r, &testConfig); err != nil {
-		log.Debug(err)
-		res.R400(w, r, library.ErrBadRequest)
+	ctx := r.Context()
+	testGroup, ok := ctx.Value(middlewares.TestCtxKey).(*models.TestGroup)
+	if !ok {
+		res.R422(w, r, library.ErrUnprocessableEntity)
 		return
 	}
 
-	tc, err := h.service.Get(&testConfig)
+	tc, err := h.service.Get(testGroup)
 	if err != nil {
 		log.Debug(err)
 		res.R500(w, r, library.ErrInternalServerError)

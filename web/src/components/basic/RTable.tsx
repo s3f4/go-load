@@ -40,16 +40,18 @@ const RTable: React.FC<Props> = (props: Props) => {
     return () => {};
   }, [props.fetcher, query]);
 
-  const onOrder = (col: string) => (e: FormEvent) => {
+  const onOrder = (sortable: boolean, col: string) => (e: FormEvent) => {
     e.preventDefault();
-    setIncrement(!increment);
-    setOrderCol(col);
-    const incrementStr = !increment ? "i_" : "d_";
-    setQuery({
-      limit: props.limit ?? 10,
-      offset: 0,
-      order: incrementStr + col,
-    });
+    if (sortable) {
+      setIncrement(!increment);
+      setOrderCol(col);
+      const incrementStr = !increment ? "i_" : "d_";
+      setQuery({
+        limit: props.limit ?? 10,
+        offset: 0,
+        order: incrementStr + col,
+      });
+    }
   };
 
   const onChangePage = (page: number) => (e: FormEvent) => {
@@ -89,7 +91,7 @@ const RTable: React.FC<Props> = (props: Props) => {
         <div css={row(true)}>
           {props.title.map((title: TableTitle, index) => (
             <div
-              onClick={onOrder(title.accessor!)}
+              onClick={onOrder(title.sortable, title.accessor!)}
               css={columnStyle(title.width, title.sortable)}
               key={index}
             >

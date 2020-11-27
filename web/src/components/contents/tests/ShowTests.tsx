@@ -72,7 +72,7 @@ const ShowTests: React.FC = () => {
 
     tests.forEach((test: Test) => {
       const row: any[] = [
-        test.name,
+        <b>{test.name}</b>,
         test.method,
         test.request_count,
         <div>
@@ -311,20 +311,24 @@ const ShowTests: React.FC = () => {
                   header: "Name",
                   accessor: "name",
                   sortable: true,
+                  width: "50%",
                 },
                 {
                   header: "Method",
                   accessor: "Method",
                   sortable: true,
+                  width: "10%",
                 },
                 {
                   header: "Request Count",
                   accessor: "request_count",
                   sortable: true,
+                  width: "20%",
                 },
                 {
                   header: "Actions",
                   sortable: false,
+                  width: "20%",
                 },
               ]}
             />

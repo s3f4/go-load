@@ -25,7 +25,7 @@ var testGroupRepositoryObject TestGroupRepository
 // NewTestGroupRepository returns an testGroupRepository object
 func NewTestGroupRepository() TestGroupRepository {
 	if testGroupRepositoryObject == nil {
-		return &testGroupRepository{
+		testGroupRepositoryObject = &testGroupRepository{
 			base: NewBaseRepository(MYSQL),
 		}
 	}

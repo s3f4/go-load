@@ -2,13 +2,13 @@
 import React, { useState } from "react";
 import { jsx, css } from "@emotion/core";
 import { useHistory } from "react-router-dom";
-import { listTestGroup, TestGroup } from "../../../api/entity/test_group";
+import { TestGroup } from "../../../api/entity/test_group";
 import Button, { ButtonColorType, ButtonType } from "../../basic/Button";
-import { leftColumn, leftContent, MediaQuery, rightColumn } from "../../style";
+import { leftColumn, MediaQuery, rightColumn } from "../../style";
 import { Test, listTestsOfTestGroup } from "../../../api/entity/test";
 import { FiActivity } from "react-icons/fi";
 import RTable from "../../basic/RTable";
-import Paginator from "../../basic/Paginator";
+import TestGroupLeftMenu from "../tests/TestGroupLeftMenu";
 
 const ListStats: React.FC = () => {
   const [testGroups, setTestGroups] = useState<TestGroup[]>();
@@ -61,30 +61,11 @@ const ListStats: React.FC = () => {
   return (
     <div css={container}>
       <div css={leftColumn}>
-        <h3 css={h3title}>Test Groups</h3>
-        {testGroups &&
-          testGroups.map((config: TestGroup) => (
-            <div
-              css={leftContent(config.id === selectedTestGroup.id)}
-              key={config.id}
-              onClick={(e: React.MouseEvent) => {
-                e.preventDefault();
-                setSelectedTestGroup(config);
-              }}
-            >
-              <div>
-                <span>
-                  <b>{config.name}</b>
-                </span>
-              </div>
-            </div>
-          ))}
-        <Paginator
-          fetcher={listTestGroup}
-          setter={(data) => {
-            setTestGroups(data);
-            setSelectedTestGroup(data[0]);
-          }}
+        <TestGroupLeftMenu
+          testGroups={testGroups}
+          selectedTestGroup={selectedTestGroup}
+          setSelectedTestGroup={setSelectedTestGroup}
+          setTestGroups={setTestGroups}
         />
       </div>
       <div css={rightColumn}>

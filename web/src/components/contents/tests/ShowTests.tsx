@@ -1,16 +1,14 @@
 /** @jsx jsx */
 import React, { useState, useEffect } from "react";
 import { jsx, css } from "@emotion/core";
-import { Link } from "react-router-dom";
 import {
   deleteTestGroup,
-  listTestGroup,
   runTestGroup,
   TestGroup,
   updateTestGroup,
 } from "../../../api/entity/test_group";
 import Button, { ButtonColorType, ButtonType } from "../../basic/Button";
-import { leftColumn, leftContent, MediaQuery, rightColumn } from "../../style";
+import { leftColumn, MediaQuery, rightColumn } from "../../style";
 import Message, { IMessage } from "../../basic/Message";
 import TestForm from "./TestForm";
 import {
@@ -32,8 +30,7 @@ import {
 } from "react-icons/fi";
 import { getInstanceInfo, Instance } from "../../../api/entity/instance";
 import RTable from "../../basic/RTable";
-import Paginator from "../../basic/Paginator";
-import Loader from "../../basic/Loader";
+import TestGroupLeftMenu from "./TestGroupLeftMenu";
 
 const ShowTests: React.FC = () => {
   const [instances, setInstances] = useState<Instance[] | undefined>();
@@ -199,34 +196,12 @@ const ShowTests: React.FC = () => {
   return (
     <div css={container}>
       <div css={leftColumn}>
-        <h3 css={h3title}>Test Groups</h3>
-        {testGroups &&
-          testGroups.map((config: TestGroup) => (
-            <div
-              css={leftContent(config.id === selectedTestGroup.id)}
-              key={config.id}
-              onClick={(e: React.MouseEvent) => {
-                e.preventDefault();
-                setSelectedTestGroup(config);
-              }}
-            >
-              <div>
-                <span>
-                  <b>{config.name}</b>
-                </span>
-              </div>
-            </div>
-          ))}
-        <Paginator
-          fetcher={listTestGroup}
-          setter={(data) => {
-            setTestGroups(data);
-            setSelectedTestGroup(data[0]);
-          }}
+        <TestGroupLeftMenu
+          testGroups={testGroups}
+          selectedTestGroup={selectedTestGroup}
+          setSelectedTestGroup={setSelectedTestGroup}
+          setTestGroups={setTestGroups}
         />
-        <Link to="/tests/create">
-          <Button text="New Test Group" />
-        </Link>
       </div>
       <div css={rightColumn}>
         {!instances ? (
@@ -363,11 +338,6 @@ const container = css`
   ${MediaQuery[1]} {
     flex-direction: row;
   }
-`;
-
-const h3title = css`
-  margin-bottom: 0.5rem;
-  padding-bottom: 0.5rem;
 `;
 
 export default ShowTests;

@@ -17,7 +17,7 @@ export const updateTestGroup = async (testGroup: TestGroup) => {
 };
 
 export const runTestGroup = async (testGroup: TestGroup) => {
-  return await makeReq("/test_group/start", "POST", testGroup);
+  return await makeReq(`/test_group/${testGroup.id}/start`, "POST", testGroup);
 };
 
 export const listTestGroup = async (query?: Query) => {

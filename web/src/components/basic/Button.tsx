@@ -122,8 +122,8 @@ const button = (
         ${gen}
         height: 2.5rem;
         min-width: 3rem;
-        font-size: 1.4rem;
-        padding: 0.3rem;
+        font-size: 1.7rem;
+        padding-top: 0.3rem;
       `;
     case ButtonType.mid:
       return css`

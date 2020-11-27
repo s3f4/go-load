@@ -107,7 +107,6 @@ const button = (
     color: ${colorType.color};
     background-color: ${colorType.background_color};
     border-radius: ${Sizes.borderRadius1};
-    margin: 0.5rem 0.5rem;
     cursor: pointer;
     padding: 1rem;
     font-weight: 600;
@@ -121,7 +120,7 @@ const button = (
     case ButtonType.iconButton:
       return css`
         ${gen}
-        height: 3rem;
+        height: 2.5rem;
         min-width: 3rem;
         font-size: 1.4rem;
         padding: 0.3rem;

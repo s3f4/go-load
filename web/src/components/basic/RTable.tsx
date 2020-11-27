@@ -180,12 +180,8 @@ const row = (title?: boolean) => css`
 
 const columnStyle = (width?: string, sortable?: boolean) => css`
   flex: 0 1 ${width ? width : "20rem"};
-  padding-left: 1rem;
-  padding-top: 1rem;
   padding: 1rem 1rem 1rem 1rem;
   text-align: center;
-  width: 7rem;
-  min-height: 2rem;
   ${sortable ? "cursor:pointer;" : ""}
 `;
 

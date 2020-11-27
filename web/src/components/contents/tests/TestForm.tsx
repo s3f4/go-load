@@ -203,6 +203,7 @@ const TestForm = (props: Props) => {
                   </div>
                 );
               }
+              return null;
             })}
           <Button text="Add New Request Header" onClick={onAddHeader(true)} />
           <h3 css={formTitle}>Expected Values</h3>
@@ -243,6 +244,7 @@ const TestForm = (props: Props) => {
                   </div>
                 );
               }
+              return null;
             })}
 
           <Button

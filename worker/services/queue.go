@@ -20,30 +20,35 @@ type QueueService interface {
 }
 
 type rabbitMQService struct {
-	uri string
+	conn *amqp.Connection
 }
+
+var rabbitMQServiceObject QueueService
 
 // NewRabbitMQService creates a new rabbitMQService instance
 func NewRabbitMQService() QueueService {
-	uri := fmt.Sprintf("amqp://%s:%s@%s:%s/",
-		os.Getenv("RABBITMQ_USER"),
-		os.Getenv("RABBITMQ_PASSWORD"),
-		os.Getenv("RABBITMQ_HOST"),
-		os.Getenv("RABBITMQ_PORT"),
-	)
+	if rabbitMQServiceObject == nil {
+		uri := fmt.Sprintf("amqp://%s:%s@%s:%s/",
+			os.Getenv("RABBITMQ_USER"),
+			os.Getenv("RABBITMQ_PASSWORD"),
+			os.Getenv("RABBITMQ_HOST"),
+			os.Getenv("RABBITMQ_PORT"),
+		)
 
-	return &rabbitMQService{uri: uri}
+		conn, err := amqp.Dial(uri)
+		if err != nil {
+			log.Fatalf("%v failed to connect queue", err)
+		}
+
+		rabbitMQServiceObject = &rabbitMQService{
+			conn: conn,
+		}
+	}
+	return rabbitMQServiceObject
 }
 
 func (r *rabbitMQService) Send(queue string, message interface{}) error {
-	conn, err := amqp.Dial(r.uri)
-	if err != nil {
-		log.Error(err)
-		return err
-	}
-	defer conn.Close()
-
-	ch, err := conn.Channel()
+	ch, err := r.conn.Channel()
 	if err != nil {
 		log.Error(err)
 		return err
@@ -82,13 +87,7 @@ func (r *rabbitMQService) Send(queue string, message interface{}) error {
 }
 
 func (r *rabbitMQService) Listen(queue string) {
-	conn, err := amqp.Dial(r.uri)
-	if err != nil {
-		log.Fatalf("%v failed to connect queue", err)
-	}
-	defer conn.Close()
-
-	ch, err := conn.Channel()
+	ch, err := r.conn.Channel()
 	defer ch.Close()
 
 	msgs, err := ch.Consume(

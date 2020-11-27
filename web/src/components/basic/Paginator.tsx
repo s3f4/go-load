@@ -19,11 +19,16 @@ const Paginator: React.FC<Props> = (props: Props) => {
   });
 
   useEffect(() => {
+    let mount = true;
     props.fetcher(query).then((response: ServerResponse) => {
-      setTotal(response.data.total);
-      props.setter(response.data.data);
+      if (mount) {
+        setTotal(response.data.total);
+        props.setter(response.data.data);
+      }
     });
-    return () => {};
+    return () => {
+      mount = false;
+    };
   }, [query]);
 
   const onChangePage = (page: number) => (e: React.FormEvent) => {

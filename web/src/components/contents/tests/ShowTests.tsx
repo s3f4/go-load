@@ -248,7 +248,7 @@ const ShowTests: React.FC = () => {
                 />
               </React.Fragment>
             ) : (
-              <React.Fragment>
+              <div css={buttonsDiv}>
                 <Button
                   text="New Test"
                   colorType={ButtonColorType.primary}
@@ -276,7 +276,7 @@ const ShowTests: React.FC = () => {
                     setUpdateSelectedGroupName(selectedTestGroup.name);
                   }}
                 />
-              </React.Fragment>
+              </div>
             )}
             <RTable
               builder={buildTable}
@@ -337,6 +337,16 @@ const container = css`
   flex-direction: column;
   ${MediaQuery[1]} {
     flex-direction: row;
+  }
+`;
+
+const buttonsDiv = css`
+  display: flex;
+  justify-content: space-between;
+  width: 38rem;
+  margin: 0.5rem auto;
+  ${MediaQuery[1]} {
+    margin: 0.5rem;
   }
 `;
 

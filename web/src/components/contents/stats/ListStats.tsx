@@ -112,9 +112,4 @@ const container = css`
   }
 `;
 
-const h3title = css`
-  margin-bottom: 0.5rem;
-  padding-bottom: 0.5rem;
-`;
-
 export default ListStats;

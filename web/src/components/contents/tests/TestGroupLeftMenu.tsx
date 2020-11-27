@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import { leftContent } from "../../style";
 import { listTestGroup, TestGroup } from "../../../api/entity/test_group";
 import Button, { ButtonType } from "../../basic/Button";
-import { FiArrowDownRight, FiArrowRight, FiPlusCircle } from "react-icons/fi";
+import { FiPlusCircle } from "react-icons/fi";
 
 interface Props {
   testGroups: TestGroup[] | undefined;

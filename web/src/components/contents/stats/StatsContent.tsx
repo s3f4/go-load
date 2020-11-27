@@ -78,7 +78,7 @@ const StatsContent: React.FC<Props> = (props: Props) => {
           Method: {test.method} <br />
         </div>
         <div css={testDiv}>
-          <div css={title}>Run Tests</div>
+          <div css={title}>Finished Tests</div>
           {test.run_tests &&
             test.run_tests.map((runTest: RunTest) => {
               return (
@@ -94,13 +94,15 @@ const StatsContent: React.FC<Props> = (props: Props) => {
                         color={runTest.passed ? "green" : "red"}
                       />
                     </div>
+                    <div>Start Time: </div>
                     <div>
-                      {runTest.id}-Start Time:{" "}
-                      {moment(runTest.start_time).format(defaultFormat())} - End
-                      Time:
-                      {moment(runTest.end_time).format(defaultFormat())} -
-                      Passed: {runTest.passed}
+                      {moment(runTest.start_time).format(defaultFormat())}
                     </div>
+                    <div>End Time:</div>
+                    <div>
+                      {moment(runTest.end_time).format(defaultFormat())}{" "}
+                    </div>
+                    <div>Passed: {runTest.passed}</div>
                   </div>
                 </div>
               );
@@ -249,6 +251,8 @@ const title = css`
 
 const runTestRow = css`
   display: flex;
+  border: 1px solid black;
+  justify-content: space-between;
 `;
 
 const runTestRowLeft = css`

@@ -64,12 +64,9 @@ const StatsContent: React.FC<Props> = (props: Props) => {
   const onSelectRunTest = (runTest: RunTest) => (e: React.FormEvent) => {
     e.preventDefault();
     setSelectedRunTest(runTest);
-    listResponses(runTest.id!)().then((response) => {
-      setResponses(response.data.data);
-    });
   };
 
-  const testContent = (test: Test) => {
+  const testContent = React.useCallback((test: Test) => {
     return (
       <div css={container}>
         <div css={testDiv}>
@@ -126,9 +123,9 @@ const StatsContent: React.FC<Props> = (props: Props) => {
         </div>
       </div>
     );
-  };
+  }, []);
 
-  const buildTable = (r: any) => {
+  const buildTable = React.useCallback((r: any) => {
     const content: any[][] = [];
     r.map((response: any) => {
       content.push([
@@ -146,9 +143,9 @@ const StatsContent: React.FC<Props> = (props: Props) => {
       return null;
     });
     return content;
-  };
+  }, []);
 
-  const responseTable = () => {
+  const responseTable = React.useCallback(() => {
     if (!selectedRunTest) {
       return;
     }
@@ -156,7 +153,8 @@ const StatsContent: React.FC<Props> = (props: Props) => {
     return (
       <Fragment>
         <RTable
-          limit={10}
+          limit={50}
+          setter={setResponses}
           fetcher={listResponses(selectedRunTest.id!)}
           builder={buildTable}
           title={[
@@ -213,7 +211,7 @@ const StatsContent: React.FC<Props> = (props: Props) => {
         />
       </Fragment>
     );
-  };
+  }, [selectedRunTest]);
 
   return (
     <div>

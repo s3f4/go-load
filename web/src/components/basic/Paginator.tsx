@@ -3,6 +3,7 @@ import React, { Fragment, useEffect, useState } from "react";
 import { jsx } from "@emotion/core";
 import { Query } from "./query";
 import { ServerResponse } from "../../api/api";
+import Button from "./Button";
 
 interface Props {
   // children: ReactNode;
@@ -18,12 +19,14 @@ const Paginator: React.FC<Props> = (props: Props) => {
     offset: 0,
   });
 
+  const { fetcher, setter } = props;
+
   useEffect(() => {
     let mount = true;
-    props.fetcher(query).then((response: ServerResponse) => {
+    fetcher(query).then((response: ServerResponse) => {
       if (mount) {
         setTotal(response.data.total);
-        props.setter(response.data.data);
+        setter(response.data.data);
       }
     });
     return () => {
@@ -35,7 +38,7 @@ const Paginator: React.FC<Props> = (props: Props) => {
     e.preventDefault();
     setQuery({
       ...query,
-      ["offset"]: (page - 1) * query.limit,
+      offset: (page - 1) * query.limit,
     });
   };
 
@@ -44,11 +47,7 @@ const Paginator: React.FC<Props> = (props: Props) => {
     const p = total / query.limit;
     const page = p > 1 ? Math.ceil(p) : p;
     for (let i = 1; i <= page; i++) {
-      buttons.push(
-        <button onClick={onChangePage(i)} key={i}>
-          {i}
-        </button>,
-      );
+      buttons.push(<Button key={i} text={i + ""} onClick={onChangePage(i)} />);
     }
     return buttons;
   };

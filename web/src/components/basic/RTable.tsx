@@ -18,6 +18,7 @@ interface Props {
   title: TableTitle[];
   builder: (data: any) => any[][];
   fetcher: (query?: Query) => Promise<any>;
+  setter?: (data: any[]) => void;
   limit?: number;
 }
 
@@ -32,13 +33,16 @@ const RTable: React.FC<Props> = (props: Props) => {
     offset: 0,
   });
 
+  const { fetcher, setter, builder } = props;
+
   useEffect(() => {
-    props.fetcher(query).then((response: ServerResponse) => {
+    fetcher(query).then((response: ServerResponse) => {
       setTotal(response.data.total);
-      setContent(props.builder(response.data.data));
+      setContent(builder(response.data.data));
+      setter?.(response.data.data);
     });
     return () => {};
-  }, [props.fetcher, query]);
+  }, [query]);
 
   const onOrder = (sortable: boolean, col: string) => (e: FormEvent) => {
     e.preventDefault();
@@ -200,4 +204,4 @@ const container = css`
   }
 `;
 
-export default RTable;
+export default React.memo(RTable);

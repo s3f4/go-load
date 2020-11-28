@@ -20,6 +20,7 @@ interface Props {
   fetcher: (query?: Query) => Promise<any>;
   setter?: (data: any[]) => void;
   limit?: number;
+  trigger?: any;
 }
 
 const RTable: React.FC<Props> = (props: Props) => {
@@ -33,7 +34,7 @@ const RTable: React.FC<Props> = (props: Props) => {
     offset: 0,
   });
 
-  const { fetcher, setter, builder } = props;
+  const { fetcher, setter, builder, trigger } = props;
 
   useEffect(() => {
     fetcher(query).then((response: ServerResponse) => {
@@ -42,7 +43,7 @@ const RTable: React.FC<Props> = (props: Props) => {
       setter?.(response.data.data);
     });
     return () => {};
-  }, [query]);
+  }, [query, trigger]);
 
   const onOrder = (sortable: boolean, col: string) => (e: FormEvent) => {
     e.preventDefault();
@@ -73,17 +74,18 @@ const RTable: React.FC<Props> = (props: Props) => {
     const page = p > 1 ? Math.ceil(p) : p;
     for (let i = 1; i <= page; i++) {
       buttons.push(
-        <Button
-          colorType={
-            i === selectedPage
-              ? ButtonColorType.primary
-              : ButtonColorType.secondary
-          }
-          type={ButtonType.small}
-          text={i + ""}
-          onClick={onChangePage(i)}
-          key={i}
-        />,
+        <div key={i} css={buttonDiv}>
+          <Button
+            colorType={
+              i === selectedPage
+                ? ButtonColorType.primary
+                : ButtonColorType.secondary
+            }
+            type={ButtonType.small}
+            text={i + ""}
+            onClick={onChangePage(i)}
+          />
+        </div>,
       );
     }
     return buttons;
@@ -202,6 +204,11 @@ const container = css`
     text-align: left;
     padding: 1rem 1rem 1rem 1rem;
   }
+`;
+
+const buttonDiv = css`
+  display: inline-block;
+  margin: 0.5rem 0.3rem;
 `;
 
 export default React.memo(RTable);

@@ -64,6 +64,7 @@ const StatsContent: React.FC<Props> = (props: Props) => {
   const onSelectRunTest = (runTest: RunTest) => (e: React.FormEvent) => {
     e.preventDefault();
     setSelectedRunTest(runTest);
+    console.log(runTest);
   };
 
   const testContent = React.useCallback((test: Test) => {
@@ -145,73 +146,72 @@ const StatsContent: React.FC<Props> = (props: Props) => {
     return content;
   }, []);
 
-  const responseTable = React.useCallback(() => {
+  const responseTable = () => {
     if (!selectedRunTest) {
       return;
     }
 
     return (
-      <Fragment>
-        <RTable
-          limit={50}
-          setter={setResponses}
-          fetcher={listResponses(selectedRunTest.id!)}
-          builder={buildTable}
-          title={[
-            {
-              header: "FirstByte",
-              accessor: "first_byte",
-              sortable: true,
-            },
-            {
-              header: "ConnectStart",
-              accessor: "connect_start",
-              sortable: true,
-            },
-            {
-              header: "ConnectDone",
-              accessor: "connect_done",
-              sortable: true,
-            },
-            {
-              header: "DNSStart",
-              accessor: "dns_start",
-              sortable: true,
-            },
-            {
-              header: "DNSDone",
-              accessor: "dns_done",
-              sortable: true,
-            },
-            {
-              header: "TLSStart",
-              accessor: "tls_start",
-              sortable: true,
-            },
-            {
-              header: "TLSDone",
-              accessor: "tls_done",
-              sortable: true,
-            },
-            {
-              header: "StatusCode",
-              accessor: "status_code",
-              sortable: true,
-            },
-            {
-              header: "TotalTime(ms)",
-              accessor: "TotalTime",
-              sortable: true,
-            },
-            {
-              header: "Body",
-              sortable: false,
-            },
-          ]}
-        />
-      </Fragment>
+      <RTable
+        limit={50}
+        setter={setResponses}
+        fetcher={listResponses(selectedRunTest?.id!)}
+        builder={buildTable}
+        trigger={selectedRunTest}
+        title={[
+          {
+            header: "FirstByte",
+            accessor: "first_byte",
+            sortable: true,
+          },
+          {
+            header: "ConnectStart",
+            accessor: "connect_start",
+            sortable: true,
+          },
+          {
+            header: "ConnectDone",
+            accessor: "connect_done",
+            sortable: true,
+          },
+          {
+            header: "DNSStart",
+            accessor: "dns_start",
+            sortable: true,
+          },
+          {
+            header: "DNSDone",
+            accessor: "dns_done",
+            sortable: true,
+          },
+          {
+            header: "TLSStart",
+            accessor: "tls_start",
+            sortable: true,
+          },
+          {
+            header: "TLSDone",
+            accessor: "tls_done",
+            sortable: true,
+          },
+          {
+            header: "StatusCode",
+            accessor: "status_code",
+            sortable: true,
+          },
+          {
+            header: "TotalTime(ms)",
+            accessor: "TotalTime",
+            sortable: true,
+          },
+          {
+            header: "Body",
+            sortable: false,
+          },
+        ]}
+      />
     );
-  }, [selectedRunTest]);
+  };
 
   return (
     <div>

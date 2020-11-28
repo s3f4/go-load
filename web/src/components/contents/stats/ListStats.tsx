@@ -72,6 +72,7 @@ const ListStats: React.FC = () => {
         <RTable
           builder={buildTable}
           fetcher={fetcher()}
+          trigger={selectedTestGroup}
           title={[
             {
               header: "Name",

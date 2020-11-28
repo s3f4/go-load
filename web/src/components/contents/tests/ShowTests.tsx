@@ -199,7 +199,11 @@ const ShowTests: React.FC = () => {
         <TestGroupLeftMenu
           testGroups={testGroups}
           selectedTestGroup={selectedTestGroup}
-          setSelectedTestGroup={setSelectedTestGroup}
+          setSelectedTestGroup={(testGroup) => {
+            setSelectedTest(undefined);
+            setMessage(undefined);
+            setSelectedTestGroup(testGroup);
+          }}
           setTestGroups={setTestGroups}
         />
       </div>
@@ -281,6 +285,7 @@ const ShowTests: React.FC = () => {
             <RTable
               builder={buildTable}
               fetcher={listTestsOfTestGroup(selectedTestGroup?.id!)}
+              trigger={selectedTestGroup}
               title={[
                 {
                   header: "Name",

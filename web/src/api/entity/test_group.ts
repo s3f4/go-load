@@ -25,5 +25,5 @@ export const listTestGroup = async (query?: Query) => {
 };
 
 export const deleteTestGroup = async (testGroup: TestGroup) => {
-  return await makeReq("/test_group", "DELETE", testGroup);
+  return await makeReq(`/test_group/${testGroup.id}`, "DELETE", testGroup);
 };

@@ -159,6 +159,7 @@ const ShowTests: React.FC = () => {
   };
 
   const onDeleteTest = (test: Test): void => {
+    debugger;
     deleteTest(test)
       .then(() => {
         setSelectedTestGroup({

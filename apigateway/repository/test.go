@@ -4,6 +4,7 @@ import (
 	"github.com/s3f4/go-load/apigateway/library"
 	"github.com/s3f4/go-load/apigateway/models"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 // TestRepository ..
@@ -45,11 +46,7 @@ func (r *testRepository) Update(test *models.Test) error {
 }
 
 func (r *testRepository) Delete(test *models.Test) error {
-	err := r.DB().Where("test_id=?", test.ID).Delete(&models.TransportConfig{}).Error
-	if err != nil {
-		return err
-	}
-	return r.DB().Where("id=?", test.ID).Delete(test).Error
+	return r.DB().Select(clause.Associations).Delete(test).Error
 }
 
 func (r *testRepository) Get(id uint) (*models.Test, error) {

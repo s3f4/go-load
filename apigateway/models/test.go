@@ -12,7 +12,7 @@ type Test struct {
 	GoroutineCount       uint8           `json:"goroutine_count" gorm:"goroutine_count"`
 	ExpectedResponseCode uint            `json:"expected_response_code" gorm:"expected_response_code"`
 	ExpectedResponseBody string          `json:"expected_response_body" gorm:"expected_response_body"`
-	TransportConfig      TransportConfig `json:"transport_config"`
+	TransportConfig      TransportConfig `json:"transport_config" gorm:"foreignKey:TestID"`
 	TestGroup            *TestGroup      `json:"test_group"`
 	RunTests             []*RunTest      `json:"run_tests" gorm:"foreignKey:TestID"`
 	Headers              []*Header       `json:"headers" gorm:"foreignKey:TestID"`

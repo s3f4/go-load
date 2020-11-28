@@ -6,6 +6,7 @@ import "time"
 type Response struct {
 	ID             uint      `json:"id" gorm:"id;primaryKey;autoIncrement"`
 	RunTestID      uint      `json:"run_test_id" gorm:"run_test_id"`
+	RunTest        *RunTest  `json:"run_test" gorm:"run_test"`
 	WorkerHostName string    `json:"worker_host_name" gorm:"worker_host_name"`
 	TotalTime      int64     `json:"total_time" gorm:"total_time"`
 	FirstByte      time.Time `json:"first_byte" gorm:"first_byte"`

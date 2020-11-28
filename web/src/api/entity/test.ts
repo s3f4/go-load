@@ -54,7 +54,7 @@ export const listTestsOfTestGroup = (testID: number) => async (
 };
 
 export const deleteTest = async (test: Test) => {
-  return await makeReq("/test", "DELETE", test);
+  return await makeReq(`/test/${test.id}/`, "DELETE", test);
 };
 
 export const updateTest = async (test: Test) => {

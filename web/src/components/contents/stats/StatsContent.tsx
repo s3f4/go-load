@@ -6,7 +6,7 @@ import moment from "moment";
 import { Line } from "react-chartjs-2";
 import { defaultFormat, preciseFormat } from "../../basic/helper";
 import { getTest, Test } from "../../../api/entity/test";
-import { Borders, MediaQuery } from "../../style";
+import { Borders, MediaQuery, Box, Sizes } from "../../style";
 import { RunTest } from "../../../api/entity/runtest";
 import { FiArrowRightCircle } from "react-icons/fi";
 import RTable from "../../basic/RTable";
@@ -15,7 +15,7 @@ import { useParams } from "react-router-dom";
 interface Props {}
 
 const StatsContent: React.FC<Props> = (props: Props) => {
-  const [graphResponses, setGraphResponses] = useState<Response[]>([]);
+  const [responses, setResponses] = useState<Response[]>([]);
   const [test, setTest] = useState<Test>();
   const [selectedRunTest, setSelectedRunTest] = useState<RunTest>();
   const { id }: any = useParams();
@@ -45,27 +45,27 @@ const StatsContent: React.FC<Props> = (props: Props) => {
   }, []);
 
   const graph = React.useCallback(() => {
-    if (!graphResponses || !selectedRunTest) {
+    if (!responses || !selectedRunTest) {
       return;
     }
 
     const data = {
       datasets: [
         {
-          data: chartData(graphResponses).datum,
+          data: chartData(responses).datum,
           label: "Latency", // for legend
         },
       ],
-      labels: chartData(graphResponses).labels,
+      labels: chartData(responses).labels,
     };
     return <Line data={data} />;
-  }, [selectedRunTest, graphResponses]);
+  }, [selectedRunTest, responses]);
 
   const onSelectRunTest = (runTest: RunTest) => (e: React.FormEvent) => {
     e.preventDefault();
     setSelectedRunTest(runTest);
     listResponses(runTest.id!)().then((response) => {
-      setGraphResponses(response.data.data);
+      setResponses(response.data.data);
     });
   };
 
@@ -73,40 +73,56 @@ const StatsContent: React.FC<Props> = (props: Props) => {
     return (
       <div css={container}>
         <div css={testDiv}>
-          <div css={title}>{test.test_group?.name}</div>
-          Test URL: {test.url} <br />
-          Method: {test.method} <br />
+          <div css={title}>{test.name}</div>
+          {Object.keys(test).map((key) => {
+            if (
+              [
+                "id",
+                "transport_config",
+                "test_group",
+                "test_group_id",
+                "run_tests",
+              ].includes(key)
+            ) {
+              return;
+            }
+            return (
+              <div key={key} css={testPropRow}>
+                <div css={testProp}>{key}</div>
+                <div>{JSON.stringify(test[key])}</div>
+              </div>
+            );
+          })}
         </div>
         <div css={testDiv}>
           <div css={title}>Finished Tests</div>
-          {test.run_tests &&
-            test.run_tests.map((runTest: RunTest) => {
-              return (
-                <div
-                  css={runTestDiv}
-                  onClick={onSelectRunTest(runTest)}
-                  key={runTest.id}
-                >
-                  <div css={runTestRow}>
+          <div css={runTestDiv}>
+            {test.run_tests &&
+              test.run_tests.map((runTest: RunTest) => {
+                return (
+                  <div
+                    css={runTestRow}
+                    onClick={onSelectRunTest(runTest)}
+                    key={runTest.id}
+                  >
                     <div css={runTestRowLeft}>
                       <FiArrowRightCircle
                         size="2.1rem"
                         color={runTest.passed ? "green" : "red"}
                       />
                     </div>
-                    <div>Start Time: </div>
                     <div>
+                      Start:{" "}
                       {moment(runTest.start_time).format(defaultFormat())}
                     </div>
-                    <div>End Time:</div>
                     <div>
-                      {moment(runTest.end_time).format(defaultFormat())}{" "}
+                      End: {moment(runTest.end_time).format(defaultFormat())}{" "}
                     </div>
                     <div>Passed: {runTest.passed}</div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+          </div>
         </div>
       </div>
     );
@@ -140,6 +156,7 @@ const StatsContent: React.FC<Props> = (props: Props) => {
     return (
       <Fragment>
         <RTable
+          limit={10}
           fetcher={listResponses(selectedRunTest.id!)}
           builder={buildTable}
           title={[
@@ -234,7 +251,9 @@ const testDiv = css`
 `;
 
 const runTestDiv = css`
-  display: block;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
   cursor: pointer;
   & :hover {
     background-color: lightgray;
@@ -251,12 +270,25 @@ const title = css`
 
 const runTestRow = css`
   display: flex;
-  border: 1px solid black;
+  border: ${Borders.border1};
+  ${Box.boxShadow1}
+  border-radius: ${Sizes.borderRadius1};
   justify-content: space-between;
+  margin-bottom: 0.5rem;
+  padding: 0.7rem;
 `;
 
 const runTestRowLeft = css`
   margin-right: 1rem;
+`;
+
+const testPropRow = css`
+  display: flex;
+  justify-content: space-between;
+`;
+
+const testProp = css`
+  font-weight: bold;
 `;
 
 export default StatsContent;

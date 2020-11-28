@@ -1,7 +1,7 @@
 /** @jsx jsx */
 import React, { FormEvent, Fragment, useEffect, useState } from "react";
 import { jsx, css } from "@emotion/core";
-import { MediaQuery } from "../style";
+import { DisableSelect, MediaQuery } from "../style";
 import { FiArrowDown, FiArrowUp } from "react-icons/fi";
 import { ServerResponse } from "../../api/api";
 import { Query } from "./query";
@@ -59,7 +59,7 @@ const RTable: React.FC<Props> = (props: Props) => {
     setSelectedPage(page);
     setQuery({
       ...query,
-      ["offset"]: (page - 1) * query.limit,
+      offset: (page - 1) * query.limit,
     });
   };
 
@@ -176,6 +176,7 @@ const row = (title?: boolean) => css`
   border-bottom: 1px solid black;
   background-color: ${title ? "#007d9c" : "none"};
   color: ${title ? "white" : "none"};
+  ${title ? DisableSelect : ""}
 `;
 
 const columnStyle = (width?: string, sortable?: boolean) => css`

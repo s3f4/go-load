@@ -11,7 +11,7 @@ import {
   FiUser,
   FiHexagon,
 } from "react-icons/fi";
-import { MediaQuery } from "../style";
+import { DisableSelect, MediaQuery } from "../style";
 import { useLocation, useHistory } from "react-router-dom";
 import { getUserFromStorage, signOut } from "../../api/entity/user";
 import { setToken, token } from "../../api/entity/jwt";
@@ -28,7 +28,6 @@ const Header: React.FC<Props> = (props: Props) => {
   const history = useHistory();
   const user = getUserFromStorage();
 
-  
   const onSignOut = (e: React.FormEvent) => {
     e.preventDefault();
     signOut()
@@ -66,6 +65,10 @@ const Header: React.FC<Props> = (props: Props) => {
             <FiClipboard style={headerIconStyle} />
             Tests
           </Link>
+          <Link css={headerLink(location.pathname === "/stats")} to="/stats">
+            <FiActivity style={headerIconStyle} />
+            Stats
+          </Link>
           <Link css={headerLink(location.pathname === "/swarm")} to="/swarm">
             <FiMonitor style={headerIconStyle} />
             Swarm
@@ -76,10 +79,6 @@ const Header: React.FC<Props> = (props: Props) => {
           >
             <FiHexagon style={headerIconStyle} />
             Services
-          </Link>
-          <Link css={headerLink(location.pathname === "/stats")} to="/stats">
-            <FiActivity style={headerIconStyle} />
-            Stats
           </Link>
         </div>
         <div>
@@ -106,27 +105,25 @@ const Header: React.FC<Props> = (props: Props) => {
   );
 };
 
-const header = () => {
-  return css`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    background-color: #007d9c;
-    border-bottom: 0.1rem solid gray;
-    & a {
-      color: white;
-      text-decoration: none;
-    }
+const header = () => css`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  background-color: #007d9c;
+  border-bottom: 0.1rem solid gray;
+  & a {
+    color: white;
+    text-decoration: none;
+  }
 
-    ${MediaQuery[1]} {
-      flex-direction: row;
-      justify-content: space-between;
-      height: 5rem;
-      align-items: center;
-    }
-  `;
-};
+  ${MediaQuery[1]} {
+    flex-direction: row;
+    justify-content: space-between;
+    height: 5rem;
+    align-items: center;
+  }
+`;
 
 const logoDiv = css`
   height: 100%;
@@ -192,7 +189,7 @@ const headerLink = (selected?: boolean) => css`
   height: 100%;
   padding: 0rem 1rem 0rem 1rem;
   ${selected ? "background-color:#17a2b8" : ""};
-
+  ${DisableSelect}
   ${MediaQuery[1]} {
     flex-direction: row;
   }

@@ -91,15 +91,15 @@ export const html = `
 `;
 
 export const leftContent = (selected?: boolean) => css`
-  width: 100%;
-  min-height: 3rem;
   display: flex;
   flex-direction: column;
+  width: 100%;
+  min-height: 3rem;
   border-bottom: ${Borders.border1};
   padding: 1rem;
   cursor: pointer;
   ${selected ? "background-color:#e3e3c3" : ""};
-  &:first-of-type {
+  &:first-child {
     border-top: ${Borders.border1};
   }
 `;
@@ -147,4 +147,11 @@ export const rightColumn = css`
     min-height: 50rem;
     padding: 2rem;
   }
+`;
+
+export const DisableSelect = `
+  -webkit-user-select: none;  
+  -moz-user-select: none;    
+  -ms-user-select: none;      
+  user-select: none;
 `;

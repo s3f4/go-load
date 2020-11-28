@@ -38,11 +38,7 @@ const TestGroupLeftMenu: React.FC<Props> = (props: Props) => {
               props.setSelectedTestGroup(testGroup);
             }}
           >
-            <div>
-              <span>
-                <b>{testGroup.name}</b>
-              </span>
-            </div>
+            <b>{testGroup.name}</b>
           </div>
         ))}
       <Paginator

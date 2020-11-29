@@ -17,6 +17,7 @@ import (
 type Client struct {
 	RunTestID       uint
 	WorkerName      string
+	Method          string
 	URL             string
 	TransportConfig models.TransportConfig
 	Headers         []*models.Header
@@ -60,7 +61,7 @@ func (c *Client) calculateTimes(start time.Time, res *models.Response) {
 
 // HTTPTrace load testing with HTTPTrace tool of golang.
 func (c *Client) HTTPTrace() (*models.Response, error) {
-	req, err := http.NewRequest("GET", c.URL, nil)
+	req, err := http.NewRequest(c.Method, c.URL, nil)
 
 	if err != nil {
 		log.Errorf("HTTPTrace Error: %v\n", err)

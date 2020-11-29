@@ -2,7 +2,6 @@ package services
 
 import (
 	"encoding/json"
-	"strconv"
 
 	"github.com/mitchellh/mapstructure"
 	"github.com/s3f4/go-load/worker/client"
@@ -54,37 +53,34 @@ func (s *workerService) Start(event *models.Event) error {
 	i := uint8(0)
 	for i < payload.GoroutineCount {
 		log.Info("%+v", payload)
-		go s.run(payload.URL, "worker_"+strconv.Itoa(int(i)), payload.RunTestID, payload.RequestCount, payload.TransportConfig.DisableKeepAlives, payload.Headers)
+		go s.run(&payload)
 		i++
 	}
 	return nil
 }
 
 // run
-func (s *workerService) run(
-	url, workerName string,
-	runTestID uint,
-	request uint64,
-	disableKeepAlives bool,
-	headers []*models.Header,
-) {
+func (s *workerService) run(payload *models.RequestPayload) {
+	// dataBuf allows eventhandler to save response results.
 	dataBuf := make(chan models.Response, 100)
 	defer close(dataBuf)
+
 	client := &client.Client{
-		RunTestID:  runTestID,
-		URL:        url,
-		WorkerName: workerName,
-		Headers:    headers,
+		RunTestID: payload.RunTestID,
+		URL:       payload.URL,
+		Headers:   payload.Headers,
+		Method:    payload.Method,
 		TransportConfig: models.TransportConfig{
-			DisableKeepAlives: disableKeepAlives,
+			DisableKeepAlives: payload.TransportConfig.DisableKeepAlives,
 		},
 	}
-	go s.makeReq(client, request, dataBuf)
+
+	go s.makeReq(client, payload, dataBuf)
 	s.sendToEventHandler(dataBuf)
 }
 
-func (s *workerService) makeReq(client *client.Client, request uint64, dataBuf chan<- models.Response) {
-	// todo request/goroutineCount
+func (s *workerService) makeReq(client *client.Client, payload *models.RequestPayload, dataBuf chan<- models.Response) {
+	request := payload.RequestCount / uint64(payload.GoroutineCount)
 	for i := uint64(0); i < request; i++ {
 		res, err := client.HTTPTrace()
 		if err != nil {

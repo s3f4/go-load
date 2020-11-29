@@ -132,15 +132,22 @@ const CreateTest: React.FC<Props> = (props: Props) => {
         );
       case "Delete All":
         return (
-          <Button
-            colorType={ButtonColorType.secondary}
-            type={ButtonType.iconButton}
-            icon={<FiTrash2 />}
-            onClick={(e: React.FormEvent) => {
-              e.preventDefault();
-              deleteAllTests();
-            }}
-          />
+          <div
+            css={css`
+              margin: 0 auto;
+              padding: 0.7rem;
+            `}
+          >
+            <Button
+              colorType={ButtonColorType.secondary}
+              type={ButtonType.iconButton}
+              icon={<FiTrash2 />}
+              onClick={(e: React.FormEvent) => {
+                e.preventDefault();
+                deleteAllTests();
+              }}
+            />
+          </div>
         );
     }
   };
@@ -201,7 +208,7 @@ const CreateTest: React.FC<Props> = (props: Props) => {
             <span>
               Total Requests: <b>{totalRequests()}</b>
             </span>
-            <div>
+            <div css={buttonsDiv}>
               <Button text="Save" onClick={onSaveTestGroup} />
               <Button text="Update" onClick={onUpdateTestGroup} />
             </div>
@@ -213,7 +220,7 @@ const CreateTest: React.FC<Props> = (props: Props) => {
               label={"Test Group Name"}
               onChange={handleChange}
             />
-            <Button text="CreateTest" onClick={setConfig} />
+            <Button text="Save Test Group" onClick={setConfig} />
           </React.Fragment>
         )}
       </div>
@@ -264,6 +271,15 @@ const h3title = css`
   border-bottom: 0.1rem solid grey;
   margin-bottom: 2rem;
   padding-bottom: 0.5rem;
+`;
+
+const buttonsDiv = css`
+  display: flex;
+  justify-content: space-around;
+  margin: 1rem auto;
+  ${MediaQuery[1]} {
+    width: 70%;
+  }
 `;
 
 export default CreateTest;

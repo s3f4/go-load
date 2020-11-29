@@ -13,7 +13,7 @@ export const saveTestGroup = async (testGroup: TestGroup) => {
 };
 
 export const updateTestGroup = async (testGroup: TestGroup) => {
-  return await makeReq("/test_group", "PUT", testGroup);
+  return await makeReq(`/test_group/${testGroup.id}`, "PUT", testGroup);
 };
 
 export const runTestGroup = async (testGroup: TestGroup) => {

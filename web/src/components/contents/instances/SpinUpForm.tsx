@@ -265,8 +265,13 @@ const formTitle = css`
 `;
 
 const buttons = css`
-  margin-top: 1rem;
-  height: 6.5rem;
+  display: flex;
+  justify-content: space-around;
+  margin: 1rem auto;
+  width: 60%;
+  ${MediaQuery[1]} {
+    width: 40%;
+  }
 `;
 
 export default SpinUp;

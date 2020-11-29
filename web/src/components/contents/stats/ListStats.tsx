@@ -9,6 +9,7 @@ import { Test, listTestsOfTestGroup } from "../../../api/entity/test";
 import { FiActivity } from "react-icons/fi";
 import RTable from "../../basic/RTable";
 import TestGroupLeftMenu from "../tests/TestGroupLeftMenu";
+import Message from "../../basic/Message";
 
 const ListStats: React.FC = () => {
   const [testGroups, setTestGroups] = useState<TestGroup[]>();
@@ -69,36 +70,43 @@ const ListStats: React.FC = () => {
         />
       </div>
       <div css={rightColumn}>
-        <RTable
-          builder={buildTable}
-          fetcher={fetcher()}
-          trigger={selectedTestGroup}
-          title={[
-            {
-              header: "Name",
-              accessor: "name",
-              sortable: true,
-              width: "50%",
-            },
-            {
-              header: "Method",
-              accessor: "Method",
-              sortable: true,
-              width: "15%",
-            },
-            {
-              header: "Request Count",
-              accessor: "request_count",
-              sortable: true,
-              width: "25%",
-            },
-            {
-              header: "Actions",
-              sortable: false,
-              width: "10%",
-            },
-          ]}
-        />
+        {selectedTestGroup && selectedTestGroup.tests.length > 0 ? (
+          <RTable
+            builder={buildTable}
+            fetcher={fetcher()}
+            trigger={selectedTestGroup}
+            title={[
+              {
+                header: "Name",
+                accessor: "name",
+                sortable: true,
+                width: "50%",
+              },
+              {
+                header: "Method",
+                accessor: "Method",
+                sortable: true,
+                width: "15%",
+              },
+              {
+                header: "Request Count",
+                accessor: "request_count",
+                sortable: true,
+                width: "25%",
+              },
+              {
+                header: "Actions",
+                sortable: false,
+                width: "10%",
+              },
+            ]}
+          />
+        ) : (
+          <Message
+            type="warning"
+            message="There is no tests here, Please create a new test group"
+          />
+        )}
       </div>
     </div>
   );

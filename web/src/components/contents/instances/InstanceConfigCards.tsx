@@ -2,7 +2,8 @@
 import React from "react";
 import { jsx, css } from "@emotion/core";
 import { Box, Sizes } from "../../style";
-import Button from "../../basic/Button";
+import Button, { ButtonType } from "../../basic/Button";
+import { FiMinusCircle, FiPlusCircle } from "react-icons/fi";
 
 interface Props {
   configs: any;
@@ -19,8 +20,18 @@ const InstanceConfigCards: React.FC<Props> = (props: Props) => {
             <div css={instanceTitle}>Region: {config.region}</div>
             <br />
             Instance Count: <b>{config.count}</b>
-            <Button type={1} text="+" onClick={props.add(config)} />
-            <Button type={1} text="-" onClick={props.remove(config)} />
+            <div css={buttons}>
+              <Button
+                type={ButtonType.iconButton}
+                icon={<FiPlusCircle />}
+                onClick={props.add(config)}
+              />
+              <Button
+                type={ButtonType.iconButton}
+                icon={<FiMinusCircle />}
+                onClick={props.remove(config)}
+              />
+            </div>
           </div>
         );
       })}
@@ -53,6 +64,13 @@ const instanceTitle = css`
   height: 100;
   padding: 0.5rem;
   font-weight: bold;
+`;
+
+const buttons = css`
+  display: flex;
+  justify-content: space-around;
+  width: 60%;
+  margin: 1rem auto;
 `;
 
 export default React.memo(InstanceConfigCards);

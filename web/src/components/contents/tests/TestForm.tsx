@@ -251,33 +251,40 @@ const TestForm = (props: Props) => {
             text="Add Expected Response Header"
             onClick={onAddHeader(false)}
           />
-          {props.test ? (
-            <Button
-              text="Update"
-              onClick={() => {
-                props.updateTest?.(test);
-                setTest(initialTest);
-              }}
-              disabled={
-                !validateAll(isValid) ||
-                typeof props.testGroup === "undefined" ||
-                props.testGroup.name.length === 0
-              }
-            />
-          ) : (
-            <Button
-              text="Save"
-              onClick={() => {
-                props.addTest?.(test);
-                setTest(initialTest);
-              }}
-              disabled={
-                !validateAll(isValid) ||
-                typeof props.testGroup === "undefined" ||
-                props.testGroup.name.length === 0
-              }
-            />
-          )}
+          <div
+            css={css`
+              margin: 1rem auto;
+              text-align: center;
+            `}
+          >
+            {props.test ? (
+              <Button
+                text="Update"
+                onClick={() => {
+                  props.updateTest?.(test);
+                  setTest(initialTest);
+                }}
+                disabled={
+                  !validateAll(isValid) ||
+                  typeof props.testGroup === "undefined" ||
+                  props.testGroup.name.length === 0
+                }
+              />
+            ) : (
+              <Button
+                text="Save"
+                onClick={() => {
+                  props.addTest?.(test);
+                  setTest(initialTest);
+                }}
+                disabled={
+                  !validateAll(isValid) ||
+                  typeof props.testGroup === "undefined" ||
+                  props.testGroup.name.length === 0
+                }
+              />
+            )}
+          </div>
         </div>
       </div>
     );

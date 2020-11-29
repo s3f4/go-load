@@ -39,7 +39,7 @@ var (
 
 func (h *testGroupHandler) Start(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	testGroup, ok := ctx.Value(middlewares.TestCtxKey).(*models.TestGroup)
+	testGroup, ok := ctx.Value(middlewares.TestGroupCtxKey).(*models.TestGroup)
 	if !ok {
 		res.R422(w, r, library.ErrUnprocessableEntity)
 		return
@@ -106,7 +106,7 @@ func (h *testGroupHandler) Delete(w http.ResponseWriter, r *http.Request) {
 
 func (h *testGroupHandler) Get(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	testGroup, ok := ctx.Value(middlewares.TestCtxKey).(*models.TestGroup)
+	testGroup, ok := ctx.Value(middlewares.TestGroupCtxKey).(*models.TestGroup)
 	if !ok {
 		res.R422(w, r, library.ErrUnprocessableEntity)
 		return

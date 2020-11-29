@@ -159,7 +159,6 @@ const ShowTests: React.FC = () => {
   };
 
   const onDeleteTest = (test: Test): void => {
-    debugger;
     deleteTest(test)
       .then(() => {
         setSelectedTestGroup({
@@ -221,37 +220,47 @@ const ShowTests: React.FC = () => {
         {selectedTestGroup && selectedTestGroup.tests.length > 0 ? (
           <React.Fragment>
             {updateSelectedGroupName ? (
-              <React.Fragment>
-                <TextInput
-                  name="testGroupName"
-                  type="text"
-                  value={updateSelectedGroupName}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    setUpdateSelectedGroupName(e.target.value);
-                  }}
-                />
-                <Button
-                  text="Save"
-                  onClick={(e: React.FormEvent) => {
-                    e.preventDefault();
-                    updateTestGroup(selectedTestGroup).then(() => {
-                      const newTestGroups = testGroups?.map((tg: TestGroup) => {
-                        if (tg.id === selectedTestGroup.id) {
-                          tg.name = updateSelectedGroupName;
-                        }
-                        return tg;
-                      });
+              <div css={updateTestGroupNameDiv}>
+                <div css={updateTestGroupNameTI}>
+                  <TextInput
+                    name="testGroupName"
+                    type="text"
+                    value={updateSelectedGroupName}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      setUpdateSelectedGroupName(e.target.value);
+                    }}
+                  />
+                </div>
+                <div
+                  css={css`
+                    margin: 0.9rem;
+                  `}
+                >
+                  <Button
+                    text="Save"
+                    onClick={(e: React.FormEvent) => {
+                      e.preventDefault();
+                      updateTestGroup(selectedTestGroup).then(() => {
+                        const newTestGroups = testGroups?.map(
+                          (tg: TestGroup) => {
+                            if (tg.id === selectedTestGroup.id) {
+                              tg.name = updateSelectedGroupName;
+                            }
+                            return tg;
+                          },
+                        );
 
-                      setTestGroups(newTestGroups);
-                      setSelectedTestGroup({
-                        ...selectedTestGroup,
-                        name: updateSelectedGroupName,
+                        setTestGroups(newTestGroups);
+                        setSelectedTestGroup({
+                          ...selectedTestGroup,
+                          name: updateSelectedGroupName,
+                        });
+                        setUpdateSelectedGroupName("");
                       });
-                      setUpdateSelectedGroupName("");
-                    });
-                  }}
-                />
-              </React.Fragment>
+                    }}
+                  />
+                </div>
+              </div>
             ) : (
               <div css={buttonsDiv}>
                 <Button
@@ -356,4 +365,13 @@ const buttonsDiv = css`
   }
 `;
 
+const updateTestGroupNameDiv = css`
+  display: flex;
+  justify-content: space-around;
+  margin: 2rem 0.5rem;
+`;
+
+const updateTestGroupNameTI = css`
+  width: 80%;
+`;
 export default ShowTests;

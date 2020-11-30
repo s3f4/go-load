@@ -12,10 +12,10 @@ type Test struct {
 	GoroutineCount         uint8           `json:"goroutine_count" gorm:"goroutine_count"`
 	ExpectedResponseCode   uint            `json:"expected_response_code" gorm:"expected_response_code"`
 	ExpectedResponseBody   string          `json:"expected_response_body" gorm:"expected_response_body"`
-	ExpectedFirstByteTime  uint64          `json:"expected_first_byte_time" gorm:"expected_first_byte_time"`
-	ExpectedConnectionTime uint64          `json:"expected_connection_time" gorm:"expected_connection_time"`
-	ExpectedDNSTime        uint64          `json:"expected_dns_time" gorm:"expected_dns_time"`
-	ExpectedTLSTime        uint64          `json:"expected_tls_time" gorm:"expected_tls_time"`
+	ExpectedFirstByteTime  int64           `json:"expected_first_byte_time" gorm:"expected_first_byte_time"`
+	ExpectedConnectionTime int64           `json:"expected_connection_time" gorm:"expected_connection_time"`
+	ExpectedDNSTime        int64           `json:"expected_dns_time" gorm:"expected_dns_time"`
+	ExpectedTLSTime        int64           `json:"expected_tls_time" gorm:"expected_tls_time"`
 	TransportConfig        TransportConfig `json:"transport_config" gorm:"foreignKey:TestID"`
 	TestGroup              *TestGroup      `json:"test_group"`
 	RunTests               []*RunTest      `json:"run_tests" gorm:"foreignKey:TestID"`

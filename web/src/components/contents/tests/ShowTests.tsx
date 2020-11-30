@@ -155,6 +155,7 @@ const ShowTests: React.FC = () => {
         type: "success",
         message: "Test's been updated.",
       });
+      setSelectedTest(undefined);
     });
   };
 
@@ -216,7 +217,11 @@ const ShowTests: React.FC = () => {
         ) : (
           ""
         )}
-        {message ? <Message type="error" message={message.message} /> : ""}
+        {message ? (
+          <Message type={message.type} message={message.message} />
+        ) : (
+          ""
+        )}
         {selectedTestGroup && selectedTestGroup.tests.length > 0 ? (
           <React.Fragment>
             {updateSelectedGroupName ? (

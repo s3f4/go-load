@@ -40,7 +40,7 @@ const TestForm = (props: Props) => {
   const [test, setTest] = useState<Test>(initialTest);
   const [isValid, setIsValid] = useState<any>({
     request_count: true,
-    url: false,
+    url: !!props.test,
     method: true,
     goroutine_count: true,
   });
@@ -173,6 +173,7 @@ const TestForm = (props: Props) => {
             name="goroutine_count"
             value={test.goroutine_count}
             validate="min:1|max:10|message:Goroutine count must be less than or equal to 10"
+            validation={validation}
           />
           <SelectBox
             name={"disable_keep_alives"}

@@ -1,3 +1,4 @@
+import { debug } from "console";
 import { toNum } from "./helper";
 
 export interface Validate {

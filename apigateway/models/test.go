@@ -25,10 +25,10 @@ type Test struct {
 // Header holds request headers
 type Header struct {
 	ID              uint   `json:"id" gorm:"primaryKey;column:id"`
-	TestID          uint   `json:"test_id"`
-	Key             string `json:"key"`
-	Value           string `json:"value"`
-	IsRequestHeader bool   `json:"is_request_header"`
+	TestID          uint   `json:"test_id" gorm:"test_id"`
+	Key             string `json:"key" gorm:"key"`
+	Value           string `json:"value" gorm:"value"`
+	IsRequestHeader bool   `json:"is_request_header" gorm:"is_request_header"`
 }
 
 // TransportConfig is used to specify how to make requests

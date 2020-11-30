@@ -14,6 +14,10 @@ export interface Test {
   payload: string;
   expected_response_code: number;
   expected_response_body: string;
+  expected_first_byte_time: number;
+  expected_connection_time: number;
+  expected_dns_time: number;
+  expected_tls_time: number;
   test_group?: TestGroup;
   transport_config: TransportConfig;
   headers?: Header[];

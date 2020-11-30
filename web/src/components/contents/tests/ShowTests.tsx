@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, ChangeEvent } from "react";
 import { jsx, css } from "@emotion/core";
 import {
   deleteTestGroup,
@@ -226,7 +226,11 @@ const ShowTests: React.FC = () => {
                     name="testGroupName"
                     type="text"
                     value={updateSelectedGroupName}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    onChange={(
+                      e:
+                        | ChangeEvent<HTMLInputElement>
+                        | ChangeEvent<HTMLTextAreaElement>,
+                    ) => {
                       setUpdateSelectedGroupName(e.target.value);
                     }}
                   />

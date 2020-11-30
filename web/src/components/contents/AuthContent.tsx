@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import React, { useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 import { jsx, css } from "@emotion/core";
 import TextInput from "../basic/TextInput";
 import Button from "../basic/Button";
@@ -28,7 +28,9 @@ const AuthContent: React.FC<Props> = (props: Props) => {
   });
   const history = useHistory();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>,
+  ) => {
     setUser({
       ...user,
       [e.target.name]: e.target.value,

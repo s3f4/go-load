@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import React, { useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import { jsx, css } from "@emotion/core";
 import TextInput from "../../basic/TextInput";
 import Button from "../../basic/Button";
@@ -26,6 +26,10 @@ const initialTest: Test = {
   method: "GET",
   expected_response_code: 0,
   expected_response_body: "",
+  expected_first_byte_time: 0,
+  expected_connection_time: 0,
+  expected_dns_time: 0,
+  expected_tls_time: 0,
   payload: "",
   goroutine_count: 1,
   headers: [],
@@ -79,7 +83,7 @@ const TestForm = (props: Props) => {
   };
 
   const onHeaderHandle = (isReq: boolean, header: Header) => (
-    e: React.ChangeEvent<HTMLInputElement>,
+    e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>,
   ) => {
     e.preventDefault();
     header[e.target.name] = e.target.value;
@@ -157,6 +161,7 @@ const TestForm = (props: Props) => {
             validation={validation}
           />
           <TextInput
+            textarea
             onChange={handleChange}
             label="Request Payload"
             name="payload"
@@ -207,6 +212,10 @@ const TestForm = (props: Props) => {
             })}
           <Button text="Add New Request Header" onClick={onAddHeader(true)} />
           <h3 css={formTitle}>Expected Values</h3>
+          <div css={formNote}>
+            You can leave these values <b>as is</b>, if you don't want to
+            compare.
+          </div>
           <TextInput
             onChange={handleChange}
             label="Expected Response Code"
@@ -214,12 +223,36 @@ const TestForm = (props: Props) => {
             value={test.expected_response_code}
           />
           <TextInput
+            textarea
             onChange={handleChange}
             label="Expected Response Body"
             name="expected_response_body"
             value={test.expected_response_body}
           />
-
+          <TextInput
+            onChange={handleChange}
+            label="Expected First Byte Time"
+            name="expected_first_byte_time"
+            value={test.expected_first_byte_time}
+          />
+          <TextInput
+            onChange={handleChange}
+            label="Expected Connection Time"
+            name="expected_connection_time"
+            value={test.expected_connection_time}
+          />
+          <TextInput
+            onChange={handleChange}
+            label="Expected DNS Time"
+            name="expected_dns_time"
+            value={test.expected_dns_time}
+          />
+          <TextInput
+            onChange={handleChange}
+            label="Expected TLS Time"
+            name="expected_tls_time"
+            value={test.expected_tls_time}
+          />
           {test.headers &&
             test.headers.map((header: Header) => {
               if (!header.is_request_header) {
@@ -246,7 +279,6 @@ const TestForm = (props: Props) => {
               }
               return null;
             })}
-
           <Button
             text="Add Expected Response Header"
             onClick={onAddHeader(false)}
@@ -318,6 +350,15 @@ const flex = css`
 const headerDiv = (right?: boolean) => css`
   width: 50%;
   ${right && typeof right !== "undefined" ? "margin-right: 3rem;" : ""}
+`;
+
+const formNote = css`
+  text-align: center;
+  background-color: #eee;
+  font-size: 1.2rem;
+  margin: 0 auto;
+  padding: 0.5rem 0;
+  height: 3rem;
 `;
 
 export default TestForm;

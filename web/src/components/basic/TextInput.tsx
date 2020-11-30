@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import React, { useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 import { jsx, css } from "@emotion/core";
 import { Borders, Sizes, Colors } from "../style";
 import BasicProps from "./basicProps";
@@ -7,10 +7,14 @@ import { ValidationResult, validate } from "./validate";
 
 interface Props extends BasicProps {
   label?: string;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange?: (
+    e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>,
+  ) => void;
   validate?: string;
   disabled?: boolean;
   validation?: (name: string, value: boolean) => void;
+  textarea?: boolean;
+  rows?: number;
 }
 
 const TextInput: React.FC<Props> = (props: Props) => {
@@ -31,14 +35,25 @@ const TextInput: React.FC<Props> = (props: Props) => {
     <React.Fragment>
       <div css={inputDiv}>
         {props.label ? <label css={label}>{props.label}</label> : ""}
-        <input
-          name={props.name}
-          css={textInput(isValid?.isValid!)}
-          type={props.type ?? "text"}
-          value={props.value}
-          onChange={props.onChange}
-          disabled={props.disabled}
-        />
+        {props.textarea ? (
+          <textarea
+            name={props.name}
+            css={textInput(isValid?.isValid!, true)}
+            value={props.value}
+            onChange={props.onChange}
+            disabled={props.disabled}
+            rows={props.rows ?? 4}
+          />
+        ) : (
+          <input
+            name={props.name}
+            css={textInput(isValid?.isValid!)}
+            type={props.type ?? "text"}
+            value={props.value}
+            onChange={props.onChange}
+            disabled={props.disabled}
+          />
+        )}
         {!isValid?.isValid && isValid?.message ? (
           <span css={validateMessage}>{isValid.message}</span>
         ) : (
@@ -69,13 +84,18 @@ const label = css`
   margin: 0.4rem;
 `;
 
-const textInput = (valid: boolean) => css`
+const textInput = (valid: boolean, textarea?: boolean) => css`
   border: ${Borders.textInputBorder(valid)};
-  height: ${Sizes.inputHeight};
+  ${!textarea ? `height: Sizes.inputHeight` : ""};
   width: 100%;
   border-radius: ${Sizes.borderRadius1};
   font-size: ${Sizes.textInputFontSize};
   padding: ${Sizes.textInputPadding};
+  ${textarea
+    ? `resize: vertical;
+      font-family: "Roboto", Arial, Helvetica, sans-serif;
+      `
+    : ""}
 `;
 
 export default TextInput;

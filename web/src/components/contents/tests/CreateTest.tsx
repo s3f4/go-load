@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import React, { useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 import { jsx, css } from "@emotion/core";
 import TextInput from "../../basic/TextInput";
 import Button, { ButtonColorType, ButtonType } from "../../basic/Button";
@@ -73,7 +73,9 @@ const CreateTest: React.FC<Props> = (props: Props) => {
     setEditTest(undefined);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>,
+  ) => {
     setMessage("");
     setTestGroupName(e.target.value);
   };

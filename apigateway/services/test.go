@@ -45,19 +45,20 @@ func (s *testService) Start(test *models.Test) error {
 	runTest.StartTime = &startTime
 
 	if err := s.rtr.Create(&runTest); err != nil {
-		fmt.Println("err")
+		log.Errorf("TestService.Start: %v", err)
 		return err
 	}
 
-	fmt.Printf("%#v", runTest)
-
-	for _, instance := range instanceConfig.Configs {
+	for index, instance := range instanceConfig.Configs {
 		requestPerInstance := test.RequestCount / uint64(instance.Count)
 
+		// portion to find out which worker worked last
+		portion := index + 1
 		event := models.Event{
 			Event: models.REQUEST,
 			Payload: models.RequestPayload{
 				RunTestID:            runTest.ID,
+				Portion:              fmt.Sprintf("%d/%d", portion, len(instanceConfig.Configs)),
 				URL:                  test.URL,
 				RequestCount:         requestPerInstance,
 				Method:               test.Method,

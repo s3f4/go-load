@@ -19,6 +19,8 @@ type Event struct {
 // RequestPayload paylaod of request event
 type RequestPayload struct {
 	RunTestID            uint            `json:"run_test_id"`
+	RunTest              *RunTest        `json:"run_test"`
+	Portion              string          `json:"portion"`
 	URL                  string          `json:"url"`
 	Method               string          `json:"method"`
 	Payload              string          `json:"payload,omitempty"`

@@ -49,37 +49,63 @@ func (s *testService) Start(test *models.Test) error {
 		return err
 	}
 
-	for index, instance := range instances {
-		fmt.Println(instance)
-		instanceCount := uint64(len(instances))
-		requestPerInstance := test.RequestCount / instanceCount
-		portion := index + 1
-		event := models.Event{
-			Event: models.REQUEST,
-			Payload: models.RequestPayload{
-				RunTestID:            runTest.ID,
-				Portion:              fmt.Sprintf("%d/%d", portion, instanceCount),
-				URL:                  test.URL,
-				RequestCount:         requestPerInstance,
-				Method:               test.Method,
-				Payload:              test.Payload,
-				GoroutineCount:       test.GoroutineCount,
-				ExpectedResponseBody: test.ExpectedResponseBody,
-				ExpectedResponseCode: test.ExpectedResponseCode,
-				Headers:              test.Headers,
-				TransportConfig:      test.TransportConfig,
-			},
-		}
+	instanceCount := uint64(len(instances))
 
-		message, err := json.Marshal(event)
-		if err != nil {
-			return err
-		}
+	if test.RequestCount < instanceCount {
+		for i := uint64(0); i < test.RequestCount; i++ {
+			event := setEvent(&runTest, test, 1, test.RequestCount, i+1)
+			message, err := json.Marshal(event)
+			if err != nil {
+				log.Error(err)
+				return err
+			}
 
-		if err := s.queueService.Send("worker", message); err != nil {
-			fmt.Println(err)
-			return err
+			if err := s.queueService.Send("worker", message); err != nil {
+				log.Error(err)
+				return err
+			}
+		}
+	} else {
+		for i := range instances {
+			requestPerInstance := test.RequestCount / instanceCount
+			event := setEvent(&runTest, test, requestPerInstance, instanceCount, uint64(i+1))
+
+			// add remain RequestCount to RequestCount of  last event
+			if len(instances) == i+1 {
+				event.Payload.(*models.RequestPayload).RequestCount = event.Payload.(*models.RequestPayload).RequestCount + uint64((test.RequestCount - (requestPerInstance * instanceCount)))
+			}
+
+			message, err := json.Marshal(event)
+			if err != nil {
+				log.Error(err)
+				return err
+			}
+
+			if err := s.queueService.Send("worker", message); err != nil {
+				log.Error(err)
+				return err
+			}
 		}
 	}
+
 	return nil
+}
+
+func setEvent(runTest *models.RunTest, test *models.Test, requestPerInstance, instanceOrRequestCount, portion uint64) *models.Event {
+	return &models.Event{
+		Event: models.REQUEST,
+		Payload: models.RequestPayload{
+			RunTestID:            runTest.ID,
+			Portion:              fmt.Sprintf("%d/%d", portion, instanceOrRequestCount),
+			URL:                  test.URL,
+			RequestCount:         requestPerInstance,
+			Method:               test.Method,
+			Payload:              test.Payload,
+			GoroutineCount:       test.GoroutineCount,
+			ExpectedResponseBody: test.ExpectedResponseBody,
+			ExpectedResponseCode: test.ExpectedResponseCode,
+			Headers:              test.Headers,
+			TransportConfig:      test.TransportConfig,
+		},
+	}
 }

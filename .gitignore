@@ -29,3 +29,4 @@ worker/log
 go-load.code-workspace
 *.crt
 *.key
+*.DS_Store

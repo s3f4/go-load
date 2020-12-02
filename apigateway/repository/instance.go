@@ -1,6 +1,11 @@
 package repository
 
 import (
+	"encoding/json"
+
+	"github.com/mitchellh/mapstructure"
+	"github.com/s3f4/go-load/apigateway/library"
+	"github.com/s3f4/go-load/apigateway/library/log"
 	"github.com/s3f4/go-load/apigateway/models"
 	"gorm.io/gorm"
 )
@@ -11,6 +16,7 @@ type InstanceRepository interface {
 	Create(*models.InstanceConfig) error
 	Delete(*models.InstanceConfig) error
 	Get() (*models.InstanceConfig, error)
+	GetFromTerraform() ([]models.InstanceTerraform, error)
 }
 
 type instanceRepository struct {
@@ -34,6 +40,14 @@ func (r *instanceRepository) DB() *gorm.DB {
 }
 
 func (r *instanceRepository) Create(instance *models.InstanceConfig) error {
+	if err := r.DB().Where("1=1").Delete(&models.InstanceConfig{}).Error; err != nil {
+		return err
+	}
+
+	if err := r.DB().Where("1=1").Delete(&models.Instance{}).Error; err != nil {
+		return err
+	}
+
 	return r.DB().Create(instance).Error
 }
 
@@ -47,4 +61,41 @@ func (r *instanceRepository) Get() (*models.InstanceConfig, error) {
 		return nil, err
 	}
 	return &instanceReq, nil
+}
+
+// GetFromTerraform
+func (r *instanceRepository) GetFromTerraform() ([]models.InstanceTerraform, error) {
+	output, err := library.RunCommands("cd infra;terraform output -json workers")
+	if err != nil {
+		return nil, err
+	}
+
+	var result map[string]interface{}
+	if err := json.Unmarshal(output, &result); err != nil {
+		return nil, err
+	}
+
+	var instances []models.InstanceTerraform
+	for _, instance := range result {
+
+		var instanceObj models.InstanceTerraform
+		decoder, err := mapstructure.NewDecoder(&mapstructure.DecoderConfig{
+			Metadata: nil,
+			Result:   &instanceObj,
+			TagName:  "json",
+		})
+		if err != nil {
+			log.Errorf("mapstructrure.decode", err)
+			return nil, err
+		}
+
+		if err := decoder.Decode(instance); err != nil {
+			log.Errorf("worker.start", err)
+			return nil, err
+		}
+
+		instances = append(instances, instanceObj)
+	}
+
+	return instances, nil
 }

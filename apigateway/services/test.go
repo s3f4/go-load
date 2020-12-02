@@ -35,7 +35,7 @@ func NewTestService() TestService {
 func (s *testService) Start(test *models.Test) error {
 	startTime := time.Now()
 
-	instanceConfig, err := s.ir.Get()
+	instances, err := s.ir.GetFromTerraform()
 	if err != nil {
 		return err
 	}
@@ -49,16 +49,16 @@ func (s *testService) Start(test *models.Test) error {
 		return err
 	}
 
-	for index, instance := range instanceConfig.Configs {
-		requestPerInstance := test.RequestCount / uint64(instance.Count)
-
-		// portion to find out which worker worked last
+	for index, instance := range instances {
+		fmt.Println(instance)
+		instanceCount := uint64(len(instances))
+		requestPerInstance := test.RequestCount / instanceCount
 		portion := index + 1
 		event := models.Event{
 			Event: models.REQUEST,
 			Payload: models.RequestPayload{
 				RunTestID:            runTest.ID,
-				Portion:              fmt.Sprintf("%d/%d", portion, len(instanceConfig.Configs)),
+				Portion:              fmt.Sprintf("%d/%d", portion, instanceCount),
 				URL:                  test.URL,
 				RequestCount:         requestPerInstance,
 				Method:               test.Method,
@@ -76,16 +76,10 @@ func (s *testService) Start(test *models.Test) error {
 			return err
 		}
 
-		log.Info(string(message))
-
-		for i := 0; i < instance.Count; i++ {
-			if err := s.queueService.Send("worker", message); err != nil {
-				fmt.Println(err)
-				return err
-			}
+		if err := s.queueService.Send("worker", message); err != nil {
+			fmt.Println(err)
+			return err
 		}
-
 	}
-
 	return nil
 }

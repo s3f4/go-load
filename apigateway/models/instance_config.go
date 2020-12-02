@@ -15,3 +15,18 @@ type Instance struct {
 	Image            string `json:"image" gorm:"image"`
 	Region           string `json:"region" gorm:"region"`
 }
+
+// InstanceTerraform terraform configs
+type InstanceTerraform struct {
+	ID                 string `json:"id"`
+	Name               string `json:"name"`
+	CreatedAt          string `json:"created_at"`
+	Disk               uint   `json:"disk"`
+	Image              string `json:"image"`
+	IPV4Address        string `json:"ipv4_address"`
+	IPV4AddressPrivate string `json:"ipv4_address_private"`
+	Memory             uint   `json:"memory"`
+	Region             string `json:"region"`
+	Size               string `json:"size"`
+	Status             string `json:"status"`
+}

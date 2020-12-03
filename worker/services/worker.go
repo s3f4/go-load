@@ -2,7 +2,8 @@ package services
 
 import (
 	"encoding/json"
-	"sync"
+	"fmt"
+	"net/http"
 
 	"github.com/s3f4/go-load/worker/client"
 	"github.com/s3f4/go-load/worker/library"
@@ -20,7 +21,6 @@ type workerService struct {
 }
 
 var workerServiceObj WorkerService
-var once sync.Once
 
 // NewWorkerService returns new workerService instance
 func NewWorkerService() WorkerService {
@@ -79,39 +79,86 @@ func (s *workerService) makeReq(client *client.Client, payload *models.RequestPa
 		}
 		dataBuf <- *res
 	}
-
-	once.Do(func() {
-
-	})
 }
 
-func (s *workerService) compare(test *models.Test, response *models.Response) bool {
-	if test.ExpectedResponseCode != response.StatusCode {
-		return false
+func (s *workerService) compare(test *models.Test, response *models.Response) []string {
+	var reasons []string
+	if test.ExpectedResponseCode != 0 && test.ExpectedResponseCode != response.StatusCode {
+		reasons = append(reasons, fmt.Sprintf(
+			"test.ExpectedResponseCode: %d\nresponse.StatusCode: %d\n",
+			test.ExpectedResponseCode,
+			response.StatusCode,
+		))
 	}
 
-	if test.Payload != response.Body {
-		return false
+	if test.Payload != "" && test.Payload != response.Body {
+		reasons = append(reasons, fmt.Sprintf(
+			"test.Payload: %s\n response.Body: %s\n",
+			test.Payload,
+			response.Body,
+		))
 	}
 
-	if test.ExpectedConnectionTime > response.ConnectTime {
-		return false
+	if test.ExpectedConnectionTime != 0 && test.ExpectedConnectionTime > response.ConnectTime {
+		reasons = append(reasons, fmt.Sprintf(
+			"test.ExpectedConnectionTime: %d\nresponse.ConnectTime: %d",
+			test.ExpectedConnectionTime,
+			response.ConnectTime,
+		))
 	}
 
-	if test.ExpectedTLSTime > response.TLSTime{
-		return false
+	if test.ExpectedTLSTime != 0 && test.ExpectedTLSTime > response.TLSTime {
+		reasons = append(reasons, fmt.Sprintf(
+			"test.ExpectedTLSTime: %d\nresponse.TLSTime: %d",
+			test.ExpectedTLSTime,
+			response.TLSTime,
+		))
 	}
 
-	if test.ExpectedDNSTime > response.DNSTime{
-		return false
+	if test.ExpectedDNSTime != 0 && test.ExpectedDNSTime > response.DNSTime {
+		reasons = append(reasons, fmt.Sprintf(
+			"test.ExpectedDNSTime: %d\nresponse.DNSTime: %d",
+			test.ExpectedDNSTime,
+			response.DNSTime,
+		))
 	}
 
-	if test.ExpectedFirstByteTime > response.FirstByteTime{
-		return false
+	if test.ExpectedFirstByteTime != 0 && test.ExpectedFirstByteTime > response.FirstByteTime {
+		reasons = append(reasons, fmt.Sprintf(
+			"test.ExpectedFirstByteTime: %d\nresponse.FirstByteTime: %d",
+			test.ExpectedFirstByteTime,
+			response.FirstByteTime,
+		))
+	}
+	var responseHeaders http.Header
+	if err := json.Unmarshal(response.ResponseHeaders, &responseHeaders); err != nil {
+		reasons = append(reasons, fmt.Sprintf(
+			"ResponseHeaders json error: %v\nHeaders: %v\n",
+			err,
+			responseHeaders,
+		))
 	}
 
-	return true
+	for _, header := range test.Headers {
+		if !header.IsRequestHeader {
+			if values, ok := responseHeaders[header.Key]; ok {
+				if found := library.SliceFind(values, header.Value); found == -1 {
+					reasons = append(reasons, fmt.Sprintf(
+						"header.Value: %s is not found in %v\n",
+						header.Value,
+						values,
+					))
+				}
+			} else {
+				reasons = append(reasons, fmt.Sprintf(
+					"%s\n is not found in the response headers",
+					header.Key,
+				))
+			}
+		}
+	}
 
+	return reasons
 }
 
 func (s *workerService) sendToEventHandler(dataBuf <-chan models.Response) error {

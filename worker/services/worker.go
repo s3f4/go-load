@@ -3,8 +3,8 @@ package services
 import (
 	"encoding/json"
 
-	"github.com/mitchellh/mapstructure"
 	"github.com/s3f4/go-load/worker/client"
+	"github.com/s3f4/go-load/worker/library"
 	"github.com/s3f4/go-load/worker/models"
 	"github.com/s3f4/mu/log"
 )
@@ -33,19 +33,8 @@ func NewWorkerService() WorkerService {
 // start gets started making requests.
 func (s *workerService) Start(event *models.Event) error {
 	var payload models.RequestPayload
-	cfg := &mapstructure.DecoderConfig{
-		Metadata: nil,
-		Result:   &payload,
-		TagName:  "json",
-	}
 
-	decoder, err := mapstructure.NewDecoder(cfg)
-	if err != nil {
-		log.Errorf("mapstructrure.decode", err)
-		return err
-	}
-
-	if err := decoder.Decode(event.Payload); err != nil {
+	if err := library.DecodeMap(event.Payload, &payload); err != nil {
 		log.Errorf("worker.start", err)
 		return err
 	}

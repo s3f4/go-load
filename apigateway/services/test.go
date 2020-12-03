@@ -61,12 +61,12 @@ func (s *testService) Start(test *models.Test) error {
 	} else {
 		for i := range instances {
 			requestPerInstance := test.RequestCount / instanceCount
-			event := setEvent(&runTest, requestPerInstance, instanceCount, uint64(i+1))
-
 			// add remain RequestCount to RequestCount of  last event
 			if len(instances) == i+1 {
-				event.Payload.(*models.RequestPayload).RequestCount = event.Payload.(*models.RequestPayload).RequestCount + uint64((test.RequestCount - (requestPerInstance * instanceCount)))
+				requestPerInstance = requestPerInstance + uint64((test.RequestCount - (requestPerInstance * instanceCount)))
 			}
+
+			event := setEvent(&runTest, requestPerInstance, instanceCount, uint64(i+1))
 
 			if err := s.sendMessage(event); err != nil {
 				return err

@@ -10,7 +10,7 @@ type Test struct {
 	Payload                string          `json:"payload,omitempty" gorm:"payload"`
 	RequestCount           uint64          `json:"request_count" gorm:"request_count"`
 	GoroutineCount         uint8           `json:"goroutine_count" gorm:"goroutine_count"`
-	ExpectedResponseCode   uint            `json:"expected_response_code" gorm:"expected_response_code"`
+	ExpectedResponseCode   int             `json:"expected_response_code" gorm:"expected_response_code"`
 	ExpectedResponseBody   string          `json:"expected_response_body" gorm:"expected_response_body"`
 	ExpectedFirstByteTime  int64           `json:"expected_first_byte_time" gorm:"expected_first_byte_time"`
 	ExpectedConnectionTime int64           `json:"expected_connection_time" gorm:"expected_connection_time"`

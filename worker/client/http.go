@@ -2,6 +2,7 @@ package client
 
 import (
 	"crypto/tls"
+	"encoding/json"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptrace"
@@ -62,13 +63,10 @@ func (c *Client) calculateTimes(start time.Time, res *models.Response) {
 // HTTPTrace load testing with HTTPTrace tool of golang.
 func (c *Client) HTTPTrace() (*models.Response, error) {
 	req, err := http.NewRequest(c.Method, c.URL, nil)
-
 	if err != nil {
 		log.Errorf("HTTPTrace Error: %v\n", err)
 		return nil, err
 	}
-
-	log.Debugf("%#v\n", c)
 
 	var res models.Response
 	var start time.Time
@@ -77,12 +75,7 @@ func (c *Client) HTTPTrace() (*models.Response, error) {
 	transport.DisableKeepAlives = c.TransportConfig.DisableKeepAlives
 
 	trace := c.setTrace(&res)
-
-	req = req.WithContext(httptrace.WithClientTrace(req.Context(), trace))
-	for _, header := range c.Headers {
-		req.Header.Add(header.Key, header.Value)
-	}
-
+	req = c.setRequestWithContext(req, trace)
 	start = time.Now()
 	response, err := transport.RoundTrip(req)
 	if err != nil {
@@ -90,6 +83,11 @@ func (c *Client) HTTPTrace() (*models.Response, error) {
 		return nil, err
 	}
 	defer response.Body.Close()
+
+	if res.ResponseHeaders, err = json.Marshal(response.Header); err != nil {
+		log.Error(err)
+		return nil, err
+	}
 
 	c.calculateTimes(start, &res)
 	res.StatusCode = response.StatusCode
@@ -101,6 +99,14 @@ func (c *Client) HTTPTrace() (*models.Response, error) {
 	}
 	res.Body = string(body)
 	return &res, err
+}
+
+func (c *Client) setRequestWithContext(request *http.Request, trace *httptrace.ClientTrace) *http.Request {
+	req := request.WithContext(httptrace.WithClientTrace(request.Context(), trace))
+	for _, header := range c.Headers {
+		req.Header.Add(header.Key, header.Value)
+	}
+	return req
 }
 
 // getHostname is used for finding out which worker making this requests.

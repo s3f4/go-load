@@ -2,6 +2,7 @@ package services
 
 import (
 	"encoding/json"
+	"sync"
 
 	"github.com/s3f4/go-load/worker/client"
 	"github.com/s3f4/go-load/worker/library"
@@ -19,6 +20,7 @@ type workerService struct {
 }
 
 var workerServiceObj WorkerService
+var once sync.Once
 
 // NewWorkerService returns new workerService instance
 func NewWorkerService() WorkerService {
@@ -77,6 +79,39 @@ func (s *workerService) makeReq(client *client.Client, payload *models.RequestPa
 		}
 		dataBuf <- *res
 	}
+
+	once.Do(func() {
+
+	})
+}
+
+func (s *workerService) compare(test *models.Test, response *models.Response) bool {
+	if test.ExpectedResponseCode != response.StatusCode {
+		return false
+	}
+
+	if test.Payload != response.Body {
+		return false
+	}
+
+	if test.ExpectedConnectionTime > response.ConnectTime {
+		return false
+	}
+
+	if test.ExpectedTLSTime > response.TLSTime{
+		return false
+	}
+
+	if test.ExpectedDNSTime > response.DNSTime{
+		return false
+	}
+
+	if test.ExpectedFirstByteTime > response.FirstByteTime{
+		return false
+	}
+
+	return true
+
 }
 
 func (s *workerService) sendToEventHandler(dataBuf <-chan models.Response) error {

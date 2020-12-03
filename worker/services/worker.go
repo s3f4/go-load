@@ -51,7 +51,7 @@ func (s *workerService) Start(event *models.Event) error {
 	}
 
 	i := uint8(0)
-	for i < payload.GoroutineCount {
+	for i < payload.Test.GoroutineCount {
 		log.Info("%+v", payload)
 		go s.run(&payload)
 		i++
@@ -66,12 +66,12 @@ func (s *workerService) run(payload *models.RequestPayload) {
 	defer close(dataBuf)
 
 	client := &client.Client{
-		RunTestID: payload.RunTestID,
-		URL:       payload.URL,
-		Headers:   payload.Headers,
-		Method:    payload.Method,
+		RunTestID: payload.RunTest.ID,
+		URL:       payload.Test.URL,
+		Headers:   payload.Test.Headers,
+		Method:    payload.Test.Method,
 		TransportConfig: models.TransportConfig{
-			DisableKeepAlives: payload.TransportConfig.DisableKeepAlives,
+			DisableKeepAlives: payload.Test.TransportConfig.DisableKeepAlives,
 		},
 	}
 
@@ -80,7 +80,7 @@ func (s *workerService) run(payload *models.RequestPayload) {
 }
 
 func (s *workerService) makeReq(client *client.Client, payload *models.RequestPayload, dataBuf chan<- models.Response) {
-	request := payload.RequestCount / uint64(payload.GoroutineCount)
+	request := payload.RequestCount / uint64(payload.Test.GoroutineCount)
 	for i := uint64(0); i < request; i++ {
 		res, err := client.HTTPTrace()
 		if err != nil {

@@ -48,41 +48,27 @@ func (s *testService) Start(test *models.Test) error {
 		log.Errorf("TestService.Start: %v", err)
 		return err
 	}
-
+	runTest.Test = test
 	instanceCount := uint64(len(instances))
 
 	if test.RequestCount < instanceCount {
 		for i := uint64(0); i < test.RequestCount; i++ {
-			event := setEvent(&runTest, test, 1, test.RequestCount, i+1)
-			message, err := json.Marshal(event)
-			if err != nil {
-				log.Error(err)
-				return err
-			}
-
-			if err := s.queueService.Send("worker", message); err != nil {
-				log.Error(err)
+			event := setEvent(&runTest, 1, test.RequestCount, i+1)
+			if err := s.sendMessage(event); err != nil {
 				return err
 			}
 		}
 	} else {
 		for i := range instances {
 			requestPerInstance := test.RequestCount / instanceCount
-			event := setEvent(&runTest, test, requestPerInstance, instanceCount, uint64(i+1))
+			event := setEvent(&runTest, requestPerInstance, instanceCount, uint64(i+1))
 
 			// add remain RequestCount to RequestCount of  last event
 			if len(instances) == i+1 {
 				event.Payload.(*models.RequestPayload).RequestCount = event.Payload.(*models.RequestPayload).RequestCount + uint64((test.RequestCount - (requestPerInstance * instanceCount)))
 			}
 
-			message, err := json.Marshal(event)
-			if err != nil {
-				log.Error(err)
-				return err
-			}
-
-			if err := s.queueService.Send("worker", message); err != nil {
-				log.Error(err)
+			if err := s.sendMessage(event); err != nil {
 				return err
 			}
 		}
@@ -91,21 +77,28 @@ func (s *testService) Start(test *models.Test) error {
 	return nil
 }
 
-func setEvent(runTest *models.RunTest, test *models.Test, requestPerInstance, instanceOrRequestCount, portion uint64) *models.Event {
+func (s *testService) sendMessage(event *models.Event) error {
+	message, err := json.Marshal(event)
+	if err != nil {
+		log.Error(err)
+		return err
+	}
+
+	if err := s.queueService.Send("worker", message); err != nil {
+		log.Error(err)
+		return err
+	}
+	return nil
+}
+
+func setEvent(runTest *models.RunTest, requestPerInstance, instanceOrRequestCount, portion uint64) *models.Event {
 	return &models.Event{
 		Event: models.REQUEST,
 		Payload: models.RequestPayload{
-			RunTestID:            runTest.ID,
-			Portion:              fmt.Sprintf("%d/%d", portion, instanceOrRequestCount),
-			URL:                  test.URL,
-			RequestCount:         requestPerInstance,
-			Method:               test.Method,
-			Payload:              test.Payload,
-			GoroutineCount:       test.GoroutineCount,
-			ExpectedResponseBody: test.ExpectedResponseBody,
-			ExpectedResponseCode: test.ExpectedResponseCode,
-			Headers:              test.Headers,
-			TransportConfig:      test.TransportConfig,
+			Portion:      fmt.Sprintf("%d/%d", portion, instanceOrRequestCount),
+			RequestCount: requestPerInstance,
+			RunTest:      runTest,
+			Test:         runTest.Test,
 		},
 	}
 }

@@ -18,28 +18,8 @@ type Event struct {
 
 // RequestPayload paylaod of request event
 type RequestPayload struct {
-	RunTestID            uint            `json:"run_test_id"`
-	RunTest              *RunTest        `json:"run_test"`
-	Portion              string          `json:"portion"`
-	URL                  string          `json:"url"`
-	Method               string          `json:"method"`
-	Payload              string          `json:"payload,omitempty"`
-	RequestCount         uint64          `json:"request_count"`
-	GoroutineCount       uint8           `json:"goroutine_count"`
-	ExpectedResponseCode uint            `json:"expected_response_code"`
-	ExpectedResponseBody string          `json:"expected_response_body"`
-	TransportConfig      TransportConfig `json:"transport_config"`
-	Headers              []*Header       `json:"headers"`
-}
-
-// Header holds request headers
-type Header struct {
-	Key             string `json:"key"`
-	Value           string `json:"value"`
-	IsRequestHeader bool   `json:"is_request_header"`
-}
-
-// TransportConfig is used to specify how to make requests
-type TransportConfig struct {
-	DisableKeepAlives bool `json:"disable_keep_alives"`
+	Portion      string   `json:"portion"`
+	RequestCount uint64   `json:"request_count"`
+	RunTest      *RunTest `json:"run_test"`
+	Test         *Test    `json:"test"`
 }

@@ -1,10 +1,6 @@
 package services
 
 import (
-	"encoding/json"
-	"fmt"
-
-	"github.com/s3f4/go-load/apigateway/library/log"
 	"github.com/s3f4/go-load/apigateway/models"
 	"github.com/s3f4/go-load/apigateway/repository"
 )
@@ -23,6 +19,7 @@ type testGroupService struct {
 	tgr          repository.TestGroupRepository
 	rtr          repository.RunTestRepository
 	queueService QueueService
+	testService  TestService
 }
 
 // NewTestGroupService returns a testGroupService instance
@@ -32,61 +29,14 @@ func NewTestGroupService() TestGroupService {
 		tgr:          repository.NewTestGroupRepository(),
 		rtr:          repository.NewRunTestRepository(),
 		queueService: NewRabbitMQService(),
+		testService:  NewTestService(),
 	}
 }
 
 func (s *testGroupService) Start(testGroup *models.TestGroup) error {
-	instanceConfig, err := s.ir.Get()
-	log.Debug(fmt.Sprintf("%+v", instanceConfig))
-
-	if err != nil {
-		return err
-	}
-
 	for _, test := range testGroup.Tests {
-
-		var runTest models.RunTest
-		runTest.TestID = test.ID
-
-		if err := s.rtr.Create(&runTest); err != nil {
-			return err
-		}
-
-		for _, instance := range instanceConfig.Configs {
-			requestPerInstance := test.RequestCount / uint64(instance.Count)
-
-			event := models.Event{
-				Event: models.REQUEST,
-				Payload: models.RequestPayload{
-					RunTestID:            runTest.ID,
-					URL:                  test.URL,
-					RequestCount:         requestPerInstance,
-					Method:               test.Method,
-					Payload:              test.Payload,
-					GoroutineCount:       test.GoroutineCount,
-					ExpectedResponseBody: test.ExpectedResponseBody,
-					ExpectedResponseCode: test.ExpectedResponseCode,
-					TransportConfig:      test.TransportConfig,
-				},
-			}
-
-			message, err := json.Marshal(event)
-			if err != nil {
-				return err
-			}
-
-			log.Debug(string(message))
-
-			for i := 0; i < instance.Count; i++ {
-				if err := s.queueService.Send("worker", message); err != nil {
-					log.Error(err)
-					return err
-				}
-			}
-		}
-
+		s.testService.Start(test)
 	}
-
 	return nil
 }
 

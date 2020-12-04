@@ -25,6 +25,7 @@ type QueueService interface {
 	Send(queue string, message interface{}) error
 	Listen(listenSpec *ListenSpec)
 	Declare(queue string) error
+	Delete(queue string) error
 }
 
 type rabbitMQService struct {
@@ -56,7 +57,6 @@ func NewRabbitMQService() QueueService {
 }
 
 func (r *rabbitMQService) Send(queue string, message interface{}) error {
-
 	ch, err := r.conn.Channel()
 	if err != nil {
 		return err
@@ -141,6 +141,27 @@ func (r *rabbitMQService) Declare(queue string) error {
 	if err != nil {
 		log.Debugf("QueueDeclare: queue declare: %s", err)
 		return err
+	}
+
+	return nil
+}
+
+func (r *rabbitMQService) Delete(queue string) error {
+	ch, err := r.conn.Channel()
+	if err != nil {
+		log.Debugf("Delete: conn.Channel: %s", err)
+		return err
+	}
+	defer ch.Close()
+
+	messageCount, err := ch.QueueDelete(queue, false, false, false)
+	if err != nil {
+		log.Debugf("QueueDeclare: queue declare: %s", err)
+		return err
+	}
+
+	if messageCount > 0 {
+		log.Errorf("Message count: %d > 0", messageCount)
 	}
 
 	return nil

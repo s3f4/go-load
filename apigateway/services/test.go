@@ -102,6 +102,8 @@ func (s *testService) Start(test *models.Test) error {
 		},
 	})
 
+	s.queueService.Delete(queue)
+
 	return nil
 }
 

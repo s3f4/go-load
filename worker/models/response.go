@@ -19,7 +19,9 @@ type Response struct {
 	ConnectStart    time.Time `json:"connect_start" gorm:"connect_start"`
 	ConnectDone     time.Time `json:"connect_done" gorm:"connect_done"`
 	ConnectTime     int64     `json:"connect_time" gorm:"connect_time"`
-	StatusCode      int      `json:"status_code" gorm:"status_code"`
+	StatusCode      int       `json:"status_code" gorm:"status_code"`
 	Body            string    `json:"body" gorm:"body"`
 	ResponseHeaders []byte    `json:"response_header" gorm:"response_header"`
+	Error           string    `json:"error"`
+	Results         string    `json:"results"`
 }

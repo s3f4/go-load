@@ -9,12 +9,22 @@ import (
 	"github.com/streadway/amqp"
 )
 
+type processFunc func(d *amqp.Delivery, exit chan<- struct{}) error
+
+// ListenSpec ...
+type ListenSpec struct {
+	Consumer    string
+	Queue       string
+	ProcessFunc processFunc
+}
+
 // QueueService is a Queue Client service
 // that connects to RabbitMQ takes messages and process
 // those messages.
 type QueueService interface {
 	Send(queue string, message interface{}) error
-	Listen(queue string)
+	Listen(listenSpec *ListenSpec)
+	Declare(queue string) error
 }
 
 type rabbitMQService struct {
@@ -80,18 +90,18 @@ func (r *rabbitMQService) Send(queue string, message interface{}) error {
 	return err
 }
 
-func (r *rabbitMQService) Listen(queue string) {
+func (r *rabbitMQService) Listen(spec *ListenSpec) {
 	ch, err := r.conn.Channel()
 	defer ch.Close()
 
 	msgs, err := ch.Consume(
-		queue,    // queue
-		"worker", // consumer
-		false,    // auto-ack
-		false,    // exclusive
-		false,    // no-local
-		false,    // no-wait
-		nil,      // args
+		spec.Queue,    // queue
+		spec.Consumer, // consumer
+		false,         // auto-ack
+		false,         // exclusive
+		false,         // no-local
+		false,         // no-wait
+		nil,           // args
 	)
 
 	if err != nil {
@@ -101,11 +111,37 @@ func (r *rabbitMQService) Listen(queue string) {
 	block := make(chan struct{})
 	go func() {
 		for d := range msgs {
-			log.Debugf("Received a message: %s", d.Body)
+			if err := spec.ProcessFunc(&d, block); err != nil {
+				log.Error(err)
+			}
 			ch.Ack(d.DeliveryTag, d.Redelivered)
 		}
 		log.Info("exit.")
 	}()
-	log.Info("finishing listening...")
 	<-block
+}
+
+func (r *rabbitMQService) Declare(queue string) error {
+	ch, err := r.conn.Channel()
+	if err != nil {
+		log.Debugf("QueueDeclare: conn.Channel: %s", err)
+		return err
+	}
+	defer ch.Close()
+
+	_, err = ch.QueueDeclare(
+		queue, // name
+		false, // durable
+		false, // delete when unused
+		false, // exclusive
+		false, // no-wait
+		nil,   // arguments
+	)
+
+	if err != nil {
+		log.Debugf("QueueDeclare: queue declare: %s", err)
+		return err
+	}
+
+	return nil
 }

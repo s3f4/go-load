@@ -98,7 +98,7 @@ func (c *Client) HTTPTrace() (*models.Response, error) {
 		return nil, err
 	}
 	res.Body = string(body)
-	return &res, err
+	return &res, nil
 }
 
 func (c *Client) setRequestWithContext(request *http.Request, trace *httptrace.ClientTrace) *http.Request {

@@ -3,11 +3,14 @@ package services
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 
+	"github.com/s3f4/go-load/apigateway/library"
 	"github.com/s3f4/go-load/apigateway/library/log"
 	"github.com/s3f4/go-load/apigateway/models"
 	"github.com/s3f4/go-load/apigateway/repository"
+	"github.com/streadway/amqp"
 )
 
 // TestService creates tests
@@ -73,6 +76,31 @@ func (s *testService) Start(test *models.Test) error {
 			}
 		}
 	}
+
+	queue := fmt.Sprintf("collect_%d_%d", test.ID, runTest.ID)
+	s.queueService.Declare(queue)
+
+	s.queueService.Listen(&ListenSpec{
+		Queue:    queue,
+		Consumer: fmt.Sprintf("apigateway_test_%d", test.ID),
+		ProcessFunc: func(d *amqp.Delivery, exit chan<- struct{}) error {
+			var event models.Event
+			if err := json.Unmarshal(d.Body, &event); err != nil {
+				return err
+			}
+
+			var payload models.CollectPayload
+			if err := library.DecodeMap(event.Payload, &payload); err != nil {
+				return err
+			}
+
+			portion := strings.Split(payload.Portion, "/")
+			if portion[0] == portion[1] {
+				exit <- struct{}{}
+			}
+			return nil
+		},
+	})
 
 	return nil
 }

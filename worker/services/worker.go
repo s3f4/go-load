@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/s3f4/go-load/worker/client"
 	"github.com/s3f4/go-load/worker/library"
@@ -13,7 +14,7 @@ import (
 
 // WorkerService makes the load testing job.
 type WorkerService interface {
-	Start(config *models.Event) error
+	Start(config *models.RequestPayload) error
 }
 
 type workerService struct {
@@ -33,18 +34,11 @@ func NewWorkerService() WorkerService {
 }
 
 // start gets started making requests.
-func (s *workerService) Start(event *models.Event) error {
-	var payload models.RequestPayload
-
-	if err := library.DecodeMap(event.Payload, &payload); err != nil {
-		log.Errorf("worker.start", err)
-		return err
-	}
-
+func (s *workerService) Start(payload *models.RequestPayload) error {
 	i := uint8(0)
 	for i < payload.Test.GoroutineCount {
 		log.Info("%+v", payload)
-		go s.run(&payload)
+		go s.run(payload)
 		i++
 	}
 	return nil
@@ -75,8 +69,10 @@ func (s *workerService) makeReq(client *client.Client, payload *models.RequestPa
 	for i := uint64(0); i < request; i++ {
 		res, err := client.HTTPTrace()
 		if err != nil {
-			continue
+			res = &models.Response{}
+			res.Error = err.Error()
 		}
+		res.Results = strings.Join(s.compare(payload.Test, res), ",")
 		dataBuf <- *res
 	}
 }

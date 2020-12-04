@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
+	"github.com/s3f4/go-load/worker/library"
 	"github.com/s3f4/go-load/worker/models"
 	"github.com/s3f4/mu/log"
 	"github.com/streadway/amqp"
@@ -115,8 +117,29 @@ func (r *rabbitMQService) Listen(queue string) {
 				log.Errorf("worker json error: %s", err)
 			}
 
+			var payload models.RequestPayload
+
+			if err := library.DecodeMap(event.Payload, &payload); err != nil {
+				log.Errorf("worker decode_map error: %s", err)
+			}
+
 			s := NewWorkerService()
-			s.Start(&event)
+			s.Start(&payload)
+
+			// Send latest workers done message
+			portion := strings.Split(payload.Portion, "/")
+			if portion[0] == portion[1] {
+				q := fmt.Sprintf("collect_%d_%d", payload.Test.ID, payload.RunTest.ID)
+				message, _ := json.Marshal(models.Event{
+					Event: models.COLLECT,
+					Payload: &models.CollectPayload{
+						TestID:    payload.Test.ID,
+						RunTestID: payload.RunTest.ID,
+						Portion:   payload.Portion,
+					},
+				})
+				r.Send(q, message)
+			}
 			// Done
 			ch.Ack(d.DeliveryTag, d.Redelivered)
 		}

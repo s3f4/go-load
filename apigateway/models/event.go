@@ -23,3 +23,10 @@ type RequestPayload struct {
 	RunTest      *RunTest `json:"run_test"`
 	Test         *Test    `json:"test"`
 }
+
+// CollectPayload to use
+type CollectPayload struct {
+	TestID    uint   `json:"test_id"`
+	RunTestID uint   `json:"run_test_id"`
+	Portion   string `json:"portion"`
+}

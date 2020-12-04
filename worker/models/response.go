@@ -22,6 +22,7 @@ type Response struct {
 	StatusCode      int       `json:"status_code" gorm:"status_code"`
 	Body            string    `json:"body" gorm:"body"`
 	ResponseHeaders []byte    `json:"response_header" gorm:"response_header"`
-	Error           string    `json:"error"`
-	Results         string    `json:"results"`
+	Error           string    `json:"error" gorm:"error"`
+	Reasons         string    `json:"reasons" gorm:"reasons"`
+	Passed          bool      `json:"passed" gorm:"passed"`
 }

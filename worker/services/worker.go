@@ -72,7 +72,13 @@ func (s *workerService) makeReq(client *client.Client, payload *models.RequestPa
 			res = &models.Response{}
 			res.Error = err.Error()
 		}
-		res.Results = strings.Join(s.compare(payload.Test, res), ",")
+
+		reasons := s.compare(payload.Test, res)
+		if len(reasons) > 0 {
+			res.Passed = false
+			res.Reasons = strings.Join(reasons, ",")
+		}
+		
 		dataBuf <- *res
 	}
 }

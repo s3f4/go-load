@@ -77,12 +77,19 @@ func (s *testService) Start(test *models.Test) error {
 		}
 	}
 
-	queue := fmt.Sprintf("collect_%d_%d", test.ID, runTest.ID)
-	s.queueService.Declare(queue)
+	return s.waitQueue(&runTest)
+}
+
+func (s *testService) waitQueue(runTest *models.RunTest) error {
+	// Declare Queue for this runTest
+	queue := fmt.Sprintf("collect_%d_%d", runTest.Test.ID, runTest.ID)
+	if err := s.queueService.Declare(queue); err != nil {
+		return err
+	}
 
 	s.queueService.Listen(&ListenSpec{
 		Queue:    queue,
-		Consumer: fmt.Sprintf("apigateway_test_%d", test.ID),
+		Consumer: fmt.Sprintf("apigateway_test_%d", runTest.Test.ID),
 		ProcessFunc: func(d *amqp.Delivery, exit chan<- struct{}) error {
 			var event models.Event
 			if err := json.Unmarshal(d.Body, &event); err != nil {
@@ -102,7 +109,9 @@ func (s *testService) Start(test *models.Test) error {
 		},
 	})
 
-	s.queueService.Delete(queue)
+	if err := s.queueService.Delete(queue); err != nil {
+		return err
+	}
 
 	return nil
 }

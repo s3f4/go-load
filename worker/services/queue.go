@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"time"
 
 	"github.com/s3f4/go-load/worker/library"
 	"github.com/s3f4/go-load/worker/models"
@@ -109,9 +108,6 @@ func (r *rabbitMQService) Listen(queue string) {
 	block := make(chan struct{})
 	go func() {
 		for d := range msgs {
-			time.Sleep(time.Second * 3)
-			log.Infof("Received a message: %s", d.Body)
-
 			var event models.Event
 			if err := json.Unmarshal(d.Body, &event); err != nil {
 				log.Errorf("worker json error: %s", err)

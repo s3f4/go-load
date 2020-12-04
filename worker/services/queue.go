@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/s3f4/go-load/worker/library"
 	"github.com/s3f4/go-load/worker/models"
@@ -114,7 +115,6 @@ func (r *rabbitMQService) Listen(queue string) {
 			}
 
 			var payload models.RequestPayload
-
 			if err := library.DecodeMap(event.Payload, &payload); err != nil {
 				log.Errorf("worker decode_map error: %s", err)
 			}
@@ -122,6 +122,9 @@ func (r *rabbitMQService) Listen(queue string) {
 			s := NewWorkerService()
 			s.Start(&payload)
 
+			// finishing test
+			endTime := time.Now()
+			payload.RunTest.EndTime = &endTime
 			// Send latest workers done message
 			portion := strings.Split(payload.Portion, "/")
 			if portion[0] == portion[1] {
@@ -129,9 +132,9 @@ func (r *rabbitMQService) Listen(queue string) {
 				message, _ := json.Marshal(models.Event{
 					Event: models.COLLECT,
 					Payload: &models.CollectPayload{
-						TestID:    payload.Test.ID,
-						RunTestID: payload.RunTest.ID,
-						Portion:   payload.Portion,
+						Test:    payload.Test,
+						RunTest: payload.RunTest,
+						Portion: payload.Portion,
 					},
 				})
 				r.Send(q, message)

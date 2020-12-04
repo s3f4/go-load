@@ -101,6 +101,10 @@ func (s *testService) waitQueue(runTest *models.RunTest) error {
 				return err
 			}
 
+			if err := s.rtr.Update(payload.RunTest); err != nil {
+				log.Errorf("RunTest Update error: %v\n", err)
+			}
+
 			portion := strings.Split(payload.Portion, "/")
 			if portion[0] == portion[1] {
 				exit <- struct{}{}

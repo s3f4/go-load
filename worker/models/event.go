@@ -8,7 +8,7 @@ const (
 	REQUEST EventType = iota
 	// STORE events is used to store responses on db of the eventhandler
 	STORE
-	// COLLECT is used to collect all 
+	// COLLECT is used to collect all
 	COLLECT
 )
 
@@ -28,7 +28,7 @@ type RequestPayload struct {
 
 // CollectPayload is used to finish test
 type CollectPayload struct {
-	TestID    uint   `json:"test_id"`
-	RunTestID uint   `json:"run_test_id"`
-	Portion   string `json:"portion"`
+	Test    *Test    `json:"test"`
+	RunTest *RunTest `json:"run_test"`
+	Portion string   `json:"portion"`
 }

@@ -24,9 +24,9 @@ type RequestPayload struct {
 	Test         *Test    `json:"test"`
 }
 
-// CollectPayload to use
+// CollectPayload is used to finish test
 type CollectPayload struct {
-	TestID    uint   `json:"test_id"`
-	RunTestID uint   `json:"run_test_id"`
-	Portion   string `json:"portion"`
+	Test    *Test    `json:"test"`
+	RunTest *RunTest `json:"run_test"`
+	Portion string   `json:"portion"`
 }

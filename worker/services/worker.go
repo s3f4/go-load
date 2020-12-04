@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"sync"
 
 	"github.com/s3f4/go-load/worker/client"
 	"github.com/s3f4/go-load/worker/library"
@@ -14,7 +15,7 @@ import (
 
 // WorkerService makes the load testing job.
 type WorkerService interface {
-	Start(config *models.RequestPayload) error
+	Start(*models.RequestPayload)
 }
 
 type workerService struct {
@@ -34,18 +35,20 @@ func NewWorkerService() WorkerService {
 }
 
 // start gets started making requests.
-func (s *workerService) Start(payload *models.RequestPayload) error {
+func (s *workerService) Start(payload *models.RequestPayload) {
+	wg := &sync.WaitGroup{}
 	i := uint8(0)
 	for i < payload.Test.GoroutineCount {
+		wg.Add(1)
 		log.Info("%+v", payload)
-		go s.run(payload)
+		go s.run(payload, wg)
 		i++
 	}
-	return nil
+	wg.Wait()
 }
 
 // run
-func (s *workerService) run(payload *models.RequestPayload) {
+func (s *workerService) run(payload *models.RequestPayload, wg *sync.WaitGroup) {
 	// dataBuf allows eventhandler to save response results.
 	dataBuf := make(chan models.Response, 100)
 	defer close(dataBuf)
@@ -60,11 +63,11 @@ func (s *workerService) run(payload *models.RequestPayload) {
 		},
 	}
 
-	go s.makeReq(client, payload, dataBuf)
+	go s.makeReq(client, payload, dataBuf, wg)
 	s.sendToEventHandler(dataBuf)
 }
 
-func (s *workerService) makeReq(client *client.Client, payload *models.RequestPayload, dataBuf chan<- models.Response) {
+func (s *workerService) makeReq(client *client.Client, payload *models.RequestPayload, dataBuf chan<- models.Response, wg *sync.WaitGroup) {
 	request := payload.RequestCount / uint64(payload.Test.GoroutineCount)
 	for i := uint64(0); i < request; i++ {
 		res, err := client.HTTPTrace()
@@ -77,10 +80,12 @@ func (s *workerService) makeReq(client *client.Client, payload *models.RequestPa
 		if len(reasons) > 0 {
 			res.Passed = false
 			res.Reasons = strings.Join(reasons, ",")
+			payload.RunTest.Passed = false
 		}
-		
+
 		dataBuf <- *res
 	}
+	wg.Done()
 }
 
 func (s *workerService) compare(test *models.Test, response *models.Response) []string {

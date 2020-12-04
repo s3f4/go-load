@@ -98,6 +98,7 @@ func (c *Client) HTTPTrace() (*models.Response, error) {
 		return nil, err
 	}
 	res.Body = string(body)
+	log.Debugf("%#v\n", res)
 	return &res, nil
 }
 

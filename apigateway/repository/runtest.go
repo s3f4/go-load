@@ -11,6 +11,7 @@ type RunTestRepository interface {
 	DB() *gorm.DB
 	Create(*models.RunTest) error
 	Delete(*models.RunTest) error
+	Update(*models.RunTest) error
 	Get(id uint) (*models.RunTest, error)
 	List() ([]models.RunTest, error)
 }
@@ -41,6 +42,10 @@ func (r *runTestRepository) Create(runTest *models.RunTest) error {
 
 func (r *runTestRepository) Delete(runTest *models.RunTest) error {
 	return r.DB().Model(runTest).Delete(runTest).Error
+}
+
+func (r *runTestRepository) Update(rt *models.RunTest) error {
+	return r.DB().Session(&gorm.Session{FullSaveAssociations: true}).Updates(rt).Error
 }
 
 func (r *runTestRepository) Get(id uint) (*models.RunTest, error) {

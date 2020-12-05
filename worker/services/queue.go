@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/s3f4/go-load/worker/library"
@@ -126,19 +125,16 @@ func (r *rabbitMQService) Listen(queue string) {
 			endTime := time.Now()
 			payload.RunTest.EndTime = &endTime
 			// Send latest workers done message
-			portion := strings.Split(payload.Portion, "/")
-			if portion[0] == portion[1] {
-				q := fmt.Sprintf("collect_%d_%d", payload.Test.ID, payload.RunTest.ID)
-				message, _ := json.Marshal(models.Event{
-					Event: models.COLLECT,
-					Payload: &models.CollectPayload{
-						Test:    payload.Test,
-						RunTest: payload.RunTest,
-						Portion: payload.Portion,
-					},
-				})
-				r.Send(q, message)
-			}
+			q := fmt.Sprintf("collect_%d_%d", payload.Test.ID, payload.RunTest.ID)
+			message, _ := json.Marshal(models.Event{
+				Event: models.COLLECT,
+				Payload: &models.CollectPayload{
+					Test:    payload.Test,
+					RunTest: payload.RunTest,
+					Portion: payload.Portion,
+				},
+			})
+			r.Send(q, message)
 			// Done
 			ch.Ack(d.DeliveryTag, d.Redelivered)
 		}

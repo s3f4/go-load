@@ -3,7 +3,6 @@ package services
 import (
 	"encoding/json"
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/s3f4/go-load/apigateway/library"
@@ -77,15 +76,17 @@ func (s *testService) Start(test *models.Test) error {
 		}
 	}
 
-	return s.waitQueue(&runTest)
+	return s.waitQueue(&runTest, test.RequestCount, instanceCount)
 }
 
-func (s *testService) waitQueue(runTest *models.RunTest) error {
+func (s *testService) waitQueue(runTest *models.RunTest, requestCount, instanceCount uint64) error {
 	// Declare Queue for this runTest
 	queue := fmt.Sprintf("collect_%d_%d", runTest.Test.ID, runTest.ID)
 	if err := s.queueService.Declare(queue); err != nil {
 		return err
 	}
+
+	var payloads []*models.CollectPayload
 
 	s.queueService.Listen(&ListenSpec{
 		Queue:    queue,
@@ -101,12 +102,9 @@ func (s *testService) waitQueue(runTest *models.RunTest) error {
 				return err
 			}
 
-			if err := s.rtr.Update(payload.RunTest); err != nil {
-				log.Errorf("RunTest Update error: %v\n", err)
-			}
+			payloads = append(payloads, &payload)
 
-			portion := strings.Split(payload.Portion, "/")
-			if portion[0] == portion[1] {
+			if s.checkPayloads(runTest, requestCount, instanceCount, payloads) {
 				exit <- struct{}{}
 			}
 			return nil
@@ -118,6 +116,39 @@ func (s *testService) waitQueue(runTest *models.RunTest) error {
 	}
 
 	return nil
+}
+
+func (s *testService) checkPayloads(
+	runTest *models.RunTest,
+	requestCount, instanceCount uint64,
+	payloads []*models.CollectPayload,
+) bool {
+	var total uint64
+	if requestCount < instanceCount {
+		total = requestCount
+	} else {
+		total = instanceCount
+	}
+
+	if int(total) != len(payloads) {
+		return false
+	}
+
+	for _, payload := range payloads {
+		if payload.RunTest.Passed == false {
+			runTest.Passed = false
+		}
+		currentEndTime := runTest.EndTime
+		if payload.RunTest.EndTime.After(*currentEndTime) {
+			runTest.EndTime = payload.RunTest.EndTime
+		}
+	}
+
+	if err := s.rtr.Update(runTest); err != nil {
+		log.Errorf("RunTest Update error: %v\n", err)
+	}
+
+	return true
 }
 
 func (s *testService) sendMessage(event *models.Event) error {

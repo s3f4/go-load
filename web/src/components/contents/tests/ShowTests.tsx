@@ -31,6 +31,7 @@ import {
 import { getInstanceInfo, Instance } from "../../../api/entity/instance";
 import RTable from "../../basic/RTable";
 import TestGroupLeftMenu from "./TestGroupLeftMenu";
+import RunTests from "./RunTests";
 
 const ShowTests: React.FC = () => {
   const [instances, setInstances] = useState<Instance[] | undefined>();
@@ -301,6 +302,7 @@ const ShowTests: React.FC = () => {
                 />
               </div>
             )}
+            <RunTests tests={selectedTestGroup.tests} />
             <RTable
               builder={buildTable}
               fetcher={listTestsOfTestGroup(selectedTestGroup?.id!)}

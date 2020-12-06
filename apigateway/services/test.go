@@ -35,13 +35,12 @@ func NewTestService() TestService {
 }
 
 func (s *testService) Start(test *models.Test) error {
-	startTime := time.Now()
-
 	instances, err := s.ir.GetFromTerraform()
 	if err != nil {
 		return err
 	}
 
+	startTime := time.Now()
 	var runTest models.RunTest
 	runTest.TestID = test.ID
 	runTest.StartTime = &startTime
@@ -103,7 +102,6 @@ func (s *testService) waitQueue(runTest *models.RunTest, requestCount, instanceC
 			}
 
 			payloads = append(payloads, &payload)
-
 			if s.checkPayloads(runTest, requestCount, instanceCount, payloads) {
 				exit <- struct{}{}
 			}

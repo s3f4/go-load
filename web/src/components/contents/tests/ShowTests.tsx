@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import React, { useState, useEffect, ChangeEvent } from "react";
+import React, { useState, useEffect, ChangeEvent, Fragment } from "react";
 import { jsx, css } from "@emotion/core";
 import {
   deleteTestGroup,
@@ -47,6 +47,9 @@ const ShowTests: React.FC = () => {
     setUpdateSelectedGroupName,
   ] = useState<string>("");
   const [addNewTest, setAddNewTest] = useState<boolean>(false);
+  // Test Run States
+  const [testGroupRun, setTestGroupRun] = useState<TestGroup>();
+  const [testRun, setTestRun] = useState<Test>();
 
   useEffect(() => {
     getInstanceInfo()
@@ -57,17 +60,13 @@ const ShowTests: React.FC = () => {
     return () => {};
   }, []);
 
-  const onRunTestConfig = (testConfig: TestGroup) => (e: React.FormEvent) => {
+  const onRunTestGroup = (testGroup: TestGroup) => (e: React.FormEvent) => {
     e.preventDefault();
-    runTestGroup(testConfig)
-      .then(() => {})
-      .catch(() => {});
+    setTestGroupRun(testGroup);
   };
 
   const onRunTest = (test: Test) => {
-    runTest(test)
-      .then((response) => console.log(response))
-      .catch((error) => console.log(error));
+    setTestRun(test);
   };
 
   const buildTable = (tests: Test[]): any[][] => {
@@ -222,7 +221,10 @@ const ShowTests: React.FC = () => {
         ) : (
           ""
         )}
-        {selectedTestGroup && selectedTestGroup.tests.length > 0 ? (
+        <RunTests test={testRun} testGroup={testGroupRun} />
+        {selectedTestGroup &&
+        selectedTestGroup.tests.length > 0 &&
+        !testGroupRun ? (
           <React.Fragment>
             {updateSelectedGroupName ? (
               <div css={updateTestGroupNameDiv}>
@@ -287,7 +289,7 @@ const ShowTests: React.FC = () => {
                   colorType={ButtonColorType.success}
                   type={ButtonType.iconTextButton}
                   icon={<FiPlayCircle />}
-                  onClick={onRunTestConfig(selectedTestGroup)}
+                  onClick={onRunTestGroup(selectedTestGroup)}
                   disabled={!instances}
                 />
                 <Button
@@ -301,7 +303,6 @@ const ShowTests: React.FC = () => {
                 />
               </div>
             )}
-            <RunTests testGroup={selectedTestGroup} />
             <RTable
               builder={buildTable}
               fetcher={listTestsOfTestGroup(selectedTestGroup?.id!)}
@@ -333,11 +334,13 @@ const ShowTests: React.FC = () => {
               ]}
             />
           </React.Fragment>
-        ) : (
+        ) : !testGroupRun ? (
           <Message
             type="warning"
             message="There is no tests here, Please create a new test group"
           />
+        ) : (
+          ""
         )}
 
         {addNewTest && (

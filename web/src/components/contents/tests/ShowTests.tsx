@@ -57,12 +57,17 @@ const ShowTests: React.FC = () => {
     return () => {};
   }, []);
 
-  const run = (testConfig: TestGroup) => (e: React.FormEvent) => {
+  const onRunTestConfig = (testConfig: TestGroup) => (e: React.FormEvent) => {
     e.preventDefault();
-
     runTestGroup(testConfig)
       .then(() => {})
       .catch(() => {});
+  };
+
+  const onRunTest = (test: Test) => {
+    runTest(test)
+      .then((response) => console.log(response))
+      .catch((error) => console.log(error));
   };
 
   const buildTable = (tests: Test[]): any[][] => {
@@ -184,12 +189,6 @@ const ShowTests: React.FC = () => {
       .catch((error) => setMessage(error));
   };
 
-  const onRunTest = (test: Test) => {
-    runTest(test)
-      .then((response) => console.log(response))
-      .catch((error) => console.log(error));
-  };
-
   const editTest = (test: Test): void => {
     setSelectedTest(test);
     setAddNewTest(false);
@@ -288,7 +287,7 @@ const ShowTests: React.FC = () => {
                   colorType={ButtonColorType.success}
                   type={ButtonType.iconTextButton}
                   icon={<FiPlayCircle />}
-                  onClick={run(selectedTestGroup)}
+                  onClick={onRunTestConfig(selectedTestGroup)}
                   disabled={!instances}
                 />
                 <Button
@@ -302,7 +301,7 @@ const ShowTests: React.FC = () => {
                 />
               </div>
             )}
-            <RunTests tests={selectedTestGroup.tests} />
+            <RunTests testGroup={selectedTestGroup} />
             <RTable
               builder={buildTable}
               fetcher={listTestsOfTestGroup(selectedTestGroup?.id!)}

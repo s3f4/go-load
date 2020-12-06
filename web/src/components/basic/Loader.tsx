@@ -7,12 +7,13 @@ import LoaderSvg from "./LoaderSvg";
 interface Props {
   message?: string;
   inlineLoading?: boolean;
+  fill?: string;
 }
 
 const Loader: React.FC<Props> = (props: Props) => {
   return props.inlineLoading ? (
     <div css={inline}>
-      <LoaderSvg width={"16"} height={"16"} fill={"#fff"} />
+      <LoaderSvg width={"16"} height={"16"} fill={props.fill ?? "#fff"} />
     </div>
   ) : (
     <div css={loaderContainer}>
@@ -44,7 +45,7 @@ const loaderCss = css`
 
 const inline = css`
   display: inline-block;
-  margin-right: 0.5rem;
+  margin: 0.2rem 0.5rem;
 `;
 
 export default Loader;

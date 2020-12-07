@@ -30,6 +30,7 @@ import { getInstanceInfo, Instance } from "../../../api/entity/instance";
 import RTable from "../../basic/RTable";
 import TestGroupLeftMenu from "./TestGroupLeftMenu";
 import RunTests from "./RunTests";
+import { search } from "../../basic/localStorage";
 
 const ShowTests: React.FC = () => {
   const [instances, setInstances] = useState<Instance[] | undefined>();
@@ -95,7 +96,13 @@ const ShowTests: React.FC = () => {
             colorType={ButtonColorType.success}
             type={ButtonType.iconButton}
             icon={<FiPlay />}
-            disabled={!instances}
+            disabled={
+              !instances ||
+              search("run_configs", [
+                { key: "test", value: test },
+                { key: "loading", value: true },
+              ]) !== -1
+            }
             onClick={(e: React.FormEvent) => {
               e.preventDefault();
               onRunTest(test!);
@@ -301,7 +308,7 @@ const ShowTests: React.FC = () => {
             <RTable
               builder={buildTable}
               fetcher={listTestsOfTestGroup(selectedTestGroup?.id!)}
-              trigger={selectedTestGroup}
+              trigger={{ selectedTestGroup, testRun }}
               title={[
                 {
                   header: "Name",

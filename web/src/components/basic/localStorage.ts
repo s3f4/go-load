@@ -22,7 +22,6 @@ export const removeItem = (item: string) => {
 
 export const search = (item: string, searchItem: string | Search[]): number => {
   const isString = typeof search === "string";
-
   const values = getItem(item, isString);
   if (values) {
     if (isString) {
@@ -37,13 +36,14 @@ export const search = (item: string, searchItem: string | Search[]): number => {
 };
 
 const searchConditions = (searchItem: Search[], val: any) => {
-  let found = false;
-  searchItem.map((condition: Search) => {
-    found = jsonEqual(val[condition.key], condition.value);
-  });
-  return found;
+  for (const item of searchItem) {
+    if (!jsonEqual(val[item.key], item.value)) {
+      return false;
+    }
+  }
+  return true;
 };
 
-function jsonEqual(a: any, b: any) {
+const jsonEqual = (a: any, b: any) => {
   return JSON.stringify(a) === JSON.stringify(b);
-}
+};

@@ -30,7 +30,12 @@ const RunTests: React.FC<Props> = (props: Props) => {
     setRunConfigs(rc ?? []);
 
     if (props.test) {
-      if (search("run_configs", [{ key: "test", value: props.test }]) === -1) {
+      if (
+        search("run_configs", [
+          { key: "test", value: props.test },
+          { key: "loading", value: true },
+        ]) === -1
+      ) {
         setItem("run_configs", [
           ...runConfigs,
           {
@@ -39,6 +44,7 @@ const RunTests: React.FC<Props> = (props: Props) => {
             passed: true,
           },
         ]);
+        setRunConfigs(getItem("run_configs"));
       }
     }
     if (props.testGroup) {
@@ -53,7 +59,15 @@ const RunTests: React.FC<Props> = (props: Props) => {
               passed: true,
             });
           });
-          setItem("run_configs", runConfigsList);
+          setItem("run_configs", [
+            ...runConfigs,
+            {
+              test: props.test,
+              loading: true,
+              passed: true,
+            },
+          ]);
+          setRunConfigs(getItem("run_configs"));
         })
         .catch((error) => {
           console.log(error);
@@ -76,7 +90,7 @@ const RunTests: React.FC<Props> = (props: Props) => {
     <div css={container}>
       {runConfigs.map((runConfig: RunConfig) => {
         return (
-          <div css={testLine}>
+          <div css={testLine} key={runConfig.test.id}>
             <div css={item(5)}>
               <Loader inlineLoading fill={"red"} />
             </div>

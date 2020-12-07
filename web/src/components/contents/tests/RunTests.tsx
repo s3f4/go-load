@@ -27,6 +27,7 @@ const RunTests: React.FC<Props> = (props: Props) => {
   useEffect(() => {
     if (props.test) {
       setRunConfigs([
+        ...runConfigs,
         {
           test: props.test,
           loading: true,

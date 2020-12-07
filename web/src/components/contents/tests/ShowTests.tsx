@@ -3,7 +3,6 @@ import React, { useState, useEffect, ChangeEvent, Fragment } from "react";
 import { jsx, css } from "@emotion/core";
 import {
   deleteTestGroup,
-  runTestGroup,
   TestGroup,
   updateTestGroup,
 } from "../../../api/entity/test_group";
@@ -12,7 +11,6 @@ import { leftColumn, MediaQuery, rightColumn } from "../../style";
 import Message, { IMessage } from "../../basic/Message";
 import TestForm from "./TestForm";
 import {
-  runTest,
   deleteTest,
   saveTest,
   Test,
@@ -134,15 +132,12 @@ const ShowTests: React.FC = () => {
   const onAddTest = (test: Test) => {
     test.test_group_id = selectedTestGroup.id!;
     saveTest(test).then(() => {
-      const newTestGroups = testGroups?.map((tg: TestGroup) => {
-        if (tg.id === selectedTestGroup.id) {
-          tg.tests = [...selectedTestGroup.tests, test];
-        }
-        return tg;
+      setSelectedTestGroup({
+        ...selectedTestGroup,
+        tests: [...selectedTestGroup.tests, test],
       });
-
-      setTestGroups(newTestGroups);
     });
+    setAddNewTest(false);
   };
 
   const onUpdateTest = (test: Test) => {

@@ -8,6 +8,7 @@ import { FiActivity } from "react-icons/fi";
 import { useHistory } from "react-router-dom";
 import { TestGroup } from "../../../api/entity/test_group";
 import { Borders, Sizes } from "../../style";
+import { setItem, getItem, search, removeItem } from "../../basic/localStorage";
 
 interface Props {
   testGroup?: TestGroup;
@@ -25,17 +26,23 @@ const RunTests: React.FC<Props> = (props: Props) => {
   const history = useHistory();
 
   useEffect(() => {
+    const rc = getItem("run_configs");
+    setRunConfigs(rc ?? []);
+
     if (props.test) {
-      setRunConfigs([
-        ...runConfigs,
-        {
-          test: props.test,
-          loading: true,
-          passed: true,
-        },
-      ]);
+      if (search("run_configs", [{ key: "test", value: props.test }]) === -1) {
+        setItem("run_configs", [
+          ...runConfigs,
+          {
+            test: props.test,
+            loading: true,
+            passed: true,
+          },
+        ]);
+      }
     }
     if (props.testGroup) {
+      removeItem("run_configs");
       const runConfigsList: RunConfig[] = [];
       listTests()
         .then((response) => {
@@ -46,7 +53,7 @@ const RunTests: React.FC<Props> = (props: Props) => {
               passed: true,
             });
           });
-          setRunConfigs(runConfigsList);
+          setItem("run_configs", runConfigsList);
         })
         .catch((error) => {
           console.log(error);

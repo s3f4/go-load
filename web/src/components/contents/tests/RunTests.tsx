@@ -42,8 +42,8 @@ const RunTests: React.FC<Props> = (props: Props) => {
           {
             test: props.test,
             loading: true,
-            passed: true,
-            started: false,
+            passed: false,
+            started: true,
             error: null,
           },
         ]);
@@ -86,8 +86,13 @@ const RunTests: React.FC<Props> = (props: Props) => {
         });
     }
 
-    runConfigs.map((runConfig: RunConfig) => {
-      if (!runConfig.finished && !runConfig.error) {
+    getItem("run_configs").map((runConfig: RunConfig) => {
+      if (
+        runConfig.started &&
+        runConfig.loading &&
+        !runConfig.finished &&
+        !runConfig.error
+      ) {
         run(runConfig, runConfig.test);
       }
     });
@@ -100,14 +105,14 @@ const RunTests: React.FC<Props> = (props: Props) => {
         runConfig.started = true;
         runConfig.finished = true;
         runConfig.passed = response.data.passed;
-        setRunConfigs(
-          runConfigs.map((r: RunConfig) => {
-            if (runConfig.test.id === r.test.id) {
-              return runConfig;
-            }
-            return r;
-          }),
-        );
+        const nRc = getItem("run_configs").map((r: RunConfig) => {
+          if (runConfig.test.id === r.test.id) {
+            return runConfig;
+          }
+          return r;
+        });
+        setItem("run_configs", nRc);
+        setRunConfigs(nRc);
       })
       .catch((error) => {
         console.log(error);

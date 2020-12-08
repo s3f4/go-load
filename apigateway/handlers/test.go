@@ -165,12 +165,12 @@ func (h *testHandler) Start(w http.ResponseWriter, r *http.Request) {
 		res.R422(w, r, library.ErrUnprocessableEntity)
 		return
 	}
-
-	if err := h.service.Start(test); err != nil {
+	runTest, err := h.service.Start(test)
+	if err != nil {
 		log.Debug(err)
 		res.R500(w, r, library.ErrInternalServerError)
 		return
 	}
 
-	res.R200(w, r, "Test has been started.")
+	res.R200(w, r, runTest)
 }

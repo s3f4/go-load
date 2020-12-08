@@ -14,7 +14,7 @@ import (
 
 // TestService creates tests
 type TestService interface {
-	Start(test *models.Test) error
+	Start(test *models.Test) (*models.RunTest, error)
 }
 
 type testService struct {
@@ -34,10 +34,10 @@ func NewTestService() TestService {
 	}
 }
 
-func (s *testService) Start(test *models.Test) error {
+func (s *testService) Start(test *models.Test) (*models.RunTest, error) {
 	instances, err := s.ir.GetFromTerraform()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	startTime := time.Now()
@@ -47,7 +47,7 @@ func (s *testService) Start(test *models.Test) error {
 
 	if err := s.rtr.Create(&runTest); err != nil {
 		log.Errorf("TestService.Start: %v", err)
-		return err
+		return nil, err
 	}
 	runTest.Test = test
 	instanceCount := uint64(len(instances))
@@ -56,7 +56,7 @@ func (s *testService) Start(test *models.Test) error {
 		for i := uint64(0); i < test.RequestCount; i++ {
 			event := setEvent(&runTest, 1, test.RequestCount, i+1)
 			if err := s.sendMessage(event); err != nil {
-				return err
+				return nil, err
 			}
 		}
 	} else {
@@ -70,7 +70,7 @@ func (s *testService) Start(test *models.Test) error {
 			event := setEvent(&runTest, requestPerInstance, instanceCount, uint64(i+1))
 
 			if err := s.sendMessage(event); err != nil {
-				return err
+				return nil, err
 			}
 		}
 	}
@@ -78,15 +78,14 @@ func (s *testService) Start(test *models.Test) error {
 	return s.waitQueue(&runTest, test.RequestCount, instanceCount)
 }
 
-func (s *testService) waitQueue(runTest *models.RunTest, requestCount, instanceCount uint64) error {
+func (s *testService) waitQueue(runTest *models.RunTest, requestCount, instanceCount uint64) (*models.RunTest, error) {
 	// Declare Queue for this runTest
 	queue := fmt.Sprintf("collect_%d_%d", runTest.Test.ID, runTest.ID)
 	if err := s.queueService.Declare(queue); err != nil {
-		return err
+		return nil, err
 	}
 
 	var payloads []*models.CollectPayload
-
 	s.queueService.Listen(&ListenSpec{
 		Queue:    queue,
 		Consumer: fmt.Sprintf("apigateway_test_%d", runTest.Test.ID),
@@ -102,42 +101,51 @@ func (s *testService) waitQueue(runTest *models.RunTest, requestCount, instanceC
 			}
 
 			payloads = append(payloads, &payload)
-			if s.checkPayloads(runTest, requestCount, instanceCount, payloads) {
+			r, check := s.checkPayloads(runTest, requestCount, instanceCount, payloads)
+			if check {
+				runTest = r
 				exit <- struct{}{}
 			}
+
 			return nil
 		},
 	})
 
 	if err := s.queueService.Delete(queue); err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return runTest, nil
 }
 
 func (s *testService) checkPayloads(
 	runTest *models.RunTest,
 	requestCount, instanceCount uint64,
 	payloads []*models.CollectPayload,
-) bool {
+) (*models.RunTest, bool) {
 	var total uint64
 	if requestCount < instanceCount {
 		total = requestCount
 	} else {
 		total = instanceCount
 	}
+	fmt.Println(total)
+	fmt.Println(len(payloads))
 
 	if int(total) != len(payloads) {
-		return false
+		return nil, false
 	}
 
 	for _, payload := range payloads {
 		if payload.RunTest.Passed == false {
 			runTest.Passed = false
 		}
-		currentEndTime := runTest.EndTime
-		if payload.RunTest.EndTime.After(*currentEndTime) {
+		if runTest.EndTime != nil {
+			currentEndTime := runTest.EndTime
+			if payload.RunTest.EndTime.After(*currentEndTime) {
+				runTest.EndTime = payload.RunTest.EndTime
+			}
+		} else {
 			runTest.EndTime = payload.RunTest.EndTime
 		}
 	}
@@ -146,7 +154,7 @@ func (s *testService) checkPayloads(
 		log.Errorf("RunTest Update error: %v\n", err)
 	}
 
-	return true
+	return runTest, true
 }
 
 func (s *testService) sendMessage(event *models.Event) error {

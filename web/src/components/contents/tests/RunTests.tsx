@@ -44,10 +44,12 @@ const RunTests: React.FC<Props> = (props: Props) => {
             loading: true,
             passed: false,
             started: true,
+            finished: false,
             error: null,
           },
         ]);
         setRunConfigs(getItem("run_configs"));
+        runWithConditions();
       }
     }
     if (props.testGroup) {
@@ -55,6 +57,7 @@ const RunTests: React.FC<Props> = (props: Props) => {
       const runConfigsList: RunConfig[] = [];
       listTests()
         .then((response) => {
+          console.log(response);
           response.data.data.map((test: Test) => {
             runConfigsList.push({
               test,
@@ -65,18 +68,9 @@ const RunTests: React.FC<Props> = (props: Props) => {
               error: null,
             });
           });
-          setItem("run_configs", [
-            ...runConfigs,
-            {
-              test: props.test,
-              loading: true,
-              passed: false,
-              started: true,
-              finished: false,
-              error: null,
-            },
-          ]);
+          setItem("run_configs", runConfigsList);
           setRunConfigs(getItem("run_configs"));
+          runWithConditions();
         })
         .catch((error) => {
           setMessage({
@@ -85,8 +79,11 @@ const RunTests: React.FC<Props> = (props: Props) => {
           });
         });
     }
+  }, [props.test, props.testGroup]);
 
-    getItem("run_configs").map((runConfig: RunConfig) => {
+  const runWithConditions = () => {
+    const configs = getItem("run_configs") || [];
+    configs.map((runConfig: RunConfig) => {
       if (
         runConfig.started &&
         runConfig.loading &&
@@ -96,7 +93,7 @@ const RunTests: React.FC<Props> = (props: Props) => {
         run(runConfig, runConfig.test);
       }
     });
-  }, [props.test, props.testGroup]);
+  };
 
   const run = (runConfig: RunConfig, test: Test) => {
     runTest(test)

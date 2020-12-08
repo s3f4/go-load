@@ -3,7 +3,7 @@ import { jsx, css } from "@emotion/core";
 import React from "react";
 import { Worker } from "../../api/entity/worker";
 import Loader from "../basic/Loader";
-import { card, cardContainer, cardTitle } from "../style";
+import { card, cardContainer, cardTitle, MediaQuery } from "../style";
 import Button from "../basic/Button";
 
 interface Props {
@@ -34,14 +34,29 @@ const WorkersContent: React.FC<Props> = (props: Props) => {
     });
 
   return (
-    <div css={cardContainer}>
-      {!props.loader ? (
-        workersDiv()
-      ) : (
-        <Loader message={"workers is loading..."} />
-      )}
+    <div>
+      <div css={title}>Swarm Container List</div>
+      <div css={cardContainer}>
+        {!props.loader ? (
+          workersDiv()
+        ) : (
+          <Loader message={"workers is loading..."} />
+        )}
+      </div>
     </div>
   );
 };
+
+const title = css`
+  width: 70%;
+  text-align: center;
+  margin: 1rem auto;
+  padding: 1rem;
+  background-color: #efefef;
+
+  ${MediaQuery[1]} {
+    height: 4rem;
+  }
+`;
 
 export default WorkersContent;

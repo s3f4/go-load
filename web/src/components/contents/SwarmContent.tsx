@@ -3,7 +3,7 @@ import { jsx, css } from "@emotion/core";
 import React, { useState } from "react";
 import { showSwarmNodes } from "../../api/entity/instance";
 import { Node } from "../../api/entity/nodes";
-import { card, cardContainer, cardTitle } from "../style";
+import { card, cardContainer, cardTitle, MediaQuery } from "../style";
 import moment from "moment";
 import { defaultFormat } from "../basic/helper";
 import Message, { IMessage } from "../basic/Message";
@@ -33,35 +33,36 @@ const SwarmContent: React.FC = () => {
     }
 
     return (
-      <div css={cardContainer}>
-        {nodes &&
-          nodes.map((node: Node) => {
-            return (
-              <div css={card} key={node.ID}>
-                <h1 css={cardTitle}>{node.Description.Hostname}</h1>
-                Role: {node.Spec.Role} <br />
-                Addr: {node.Status.Addr} <br />
-                State: {node.Status.State}
-                <br />
-                Memory :{" "}
-                {((node.Description.Resources.MemoryBytes /
-                  (1024 * 1024)) as number).toFixed(2)}
-                MB
-                <br />
-                CPUs : {node.Description.Resources.NanoCPUs / Math.pow(10, 9)}
-                <br />
-                Availability: {node.Spec.Availability}
-                <br />
-                Created: {moment(node.CreatedAt).format(defaultFormat())}
-                <br />
-              </div>
-            );
-          })}
+      <div>
+        <div css={title}>Swarm Service List</div>
+        <div css={cardContainer}>
+          {nodes &&
+            nodes.map((node: Node) => {
+              return (
+                <div css={card} key={node.ID}>
+                  <h1 css={cardTitle}>{node.Description.Hostname}</h1>
+                  Role: {node.Spec.Role} <br />
+                  Addr: {node.Status.Addr} <br />
+                  State: {node.Status.State}
+                  <br />
+                  Memory :{" "}
+                  {((node.Description.Resources.MemoryBytes /
+                    (1024 * 1024)) as number).toFixed(2)}
+                  MB
+                  <br />
+                  CPUs : {node.Description.Resources.NanoCPUs / Math.pow(10, 9)}
+                  <br />
+                  Availability: {node.Spec.Availability}
+                  <br />
+                  Created: {moment(node.CreatedAt).format(defaultFormat())}
+                  <br />
+                </div>
+              );
+            })}
+        </div>
       </div>
     );
   };
-
-  console.log(message);
 
   return loading ? (
     <Loader message="swarm config is loading..." />
@@ -69,5 +70,17 @@ const SwarmContent: React.FC = () => {
     swarmContent()
   );
 };
+
+const title = css`
+  width: 100%;
+  text-align: center;
+  margin: 1rem auto;
+  padding: 1rem;
+  background-color: #efefef;
+
+  ${MediaQuery[1]} {
+    height: 4rem;
+  }
+`;
 
 export default SwarmContent;

@@ -44,6 +44,7 @@ func (s *testService) Start(test *models.Test) (*models.RunTest, error) {
 	var runTest models.RunTest
 	runTest.TestID = test.ID
 	runTest.StartTime = &startTime
+	runTest.Passed = true
 
 	if err := s.rtr.Create(&runTest); err != nil {
 		log.Errorf("TestService.Start: %v", err)
@@ -123,15 +124,15 @@ func (s *testService) checkPayloads(
 	requestCount, instanceCount uint64,
 	payloads []*models.CollectPayload,
 ) (*models.RunTest, bool) {
+
 	var total uint64
 	if requestCount < instanceCount {
 		total = requestCount
 	} else {
 		total = instanceCount
 	}
-	fmt.Println(total)
-	fmt.Println(len(payloads))
 
+	// Check if it is the latest coming payload.
 	if int(total) != len(payloads) {
 		return nil, false
 	}

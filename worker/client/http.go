@@ -69,6 +69,7 @@ func (c *Client) HTTPTrace() (*models.Response, error) {
 	}
 
 	var res models.Response
+	res.Passed = true
 	var start time.Time
 
 	transport := http.DefaultTransport.(*http.Transport)

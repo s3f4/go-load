@@ -137,6 +137,7 @@ func (s *workerService) compare(test *models.Test, response *models.Response) []
 			response.FirstByteTime,
 		))
 	}
+
 	var responseHeaders http.Header
 	if err := json.Unmarshal(response.ResponseHeaders, &responseHeaders); err != nil {
 		reasons = append(reasons, fmt.Sprintf(

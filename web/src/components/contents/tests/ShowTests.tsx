@@ -98,10 +98,7 @@ const ShowTests: React.FC = () => {
             icon={<FiPlay />}
             disabled={
               !instances ||
-              search("run_configs", [
-                { key: "test", value: test },
-                { key: "loading", value: true },
-              ]) !== -1
+              search("run_configs", [{ key: "test", value: test }]) !== -1
             }
             onClick={(e: React.FormEvent) => {
               e.preventDefault();

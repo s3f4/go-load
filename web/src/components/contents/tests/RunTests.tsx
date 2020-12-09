@@ -8,7 +8,12 @@ import { FiActivity } from "react-icons/fi";
 import { useHistory } from "react-router-dom";
 import { TestGroup } from "../../../api/entity/test_group";
 import { Borders, Sizes } from "../../style";
-import { setItem, getItem, search, removeItem } from "../../basic/localStorage";
+import {
+  setItems,
+  getItems,
+  search,
+  removeAll,
+} from "../../basic/localStorage";
 import Message, { IMessage } from "../../basic/Message";
 import { findInAOO } from "../../basic/helper";
 
@@ -32,12 +37,12 @@ const RunTests: React.FC<Props> = (props: Props) => {
   const history = useHistory();
 
   useEffect(() => {
-    const rc = getItem("run_configs");
+    const rc = getItems("run_configs");
     setRunConfigs(rc ?? []);
 
     if (props.test) {
       if (search("run_configs", [{ key: "test", value: props.test }]) === -1) {
-        setItem("run_configs", [
+        setItems("run_configs", [
           ...runConfigs,
           {
             test: props.test,
@@ -48,12 +53,12 @@ const RunTests: React.FC<Props> = (props: Props) => {
             error: null,
           },
         ]);
-        setRunConfigs(getItem("run_configs"));
+        setRunConfigs(getItems("run_configs"));
         runWithConditions();
       }
     }
     if (props.testGroup) {
-      removeItem("run_configs");
+      removeAll("run_configs");
       const runConfigsList: RunConfig[] = [];
       listTests()
         .then((response) => {
@@ -68,8 +73,8 @@ const RunTests: React.FC<Props> = (props: Props) => {
               error: null,
             });
           });
-          setItem("run_configs", runConfigsList);
-          setRunConfigs(getItem("run_configs"));
+          setItems("run_configs", runConfigsList);
+          setRunConfigs(getItems("run_configs"));
           runWithConditions();
         })
         .catch((error) => {
@@ -82,7 +87,7 @@ const RunTests: React.FC<Props> = (props: Props) => {
   }, [props.test, props.testGroup]);
 
   const runWithConditions = () => {
-    const configs = getItem("run_configs") || [];
+    const configs = getItems("run_configs") || [];
     configs.map((runConfig: RunConfig) => {
       if (
         runConfig.started &&
@@ -102,13 +107,13 @@ const RunTests: React.FC<Props> = (props: Props) => {
         runConfig.started = true;
         runConfig.finished = true;
         runConfig.passed = response.data.passed;
-        const nRc = getItem("run_configs").map((r: RunConfig) => {
+        const nRc = getItems("run_configs").map((r: RunConfig) => {
           if (runConfig.test.id === r.test.id) {
             return runConfig;
           }
           return r;
         });
-        setItem("run_configs", nRc);
+        setItems("run_configs", nRc);
         setRunConfigs(nRc);
       })
       .catch((error) => {
@@ -117,7 +122,7 @@ const RunTests: React.FC<Props> = (props: Props) => {
   };
 
   const clear = () => {
-    removeItem("run_configs");
+    removeAll("run_configs");
     setRunConfigs([]);
   };
 

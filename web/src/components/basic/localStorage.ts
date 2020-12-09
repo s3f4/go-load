@@ -1,13 +1,19 @@
-interface Search {
+interface Condition {
   key: string;
   value: any;
 }
 
-export const setItem = (item: string, value: any, notJson?: boolean) => {
+export const addItem = (item: string, value: any, notJson?: boolean) => {
+  const items = getItems(item);
+  items.push(value);
+  localStorage.setItem(items, notJson ? value : JSON.stringify(value));
+};
+
+export const setItems = (item: string, value: any, notJson?: boolean) => {
   localStorage.setItem(item, notJson ? value : JSON.stringify(value));
 };
 
-export const getItem = (item: string, notJson?: boolean) => {
+export const getItems = (item: string, notJson?: boolean) => {
   let value = localStorage.getItem(item);
   if (value) {
     return notJson ? value : JSON.parse(value);
@@ -16,29 +22,48 @@ export const getItem = (item: string, notJson?: boolean) => {
   }
 };
 
-export const removeItem = (item: string) => {
+export const removeOne = (item: string, conditions: string | Condition[]) => {
+  const items = getItems(item);
+  const newItems = items.filter((i: any) => {
+    return !filter(i, conditions as Condition[]);
+  });
+  setItems(item, newItems);
+};
+
+export const removeAll = (item: string) => {
   localStorage.removeItem(item);
 };
 
-export const search = (item: string, searchItem: string | Search[]): number => {
+export const search = (
+  item: string,
+  conditions: string | Condition[],
+): number => {
   const isString = typeof search === "string";
-  const values = getItem(item, isString);
+  const values = getItems(item, isString);
   if (values) {
     if (isString) {
       return values.indexOf(search);
     } else {
       return (values as any[]).findIndex((val: any) => {
-        return searchConditions(searchItem as Search[], val);
+        return filter(val, conditions as Condition[]);
       });
     }
   }
   return -1;
 };
 
-const searchConditions = (searchItem: Search[], val: any) => {
-  for (const item of searchItem) {
-    if (!jsonEqual(val[item.key], item.value)) {
-      return false;
+const filter = (val: any, conditions: Condition[]) => {
+  for (const condition of conditions) {
+    // Search with two depth
+    const keys = condition.key.split(".");
+    if (keys.length === 2) {
+      if (!jsonEqual(val[keys[0]][keys[1]], condition.value)) {
+        return false;
+      }
+    } else {
+      if (!jsonEqual(val[condition.key], condition.value)) {
+        return false;
+      }
     }
   }
   return true;

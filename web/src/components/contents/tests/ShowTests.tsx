@@ -30,7 +30,7 @@ import { getInstanceInfo, Instance } from "../../../api/entity/instance";
 import RTable from "../../basic/RTable";
 import TestGroupLeftMenu from "./TestGroupLeftMenu";
 import RunTests from "./RunTests";
-import { search } from "../../basic/localStorage";
+import { removeOne, search } from "../../basic/localStorage";
 
 const ShowTests: React.FC = () => {
   const [instances, setInstances] = useState<Instance[] | undefined>();
@@ -89,6 +89,8 @@ const ShowTests: React.FC = () => {
   };
 
   const buttons = (text: string, test?: Test) => {
+    console.log(search("run_configs", [{ key: "test", value: test }]));
+    console.log(test);
     switch (text) {
       case "Run":
         return (
@@ -98,7 +100,8 @@ const ShowTests: React.FC = () => {
             icon={<FiPlay />}
             disabled={
               !instances ||
-              search("run_configs", [{ key: "test", value: test }]) !== -1
+              search("run_configs", [{ key: "test.id", value: test?.id }]) !==
+                -1
             }
             onClick={(e: React.FormEvent) => {
               e.preventDefault();
@@ -164,6 +167,8 @@ const ShowTests: React.FC = () => {
   };
 
   const onDeleteTest = (test: Test): void => {
+    removeOne("run_configs", [{ key: "test.id", value: test.id }]);
+    return;
     deleteTest(test)
       .then(() => {
         setSelectedTestGroup({

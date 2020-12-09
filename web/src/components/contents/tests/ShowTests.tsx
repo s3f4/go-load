@@ -181,7 +181,6 @@ const ShowTests: React.FC = () => {
   const onDeleteTest = (test: Test): void => {
     removeOne("run_configs", [{ key: "test.id", value: test.id }]);
     setRunConfigs(getItems("run_configs"));
-    return;
     deleteTest(test)
       .then(() => {
         setSelectedTestGroup({
@@ -243,10 +242,15 @@ const ShowTests: React.FC = () => {
           testGroup={testGroupRun}
           setRunConfigs={setRunConfigs}
           runConfigs={runConfigs}
+          clear={() => {
+            setTestRun(undefined);
+            setTestGroupRun(undefined);
+            setRunConfigs([]);
+          }}
         />
         {selectedTestGroup &&
         selectedTestGroup.tests.length > 0 &&
-        (!testGroupRun || getItems("run_configs")) ? (
+        !testGroupRun ? (
           <React.Fragment>
             {updateSelectedGroupName ? (
               <div css={updateTestGroupNameDiv}>

@@ -23,6 +23,7 @@ interface Props {
   testGroup?: TestGroup;
   runConfigs: RunConfig[];
   setRunConfigs: (data: any) => void;
+  clear: () => void;
 }
 
 const RunTests: React.FC<Props> = (props: Props) => {
@@ -116,7 +117,7 @@ const RunTests: React.FC<Props> = (props: Props) => {
 
   const clear = () => {
     removeAll("run_configs");
-    props.setRunConfigs([]);
+    props.clear();
   };
 
   const isLoading = () => {

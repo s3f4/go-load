@@ -170,6 +170,8 @@ func (s *workerService) compare(test *models.Test, response *models.Response) []
 }
 
 func (s *workerService) sendToEventHandler(dataBuf <-chan models.Response) error {
+	fmt.Println("databuf")
+	fmt.Println(dataBuf)
 	for data := range dataBuf {
 		jsonData, err := json.Marshal(data)
 		if err != nil {

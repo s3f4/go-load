@@ -51,7 +51,7 @@ services:
       context: ./eventhandler
       dockerfile: Dockerfile.dev
     volumes:
-      - ./eventhandler:/go/src/github.com/s3f4/go-load/eventhandler
+      - ./eventhandler:/app
     environment:
       - RABBITMQ_USER=user
       - RABBITMQ_PASSWORD=password

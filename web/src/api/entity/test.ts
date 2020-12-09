@@ -51,10 +51,12 @@ export const listTests = async (query?: Query) => {
   return await makeReq(`/test?${QueryString(query)}`);
 };
 
-export const listTestsOfTestGroup = (testID: number) => async (
+export const listTestsOfTestGroup = (testGroupID: number) => async (
   query?: Query,
 ) => {
-  return await makeReq(`/test_group/${testID}/tests?${QueryString(query)}`);
+  return await makeReq(
+    `/test_group/${testGroupID}/tests?${QueryString(query)}`,
+  );
 };
 
 export const deleteTest = async (test: Test) => {

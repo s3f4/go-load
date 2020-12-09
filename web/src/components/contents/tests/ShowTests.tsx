@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import React, { useState, useEffect, ChangeEvent, Fragment } from "react";
+import React, { useState, useEffect, ChangeEvent } from "react";
 import { jsx, css } from "@emotion/core";
 import {
   deleteTestGroup,
@@ -30,7 +30,16 @@ import { getInstanceInfo, Instance } from "../../../api/entity/instance";
 import RTable from "../../basic/RTable";
 import TestGroupLeftMenu from "./TestGroupLeftMenu";
 import RunTests from "./RunTests";
-import { removeOne, search } from "../../basic/localStorage";
+import { getItems, search, removeOne } from "../../basic/localStorage";
+
+export interface RunConfig {
+  test: Test;
+  loading: boolean;
+  passed: boolean;
+  started: boolean;
+  finished: boolean;
+  error: any;
+}
 
 const ShowTests: React.FC = () => {
   const [instances, setInstances] = useState<Instance[] | undefined>();
@@ -49,6 +58,9 @@ const ShowTests: React.FC = () => {
   // Test Run States
   const [testGroupRun, setTestGroupRun] = useState<TestGroup>();
   const [testRun, setTestRun] = useState<Test>();
+  const [runConfigs, setRunConfigs] = useState<RunConfig[]>(
+    getItems("run_configs") || [],
+  );
 
   useEffect(() => {
     getInstanceInfo()
@@ -168,6 +180,7 @@ const ShowTests: React.FC = () => {
 
   const onDeleteTest = (test: Test): void => {
     removeOne("run_configs", [{ key: "test.id", value: test.id }]);
+    setRunConfigs(getItems("run_configs"));
     return;
     deleteTest(test)
       .then(() => {
@@ -225,10 +238,15 @@ const ShowTests: React.FC = () => {
         ) : (
           ""
         )}
-        <RunTests test={testRun} testGroup={testGroupRun} />
+        <RunTests
+          test={testRun}
+          testGroup={testGroupRun}
+          setRunConfigs={setRunConfigs}
+          runConfigs={runConfigs}
+        />
         {selectedTestGroup &&
         selectedTestGroup.tests.length > 0 &&
-        !testGroupRun ? (
+        (!testGroupRun || getItems("run_configs")) ? (
           <React.Fragment>
             {updateSelectedGroupName ? (
               <div css={updateTestGroupNameDiv}>
@@ -310,7 +328,7 @@ const ShowTests: React.FC = () => {
             <RTable
               builder={buildTable}
               fetcher={listTestsOfTestGroup(selectedTestGroup?.id!)}
-              trigger={{ selectedTestGroup, testRun }}
+              trigger={{ selectedTestGroup }}
               title={[
                 {
                   header: "Name",

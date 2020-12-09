@@ -22,10 +22,10 @@ export const getItems = (item: string, notJson?: boolean) => {
   }
 };
 
-export const removeOne = (item: string, conditions: string | Condition[]) => {
+export const removeOne = (item: string, conditions: Condition[]) => {
   const items = getItems(item);
   const newItems = items.filter((i: any) => {
-    return !filter(i, conditions as Condition[]);
+    return !filter(i, conditions);
   });
   setItems(item, newItems);
 };

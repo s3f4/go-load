@@ -17,7 +17,7 @@ export interface TableTitle {
 interface Props {
   title: TableTitle[];
   builder: (data: any) => any[][];
-  fetcher: (query?: Query) => Promise<any>;
+  fetcher: (query?: Query) => Promise<ServerResponse>;
   setter?: (data: any[]) => void;
   limit?: number;
   trigger?: any;

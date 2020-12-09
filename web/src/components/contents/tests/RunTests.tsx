@@ -16,34 +16,27 @@ import {
 } from "../../basic/localStorage";
 import Message, { IMessage } from "../../basic/Message";
 import { findInAOO } from "../../basic/helper";
+import { RunConfig } from "./ShowTests";
 
 interface Props {
-  testGroup?: TestGroup;
   test?: Test;
-}
-
-interface RunConfig {
-  test: Test;
-  loading: boolean;
-  passed: boolean;
-  started: boolean;
-  finished: boolean;
-  error: any;
+  testGroup?: TestGroup;
+  runConfigs: RunConfig[];
+  setRunConfigs: (data: any) => void;
 }
 
 const RunTests: React.FC<Props> = (props: Props) => {
-  const [runConfigs, setRunConfigs] = useState<RunConfig[]>([]);
   const [message, setMessage] = useState<IMessage>();
   const history = useHistory();
 
   useEffect(() => {
     const rc = getItems("run_configs");
-    setRunConfigs(rc ?? []);
+    props.setRunConfigs(rc ?? []);
 
     if (props.test) {
       if (search("run_configs", [{ key: "test", value: props.test }]) === -1) {
         setItems("run_configs", [
-          ...runConfigs,
+          ...props.runConfigs,
           {
             test: props.test,
             loading: true,
@@ -53,7 +46,7 @@ const RunTests: React.FC<Props> = (props: Props) => {
             error: null,
           },
         ]);
-        setRunConfigs(getItems("run_configs"));
+        props.setRunConfigs(getItems("run_configs"));
         runWithConditions();
       }
     }
@@ -74,7 +67,7 @@ const RunTests: React.FC<Props> = (props: Props) => {
             });
           });
           setItems("run_configs", runConfigsList);
-          setRunConfigs(getItems("run_configs"));
+          props.setRunConfigs(getItems("run_configs"));
           runWithConditions();
         })
         .catch((error) => {
@@ -114,7 +107,7 @@ const RunTests: React.FC<Props> = (props: Props) => {
           return r;
         });
         setItems("run_configs", nRc);
-        setRunConfigs(nRc);
+        props.setRunConfigs(nRc);
       })
       .catch((error) => {
         console.log(error);
@@ -123,11 +116,11 @@ const RunTests: React.FC<Props> = (props: Props) => {
 
   const clear = () => {
     removeAll("run_configs");
-    setRunConfigs([]);
+    props.setRunConfigs([]);
   };
 
   const isLoading = () => {
-    return findInAOO(runConfigs, "loading");
+    return findInAOO(props.runConfigs, "loading");
   };
 
   return (
@@ -136,7 +129,7 @@ const RunTests: React.FC<Props> = (props: Props) => {
         <Message type={message.type} message={message.message} />
       ) : (
         <div css={container}>
-          {runConfigs.map((runConfig: RunConfig) => {
+          {props.runConfigs.map((runConfig: RunConfig) => {
             return (
               <div css={testLine} key={runConfig.test.id}>
                 {runConfig.loading && (
@@ -161,7 +154,7 @@ const RunTests: React.FC<Props> = (props: Props) => {
               </div>
             );
           })}
-          {runConfigs.length > 0 && (
+          {props.runConfigs.length > 0 && (
             <div css={clearButton}>
               <Button onClick={clear} text="Clear" disabled={isLoading()} />
             </div>

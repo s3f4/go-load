@@ -1,6 +1,8 @@
 package models
 
-import "time"
+import (
+	"time"
+)
 
 // Response model
 type Response struct {
@@ -24,5 +26,5 @@ type Response struct {
 	ResponseHeaders []byte    `json:"response_header" gorm:"response_header"`
 	Error           string    `json:"error" gorm:"error"`
 	Reasons         string    `json:"reasons" gorm:"reasons"`
-	Passed          bool      `json:"passed" gorm:"column:passed;default:true"`
+	Passed          *bool     `json:"passed" gorm:"column:passed;default:true"`
 }

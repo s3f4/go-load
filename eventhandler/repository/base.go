@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 // DBType database type for connection different types of databases
@@ -28,9 +30,21 @@ type connect struct {
 // newConnection config
 func newConnection() *connect {
 	return &connect{
-		PostgresDSN: "user=%s password=%s host=%s port=%s dbname=%s sslmode=disable TimeZone=UTC",
+		PostgresDSN: "user=%s password=%s host=%s dbname=%s port=%s sslmode=disable TimeZone=UTC",
 		MySQLDSN:    "%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 	}
+}
+
+func (c *connect) getLogger() logger.Interface {
+	newLogger := logger.New(
+		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
+		logger.Config{
+			SlowThreshold: time.Second, // Slow SQL threshold
+			LogLevel:      logger.Info, // Log level
+			Colorful:      false,       // Disable color
+		},
+	)
+	return newLogger
 }
 
 func (c *connect) connectMYSQL(r *baseRepository) {
@@ -42,7 +56,9 @@ func (c *connect) connectMYSQL(r *baseRepository) {
 		os.Getenv("MYSQL_DATABASE"),
 	)
 
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
+		Logger: c.getLogger(),
+	})
 	r.DB = db
 	if err != nil {
 		log.Panicf("failed to connect database: %s", err)
@@ -54,11 +70,13 @@ func (c *connect) connectPOSTGRES(r *baseRepository) {
 		os.Getenv("POSTGRES_USER"),
 		os.Getenv("POSTGRES_PASSWORD"),
 		os.Getenv("POSTGRES_HOST"),
-		os.Getenv("POSTGRES_PORT"),
 		os.Getenv("POSTGRES_DATABASE"),
+		os.Getenv("POSTGRES_PORT"),
 	)
 
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+		Logger: c.getLogger(),
+	})
 	r.DB = db
 	if err != nil {
 		log.Panicf("failed to connect database: %s", err)
@@ -67,8 +85,8 @@ func (c *connect) connectPOSTGRES(r *baseRepository) {
 
 // BaseRepository an interface that uses sql
 type BaseRepository interface {
-	Migrate(models ...interface{}) error
 	GetDB() *gorm.DB
+	Migrate(models ...interface{}) error
 }
 
 type baseRepository struct {
@@ -100,6 +118,14 @@ func (r *baseRepository) connect() {
 	//defer db.Close()
 }
 
+//GetDB return *gorm.DB instance
+func (r *baseRepository) GetDB() *gorm.DB {
+	if r.DB == nil {
+		r.connect()
+	}
+	return r.DB
+}
+
 //Migrate migrates db
 func (r *baseRepository) Migrate(models ...interface{}) error {
 	for _, model := range models {
@@ -109,12 +135,4 @@ func (r *baseRepository) Migrate(models ...interface{}) error {
 		}
 	}
 	return nil
-}
-
-//GetDB return *gorm.DB instance
-func (r *baseRepository) GetDB() *gorm.DB {
-	if r.DB == nil {
-		r.connect()
-	}
-	return r.DB
 }

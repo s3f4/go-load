@@ -78,12 +78,13 @@ func (s *workerService) makeReq(client *client.Client, payload *models.RequestPa
 
 		reasons := s.compare(payload.Test, res)
 		if len(reasons) > 0 {
-			res.Passed = false
+			f := false
+			res.Passed = &f
 			res.Reasons = strings.Join(reasons, ",")
-			payload.RunTest.Passed = false
+			payload.RunTest.Passed = &f
 		}
-
 		dataBuf <- *res
+		fmt.Printf("%#v\n", res.Passed)
 	}
 	wg.Done()
 }
@@ -150,7 +151,9 @@ func (s *workerService) compare(test *models.Test, response *models.Response) []
 	for _, header := range test.Headers {
 		if !header.IsRequestHeader {
 			if values, ok := responseHeaders[header.Key]; ok {
+				fmt.Println("responseheaders header.key found")
 				if found := library.SliceFind(values, header.Value); found == -1 {
+					fmt.Println("found = -1")
 					reasons = append(reasons, fmt.Sprintf(
 						"header.Value: %s is not found in %v\n",
 						header.Value,
@@ -158,8 +161,9 @@ func (s *workerService) compare(test *models.Test, response *models.Response) []
 					))
 				}
 			} else {
+				fmt.Println("responseheaders header.key not found")
 				reasons = append(reasons, fmt.Sprintf(
-					"%s\n is not found in the response headers",
+					"header: %s is not found in the response headers\n",
 					header.Key,
 				))
 			}

@@ -1,6 +1,8 @@
 package models
 
-import "time"
+import (
+	"time"
+)
 
 // RunTest tests
 type RunTest struct {
@@ -8,5 +10,5 @@ type RunTest struct {
 	TestID    uint       `json:"test_id" gorm:"test_id,foreignKey:TestID"`
 	StartTime *time.Time `json:"start_time" gorm:"start_time"`
 	EndTime   *time.Time `json:"end_time" gorm:"end_time"`
-	Passed    bool       `json:"passed" gorm:"passed"`
+	Passed    *bool      `json:"passed" gorm:"passed"`
 }

@@ -100,7 +100,6 @@ func routeMap(*chi.Mux) {
 				router.Use(middlewares.TestGroupCtx)
 				router.Put("/", handlers.TestGroupHandler.Update)
 				router.Delete("/", handlers.TestGroupHandler.Delete)
-				router.Post("/start", handlers.TestGroupHandler.Start)
 				router.Route("/tests", func(router chi.Router) {
 					router.Use(middlewares.QueryCtx)
 					router.Get("/", handlers.TestHandler.ListByTestGroupID)

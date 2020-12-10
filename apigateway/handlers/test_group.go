@@ -11,12 +11,10 @@ import (
 	"github.com/s3f4/go-load/apigateway/middlewares"
 	"github.com/s3f4/go-load/apigateway/models"
 	"github.com/s3f4/go-load/apigateway/repository"
-	"github.com/s3f4/go-load/apigateway/services"
 	"gorm.io/gorm"
 )
 
 type testGroupHandlerInterface interface {
-	Start(w http.ResponseWriter, r *http.Request)
 	Create(w http.ResponseWriter, r *http.Request)
 	Update(w http.ResponseWriter, r *http.Request)
 	Delete(w http.ResponseWriter, r *http.Request)
@@ -25,34 +23,15 @@ type testGroupHandlerInterface interface {
 }
 
 type testGroupHandler struct {
-	service    services.TestGroupService
 	repository repository.TestGroupRepository
 }
 
 var (
 	//TestGroupHandler .
 	TestGroupHandler testGroupHandlerInterface = &testGroupHandler{
-		service:    services.NewTestGroupService(),
 		repository: repository.NewTestGroupRepository(),
 	}
 )
-
-func (h *testGroupHandler) Start(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-	testGroup, ok := ctx.Value(middlewares.TestGroupCtxKey).(*models.TestGroup)
-	if !ok {
-		res.R422(w, r, library.ErrUnprocessableEntity)
-		return
-	}
-
-	if err := h.service.Start(testGroup); err != nil {
-		log.Errorf("Worker Service Error: %s", err)
-		res.R500(w, r, library.ErrInternalServerError)
-		return
-	}
-
-	res.R200(w, r, "Test started.")
-}
 
 func (h *testGroupHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var testConfig models.TestGroup
@@ -62,7 +41,7 @@ func (h *testGroupHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := h.service.Create(&testConfig)
+	err := h.repository.Create(&testConfig)
 	if err != nil {
 		log.Debug(err)
 		res.R500(w, r, library.ErrBadRequest)
@@ -78,7 +57,7 @@ func (h *testGroupHandler) Update(w http.ResponseWriter, r *http.Request) {
 		res.R400(w, r, library.ErrBadRequest)
 		return
 	}
-	err := h.service.Update(&testConfig)
+	err := h.repository.Update(&testConfig)
 	if err != nil {
 		log.Debug(err)
 		res.R500(w, r, err)
@@ -95,7 +74,7 @@ func (h *testGroupHandler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := h.service.Delete(testGroup)
+	err := h.repository.Delete(testGroup)
 	if err != nil {
 		log.Debug(err)
 		res.R500(w, r, err)
@@ -112,7 +91,7 @@ func (h *testGroupHandler) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tc, err := h.service.Get(testGroup)
+	tc, err := h.repository.Get(testGroup.ID)
 	if err != nil {
 		log.Debug(err)
 		res.R500(w, r, library.ErrInternalServerError)

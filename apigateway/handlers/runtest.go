@@ -9,7 +9,7 @@ import (
 	res "github.com/s3f4/go-load/apigateway/library/response"
 	"github.com/s3f4/go-load/apigateway/middlewares"
 	"github.com/s3f4/go-load/apigateway/models"
-	"github.com/s3f4/go-load/apigateway/services"
+	"github.com/s3f4/go-load/apigateway/repository"
 	"gorm.io/gorm"
 )
 
@@ -21,13 +21,13 @@ type runTestHandlerInterface interface {
 }
 
 type runTestHandler struct {
-	service services.RunTestService
+	repository repository.RunTestRepository
 }
 
 var (
 	//RunTestHandler .
 	RunTestHandler runTestHandlerInterface = &runTestHandler{
-		service: services.NewRunTestService(),
+		repository: repository.NewRunTestRepository(),
 	}
 )
 
@@ -39,7 +39,7 @@ func (h *runTestHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := h.service.Create(&runTest)
+	err := h.repository.Create(&runTest)
 	if err != nil {
 		log.Info(err)
 		res.R500(w, r, err)
@@ -56,7 +56,7 @@ func (h *runTestHandler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := h.service.Delete(&runTest)
+	err := h.repository.Delete(&runTest)
 	if err != nil {
 		log.Info(err)
 		res.R500(w, r, err)
@@ -76,7 +76,7 @@ func (h *runTestHandler) Get(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *runTestHandler) List(w http.ResponseWriter, r *http.Request) {
-	runTest, err := h.service.List()
+	runTest, err := h.repository.List()
 	if err != nil {
 		log.Info(err)
 		if errors.Is(err, gorm.ErrRecordNotFound) {

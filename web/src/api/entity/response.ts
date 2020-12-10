@@ -17,6 +17,8 @@ export interface Response {
   connect_time: number;
   status_code: number;
   body: string;
+  reasons: string;
+  passed: boolean;
 }
 
 export const listResponses = (runTestID: number) => async (query?: Query) => {

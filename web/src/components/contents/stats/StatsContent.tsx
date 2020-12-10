@@ -1,7 +1,7 @@
 /** @jsx jsx */
-import React, { Fragment, useState } from "react";
+import React, { useState } from "react";
 import { jsx, css } from "@emotion/core";
-import { listResponses, Response } from "../../../api/entity/stats";
+import { listResponses, Response } from "../../../api/entity/response";
 import moment from "moment";
 import { Line } from "react-chartjs-2";
 import { defaultFormat, preciseFormat } from "../../basic/helper";
@@ -9,7 +9,7 @@ import { getTest, Test } from "../../../api/entity/test";
 import { Borders, MediaQuery, Box, Sizes } from "../../style";
 import { RunTest } from "../../../api/entity/runtest";
 import { FiArrowRightCircle } from "react-icons/fi";
-import RTable from "../../basic/RTable";
+import RTable, { RTableRow } from "../../basic/RTable";
 import { useParams } from "react-router-dom";
 
 interface Props {}
@@ -126,24 +126,26 @@ const StatsContent: React.FC<Props> = (props: Props) => {
     );
   }, []);
 
-  const buildTable = React.useCallback((r: any) => {
-    const content: any[][] = [];
-    r.map((response: any) => {
-      content.push([
-        moment(response.first_byte).format(preciseFormat()),
-        moment(response.connect_start).format(preciseFormat()),
-        moment(response.connect_done).format(preciseFormat()),
-        moment(response.dns_start).format(preciseFormat()),
-        moment(response.dns_done).format(preciseFormat()),
-        moment(response.tls_start).format(preciseFormat()),
-        moment(response.tls_done).format(preciseFormat()),
-        response.status_code,
-        response.total_time / 1000000,
-        byteSize(response.body),
-      ]);
-      return null;
+  const buildTable = React.useCallback((r: Response[]) => {
+    const rows: RTableRow[] = [];
+    r.forEach((response: Response) => {
+      const row: RTableRow = {
+        row: [
+          { content: moment(response.first_byte).format(preciseFormat()) },
+          { content: moment(response.connect_start).format(preciseFormat()) },
+          { content: moment(response.connect_done).format(preciseFormat()) },
+          { content: moment(response.dns_start).format(preciseFormat()) },
+          { content: moment(response.dns_done).format(preciseFormat()) },
+          { content: moment(response.tls_start).format(preciseFormat()) },
+          { content: moment(response.tls_done).format(preciseFormat()) },
+          { content: response.status_code },
+          { content: response.total_time / 1000000 },
+          { content: byteSize(response.body) },
+        ],
+      };
+      rows.push(row);
     });
-    return content;
+    return rows;
   }, []);
 
   const responseTable = () => {

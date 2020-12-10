@@ -1,5 +1,11 @@
 /** @jsx jsx */
-import React, { FormEvent, Fragment, useEffect, useState } from "react";
+import React, {
+  FormEvent,
+  Fragment,
+  ReactNode,
+  useEffect,
+  useState,
+} from "react";
 import { jsx, css } from "@emotion/core";
 import { DisableSelect, MediaQuery } from "../style";
 import { FiArrowDown, FiArrowUp } from "react-icons/fi";
@@ -14,9 +20,19 @@ export interface TableTitle {
   sortable: boolean;
   width?: string;
 }
+
+export interface RTableRow {
+  rowStyle?: any;
+  row: RTableColumn[];
+}
+export interface RTableColumn {
+  columnStyle?: any;
+  content: ReactNode;
+}
+
 interface Props {
   title: TableTitle[];
-  builder: (data: any) => any[][];
+  builder: (data: any) => RTableRow[];
   fetcher: (query?: Query) => Promise<ServerResponse>;
   setter?: (data: any[]) => void;
   limit?: number;
@@ -27,7 +43,7 @@ const RTable: React.FC<Props> = (props: Props) => {
   const [increment, setIncrement] = useState<boolean>(false);
   const [orderedCol, setOrderCol] = useState<string>();
   const [selectedPage, setSelectedPage] = useState<number>(1);
-  const [content, setContent] = useState<any[][]>([]);
+  const [content, setContent] = useState<RTableRow[]>([]);
   const [total, setTotal] = useState<number>(0);
   const [query, setQuery] = useState<Query>({
     limit: props.limit ?? 10,
@@ -115,15 +131,15 @@ const RTable: React.FC<Props> = (props: Props) => {
           ))}
         </div>
 
-        {content.map((rows, index) => {
+        {content.map((r, index) => {
           return (
             <div key={index} css={row(false)}>
-              {rows.map((column, colIndex) => (
+              {r.row.map((column, colIndex) => (
                 <div
                   css={columnStyle(props.title[colIndex].width)}
                   key={colIndex}
                 >
-                  {column}
+                  {column.content}
                 </div>
               ))}
             </div>
@@ -132,13 +148,13 @@ const RTable: React.FC<Props> = (props: Props) => {
       </div>
 
       <div css={mobileContainer}>
-        {content.map((rows, index) => {
+        {content.map((r, index) => {
           return (
             <div key={index} css={mobileRow}>
-              {rows.map((column, colIndex) => (
+              {r.row.map((column, colIndex) => (
                 <div css={mobileFlex} key={colIndex}>
                   <b>{props.title[colIndex].header}</b>
-                  {column}
+                  {column.content}
                 </div>
               ))}
             </div>

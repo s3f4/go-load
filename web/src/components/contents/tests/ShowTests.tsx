@@ -27,7 +27,7 @@ import {
   FiPlusCircle,
 } from "react-icons/fi";
 import { getInstanceInfo, Instance } from "../../../api/entity/instance";
-import RTable from "../../basic/RTable";
+import RTable, { RTableRow } from "../../basic/RTable";
 import TestGroupLeftMenu from "./TestGroupLeftMenu";
 import RunTests from "./RunTests";
 import { getItems, search, removeOne } from "../../basic/localStorage";
@@ -80,24 +80,31 @@ const ShowTests: React.FC = () => {
     setTestRun(test);
   };
 
-  const buildTable = (tests: Test[]): any[][] => {
-    const content: any[] = [];
+  const buildTable = (tests: Test[]): RTableRow[] => {
+    const rows: RTableRow[] = [];
 
     tests.forEach((test: Test) => {
-      const row: any[] = [
-        <b>{test.name}</b>,
-        test.method,
-        test.request_count,
-        <div>
-          {buttons("Run", test)}
-          {buttons("Edit", test)}
-          {buttons("Delete", test)}
-        </div>,
-      ];
-      content.push(row);
+      const row: RTableRow = {
+        rowStyle: "",
+        row: [
+          { content: <b>{test.name}</b> },
+          { content: test.method },
+          { content: test.request_count },
+          {
+            content: (
+              <div>
+                {buttons("Run", test)}
+                {buttons("Edit", test)}
+                {buttons("Delete", test)}
+              </div>
+            ),
+          },
+        ],
+      };
+      rows.push(row);
     });
 
-    return content;
+    return rows;
   };
 
   const buttons = (text: string, test?: Test) => {

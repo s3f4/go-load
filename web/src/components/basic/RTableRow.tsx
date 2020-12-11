@@ -12,7 +12,11 @@ interface Props {
 }
 
 const RTableRow: React.FC<Props> = (props: Props) => {
-  const [showModal, setShowModal] = useState<boolean>(true);
+  const [show, setShow] = useState<boolean>(false);
+
+  const toggle = (val: boolean) => {
+    setShow(val);
+  };
 
   const content = () => {
     if (props.mobile) {
@@ -30,15 +34,18 @@ const RTableRow: React.FC<Props> = (props: Props) => {
       );
     } else {
       return (
-        <div
-          onClick={() => {
-            setShowModal(true);
-          }}
-          css={row(false)}
-        >
-          <Modal show={showModal} />
+        <div css={row(false)}>
+          <Modal show={show} setShow={toggle} />
           {props.row.columns.map((column, colIndex) => (
-            <div css={columnStyle(props.title[colIndex].width)} key={colIndex}>
+            <div
+              onClick={() => {
+                if (colIndex !== props.row.columns.length - 1) {
+                  toggle(true);
+                }
+              }}
+              css={columnStyle(props.title[colIndex].width)}
+              key={colIndex}
+            >
               {column.content}
             </div>
           ))}

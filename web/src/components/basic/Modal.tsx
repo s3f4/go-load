@@ -1,27 +1,18 @@
 /** @jsx jsx */
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { jsx, css } from "@emotion/core";
 
 interface Props {
   show: boolean;
-  onOpen?: () => any;
-  onClose?: () => any;
+  setShow: (val: boolean) => any;
 }
 
 const Modal: React.FC<Props> = (props: Props) => {
-  const [showModal, setShowModal] = useState<boolean>(false);
-
-  useEffect(() => {}, [showModal]);
-
+  console.log(props.show);
   return (
-    <div css={container(showModal)}>
+    <div css={container(props.show)}>
       <div css={modalContent}>
-        <span
-          css={close}
-          onClick={() => {
-            setShowModal(false);
-          }}
-        >
+        <span css={close} onClick={() => props.setShow(false)}>
           &times;
         </span>
         <p>some content</p>

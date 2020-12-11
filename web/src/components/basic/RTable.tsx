@@ -12,7 +12,7 @@ import { FiArrowDown, FiArrowUp } from "react-icons/fi";
 import { ServerResponse } from "../../api/api";
 import { Query } from "./query";
 import Button, { ButtonColorType, ButtonType } from "./Button";
-import Modal from "./Modal";
+import RTableRow from "./RTableRow";
 
 export interface TableTitle {
   header: string;
@@ -22,19 +22,19 @@ export interface TableTitle {
   width?: string;
 }
 
-export interface RTableRow {
+export interface IRTableRow {
   modal?: (show: boolean) => ReactNode;
   rowStyle?: any;
-  columns: RTableColumn[];
+  columns: IRTableColumn[];
 }
-export interface RTableColumn {
+export interface IRTableColumn {
   columnStyle?: any;
   content: ReactNode;
 }
 
 interface Props {
   title: TableTitle[];
-  builder: (data: any) => RTableRow[];
+  builder: (data: any) => IRTableRow[];
   fetcher: (query?: Query) => Promise<ServerResponse>;
   setter?: (data: any[]) => void;
   limit?: number;
@@ -45,13 +45,12 @@ const RTable: React.FC<Props> = (props: Props) => {
   const [increment, setIncrement] = useState<boolean>(false);
   const [orderedCol, setOrderCol] = useState<string>();
   const [selectedPage, setSelectedPage] = useState<number>(1);
-  const [content, setContent] = useState<RTableRow[]>([]);
+  const [content, setContent] = useState<IRTableRow[]>([]);
   const [total, setTotal] = useState<number>(0);
   const [query, setQuery] = useState<Query>({
     limit: props.limit ?? 10,
     offset: 0,
   });
-  const [showModal, setShowModal] = useState<boolean>(false);
 
   const { fetcher, setter, builder, trigger } = props;
 
@@ -136,22 +135,7 @@ const RTable: React.FC<Props> = (props: Props) => {
 
         {content.map((r, index) => {
           return (
-            <div
-              key={index}
-              css={row(false)}
-              onClick={() => {
-                setShowModal(!showModal);
-              }}
-            >
-              {r.columns.map((column, colIndex) => (
-                <div
-                  css={columnStyle(props.title[colIndex].width)}
-                  key={colIndex}
-                >
-                  {column.content}
-                </div>
-              ))}
-            </div>
+            <RTableRow key={index} mobile={false} row={r} title={props.title} />
           );
         })}
       </div>
@@ -159,14 +143,7 @@ const RTable: React.FC<Props> = (props: Props) => {
       <div css={mobileContainer}>
         {content.map((r, index) => {
           return (
-            <div key={index} css={mobileRow}>
-              {r.columns.map((column, colIndex) => (
-                <div css={mobileFlex} key={colIndex}>
-                  <b>{props.title[colIndex].header}</b>
-                  {column.content}
-                </div>
-              ))}
-            </div>
+            <RTableRow key={index} mobile={true} title={props.title} row={r} />
           );
         })}
       </div>
@@ -185,19 +162,6 @@ const mobileContainer = css`
   border-radius: 0.5rem;
   text-align: left;
   padding: 1rem 1rem 1rem 1rem;
-`;
-
-const mobileFlex = css`
-  display: flex;
-  justify-content: space-between;
-  flex: 0 0 5rem;
-  min-height: 4rem;
-`;
-
-const mobileRow = css`
-  margin-top: 1rem;
-  padding: 2rem;
-  background-color: #e1e1e1;
 `;
 
 const row = (title?: boolean) => css`

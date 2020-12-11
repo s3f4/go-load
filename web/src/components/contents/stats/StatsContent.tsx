@@ -10,7 +10,7 @@ import { listRunTestsOfTest } from "../../../api/entity/runtest";
 import { Borders, MediaQuery, Box, Sizes } from "../../style";
 import { RunTest } from "../../../api/entity/runtest";
 import { FiArrowRightCircle } from "react-icons/fi";
-import RTable, { RTableRow } from "../../basic/RTable";
+import RTable, { IRTableRow } from "../../basic/RTable";
 import { useParams } from "react-router-dom";
 import Paginator from "../../basic/Paginator";
 
@@ -140,9 +140,9 @@ const StatsContent: React.FC<Props> = (props: Props) => {
   );
 
   const buildTable = React.useCallback((r: Response[]) => {
-    const rows: RTableRow[] = [];
+    const rows: IRTableRow[] = [];
     r.forEach((response: Response) => {
-      const row: RTableRow = {
+      const row: IRTableRow = {
         columns: [
           { content: moment(response.first_byte).format(preciseFormat()) },
           { content: moment(response.connect_start).format(preciseFormat()) },

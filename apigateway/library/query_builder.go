@@ -51,9 +51,8 @@ func (q *QueryBuilder) SetPreloads(preloads ...string) *QueryBuilder {
 // List function
 func (q *QueryBuilder) List(out interface{}) error {
 	q.tx.Limit(q.Limit).Offset(q.Offset)
-
-	// todo clean order string
-	// Check column that will be sorted is exists
+	
+	// Check the column that will be sorted is exists
 	if len(q.Order) > 0 && IsIn(q.Order, q.Model) {
 		q.tx.Order(q.Order)
 	}

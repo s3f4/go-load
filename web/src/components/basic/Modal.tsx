@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import React, { Fragment, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { jsx, css } from "@emotion/core";
 
 interface Props {
@@ -9,14 +9,12 @@ interface Props {
 }
 
 const Modal: React.FC<Props> = (props: Props) => {
-  const [showModal, setShowModal] = useState<boolean>(props.show);
+  const [showModal, setShowModal] = useState<boolean>(false);
 
-  if (!showModal) {
-    return <Fragment />;
-  }
+  useEffect(() => {}, [showModal]);
 
   return (
-    <div css={container}>
+    <div css={container(showModal)}>
       <div css={modalContent}>
         <span
           css={close}
@@ -32,8 +30,8 @@ const Modal: React.FC<Props> = (props: Props) => {
   );
 };
 
-const container = css`
-  display: block;
+const container = (show: boolean) => css`
+  display: ${show ? "block" : "none"};
   position: fixed;
   z-index: 1;
   padding-top: 100px;

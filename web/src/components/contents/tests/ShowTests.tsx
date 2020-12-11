@@ -27,7 +27,7 @@ import {
   FiPlusCircle,
 } from "react-icons/fi";
 import { getInstanceInfo, Instance } from "../../../api/entity/instance";
-import RTable, { RTableRow } from "../../basic/RTable";
+import RTable, { IRTableRow } from "../../basic/RTable";
 import TestGroupLeftMenu from "./TestGroupLeftMenu";
 import RunTests from "./RunTests";
 import { getItems, search, removeOne } from "../../basic/localStorage";
@@ -80,11 +80,11 @@ const ShowTests: React.FC = () => {
     setTestRun(test);
   };
 
-  const buildTable = (tests: Test[]): RTableRow[] => {
-    const rows: RTableRow[] = [];
+  const buildTable = (tests: Test[]): IRTableRow[] => {
+    const rows: IRTableRow[] = [];
 
     tests.forEach((test: Test) => {
-      const row: RTableRow = {
+      const row: IRTableRow = {
         rowStyle: "",
         columns: [
           { content: <b>{test.name}</b> },

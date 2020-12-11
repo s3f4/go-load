@@ -7,7 +7,7 @@ import Button, { ButtonColorType, ButtonType } from "../../basic/Button";
 import { leftColumn, MediaQuery, rightColumn } from "../../style";
 import { Test, listTestsOfTestGroup } from "../../../api/entity/test";
 import { FiActivity } from "react-icons/fi";
-import RTable, { RTableRow } from "../../basic/RTable";
+import RTable, { IRTableRow } from "../../basic/RTable";
 import TestGroupLeftMenu from "../tests/TestGroupLeftMenu";
 import Message from "../../basic/Message";
 
@@ -19,12 +19,12 @@ const ListStats: React.FC = () => {
   });
   const history = useHistory();
 
-  const buildTable = (tests: Test[]): RTableRow[] => {
-    const rows: RTableRow[] = [];
+  const buildTable = (tests: Test[]): IRTableRow[] => {
+    const rows: IRTableRow[] = [];
 
     tests.forEach((test: Test) => {
-      const row: RTableRow = {
-        rowStyle:`${test}`,
+      const row: IRTableRow = {
+        rowStyle: `${test}`,
         columns: [
           { content: <b>{test.name}</b> },
           { content: test.method },

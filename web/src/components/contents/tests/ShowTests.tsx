@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import React, { useState, useEffect, ChangeEvent } from "react";
+import React, { useState, useEffect, ChangeEvent, Fragment } from "react";
 import { jsx, css } from "@emotion/core";
 import {
   deleteTestGroup,
@@ -86,7 +86,7 @@ const ShowTests: React.FC = () => {
     tests.forEach((test: Test) => {
       const row: RTableRow = {
         rowStyle: "",
-        row: [
+        columns: [
           { content: <b>{test.name}</b> },
           { content: test.method },
           { content: test.request_count },
@@ -108,8 +108,6 @@ const ShowTests: React.FC = () => {
   };
 
   const buttons = (text: string, test?: Test) => {
-    console.log(search("run_configs", [{ key: "test", value: test }]));
-    console.log(test);
     switch (text) {
       case "Run":
         return (

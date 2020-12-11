@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"github.com/s3f4/go-load/apigateway/library/log"
+	"github.com/s3f4/go-load/apigateway/library"
 	"github.com/s3f4/go-load/apigateway/models"
 	"gorm.io/gorm"
 )
@@ -13,7 +13,7 @@ type RunTestRepository interface {
 	Delete(*models.RunTest) error
 	Update(*models.RunTest) error
 	Get(id uint) (*models.RunTest, error)
-	List() ([]models.RunTest, error)
+	List(*library.QueryBuilder, string, ...interface{}) ([]models.RunTest, int64, error)
 }
 
 type runTestRepository struct {
@@ -56,11 +56,21 @@ func (r *runTestRepository) Get(id uint) (*models.RunTest, error) {
 	return &testReq, nil
 }
 
-func (r *runTestRepository) List() ([]models.RunTest, error) {
-	var testReq []models.RunTest
-	if err := r.DB().Find(&testReq).Error; err != nil {
-		log.Debug(err)
-		return nil, err
+func (r *runTestRepository) List(query *library.QueryBuilder, conditionStr string, where ...interface{}) ([]models.RunTest, int64, error) {
+	var runTestReq []models.RunTest
+	var total int64
+	if len(conditionStr) > 0 && where != nil {
+		r.DB().Where(conditionStr, where...).Model(&runTestReq).Count(&total)
+	} else {
+		r.DB().Model(&runTestReq).Count(&total)
 	}
-	return testReq, nil
+
+	if err := query.SetDB(r.DB()).
+		SetModel(models.Test{}).
+		SetWhere(conditionStr, where...).
+		List(&runTestReq); err != nil {
+		return nil, 0, err
+	}
+
+	return runTestReq, total, nil
 }

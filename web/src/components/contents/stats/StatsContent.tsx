@@ -6,11 +6,14 @@ import moment from "moment";
 import { Line } from "react-chartjs-2";
 import { defaultFormat, preciseFormat } from "../../basic/helper";
 import { getTest, Test } from "../../../api/entity/test";
+import { listRunTestsOfTest } from "../../../api/entity/runtest";
 import { Borders, MediaQuery, Box, Sizes } from "../../style";
 import { RunTest } from "../../../api/entity/runtest";
 import { FiArrowRightCircle } from "react-icons/fi";
 import RTable, { RTableRow } from "../../basic/RTable";
 import { useParams } from "react-router-dom";
+import Paginator from "../../basic/Paginator";
+import RunTests from "../tests/RunTests";
 
 interface Props {}
 
@@ -18,6 +21,8 @@ const StatsContent: React.FC<Props> = (props: Props) => {
   const [responses, setResponses] = useState<Response[]>([]);
   const [test, setTest] = useState<Test>();
   const [selectedRunTest, setSelectedRunTest] = useState<RunTest>();
+  const [runTests, setRunTests] = useState<RunTest[]>([]);
+
   const { id }: any = useParams();
 
   React.useEffect(() => {
@@ -67,70 +72,79 @@ const StatsContent: React.FC<Props> = (props: Props) => {
     console.log(runTest);
   };
 
-  const testContent = React.useCallback((test: Test) => {
-    return (
-      <div css={container}>
-        <div css={testDiv}>
-          <div css={title}>{test.name}</div>
-          {Object.keys(test).map((key) => {
-            if (
-              [
-                "id",
-                "transport_config",
-                "test_group",
-                "test_group_id",
-                "run_tests",
-              ].includes(key)
-            ) {
-              return;
-            }
-            return (
-              <div key={key} css={testPropRow}>
-                <div css={testProp}>{key}</div>
-                <div>{JSON.stringify(test[key])}</div>
-              </div>
-            );
-          })}
-        </div>
-        <div css={testDiv}>
-          <div css={title}>Finished Tests</div>
-          <div css={runTestDiv}>
-            {test.run_tests &&
-              test.run_tests.map((runTest: RunTest) => {
-                return (
-                  <div
-                    css={runTestRow}
-                    onClick={onSelectRunTest(runTest)}
-                    key={runTest.id}
-                  >
-                    <div css={runTestRowLeft}>
-                      <FiArrowRightCircle
-                        size="2.1rem"
-                        color={runTest.passed ? "green" : "red"}
-                      />
+  const testContent = React.useCallback(
+    (test: Test) => {
+      return (
+        <div css={container}>
+          <div css={testDiv}>
+            <div css={title}>{test.name}</div>
+            {Object.keys(test).map((key) => {
+              if (
+                [
+                  "id",
+                  "transport_config",
+                  "test_group",
+                  "test_group_id",
+                  "run_tests",
+                ].includes(key)
+              ) {
+                return;
+              }
+              return (
+                <div key={key} css={testPropRow}>
+                  <div css={testProp}>{key}</div>
+                  <div>{JSON.stringify(test[key])}</div>
+                </div>
+              );
+            })}
+          </div>
+          <div css={testDiv}>
+            <div css={title}>Finished Tests</div>
+            <div css={runTestDiv}>
+              {runTests &&
+                runTests.map((runTest: RunTest) => {
+                  console.log(runTest);
+                  return (
+                    <div
+                      css={runTestRow}
+                      onClick={onSelectRunTest(runTest)}
+                      key={runTest.id}
+                    >
+                      <div css={runTestRowLeft}>
+                        <FiArrowRightCircle
+                          size="2.1rem"
+                          color={runTest.passed ? "green" : "red"}
+                        />
+                      </div>
+                      <div>
+                        Start:{" "}
+                        {moment(runTest.start_time).format(defaultFormat())}
+                      </div>
+                      <div>
+                        End: {moment(runTest.end_time).format(defaultFormat())}{" "}
+                      </div>
+                      <div>Passed: {runTest.passed}</div>
                     </div>
-                    <div>
-                      Start:{" "}
-                      {moment(runTest.start_time).format(defaultFormat())}
-                    </div>
-                    <div>
-                      End: {moment(runTest.end_time).format(defaultFormat())}{" "}
-                    </div>
-                    <div>Passed: {runTest.passed}</div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+            </div>
+            <Paginator
+              limit={5}
+              fetcher={listRunTestsOfTest(id)}
+              setter={setRunTests}
+            />
           </div>
         </div>
-      </div>
-    );
-  }, []);
+      );
+    },
+    [runTests],
+  );
 
   const buildTable = React.useCallback((r: Response[]) => {
     const rows: RTableRow[] = [];
     r.forEach((response: Response) => {
       const row: RTableRow = {
-        row: [
+        columns: [
           { content: moment(response.first_byte).format(preciseFormat()) },
           { content: moment(response.connect_start).format(preciseFormat()) },
           { content: moment(response.connect_done).format(preciseFormat()) },

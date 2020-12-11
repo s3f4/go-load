@@ -12,6 +12,7 @@ import { FiArrowDown, FiArrowUp } from "react-icons/fi";
 import { ServerResponse } from "../../api/api";
 import { Query } from "./query";
 import Button, { ButtonColorType, ButtonType } from "./Button";
+import Modal from "./Modal";
 
 export interface TableTitle {
   header: string;
@@ -22,8 +23,9 @@ export interface TableTitle {
 }
 
 export interface RTableRow {
+  modal?: (show: boolean) => ReactNode;
   rowStyle?: any;
-  row: RTableColumn[];
+  columns: RTableColumn[];
 }
 export interface RTableColumn {
   columnStyle?: any;
@@ -49,6 +51,7 @@ const RTable: React.FC<Props> = (props: Props) => {
     limit: props.limit ?? 10,
     offset: 0,
   });
+  const [showModal, setShowModal] = useState<boolean>(false);
 
   const { fetcher, setter, builder, trigger } = props;
 
@@ -133,8 +136,14 @@ const RTable: React.FC<Props> = (props: Props) => {
 
         {content.map((r, index) => {
           return (
-            <div key={index} css={row(false)}>
-              {r.row.map((column, colIndex) => (
+            <div
+              key={index}
+              css={row(false)}
+              onClick={() => {
+                setShowModal(!showModal);
+              }}
+            >
+              {r.columns.map((column, colIndex) => (
                 <div
                   css={columnStyle(props.title[colIndex].width)}
                   key={colIndex}
@@ -151,7 +160,7 @@ const RTable: React.FC<Props> = (props: Props) => {
         {content.map((r, index) => {
           return (
             <div key={index} css={mobileRow}>
-              {r.row.map((column, colIndex) => (
+              {r.columns.map((column, colIndex) => (
                 <div css={mobileFlex} key={colIndex}>
                   <b>{props.title[colIndex].header}</b>
                   {column.content}
@@ -199,6 +208,7 @@ const row = (title?: boolean) => css`
   background-color: ${title ? "#007d9c" : "none"};
   color: ${title ? "white" : "none"};
   ${title ? DisableSelect : ""}
+  cursor:pointer;
 `;
 
 const columnStyle = (width?: string, sortable?: boolean) => css`

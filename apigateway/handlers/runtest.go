@@ -18,6 +18,7 @@ type runTestHandlerInterface interface {
 	Delete(w http.ResponseWriter, r *http.Request)
 	Get(w http.ResponseWriter, r *http.Request)
 	List(w http.ResponseWriter, r *http.Request)
+	ListByTestID(w http.ResponseWriter, r *http.Request)
 }
 
 type runTestHandler struct {
@@ -76,7 +77,7 @@ func (h *runTestHandler) Get(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *runTestHandler) List(w http.ResponseWriter, r *http.Request) {
-	runTest, err := h.repository.List()
+	runTest, _, err := h.repository.List(nil, "")
 	if err != nil {
 		log.Info(err)
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -87,4 +88,34 @@ func (h *runTestHandler) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	res.R200(w, r, runTest)
+}
+
+func (h *runTestHandler) ListByTestID(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	query, ok := ctx.Value(middlewares.QueryCtxKey).(*library.QueryBuilder)
+	if !ok {
+		res.R422(w, r, library.ErrUnprocessableEntity)
+		return
+	}
+
+	test, ok := ctx.Value(middlewares.TestCtxKey).(*models.Test)
+	if !ok {
+		res.R422(w, r, library.ErrUnprocessableEntity)
+		return
+	}
+
+	runTests, total, err := h.repository.List(query, "test_id=?", test.ID)
+	if err != nil {
+		log.Debug(err)
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			res.R404(w, r, library.ErrNotFound)
+			return
+		}
+		res.R500(w, r, library.ErrInternalServerError)
+		return
+	}
+	res.R200(w, r, map[string]interface{}{
+		"total": total,
+		"data":  runTests,
+	})
 }

@@ -1,4 +1,5 @@
-import { makeReq } from "../api";
+import { Query } from "../../components/basic/query";
+import { makeReq, QueryString } from "../api";
 
 export interface RunTest {
   id?: number;
@@ -18,4 +19,8 @@ export const listRunTest = async () => {
 
 export const deleteRunTest = async (runTest: RunTest) => {
   return await makeReq("/run_test", "DELETE", runTest);
+};
+
+export const listRunTestsOfTest = (testID: number) => async (query?: Query) => {
+  return await makeReq(`/test/${testID}/run_tests?${QueryString(query)}`);
 };

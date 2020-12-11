@@ -1,9 +1,8 @@
 /** @jsx jsx */
-import React, { ReactNode, useState } from "react";
+import React, { Fragment, useState } from "react";
 import { jsx, css } from "@emotion/core";
 
 interface Props {
-  content: ReactNode;
   show: boolean;
   onOpen?: () => any;
   onClose?: () => any;
@@ -11,8 +10,9 @@ interface Props {
 
 const Modal: React.FC<Props> = (props: Props) => {
   const [showModal, setShowModal] = useState<boolean>(props.show);
+
   if (!showModal) {
-    return null;
+    return <Fragment />;
   }
 
   return (

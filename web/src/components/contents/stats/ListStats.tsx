@@ -24,7 +24,8 @@ const ListStats: React.FC = () => {
 
     tests.forEach((test: Test) => {
       const row: RTableRow = {
-        row: [
+        rowStyle:`${test}`,
+        columns: [
           { content: <b>{test.name}</b> },
           { content: test.method },
           { content: test.request_count },

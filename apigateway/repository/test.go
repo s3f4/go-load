@@ -51,7 +51,8 @@ func (r *testRepository) Delete(test *models.Test) error {
 
 func (r *testRepository) Get(id uint) (*models.Test, error) {
 	var testReq models.Test
-	if err := r.DB().Preload("Headers").
+	if err := r.DB().
+		Preload("Headers").
 		Preload("TestGroup").
 		Preload("RunTests").
 		Preload("TransportConfig").

@@ -13,7 +13,6 @@ import { FiArrowRightCircle } from "react-icons/fi";
 import RTable, { RTableRow } from "../../basic/RTable";
 import { useParams } from "react-router-dom";
 import Paginator from "../../basic/Paginator";
-import RunTests from "../tests/RunTests";
 
 interface Props {}
 

@@ -3,7 +3,7 @@ import React, { Fragment, useEffect, useState } from "react";
 import { jsx } from "@emotion/core";
 import { Query } from "./query";
 import { ServerResponse } from "../../api/api";
-import Button from "./Button";
+import Button, { ButtonType } from "./Button";
 
 interface Props {
   // children: ReactNode;
@@ -17,6 +17,7 @@ const Paginator: React.FC<Props> = (props: Props) => {
   const [query, setQuery] = useState<Query>({
     limit: props.limit ?? 10,
     offset: 0,
+    order: "d__id",
   });
 
   const { fetcher, setter } = props;
@@ -47,7 +48,14 @@ const Paginator: React.FC<Props> = (props: Props) => {
     const p = total / query.limit;
     const page = p > 1 ? Math.ceil(p) : p;
     for (let i = 1; i <= page; i++) {
-      buttons.push(<Button key={i} text={i + ""} onClick={onChangePage(i)} />);
+      buttons.push(
+        <Button
+          type={ButtonType.small}
+          key={i}
+          text={i + ""}
+          onClick={onChangePage(i)}
+        />,
+      );
     }
     return buttons;
   };

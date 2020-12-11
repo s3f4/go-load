@@ -89,11 +89,11 @@ func (q *QueryBuilder) Build(query url.Values) {
 
 	if s, ok := query["order"]; ok {
 		order := s[0]
-		if strings.HasPrefix(order, "d_") {
+		if strings.HasPrefix(order, "d__") {
 			q.Order = fmt.Sprintf("%s DESC", strings.Split(order, "d_")[1])
 		}
 
-		if strings.HasPrefix(order, "i_") {
+		if strings.HasPrefix(order, "i__") {
 			q.Order = fmt.Sprintf("%s ASC", strings.Split(order, "i_")[1])
 		}
 	}

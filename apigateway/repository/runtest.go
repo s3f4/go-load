@@ -66,7 +66,7 @@ func (r *runTestRepository) List(query *library.QueryBuilder, conditionStr strin
 	}
 
 	if err := query.SetDB(r.DB()).
-		SetModel(models.Test{}).
+		SetModel(models.RunTest{}).
 		SetWhere(conditionStr, where...).
 		List(&runTestReq); err != nil {
 		return nil, 0, err

@@ -69,7 +69,7 @@ const RTable: React.FC<Props> = (props: Props) => {
     if (sortable) {
       setIncrement(!increment);
       setOrderCol(col);
-      const incrementStr = !increment ? "i_" : "d_";
+      const incrementStr = !increment ? "i__" : "d__";
       setQuery({
         limit: props.limit ?? 10,
         offset: 0,

@@ -28,7 +28,14 @@ func IsIn(val string, x interface{}) bool {
 		return false
 	}
 
-	return Find(modelFields, strcase.ToCamel(vals[0])) != -1
+	field := vals[0]
+	if field == "id" || field == "ID" || field == "Id" {
+		field = "ID"
+	} else {
+		field = strcase.ToCamel(field)
+	}
+
+	return Find(modelFields, field) != -1
 }
 
 //Fields gets fields of Struct

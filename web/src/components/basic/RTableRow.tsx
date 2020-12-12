@@ -35,7 +35,7 @@ const RTableRow: React.FC<Props> = (props: Props) => {
     } else {
       return (
         <div css={row(false)}>
-          <Modal show={show} setShow={toggle} />
+          <Modal row={props.row} show={show} setShow={toggle} />
           {props.row.columns.map((column, colIndex) => (
             <div
               onClick={() => {

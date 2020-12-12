@@ -1,10 +1,14 @@
 /** @jsx jsx */
-import React from "react";
+import React, { ReactNode } from "react";
 import { jsx, css } from "@emotion/core";
+import { IRTableColumn, IRTableRow, TableTitle } from "./RTable";
 
 interface Props {
   show: boolean;
   setShow: (val: boolean) => any;
+  title?: TableTitle[];
+  row?: IRTableRow;
+  content?: ReactNode;
 }
 
 const Modal: React.FC<Props> = (props: Props) => {
@@ -15,7 +19,15 @@ const Modal: React.FC<Props> = (props: Props) => {
         <span css={close} onClick={() => props.setShow(false)}>
           &times;
         </span>
-        <p>some content</p>
+        <div>
+          {props.row
+            ? props.row.columns.map((col: IRTableColumn) => {
+                return <div>{col.content}</div>;
+              })
+            : props.content
+            ? props.content
+            : ""}
+        </div>
       </div>
     </div>
   );

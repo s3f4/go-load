@@ -18,13 +18,14 @@ export interface TableTitle {
   header: string;
   // accessor is model column if there is one
   accessor?: string;
-  sortable: boolean;
+  sortable?: boolean;
   width?: string;
 }
 
 export interface IRTableRow {
   modal?: (show: boolean) => ReactNode;
   rowStyle?: any;
+  allColumns?: IRTableColumn[];
   columns: IRTableColumn[];
 }
 export interface IRTableColumn {
@@ -34,6 +35,7 @@ export interface IRTableColumn {
 
 interface Props {
   title: TableTitle[];
+  allTitles?: TableTitle[];
   builder: (data: any) => IRTableRow[];
   fetcher: (query?: Query) => Promise<ServerResponse>;
   setter?: (data: any[]) => void;
@@ -115,7 +117,7 @@ const RTable: React.FC<Props> = (props: Props) => {
         <div css={row(true)}>
           {props.title.map((title: TableTitle, index) => (
             <div
-              onClick={onOrder(title.sortable, title.accessor!)}
+              onClick={onOrder(title.sortable!, title.accessor!)}
               css={columnStyle(title.width, title.sortable)}
               key={index}
             >
@@ -135,7 +137,12 @@ const RTable: React.FC<Props> = (props: Props) => {
 
         {content.map((r, index) => {
           return (
-            <RTableRow key={index} mobile={false} row={r} title={props.title} />
+            <RTableRow
+              key={index}
+              mobile={false}
+              row={r}
+              title={props.allTitles ?? props.title}
+            />
           );
         })}
       </div>
@@ -143,7 +150,7 @@ const RTable: React.FC<Props> = (props: Props) => {
       <div css={mobileContainer}>
         {content.map((r, index) => {
           return (
-            <RTableRow key={index} mobile={true} title={props.title} row={r} />
+            <RTableRow key={index} mobile={true} row={r} title={props.title} />
           );
         })}
       </div>

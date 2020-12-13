@@ -86,6 +86,17 @@ const ShowTests: React.FC = () => {
     tests.forEach((test: Test) => {
       const row: IRTableRow = {
         rowStyle: "",
+        allColumns: [
+          { content: test.id },
+          { content: test.name },
+          { content: test.url },
+          { content: test.method },
+          { content: test.request_count },
+          { content: test.goroutine_count },
+          { content: JSON.stringify(test.headers) },
+          { content: JSON.stringify(test.transport_config) },
+          { content: test.test_group?.name },
+        ],
         columns: [
           { content: <b>{test.name}</b> },
           { content: test.method },
@@ -362,6 +373,17 @@ const ShowTests: React.FC = () => {
                   sortable: false,
                   width: "20%",
                 },
+              ]}
+              allTitles={[
+                { header: "ID" },
+                { header: "Test Name" },
+                { header: "Test Group Name" },
+                { header: "URL" },
+                { header: "Method" },
+                { header: "Request Count" },
+                { header: "Headers" },
+                { header: "Goroutine Count" },
+                { header: "Transport Config" },
               ]}
             />
           </React.Fragment>

@@ -4,7 +4,7 @@ import { jsx, css } from "@emotion/core";
 import { listTests, runTest, Test } from "../../../api/entity/test";
 import Loader from "../../basic/Loader";
 import Button, { ButtonColorType, ButtonType } from "../../basic/Button";
-import { FiActivity } from "react-icons/fi";
+import { FiActivity, FiArrowRightCircle } from "react-icons/fi";
 import { useHistory } from "react-router-dom";
 import { TestGroup } from "../../../api/entity/test_group";
 import { Borders, Sizes } from "../../style";
@@ -138,9 +138,18 @@ const RunTests: React.FC<Props> = (props: Props) => {
                     <Loader inlineLoading fill={"red"} />
                   </div>
                 )}
+                {!runConfig.loading && (
+                  <div css={item(5)}>
+                    {runConfig.passed}
+                    <FiArrowRightCircle
+                      size="2.1rem"
+                      color={runConfig.passed ? "green" : "red"}
+                    />
+                  </div>
+                )}
                 <div css={item(90)}>{runConfig.test.name}</div>
                 {!runConfig.loading && (
-                  <div css={item(10)}>
+                  <div css={item(5)}>
                     <Button
                       colorType={ButtonColorType.info}
                       type={ButtonType.iconButton}

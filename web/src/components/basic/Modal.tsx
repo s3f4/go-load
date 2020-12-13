@@ -12,7 +12,6 @@ interface Props {
 }
 
 const Modal: React.FC<Props> = (props: Props) => {
-  console.log(props.show);
   return (
     <div css={container(props.show)}>
       <div css={modalContent}>
@@ -20,9 +19,14 @@ const Modal: React.FC<Props> = (props: Props) => {
           &times;
         </span>
         <div>
-          {props.row
-            ? props.row.columns.map((col: IRTableColumn) => {
-                return <div>{col.content}</div>;
+          {props.row && props.row.allColumns
+            ? props.row.allColumns.map((col: IRTableColumn, index: number) => {
+                return (
+                  <div key={index}>
+                    <b>{props.title ? props.title[index].header : ""}:</b> -{" "}
+                    {col.content}
+                  </div>
+                );
               })
             : props.content
             ? props.content

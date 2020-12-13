@@ -18,6 +18,7 @@ export interface Test {
   expected_connection_time: number;
   expected_dns_time: number;
   expected_tls_time: number;
+  expected_total_time: number;
   test_group?: TestGroup;
   transport_config: TransportConfig;
   headers?: Header[];

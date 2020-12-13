@@ -47,7 +47,7 @@ const StatsContent: React.FC<Props> = (props: Props) => {
       dns_time.push(response.dns_time);
       tls_time.push(response.tls_time);
       total_time.push(response.total_time);
-      console.log(response.connect_time);
+
       labels.push("request_" + index);
       return null;
     });
@@ -72,26 +72,27 @@ const StatsContent: React.FC<Props> = (props: Props) => {
     const graphData = chartData(responses);
 
     const data = {
+      legend: "abc",
       datasets: [
         {
           data: graphData.data.first_byte_time,
-          label: "First Byte Time",
+          label: "First Byte Time(ns)",
         },
         {
           data: graphData.data.connect_time,
-          label: "Connect Time",
+          label: "Connect Time(ns)",
         },
         {
           data: graphData.data.dns_time,
-          label: "DNS Time",
+          label: "DNS Time(ns)",
         },
         {
           data: graphData.data.tls_time,
-          label: "TLS Time",
+          label: "TLS Time(ns)",
         },
         {
           data: graphData.data.total_time,
-          label: "Total Time",
+          label: "Total Time(ns)",
         },
       ],
       labels: graphData.labels,
@@ -171,44 +172,41 @@ const StatsContent: React.FC<Props> = (props: Props) => {
     [runTests],
   );
 
-  const buildTable = React.useCallback(
-    (r: Response[]) => {
-      const rows: IRTableRow[] = [];
-      r.forEach((response: Response) => {
-        const row: IRTableRow = {
-          allColumns: [
-            {
-              content: moment(selectedRunTest!.start_time).format(
-                preciseFormat(),
-              ),
-            },
-            { content: moment(response.first_byte).format(preciseFormat()) },
-            { content: moment(response.connect_start).format(preciseFormat()) },
-            { content: moment(response.connect_done).format(preciseFormat()) },
-            { content: moment(response.dns_start).format(preciseFormat()) },
-            { content: moment(response.dns_done).format(preciseFormat()) },
-            { content: moment(response.tls_start).format(preciseFormat()) },
-            { content: moment(response.tls_done).format(preciseFormat()) },
-            { content: response.status_code },
-            { content: response.total_time / 1000000 },
-            { content: response.body },
-          ],
-          columns: [
-            { content: moment(response.first_byte).format(defaultFormat()) },
-            { content: response.first_byte_time },
-            { content: response.connect_time },
-            { content: response.dns_time },
-            { content: response.tls_time },
-            { content: response.status_code },
-            { content: response.total_time / 1000000 },
-          ],
-        };
-        rows.push(row);
-      });
-      return rows;
-    },
-    [selectedRunTest],
-  );
+  const buildTable = React.useCallback((r: Response[]) => {
+    const rows: IRTableRow[] = [];
+    r.forEach((response: Response) => {
+      const reasons = response.reasons.split("\n");
+      console.log(reasons);
+      const row: IRTableRow = {
+        allColumns: [
+          { content: moment(response.start_time).format(preciseFormat()) },
+          { content: moment(response.first_byte).format(preciseFormat()) },
+          { content: moment(response.connect_start).format(preciseFormat()) },
+          { content: moment(response.connect_done).format(preciseFormat()) },
+          { content: moment(response.dns_start).format(preciseFormat()) },
+          { content: moment(response.dns_done).format(preciseFormat()) },
+          { content: moment(response.tls_start).format(preciseFormat()) },
+          { content: moment(response.tls_done).format(preciseFormat()) },
+          { content: response.status_code },
+          { content: response.total_time },
+          { content: response.body },
+          { content: response.passed },
+          { content: JSON.stringify(response.reasons) },
+        ],
+        columns: [
+          { content: moment(response.first_byte).format(defaultFormat()) },
+          { content: response.first_byte_time },
+          { content: response.connect_time },
+          { content: response.dns_time },
+          { content: response.tls_time },
+          { content: response.status_code },
+          { content: response.total_time },
+        ],
+      };
+      rows.push(row);
+    });
+    return rows;
+  }, []);
 
   const responseTable = () => {
     if (!selectedRunTest) {
@@ -234,6 +232,8 @@ const StatsContent: React.FC<Props> = (props: Props) => {
           { header: "StatusCode" },
           { header: "TotalTime(ms)" },
           { header: "Body" },
+          { header: "Passed" },
+          { header: "Reasons" },
         ]}
         title={[
           {
@@ -273,7 +273,7 @@ const StatsContent: React.FC<Props> = (props: Props) => {
             width: "12.5%",
           },
           {
-            header: "TotalTime(ms)",
+            header: "TotalTime(ns)",
             accessor: "total_time",
             sortable: true,
             width: "15%",

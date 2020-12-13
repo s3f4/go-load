@@ -30,6 +30,7 @@ const initialTest: Test = {
   expected_connection_time: 0,
   expected_dns_time: 0,
   expected_tls_time: 0,
+  expected_total_time: 0,
   payload: "",
   goroutine_count: 1,
   headers: [],
@@ -232,27 +233,33 @@ const TestForm = (props: Props) => {
           />
           <TextInput
             onChange={handleChange}
-            label="Expected First Byte Time"
+            label="Expected First Byte Time(ns)"
             name="expected_first_byte_time"
             value={test.expected_first_byte_time}
           />
           <TextInput
             onChange={handleChange}
-            label="Expected Connection Time"
+            label="Expected Connection Time(ns)"
             name="expected_connection_time"
             value={test.expected_connection_time}
           />
           <TextInput
             onChange={handleChange}
-            label="Expected DNS Time"
+            label="Expected DNS Time(ns)"
             name="expected_dns_time"
             value={test.expected_dns_time}
           />
           <TextInput
             onChange={handleChange}
-            label="Expected TLS Time"
+            label="Expected TLS Time(ns)"
             name="expected_tls_time"
             value={test.expected_tls_time}
+          />
+          <TextInput
+            onChange={handleChange}
+            label="Expected Total Time(ns)"
+            name="expected_total_time"
+            value={test.expected_total_time}
           />
           {test.headers &&
             test.headers.map((header: Header) => {

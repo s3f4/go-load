@@ -9,6 +9,7 @@ type Response struct {
 	ID              uint      `json:"id" gorm:"id;primaryKey;autoIncrement"`
 	RunTestID       uint      `json:"run_test_id" gorm:"run_test_id"`
 	WorkerHostName  string    `json:"worker_host_name" gorm:"worker_host_name"`
+	StartTime       time.Time `json:"start_time" gorm:"start_time"`
 	TotalTime       int64     `json:"total_time" gorm:"total_time"`
 	FirstByte       time.Time `json:"first_byte" gorm:"first_byte"`
 	FirstByteTime   int64     `json:"first_byte_time" gorm:"first_byte_time"`

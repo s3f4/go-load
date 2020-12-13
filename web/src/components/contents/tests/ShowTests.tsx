@@ -96,6 +96,13 @@ const ShowTests: React.FC = () => {
           { content: test.goroutine_count },
           { content: JSON.stringify(test.headers) },
           { content: JSON.stringify(test.transport_config) },
+          {content: test.expected_response_code},
+          {content: test.expected_response_body},
+          {content: test.expected_first_byte_time},
+          {content: test.expected_connection_time},
+          {content: test.expected_dns_time},
+          {content: test.expected_tls_time},
+          {content: test.expected_total_time},
         ],
         columns: [
           { content: <b>{test.name}</b> },
@@ -384,6 +391,13 @@ const ShowTests: React.FC = () => {
                 { header: "Goroutine Count" },
                 { header: "Headers" },
                 { header: "Transport Config" },
+                { header: "Expected Response Status Code" },
+                { header: "Expected Response Body" },
+                { header: "Expected Response First Byte Time" },
+                { header: "Expected Response Connect Time" },
+                { header: "Expected Response DNS Time" },
+                { header: "Expected Response TLS Time" },
+                { header: "Expected Response Total Time" },
               ]}
             />
           </React.Fragment>

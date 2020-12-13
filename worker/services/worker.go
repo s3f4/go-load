@@ -93,7 +93,7 @@ func (s *workerService) compare(test *models.Test, response *models.Response) []
 	var reasons []string
 	if test.ExpectedResponseCode != 0 && test.ExpectedResponseCode != response.StatusCode {
 		reasons = append(reasons, fmt.Sprintf(
-			"test.ExpectedResponseCode: %d\nresponse.StatusCode: %d\n",
+			"test.ExpectedResponseCode: %d, response.StatusCode: %d\n",
 			test.ExpectedResponseCode,
 			response.StatusCode,
 		))
@@ -101,7 +101,7 @@ func (s *workerService) compare(test *models.Test, response *models.Response) []
 
 	if test.Payload != "" && test.Payload != response.Body {
 		reasons = append(reasons, fmt.Sprintf(
-			"test.Payload: %s\n response.Body: %s\n",
+			"test.Payload: %s, response.Body: %s\n",
 			test.Payload,
 			response.Body,
 		))
@@ -109,7 +109,7 @@ func (s *workerService) compare(test *models.Test, response *models.Response) []
 
 	if test.ExpectedConnectionTime != 0 && test.ExpectedConnectionTime > response.ConnectTime {
 		reasons = append(reasons, fmt.Sprintf(
-			"test.ExpectedConnectionTime: %d\nresponse.ConnectTime: %d",
+			"test.ExpectedConnectionTime: %d, response.ConnectTime: %d\n",
 			test.ExpectedConnectionTime,
 			response.ConnectTime,
 		))
@@ -117,7 +117,7 @@ func (s *workerService) compare(test *models.Test, response *models.Response) []
 
 	if test.ExpectedTLSTime != 0 && test.ExpectedTLSTime > response.TLSTime {
 		reasons = append(reasons, fmt.Sprintf(
-			"test.ExpectedTLSTime: %d\nresponse.TLSTime: %d",
+			"test.ExpectedTLSTime: %d, response.TLSTime: %d\n",
 			test.ExpectedTLSTime,
 			response.TLSTime,
 		))
@@ -125,7 +125,7 @@ func (s *workerService) compare(test *models.Test, response *models.Response) []
 
 	if test.ExpectedDNSTime != 0 && test.ExpectedDNSTime > response.DNSTime {
 		reasons = append(reasons, fmt.Sprintf(
-			"test.ExpectedDNSTime: %d\nresponse.DNSTime: %d",
+			"test.ExpectedDNSTime: %d, response.DNSTime: %d\n",
 			test.ExpectedDNSTime,
 			response.DNSTime,
 		))
@@ -133,7 +133,7 @@ func (s *workerService) compare(test *models.Test, response *models.Response) []
 
 	if test.ExpectedFirstByteTime != 0 && test.ExpectedFirstByteTime > response.FirstByteTime {
 		reasons = append(reasons, fmt.Sprintf(
-			"test.ExpectedFirstByteTime: %d\nresponse.FirstByteTime: %d",
+			"test.ExpectedFirstByteTime: %d, response.FirstByteTime: %d\n",
 			test.ExpectedFirstByteTime,
 			response.FirstByteTime,
 		))
@@ -142,7 +142,7 @@ func (s *workerService) compare(test *models.Test, response *models.Response) []
 	var responseHeaders http.Header
 	if err := json.Unmarshal(response.ResponseHeaders, &responseHeaders); err != nil {
 		reasons = append(reasons, fmt.Sprintf(
-			"ResponseHeaders json error: %v\nHeaders: %v\n",
+			"ResponseHeaders json error: %v, Headers: %v\n",
 			err,
 			responseHeaders,
 		))
@@ -151,9 +151,7 @@ func (s *workerService) compare(test *models.Test, response *models.Response) []
 	for _, header := range test.Headers {
 		if !header.IsRequestHeader {
 			if values, ok := responseHeaders[header.Key]; ok {
-				fmt.Println("responseheaders header.key found")
 				if found := library.SliceFind(values, header.Value); found == -1 {
-					fmt.Println("found = -1")
 					reasons = append(reasons, fmt.Sprintf(
 						"header.Value: %s is not found in %v\n",
 						header.Value,

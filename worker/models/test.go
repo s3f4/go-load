@@ -16,6 +16,7 @@ type Test struct {
 	ExpectedConnectionTime int64           `json:"expected_connection_time" gorm:"expected_connection_time"`
 	ExpectedDNSTime        int64           `json:"expected_dns_time" gorm:"expected_dns_time"`
 	ExpectedTLSTime        int64           `json:"expected_tls_time" gorm:"expected_tls_time"`
+	ExpectedTotalTime      int64           `json:"expected_total_time" gorm:"expected_total_time"`
 	TransportConfig        TransportConfig `json:"transport_config" gorm:"foreignKey:TestID"`
 	TestGroup              *TestGroup      `json:"test_group"`
 	RunTests               []*RunTest      `json:"run_tests" gorm:"foreignKey:TestID"`

@@ -51,6 +51,7 @@ func (c *Client) setTrace(res *models.Response) *httptrace.ClientTrace {
 }
 
 func (c *Client) calculateTimes(start time.Time, res *models.Response) {
+	res.StartTime = start
 	res.FirstByteTime = int64(res.FirstByte.Sub(start))
 	res.DNSTime = int64(res.DNSDone.Sub(res.DNSStart))
 	res.TLSTime = int64(res.TLSDone.Sub(res.TLSStart))

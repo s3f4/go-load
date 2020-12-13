@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import React, { Fragment, useState } from "react";
+import React, { useState } from "react";
 import { jsx, css } from "@emotion/core";
 import { listResponses, Response } from "../../../api/entity/response";
 import moment from "moment";
@@ -138,7 +138,7 @@ const StatsContent: React.FC<Props> = (props: Props) => {
                 runTests.map((runTest: RunTest) => {
                   return (
                     <div
-                      css={runTestRow}
+                      css={runTestRow(runTest.id === selectedRunTest?.id)}
                       onClick={onSelectRunTest(runTest)}
                       key={runTest.id}
                     >
@@ -155,7 +155,7 @@ const StatsContent: React.FC<Props> = (props: Props) => {
                       <div>
                         End: {moment(runTest.end_time).format(defaultFormat())}{" "}
                       </div>
-                      <div>Passed: {runTest.passed}</div>
+                      <div>Passed: {runTest.passed.toString()}</div>
                     </div>
                   );
                 })}
@@ -169,15 +169,18 @@ const StatsContent: React.FC<Props> = (props: Props) => {
         </div>
       );
     },
-    [runTests],
+    [runTests, selectedRunTest],
   );
 
   const buildTable = React.useCallback((r: Response[]) => {
     const rows: IRTableRow[] = [];
     r.forEach((response: Response) => {
       const reasons = response.reasons.split("\n");
-      console.log(reasons);
+
       const row: IRTableRow = {
+        rowStyle: response.passed
+          ? "background-color:green;"
+          : "background-color:red;",
         allColumns: [
           { content: moment(response.start_time).format(preciseFormat()) },
           { content: moment(response.first_byte).format(preciseFormat()) },
@@ -190,8 +193,16 @@ const StatsContent: React.FC<Props> = (props: Props) => {
           { content: response.status_code },
           { content: response.total_time },
           { content: response.body },
-          { content: response.passed },
-          { content: JSON.stringify(response.reasons) },
+          { content: response.passed.toString() },
+          {
+            content: (
+              <div>
+                {reasons.map((reason) => {
+                  return <div>{reason}</div>;
+                })}
+              </div>
+            ),
+          },
         ],
         columns: [
           { content: moment(response.first_byte).format(defaultFormat()) },
@@ -308,7 +319,7 @@ const testContainer = css`
 `;
 
 const testDiv = css`
-  width: 100%;
+  width: 50%;
   ${MediaQuery[1]} {
     width: 100%;
   }
@@ -336,15 +347,18 @@ const title = css`
   margin-bottom: 2rem;
 `;
 
-const runTestRow = css`
-  display: flex;
-  border: ${Borders.border1};
-  ${Box.boxShadow1}
-  border-radius: ${Sizes.borderRadius1};
-  justify-content: space-between;
-  margin-bottom: 0.5rem;
-  padding: 0.7rem;
-`;
+const runTestRow = (selected: boolean) => {
+  return css`
+    display: flex;
+    border: ${Borders.border1};
+    ${Box.boxShadow1}
+    border-radius: ${Sizes.borderRadius1};
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    padding: 0.7rem;
+    ${selected ? "background-color:#FFA042;" : ""};
+  `;
+};
 
 const runTestRowLeft = css`
   margin-right: 1rem;

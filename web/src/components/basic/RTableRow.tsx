@@ -35,7 +35,7 @@ const RTableRow: React.FC<Props> = (props: Props) => {
       );
     } else {
       return (
-        <div css={row(false)}>
+        <div css={row(false, props.row.rowStyle)}>
           <Modal
             title={props.allTitles}
             row={props.row}
@@ -75,7 +75,7 @@ const mobileFlex = css`
   min-height: 4rem;
 `;
 
-const row = (title?: boolean) => css`
+const row = (title?: boolean, rowStyle?: any) => css`
   display: flex;
   justify-content: space-between;
   flex: 0 0 4.5rem;
@@ -84,6 +84,7 @@ const row = (title?: boolean) => css`
   color: ${title ? "white" : "none"};
   ${title ? DisableSelect : ""}
   cursor:pointer;
+  ${rowStyle}
 `;
 
 const columnStyle = (width?: string, sortable?: boolean) => css`

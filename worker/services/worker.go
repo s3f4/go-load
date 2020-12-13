@@ -80,7 +80,7 @@ func (s *workerService) makeReq(client *client.Client, payload *models.RequestPa
 		if len(reasons) > 0 {
 			f := false
 			res.Passed = &f
-			res.Reasons = strings.Join(reasons, ",")
+			res.Reasons = strings.Join(reasons, "\n")
 			payload.RunTest.Passed = &f
 		}
 		dataBuf <- *res
@@ -91,25 +91,10 @@ func (s *workerService) makeReq(client *client.Client, payload *models.RequestPa
 
 func (s *workerService) compare(test *models.Test, response *models.Response) []string {
 	var reasons []string
-	if test.ExpectedResponseCode != 0 && test.ExpectedResponseCode != response.StatusCode {
-		reasons = append(reasons, fmt.Sprintf(
-			"test.ExpectedResponseCode: %d, response.StatusCode: %d\n",
-			test.ExpectedResponseCode,
-			response.StatusCode,
-		))
-	}
-
-	if test.Payload != "" && test.Payload != response.Body {
-		reasons = append(reasons, fmt.Sprintf(
-			"test.Payload: %s, response.Body: %s\n",
-			test.Payload,
-			response.Body,
-		))
-	}
 
 	if test.ExpectedConnectionTime != 0 && test.ExpectedConnectionTime > response.ConnectTime {
 		reasons = append(reasons, fmt.Sprintf(
-			"test.ExpectedConnectionTime: %d, response.ConnectTime: %d\n",
+			"test.ExpectedConnectionTime: %d > response.ConnectTime: %d",
 			test.ExpectedConnectionTime,
 			response.ConnectTime,
 		))
@@ -117,7 +102,7 @@ func (s *workerService) compare(test *models.Test, response *models.Response) []
 
 	if test.ExpectedTLSTime != 0 && test.ExpectedTLSTime > response.TLSTime {
 		reasons = append(reasons, fmt.Sprintf(
-			"test.ExpectedTLSTime: %d, response.TLSTime: %d\n",
+			"test.ExpectedTLSTime: %d > response.TLSTime: %d",
 			test.ExpectedTLSTime,
 			response.TLSTime,
 		))
@@ -125,7 +110,7 @@ func (s *workerService) compare(test *models.Test, response *models.Response) []
 
 	if test.ExpectedDNSTime != 0 && test.ExpectedDNSTime > response.DNSTime {
 		reasons = append(reasons, fmt.Sprintf(
-			"test.ExpectedDNSTime: %d, response.DNSTime: %d\n",
+			"test.ExpectedDNSTime: %d > response.DNSTime: %d",
 			test.ExpectedDNSTime,
 			response.DNSTime,
 		))
@@ -133,7 +118,7 @@ func (s *workerService) compare(test *models.Test, response *models.Response) []
 
 	if test.ExpectedFirstByteTime != 0 && test.ExpectedFirstByteTime > response.FirstByteTime {
 		reasons = append(reasons, fmt.Sprintf(
-			"test.ExpectedFirstByteTime: %d, response.FirstByteTime: %d\n",
+			"test.ExpectedFirstByteTime: %d > response.FirstByteTime: %d",
 			test.ExpectedFirstByteTime,
 			response.FirstByteTime,
 		))
@@ -142,7 +127,7 @@ func (s *workerService) compare(test *models.Test, response *models.Response) []
 	var responseHeaders http.Header
 	if err := json.Unmarshal(response.ResponseHeaders, &responseHeaders); err != nil {
 		reasons = append(reasons, fmt.Sprintf(
-			"ResponseHeaders json error: %v, Headers: %v\n",
+			"ResponseHeaders json error: %v, Headers: %v",
 			err,
 			responseHeaders,
 		))
@@ -153,19 +138,34 @@ func (s *workerService) compare(test *models.Test, response *models.Response) []
 			if values, ok := responseHeaders[header.Key]; ok {
 				if found := library.SliceFind(values, header.Value); found == -1 {
 					reasons = append(reasons, fmt.Sprintf(
-						"header.Value: %s is not found in %v\n",
+						"header.Value: %s is not found in %v",
 						header.Value,
 						values,
 					))
 				}
 			} else {
-				fmt.Println("responseheaders header.key not found")
 				reasons = append(reasons, fmt.Sprintf(
-					"header: %s is not found in the response headers\n",
+					"header: %s is not found in the response headers",
 					header.Key,
 				))
 			}
 		}
+	}
+
+	if test.ExpectedResponseCode != 0 && test.ExpectedResponseCode != response.StatusCode {
+		reasons = append(reasons, fmt.Sprintf(
+			"test.ExpectedResponseCode: %d, response.StatusCode: %d",
+			test.ExpectedResponseCode,
+			response.StatusCode,
+		))
+	}
+
+	if test.ExpectedResponseBody != "" && test.ExpectedResponseBody != response.Body {
+		reasons = append(reasons, fmt.Sprintf(
+			"test.ExpectedResponseBody: %s, response.Body: %s",
+			test.ExpectedResponseBody,
+			response.Body,
+		))
 	}
 
 	return reasons

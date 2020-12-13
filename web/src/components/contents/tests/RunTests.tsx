@@ -147,9 +147,9 @@ const RunTests: React.FC<Props> = (props: Props) => {
                     />
                   </div>
                 )}
-                <div css={item(90)}>{runConfig.test.name}</div>
+                <div css={item(87)}>{runConfig.test.name}</div>
                 {!runConfig.loading && (
-                  <div css={item(5)}>
+                  <div css={item(7)}>
                     <Button
                       colorType={ButtonColorType.info}
                       type={ButtonType.iconButton}
@@ -165,7 +165,7 @@ const RunTests: React.FC<Props> = (props: Props) => {
             );
           })}
           {props.runConfigs.length > 0 && (
-            <div css={clearButton}>
+            <div css={clearDiv}>
               <Button onClick={clear} text="Clear" disabled={isLoading()} />
             </div>
           )}
@@ -198,9 +198,9 @@ const item = (width: number) => css`
   width: ${width}%;
 `;
 
-const clearButton = css`
-  margin-top: 0.5rem;
-  width: 11.8%;
+const clearDiv = css`
+  margin: 0.5rem 0.5rem 0 0;
+  width: 10rem;
   align-self: flex-end;
 `;
 

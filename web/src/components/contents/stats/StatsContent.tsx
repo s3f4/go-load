@@ -33,15 +33,33 @@ const StatsContent: React.FC<Props> = (props: Props) => {
   }, [id]);
 
   const chartData = React.useCallback((r) => {
-    const datum: any[] = [];
     const labels: any[] = [];
+
+    const dns_time: number[] = [];
+    const connect_time: number[] = [];
+    const tls_time: number[] = [];
+    const first_byte_time: number[] = [];
+    const total_time: number[] = [];
+
     r.map((response: Response, index: number) => {
-      datum.push(response.dns_time / 100000);
+      first_byte_time.push(response.first_byte_time);
+      connect_time.push(response.connect_time);
+      dns_time.push(response.dns_time);
+      tls_time.push(response.tls_time);
+      total_time.push(response.total_time);
+      console.log(response.connect_time);
       labels.push("request_" + index);
       return null;
     });
+    const data: any = {
+      first_byte_time,
+      connect_time,
+      dns_time,
+      tls_time,
+      total_time,
+    };
     return {
-      datum,
+      data,
       labels,
     };
   }, []);
@@ -51,14 +69,32 @@ const StatsContent: React.FC<Props> = (props: Props) => {
       return;
     }
 
+    const graphData = chartData(responses);
+
     const data = {
       datasets: [
         {
-          data: chartData(responses).datum,
-          label: "Latency", // for legend
+          data: graphData.data.first_byte_time,
+          label: "First Byte Time",
+        },
+        {
+          data: graphData.data.connect_time,
+          label: "Connect Time",
+        },
+        {
+          data: graphData.data.dns_time,
+          label: "DNS Time",
+        },
+        {
+          data: graphData.data.tls_time,
+          label: "TLS Time",
+        },
+        {
+          data: graphData.data.total_time,
+          label: "Total Time",
         },
       ],
-      labels: chartData(responses).labels,
+      labels: graphData.labels,
     };
     return <Line data={data} />;
   }, [selectedRunTest, responses]);

@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import React, { useState } from "react";
+import React, { Fragment, useState } from "react";
 import { jsx, css } from "@emotion/core";
 import { listResponses, Response } from "../../../api/entity/response";
 import moment from "moment";
@@ -31,8 +31,6 @@ const StatsContent: React.FC<Props> = (props: Props) => {
       })
       .catch((error) => console.log(error));
   }, [id]);
-
-  const byteSize = (str: string) => new Blob([str]).size;
 
   const chartData = React.useCallback((r) => {
     const datum: any[] = [];
@@ -68,7 +66,6 @@ const StatsContent: React.FC<Props> = (props: Props) => {
   const onSelectRunTest = (runTest: RunTest) => (e: React.FormEvent) => {
     e.preventDefault();
     setSelectedRunTest(runTest);
-    console.log(runTest);
   };
 
   const testContent = React.useCallback(
@@ -102,7 +99,6 @@ const StatsContent: React.FC<Props> = (props: Props) => {
             <div css={runTestDiv}>
               {runTests &&
                 runTests.map((runTest: RunTest) => {
-                  console.log(runTest);
                   return (
                     <div
                       css={runTestRow}
@@ -139,27 +135,44 @@ const StatsContent: React.FC<Props> = (props: Props) => {
     [runTests],
   );
 
-  const buildTable = React.useCallback((r: Response[]) => {
-    const rows: IRTableRow[] = [];
-    r.forEach((response: Response) => {
-      const row: IRTableRow = {
-        columns: [
-          { content: moment(response.first_byte).format(preciseFormat()) },
-          { content: moment(response.connect_start).format(preciseFormat()) },
-          { content: moment(response.connect_done).format(preciseFormat()) },
-          { content: moment(response.dns_start).format(preciseFormat()) },
-          { content: moment(response.dns_done).format(preciseFormat()) },
-          { content: moment(response.tls_start).format(preciseFormat()) },
-          { content: moment(response.tls_done).format(preciseFormat()) },
-          { content: response.status_code },
-          { content: response.total_time / 1000000 },
-          { content: byteSize(response.body) },
-        ],
-      };
-      rows.push(row);
-    });
-    return rows;
-  }, []);
+  const buildTable = React.useCallback(
+    (r: Response[]) => {
+      const rows: IRTableRow[] = [];
+      r.forEach((response: Response) => {
+        const row: IRTableRow = {
+          allColumns: [
+            {
+              content: moment(selectedRunTest!.start_time).format(
+                preciseFormat(),
+              ),
+            },
+            { content: moment(response.first_byte).format(preciseFormat()) },
+            { content: moment(response.connect_start).format(preciseFormat()) },
+            { content: moment(response.connect_done).format(preciseFormat()) },
+            { content: moment(response.dns_start).format(preciseFormat()) },
+            { content: moment(response.dns_done).format(preciseFormat()) },
+            { content: moment(response.tls_start).format(preciseFormat()) },
+            { content: moment(response.tls_done).format(preciseFormat()) },
+            { content: response.status_code },
+            { content: response.total_time / 1000000 },
+            { content: response.body },
+          ],
+          columns: [
+            { content: moment(response.first_byte).format(defaultFormat()) },
+            { content: response.first_byte_time },
+            { content: response.connect_time },
+            { content: response.dns_time },
+            { content: response.tls_time },
+            { content: response.status_code },
+            { content: response.total_time / 1000000 },
+          ],
+        };
+        rows.push(row);
+      });
+      return rows;
+    },
+    [selectedRunTest],
+  );
 
   const responseTable = () => {
     if (!selectedRunTest) {
@@ -173,55 +186,61 @@ const StatsContent: React.FC<Props> = (props: Props) => {
         fetcher={listResponses(selectedRunTest?.id!)}
         builder={buildTable}
         trigger={selectedRunTest}
+        allTitles={[
+          { header: "StartTime" },
+          { header: "FirstByte" },
+          { header: "ConnectStart" },
+          { header: "ConnectDone" },
+          { header: "DNSStart" },
+          { header: "DNSDone" },
+          { header: "TLSStart" },
+          { header: "TLSDone" },
+          { header: "StatusCode" },
+          { header: "TotalTime(ms)" },
+          { header: "Body" },
+        ]}
         title={[
           {
             header: "FirstByte",
             accessor: "first_byte",
             sortable: true,
+            width: "22.5%",
           },
           {
-            header: "ConnectStart",
-            accessor: "connect_start",
+            header: "FirstByteTime",
+            accessor: "first_byte_time",
             sortable: true,
+            width: "15%",
           },
           {
-            header: "ConnectDone",
-            accessor: "connect_done",
+            header: "Connect Time",
+            accessor: "connect_time",
             sortable: true,
+            width: "15%",
           },
           {
-            header: "DNSStart",
-            accessor: "dns_start",
+            header: "DNSTime",
+            accessor: "DNS_time",
             sortable: true,
+            width: "12.5%",
           },
           {
-            header: "DNSDone",
-            accessor: "dns_done",
+            header: "TLSTime",
+            accessor: "TLS_time",
             sortable: true,
-          },
-          {
-            header: "TLSStart",
-            accessor: "tls_start",
-            sortable: true,
-          },
-          {
-            header: "TLSDone",
-            accessor: "tls_done",
-            sortable: true,
+            width: "12.5%",
           },
           {
             header: "StatusCode",
             accessor: "status_code",
             sortable: true,
+            width: "12.5%",
           },
           {
             header: "TotalTime(ms)",
-            accessor: "TotalTime",
+            accessor: "total_time",
             sortable: true,
-          },
-          {
-            header: "Body",
-            sortable: false,
+            width: "15%",
           },
         ]}
       />

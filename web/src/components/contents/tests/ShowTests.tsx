@@ -89,13 +89,13 @@ const ShowTests: React.FC = () => {
         allColumns: [
           { content: test.id },
           { content: test.name },
+          { content: test.test_group?.name },
           { content: test.url },
           { content: test.method },
           { content: test.request_count },
           { content: test.goroutine_count },
           { content: JSON.stringify(test.headers) },
           { content: JSON.stringify(test.transport_config) },
-          { content: test.test_group?.name },
         ],
         columns: [
           { content: <b>{test.name}</b> },
@@ -354,13 +354,13 @@ const ShowTests: React.FC = () => {
                   header: "Name",
                   accessor: "name",
                   sortable: true,
-                  width: "50%",
+                  width: "45%",
                 },
                 {
                   header: "Method",
                   accessor: "Method",
                   sortable: true,
-                  width: "10%",
+                  width: "15%",
                 },
                 {
                   header: "Request Count",
@@ -381,8 +381,8 @@ const ShowTests: React.FC = () => {
                 { header: "URL" },
                 { header: "Method" },
                 { header: "Request Count" },
-                { header: "Headers" },
                 { header: "Goroutine Count" },
+                { header: "Headers" },
                 { header: "Transport Config" },
               ]}
             />

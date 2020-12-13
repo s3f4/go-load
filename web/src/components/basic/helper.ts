@@ -9,7 +9,7 @@ export const toNum = (val: any): number => {
 };
 
 export const defaultFormat = (): string => "DD.MM.YYYY hh:mm:ss";
-export const preciseFormat = (): string => "hh:mm:ss.SSSS";
+export const preciseFormat = (): string => "DD.MM.YYYY hh:mm:ss.SSS";
 
 export const findInAOO = (arr: object[], key: string) => {
   for (const item of arr) {

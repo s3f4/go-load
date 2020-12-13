@@ -141,7 +141,8 @@ const RTable: React.FC<Props> = (props: Props) => {
               key={index}
               mobile={false}
               row={r}
-              title={props.allTitles ?? props.title}
+              title={props.title}
+              allTitles={props.allTitles}
             />
           );
         })}

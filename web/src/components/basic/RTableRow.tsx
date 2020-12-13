@@ -9,6 +9,7 @@ interface Props {
   mobile: boolean;
   row: IRTableRow;
   title: TableTitle[];
+  allTitles?: TableTitle[];
 }
 
 const RTableRow: React.FC<Props> = (props: Props) => {
@@ -36,7 +37,7 @@ const RTableRow: React.FC<Props> = (props: Props) => {
       return (
         <div css={row(false)}>
           <Modal
-            title={props.title}
+            title={props.allTitles}
             row={props.row}
             show={show}
             setShow={toggle}

@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import React, { useState, useEffect, ChangeEvent, Fragment } from "react";
+import React, { useState, useEffect, ChangeEvent } from "react";
 import { jsx, css } from "@emotion/core";
 import {
   deleteTestGroup,
@@ -78,6 +78,8 @@ const ShowTests: React.FC = () => {
 
   const onRunTest = (test: Test) => {
     setTestRun(test);
+    setSelectedTest(undefined);
+    setAddNewTest(false);
   };
 
   const buildTable = (tests: Test[]): IRTableRow[] => {
@@ -96,13 +98,13 @@ const ShowTests: React.FC = () => {
           { content: test.goroutine_count },
           { content: JSON.stringify(test.headers) },
           { content: JSON.stringify(test.transport_config) },
-          {content: test.expected_response_code},
-          {content: test.expected_response_body},
-          {content: test.expected_first_byte_time},
-          {content: test.expected_connection_time},
-          {content: test.expected_dns_time},
-          {content: test.expected_tls_time},
-          {content: test.expected_total_time},
+          { content: test.expected_response_code },
+          { content: test.expected_response_body },
+          { content: test.expected_first_byte_time },
+          { content: test.expected_connection_time },
+          { content: test.expected_dns_time },
+          { content: test.expected_tls_time },
+          { content: test.expected_total_time },
         ],
         columns: [
           { content: <b>{test.name}</b> },

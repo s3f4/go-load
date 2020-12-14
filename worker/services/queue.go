@@ -108,6 +108,7 @@ func (r *rabbitMQService) Listen(queue string) {
 	block := make(chan struct{})
 	go func() {
 		for d := range msgs {
+			log.Debugf("Message: %s", d.Body)
 			var event models.Event
 			if err := json.Unmarshal(d.Body, &event); err != nil {
 				log.Errorf("worker json error: %s", err)

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -116,11 +117,13 @@ func routeMap(*chi.Mux) {
 
 			router.Route("/{ID}", func(router chi.Router) {
 				router.Use(middlewares.TestCtx)
-				router.Post("/start", handlers.TestHandler.Start)
 				router.Get("/", handlers.TestHandler.Get)
 				router.Put("/", handlers.TestHandler.Update)
 				router.Delete("/", handlers.TestHandler.Delete)
-
+				router.Route("/", func(router chi.Router) {
+					router.Use(middleware.Timeout(20 * time.Second))
+					router.Post("/start", handlers.TestHandler.Start)
+				})
 				router.Route("/run_tests", func(router chi.Router) {
 					router.Use(middlewares.QueryCtx)
 					router.Get("/", handlers.RunTestHandler.ListByTestID)
@@ -139,7 +142,7 @@ func routeMap(*chi.Mux) {
 					router.Get("/", handlers.StatsHandler.List)
 				})
 			})
-			router.Get("/run_test", handlers.RunTestHandler.List)
+			router.Get("/", handlers.RunTestHandler.List)
 		})
 	})
 

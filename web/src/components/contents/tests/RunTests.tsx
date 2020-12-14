@@ -1,17 +1,12 @@
 /** @jsx jsx */
 import React, { Fragment, useEffect, useState } from "react";
 import { jsx, css } from "@emotion/core";
-import {
-  listTests,
-  listTestsOfTestGroup,
-  runTest,
-  Test,
-} from "../../../api/entity/test";
+import { listTestsOfTestGroup, runTest, Test } from "../../../api/entity/test";
 import Loader from "../../basic/Loader";
 import Button, { ButtonColorType, ButtonType } from "../../basic/Button";
 import { FiActivity, FiArrowRightCircle } from "react-icons/fi";
 import { useHistory } from "react-router-dom";
-import { TestGroup } from "../../../api/entity/test_group";
+import { runTestGroup, TestGroup } from "../../../api/entity/test_group";
 import { Borders, Sizes } from "../../style";
 import {
   setItems,
@@ -34,16 +29,10 @@ interface Props {
 
 const RunTests: React.FC<Props> = (props: Props) => {
   const [message, setMessage] = useState<IMessage>();
-  const [query, setQuery] = useState<Query>({
-    limit: 10,
-    offset: 0,
-    order: "d__id",
-  });
   const history = useHistory();
 
   useEffect(() => {
-    const rc = getItems("run_configs");
-    props.setRunConfigs(rc ?? []);
+    props.setRunConfigs(getItems("run_configs") ?? []);
 
     if (!props.testGroup && props.test) {
       if (search("run_configs", [{ key: "test", value: props.test }]) === -1) {
@@ -63,50 +52,85 @@ const RunTests: React.FC<Props> = (props: Props) => {
       }
     }
     if (props.testGroup && !props.test) {
-      removeAll("run_configs");
-      const runConfigsList: RunConfig[] = [];
-      listTestsOfTestGroup(props.testGroup.id!)(query)
-        .then((response) => {
-          console.log(response);
-          response.data.data.map((test: Test) => {
-            runConfigsList.push({
+      runTestGroup(props.testGroup.id!);
+    }
+  }, [props.test, props.testGroup]);
+
+  const runWithConditions = async (): Promise<any> => {
+    return new Promise((resolve) => {
+      const configs = getItems("run_configs") || [];
+      configs.map((runConfig: RunConfig) => {
+        if (
+          runConfig.started &&
+          runConfig.loading &&
+          !runConfig.finished &&
+          !runConfig.error
+        ) {
+          run(runConfig, runConfig.test).then(() => {
+            resolve(undefined);
+          });
+        }
+      });
+    });
+  };
+
+  const runTestGroup = (id: number, query?: Query, page?: number) => {
+    let q: Query = {
+        limit: 5,
+        offset: 0,
+        order: "d__id",
+      },
+      p: number = 0,
+      total: number = 0;
+
+    if (query) {
+      q = query;
+    }
+
+    if (page) {
+      p = page;
+    }
+
+    listTestsOfTestGroup(id)(q)
+      .then((response) => {
+        total = response.data.total;
+        response.data.data.map((test: Test) => {
+          const oldItems = getItems("run_configs") || [];
+          setItems("run_configs", [
+            ...oldItems,
+            {
               test,
               loading: true,
               passed: false,
               started: true,
               finished: false,
               error: null,
-            });
-          });
-          setItems("run_configs", runConfigsList);
-          props.setRunConfigs(getItems("run_configs"));
-          runWithConditions();
-        })
-        .catch((error) => {
-          setMessage({
-            type: "error",
-            message: error,
-          });
+            },
+          ]);
         });
-    }
-  }, [props.test, props.testGroup]);
 
-  const runWithConditions = () => {
-    const configs = getItems("run_configs") || [];
-    configs.map((runConfig: RunConfig) => {
-      if (
-        runConfig.started &&
-        runConfig.loading &&
-        !runConfig.finished &&
-        !runConfig.error
-      ) {
-        run(runConfig, runConfig.test);
-      }
-    });
+        props.setRunConfigs(getItems("run_configs"));
+        runWithConditions().then(() => {
+          if ((p + 1) * q.limit < total) {
+            q = {
+              ...q,
+              offset: (p + 1) * q.limit,
+            };
+            p = p + 1;
+            runTestGroup(id, q, p);
+          }
+        });
+      })
+      .catch((error) => {
+        setMessage({
+          type: "error",
+          message: error,
+        });
+      });
   };
 
-  const run = (runConfig: RunConfig, test: Test) => {
-    runTest(test)
+  const run = (runConfig: RunConfig, test: Test): Promise<any> => {
+    return runTest(test)
       .then((response) => {
         runConfig.loading = false;
         runConfig.started = true;

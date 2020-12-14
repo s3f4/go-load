@@ -145,7 +145,7 @@ const StatsContent: React.FC<Props> = (props: Props) => {
                       <div css={runTestRowLeft}>
                         <FiArrowRightCircle
                           size="2.1rem"
-                          color={runTest.passed ? "green" : "red"}
+                          color={runTest.passed ? "#87b666" : "#ff6961"}
                         />
                       </div>
                       <div>
@@ -179,8 +179,8 @@ const StatsContent: React.FC<Props> = (props: Props) => {
 
       const row: IRTableRow = {
         rowStyle: response.passed
-          ? "background-color:green;"
-          : "background-color:red;",
+          ? "background-color:#87b666;color:white;"
+          : "background-color:#ff6961;color:white;",
         allColumns: [
           { content: moment(response.start_time).format(preciseFormat()) },
           { content: moment(response.first_byte).format(preciseFormat()) },

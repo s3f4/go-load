@@ -3,7 +3,7 @@ import React, { Fragment, useEffect, useState } from "react";
 import { jsx } from "@emotion/core";
 import { Query } from "./query";
 import { ServerResponse } from "../../api/api";
-import Button, { ButtonType } from "./Button";
+import Button, { ButtonColorType, ButtonType } from "./Button";
 
 interface Props {
   // children: ReactNode;
@@ -50,6 +50,11 @@ const Paginator: React.FC<Props> = (props: Props) => {
     for (let i = 1; i <= page; i++) {
       buttons.push(
         <Button
+          colorType={
+            i === query.offset / query.limit + 1
+              ? ButtonColorType.primary
+              : ButtonColorType.secondary
+          }
           type={ButtonType.small}
           key={i}
           text={i + ""}

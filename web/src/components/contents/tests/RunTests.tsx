@@ -1,7 +1,12 @@
 /** @jsx jsx */
 import React, { Fragment, useEffect, useState } from "react";
 import { jsx, css } from "@emotion/core";
-import { listTests, runTest, Test } from "../../../api/entity/test";
+import {
+  listTests,
+  listTestsOfTestGroup,
+  runTest,
+  Test,
+} from "../../../api/entity/test";
 import Loader from "../../basic/Loader";
 import Button, { ButtonColorType, ButtonType } from "../../basic/Button";
 import { FiActivity, FiArrowRightCircle } from "react-icons/fi";
@@ -17,6 +22,7 @@ import {
 import Message, { IMessage } from "../../basic/Message";
 import { findInAOO } from "../../basic/helper";
 import { RunConfig } from "./ShowTests";
+import { Query } from "../../basic/query";
 
 interface Props {
   test?: Test;
@@ -28,13 +34,18 @@ interface Props {
 
 const RunTests: React.FC<Props> = (props: Props) => {
   const [message, setMessage] = useState<IMessage>();
+  const [query, setQuery] = useState<Query>({
+    limit: 10,
+    offset: 0,
+    order: "d__id",
+  });
   const history = useHistory();
 
   useEffect(() => {
     const rc = getItems("run_configs");
     props.setRunConfigs(rc ?? []);
 
-    if (props.test) {
+    if (!props.testGroup && props.test) {
       if (search("run_configs", [{ key: "test", value: props.test }]) === -1) {
         setItems("run_configs", [
           ...props.runConfigs,
@@ -51,10 +62,10 @@ const RunTests: React.FC<Props> = (props: Props) => {
         runWithConditions();
       }
     }
-    if (props.testGroup) {
+    if (props.testGroup && !props.test) {
       removeAll("run_configs");
       const runConfigsList: RunConfig[] = [];
-      listTests()
+      listTestsOfTestGroup(props.testGroup.id!)(query)
         .then((response) => {
           console.log(response);
           response.data.data.map((test: Test) => {
@@ -118,6 +129,7 @@ const RunTests: React.FC<Props> = (props: Props) => {
   const clear = () => {
     removeAll("run_configs");
     props.clear();
+    history.push("/tests");
   };
 
   const isLoading = () => {
@@ -135,7 +147,7 @@ const RunTests: React.FC<Props> = (props: Props) => {
               <div css={testLine} key={runConfig.test.id}>
                 {runConfig.loading && (
                   <div css={item(5)}>
-                    <Loader inlineLoading fill={"red"} />
+                    <Loader inlineLoading fill={"#87b666"} />
                   </div>
                 )}
                 {!runConfig.loading && (
@@ -143,7 +155,7 @@ const RunTests: React.FC<Props> = (props: Props) => {
                     {runConfig.passed}
                     <FiArrowRightCircle
                       size="2.1rem"
-                      color={runConfig.passed ? "green" : "red"}
+                      color={runConfig.passed ? "#87b666" : "#ff6961"}
                     />
                   </div>
                 )}

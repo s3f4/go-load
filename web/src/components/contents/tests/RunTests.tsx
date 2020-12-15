@@ -80,7 +80,7 @@ const RunTests: React.FC<Props> = (props: Props) => {
         offset: 0,
         order: "d__id",
       },
-      p: number = 0,
+      p: number = 1,
       total: number = 0;
 
     if (query) {
@@ -111,13 +111,12 @@ const RunTests: React.FC<Props> = (props: Props) => {
 
         props.setRunConfigs(getItems("run_configs"));
         runWithConditions().then(() => {
-          if ((p + 1) * q.limit < total) {
+          if (p * q.limit <= total) {
             q = {
               ...q,
-              offset: (p + 1) * q.limit,
+              offset: p * q.limit,
             };
-            p = p + 1;
-            runTestGroup(id, q, p);
+            runTestGroup(id, q, ++p);
           }
         });
       })

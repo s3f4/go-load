@@ -2,6 +2,7 @@ package repository
 
 import (
 	"encoding/json"
+	"errors"
 
 	"github.com/mitchellh/mapstructure"
 	"github.com/s3f4/go-load/apigateway/library"
@@ -73,6 +74,10 @@ func (r *instanceRepository) GetFromTerraform() ([]models.InstanceTerraform, err
 	var result map[string]interface{}
 	if err := json.Unmarshal(output, &result); err != nil {
 		return nil, err
+	}
+
+	if len(result) == 0 {
+		return nil, errors.New("There is no instance")
 	}
 
 	var instances []models.InstanceTerraform

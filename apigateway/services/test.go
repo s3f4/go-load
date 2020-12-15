@@ -36,6 +36,7 @@ func NewTestService() TestService {
 
 func (s *testService) Start(test *models.Test) (*models.RunTest, error) {
 	instances, err := s.ir.GetFromTerraform()
+
 	if err != nil {
 		return nil, err
 	}
@@ -86,6 +87,7 @@ func (s *testService) waitQueue(runTest *models.RunTest, requestCount, instanceC
 	// Declare Queue for this runTest
 	queue := fmt.Sprintf("collect_%d_%d", runTest.Test.ID, runTest.ID)
 	if err := s.queueService.Declare(queue); err != nil {
+		log.Error(err)
 		return nil, err
 	}
 

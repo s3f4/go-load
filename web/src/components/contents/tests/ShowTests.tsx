@@ -77,9 +77,9 @@ const ShowTests: React.FC = () => {
   };
 
   const onRunTest = (test: Test) => {
-    setTestRun(test);
     setSelectedTest(undefined);
     setAddNewTest(false);
+    setTestRun(test);
   };
 
   const buildTable = (tests: Test[]): IRTableRow[] => {

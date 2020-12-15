@@ -6,7 +6,7 @@ import Loader from "../../basic/Loader";
 import Button, { ButtonColorType, ButtonType } from "../../basic/Button";
 import { FiActivity, FiArrowRightCircle } from "react-icons/fi";
 import { useHistory } from "react-router-dom";
-import {  TestGroup } from "../../../api/entity/test_group";
+import { TestGroup } from "../../../api/entity/test_group";
 import { Borders, Sizes } from "../../style";
 import {
   setItems,
@@ -48,7 +48,13 @@ const RunTests: React.FC<Props> = (props: Props) => {
           },
         ]);
         props.setRunConfigs(getItems("run_configs"));
-        runWithConditions();
+        runWithConditions().catch((error) => {
+          setItems("run_configs", []);
+          setMessage({
+            type: "error",
+            message: error.message,
+          });
+        });
       }
     }
     if (props.testGroup && !props.test) {
@@ -57,7 +63,7 @@ const RunTests: React.FC<Props> = (props: Props) => {
   }, [props.test, props.testGroup]);
 
   const runWithConditions = async (): Promise<any> => {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const configs = getItems("run_configs") || [];
       configs.map((runConfig: RunConfig) => {
         if (
@@ -66,9 +72,13 @@ const RunTests: React.FC<Props> = (props: Props) => {
           !runConfig.finished &&
           !runConfig.error
         ) {
-          run(runConfig, runConfig.test).then(() => {
-            resolve(undefined);
-          });
+          run(runConfig, runConfig.test)
+            .then(() => {
+              resolve(undefined);
+            })
+            .catch((error) => {
+              reject(error);
+            });
         }
       });
     });
@@ -91,26 +101,26 @@ const RunTests: React.FC<Props> = (props: Props) => {
       p = page;
     }
 
-    listTestsOfTestGroup(id)(q)
-      .then((response) => {
-        total = response.data.total;
-        response.data.data.map((test: Test) => {
-          const oldItems = getItems("run_configs") || [];
-          setItems("run_configs", [
-            ...oldItems,
-            {
-              test,
-              loading: true,
-              passed: false,
-              started: true,
-              finished: false,
-              error: null,
-            },
-          ]);
-        });
+    listTestsOfTestGroup(id)(q).then((response) => {
+      total = response.data.total;
+      response.data.data.map((test: Test) => {
+        const oldItems = getItems("run_configs") || [];
+        setItems("run_configs", [
+          ...oldItems,
+          {
+            test,
+            loading: true,
+            passed: false,
+            started: true,
+            finished: false,
+            error: null,
+          },
+        ]);
+      });
 
-        props.setRunConfigs(getItems("run_configs"));
-        runWithConditions().then(() => {
+      props.setRunConfigs(getItems("run_configs"));
+      runWithConditions()
+        .then(() => {
           if (p * q.limit <= total) {
             q = {
               ...q,
@@ -118,14 +128,16 @@ const RunTests: React.FC<Props> = (props: Props) => {
             };
             runTestGroup(id, q, ++p);
           }
+        })
+        .catch((error) => {
+          setItems("run_configs", []);
+          console.log(error);
+          setMessage({
+            type: "error",
+            message: error.message,
+          });
         });
-      })
-      .catch((error) => {
-        setMessage({
-          type: "error",
-          message: error,
-        });
-      });
+    });
   };
 
   const run = async (runConfig: RunConfig, test: Test): Promise<any> => {
@@ -144,13 +156,14 @@ const RunTests: React.FC<Props> = (props: Props) => {
       setItems("run_configs", nRc);
       props.setRunConfigs(nRc);
     } catch (error) {
-      console.log(error);
+      throw error;
     }
   };
 
   const clear = () => {
     removeAll("run_configs");
     props.clear();
+    setMessage(undefined);
     history.push("/tests");
   };
 
@@ -160,11 +173,11 @@ const RunTests: React.FC<Props> = (props: Props) => {
 
   return (
     <Fragment>
-      {message ? (
-        <Message type={message.type} message={message.message} />
-      ) : (
-        <div css={container}>
-          {props.runConfigs.map((runConfig: RunConfig) => {
+      <div css={container}>
+        {message ? (
+          <Message type={message.type} message={message.message} />
+        ) : (
+          props.runConfigs.map((runConfig: RunConfig) => {
             return (
               <div css={testLine} key={runConfig.test.id}>
                 {runConfig.loading && (
@@ -197,14 +210,18 @@ const RunTests: React.FC<Props> = (props: Props) => {
                 )}
               </div>
             );
-          })}
-          {props.runConfigs.length > 0 && (
-            <div css={clearDiv}>
-              <Button onClick={clear} text="Clear" disabled={isLoading()} />
-            </div>
-          )}
-        </div>
-      )}
+          })
+        )}
+        {props.runConfigs.length > 0 && (
+          <div css={clearDiv}>
+            <Button
+              onClick={clear}
+              text="Clear"
+              disabled={!message && isLoading()}
+            />
+          </div>
+        )}
+      </div>
     </Fragment>
   );
 };

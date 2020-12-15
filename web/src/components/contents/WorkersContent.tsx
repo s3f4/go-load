@@ -3,7 +3,14 @@ import { jsx, css } from "@emotion/core";
 import React from "react";
 import { Worker } from "../../api/entity/worker";
 import Loader from "../basic/Loader";
-import { card, cardContainer, cardTitle, MediaQuery } from "../style";
+import {
+  card,
+  cardContainer,
+  cardContent,
+  cardItem,
+  cardTitle,
+  MediaQuery,
+} from "../style";
 import Button from "../basic/Button";
 
 interface Props {
@@ -19,15 +26,26 @@ const WorkersContent: React.FC<Props> = (props: Props) => {
         return (
           <div css={card} key={worker.Id}>
             <h1 css={cardTitle}>{worker.Names[0].substr(1)}</h1>
-            <br />
-            {worker.Id.substr(0, 7)} <br />
-            {worker.Status} <br />
-            {worker.State}
-            <br />
-            <Button
-              onClick={props.handleStop(worker)}
-              text={"Stop Container"}
-            />
+            <div css={cardContent}>
+              <div css={cardItem}>
+                <b>ID:</b>
+                <span>{worker.Id.substr(0, 7)} </span>
+              </div>
+              <div css={cardItem}>
+                <b>Status:</b>
+                <span>{worker.Status}</span>
+              </div>
+              <div css={cardItem}>
+                <b>State:</b>
+                <span>{worker.State}</span>
+              </div>
+              <div css={cardItem}>
+                <Button
+                  onClick={props.handleStop(worker)}
+                  text={"Stop Container"}
+                />
+              </div>
+            </div>
           </div>
         );
       }

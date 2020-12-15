@@ -3,7 +3,14 @@ import { jsx, css } from "@emotion/core";
 import React, { useState } from "react";
 import { showSwarmNodes } from "../../api/entity/instance";
 import { Node } from "../../api/entity/nodes";
-import { card, cardContainer, cardTitle, MediaQuery } from "../style";
+import {
+  card,
+  cardContainer,
+  cardContent,
+  cardItem,
+  cardTitle,
+  MediaQuery,
+} from "../style";
 import moment from "moment";
 import { defaultFormat } from "../basic/helper";
 import Message, { IMessage } from "../basic/Message";
@@ -41,21 +48,44 @@ const SwarmContent: React.FC = () => {
               return (
                 <div css={card} key={node.ID}>
                   <h1 css={cardTitle}>{node.Description.Hostname}</h1>
-                  Role: {node.Spec.Role} <br />
-                  Addr: {node.Status.Addr} <br />
-                  State: {node.Status.State}
-                  <br />
-                  Memory :{" "}
-                  {((node.Description.Resources.MemoryBytes /
-                    (1024 * 1024)) as number).toFixed(2)}
-                  MB
-                  <br />
-                  CPUs : {node.Description.Resources.NanoCPUs / Math.pow(10, 9)}
-                  <br />
-                  Availability: {node.Spec.Availability}
-                  <br />
-                  Created: {moment(node.CreatedAt).format(defaultFormat())}
-                  <br />
+                  <div css={cardContent}>
+                    <div css={cardItem}>
+                      <b>Role:</b>
+                      <span>{node.Spec.Role}</span>
+                    </div>
+                    <div css={cardItem}>
+                      <b>Addr:</b>
+                      <span>{node.Status.Addr}</span>
+                    </div>
+                    <div css={cardItem}>
+                      <b>State:</b>
+                      <span>{node.Status.State}</span>
+                    </div>
+                    <div css={cardItem}>
+                      <b>Memory:</b>
+                      <span>
+                        {((node.Description.Resources.MemoryBytes /
+                          (1024 * 1024)) as number).toFixed(2)}
+                        MB
+                      </span>
+                    </div>
+                    <div css={cardItem}>
+                      <b>CPUs:</b>
+                      <span>
+                        {node.Description.Resources.NanoCPUs / Math.pow(10, 9)}
+                      </span>
+                    </div>
+                    <div css={cardItem}>
+                      <b>Availability:</b>
+                      <span>{node.Spec.Availability}</span>
+                    </div>
+                    <div css={cardItem}>
+                      <b>Created:</b>
+                      <span>
+                        {moment(node.CreatedAt).format(defaultFormat())}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               );
             })}

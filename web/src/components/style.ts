@@ -129,6 +129,17 @@ export const cardTitle = css`
   padding: 0.5rem;
 `;
 
+export const cardContent = css`
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+`;
+
+export const cardItem = css`
+  display: flex;
+  justify-content: space-between;
+`;
+
 export const leftColumn = css`
   background-color: #e3e3e3;
   width: 100%;

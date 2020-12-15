@@ -58,6 +58,7 @@ func (s *testService) Start(test *models.Test) (*models.RunTest, error) {
 		for i := uint64(0); i < test.RequestCount; i++ {
 			event := setEvent(&runTest, 1, test.RequestCount, i+1)
 			if err := s.sendMessage(event); err != nil {
+				log.Error(err)
 				return nil, err
 			}
 		}
@@ -72,6 +73,7 @@ func (s *testService) Start(test *models.Test) (*models.RunTest, error) {
 			event := setEvent(&runTest, requestPerInstance, instanceCount, uint64(i+1))
 
 			if err := s.sendMessage(event); err != nil {
+				log.Error(err)
 				return nil, err
 			}
 		}
@@ -94,11 +96,13 @@ func (s *testService) waitQueue(runTest *models.RunTest, requestCount, instanceC
 		ProcessFunc: func(d *amqp.Delivery, exit chan<- struct{}) error {
 			var event models.Event
 			if err := json.Unmarshal(d.Body, &event); err != nil {
+				log.Error(err)
 				return err
 			}
 
 			var payload models.CollectPayload
 			if err := library.DecodeMap(event.Payload, &payload); err != nil {
+				log.Error(err)
 				return err
 			}
 
@@ -137,7 +141,7 @@ func (s *testService) checkPayloads(
 	if int(total) != len(payloads) {
 		return nil, false
 	}
-	
+
 	f := false
 	for _, payload := range payloads {
 		if *payload.RunTest.Passed == f {

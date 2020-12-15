@@ -6,7 +6,7 @@ import Loader from "../../basic/Loader";
 import Button, { ButtonColorType, ButtonType } from "../../basic/Button";
 import { FiActivity, FiArrowRightCircle } from "react-icons/fi";
 import { useHistory } from "react-router-dom";
-import { runTestGroup, TestGroup } from "../../../api/entity/test_group";
+import {  TestGroup } from "../../../api/entity/test_group";
 import { Borders, Sizes } from "../../style";
 import {
   setItems,
@@ -128,25 +128,24 @@ const RunTests: React.FC<Props> = (props: Props) => {
       });
   };
 
-  const run = (runConfig: RunConfig, test: Test): Promise<any> => {
-    return runTest(test)
-      .then((response) => {
-        runConfig.loading = false;
-        runConfig.started = true;
-        runConfig.finished = true;
-        runConfig.passed = response.data.passed;
-        const nRc = getItems("run_configs").map((r: RunConfig) => {
-          if (runConfig.test.id === r.test.id) {
-            return runConfig;
-          }
-          return r;
-        });
-        setItems("run_configs", nRc);
-        props.setRunConfigs(nRc);
-      })
-      .catch((error) => {
-        console.log(error);
+  const run = async (runConfig: RunConfig, test: Test): Promise<any> => {
+    try {
+      const response = await runTest(test);
+      runConfig.loading = false;
+      runConfig.started = true;
+      runConfig.finished = true;
+      runConfig.passed = response.data.passed;
+      const nRc = getItems("run_configs").map((r: RunConfig) => {
+        if (runConfig.test.id === r.test.id) {
+          return runConfig;
+        }
+        return r;
       });
+      setItems("run_configs", nRc);
+      props.setRunConfigs(nRc);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const clear = () => {

@@ -2,7 +2,13 @@
 import { jsx, css } from "@emotion/core";
 import React from "react";
 import Loader from "../basic/Loader";
-import { card, cardContainer, cardTitle } from "../style";
+import {
+  card,
+  cardContainer,
+  cardContent,
+  cardItem,
+  cardTitle,
+} from "../style";
 import { Service } from "../../api/entity/service";
 import Message, { IMessage } from "../basic/Message";
 
@@ -24,11 +30,20 @@ const ServicesContent: React.FC<Props> = (props: Props) => {
       return (
         <div css={card} key={service.Id}>
           <h1 css={cardTitle}>{service.Names[0].substr(1)}</h1>
-          <br />
-          {service.Id.substr(0, 7)} <br />
-          {service.Status} <br />
-          {service.State}
-          <br />
+          <div css={cardContent}>
+            <div css={cardItem}>
+              <b>ID:</b>
+              <span>{service.Id.substr(0, 7)}</span>
+            </div>
+            <div css={cardItem}>
+              <b>Status:</b>
+              <span>{service.Status}</span>
+            </div>
+            <div css={cardItem}>
+              <b>State:</b>
+              <span>{service.State}</span>
+            </div>
+          </div>
         </div>
       );
     });

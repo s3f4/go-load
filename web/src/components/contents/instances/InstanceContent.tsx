@@ -7,7 +7,13 @@ import {
   getInstanceInfoFromTerraform,
   InstanceTerra,
 } from "../../../api/entity/instance";
-import { card, cardTitle, cardContainer } from "../../style";
+import {
+  card,
+  cardTitle,
+  cardContainer,
+  cardItem,
+  cardContent,
+} from "../../style";
 import Button, { ButtonColorType, ButtonType } from "../../basic/Button";
 import { FiX } from "react-icons/fi";
 
@@ -88,14 +94,36 @@ const InstanceContent: React.FC = () => {
             return (
               <div css={card} key={instance.region}>
                 <h1 css={cardTitle}>{instance.name}</h1>
-                Region: {instance.region} <br />
-                Size: {instance.size} <br />
-                Memory: {instance.memory} <br />
-                Disk: {instance.disk}GB <br />
-                Image: {instance.image} <br />
-                Size: {instance.size} <br />
-                IPv4: {instance.ipv4_address} <br />
-                Created: {instance.created_at}
+                <div css={cardContent}>
+                  <div css={cardItem}>
+                    <b>Region:</b>
+                    <span> {instance.region}</span>
+                  </div>
+                  <div css={cardItem}>
+                    <b>Size:</b>
+                    <span> {instance.size}</span>
+                  </div>
+                  <div css={cardItem}>
+                    <b>Memory:</b>
+                    <span> {instance.memory}</span>
+                  </div>
+                  <div css={cardItem}>
+                    <b>Disk: </b>
+                    <span> {instance.disk}GB</span>
+                  </div>
+                  <div css={cardItem}>
+                    <b>Image:</b>
+                    <span> {instance.image}</span>
+                  </div>
+                  <div css={cardItem}>
+                    <b>IPv4:</b>
+                    <span> {instance.ipv4_address}</span>
+                  </div>
+                  <div css={cardItem}>
+                    <b>Created:</b>
+                    <span> {instance.created_at}</span>
+                  </div>
+                </div>
               </div>
             );
           })}

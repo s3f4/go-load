@@ -72,7 +72,7 @@ func (r *testRepository) List(query *library.QueryBuilder, conditionStr string, 
 	}
 
 	if err := query.SetDB(r.DB()).
-		SetPreloads("Headers", "RunTests", "TransportConfig").
+		SetPreloads("Headers", "RunTests", "TransportConfig", "TestGroup").
 		SetModel(models.Test{}).
 		SetWhere(conditionStr, where...).
 		List(&testReq); err != nil {

@@ -13,6 +13,7 @@ import { FiArrowRightCircle } from "react-icons/fi";
 import RTable, { IRTableRow } from "../../basic/RTable";
 import { useParams } from "react-router-dom";
 import Paginator from "../../basic/Paginator";
+import Loader from "../../basic/Loader";
 
 interface Props {}
 
@@ -21,6 +22,7 @@ const StatsContent: React.FC<Props> = (props: Props) => {
   const [test, setTest] = useState<Test>();
   const [selectedRunTest, setSelectedRunTest] = useState<RunTest>();
   const [runTests, setRunTests] = useState<RunTest[]>([]);
+  const [loader, setLoader] = useState<boolean>(false);
 
   const { id }: any = useParams();
 
@@ -69,10 +71,13 @@ const StatsContent: React.FC<Props> = (props: Props) => {
       return;
     }
 
+    if (loader) {
+      return <Loader message={"Response Graph loading..."} />;
+    }
+
     const graphData = chartData(responses);
 
     const data = {
-      legend: "abc",
       datasets: [
         {
           data: graphData.data.first_byte_time,
@@ -102,6 +107,7 @@ const StatsContent: React.FC<Props> = (props: Props) => {
 
   const onSelectRunTest = (runTest: RunTest) => (e: React.FormEvent) => {
     e.preventDefault();
+    setLoader(true);
     setSelectedRunTest(runTest);
   };
 
@@ -179,8 +185,8 @@ const StatsContent: React.FC<Props> = (props: Props) => {
 
       const row: IRTableRow = {
         rowStyle: response.passed
-          ? "background-color:#87b666;color:white;"
-          : "background-color:#ff6961;color:white;",
+          ? "background-color:#87b666;"
+          : "background-color:#ff6961;",
         allColumns: [
           { content: moment(response.start_time).format(preciseFormat()) },
           { content: moment(response.first_byte).format(preciseFormat()) },
@@ -226,6 +232,8 @@ const StatsContent: React.FC<Props> = (props: Props) => {
 
     return (
       <RTable
+        setLoader={setLoader}
+        loader={loader}
         limit={50}
         setter={setResponses}
         fetcher={listResponses(selectedRunTest?.id!)}

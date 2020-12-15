@@ -13,6 +13,7 @@ import { ServerResponse } from "../../api/api";
 import { Query } from "./query";
 import Button, { ButtonColorType, ButtonType } from "./Button";
 import RTableRow from "./RTableRow";
+import Loader from "./Loader";
 
 export interface TableTitle {
   header: string;
@@ -41,6 +42,8 @@ interface Props {
   setter?: (data: any[]) => void;
   limit?: number;
   trigger?: any;
+  setLoader?: (laod: boolean) => void;
+  loader?: any;
 }
 
 const RTable: React.FC<Props> = (props: Props) => {
@@ -58,6 +61,7 @@ const RTable: React.FC<Props> = (props: Props) => {
 
   useEffect(() => {
     fetcher(query).then((response: ServerResponse) => {
+      props.setLoader?.(false);
       setTotal(response.data.total);
       setContent(builder(response.data.data));
       setter?.(response.data.data);
@@ -113,49 +117,60 @@ const RTable: React.FC<Props> = (props: Props) => {
 
   return (
     <Fragment>
-      <div css={container}>
-        <div css={row(true)}>
-          {props.title.map((title: TableTitle, index) => (
-            <div
-              onClick={onOrder(title.sortable!, title.accessor!)}
-              css={columnStyle(title.width, title.sortable)}
-              key={index}
-            >
-              <b>{title.header}</b>{" "}
-              {title.sortable && orderedCol === title.accessor ? (
-                increment ? (
-                  <FiArrowUp />
-                ) : (
-                  <FiArrowDown />
-                )
-              ) : (
-                ""
-              )}
+      {props.loader ? (
+        <Loader message={"Table data is loading..."} />
+      ) : (
+        <Fragment>
+          <div css={container}>
+            <div css={row(true)}>
+              {props.title.map((title: TableTitle, index) => (
+                <div
+                  onClick={onOrder(title.sortable!, title.accessor!)}
+                  css={columnStyle(title.width, title.sortable)}
+                  key={index}
+                >
+                  <b>{title.header}</b>{" "}
+                  {title.sortable && orderedCol === title.accessor ? (
+                    increment ? (
+                      <FiArrowUp />
+                    ) : (
+                      <FiArrowDown />
+                    )
+                  ) : (
+                    ""
+                  )}
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
 
-        {content.map((r, index) => {
-          return (
-            <RTableRow
-              key={index}
-              mobile={false}
-              row={r}
-              title={props.title}
-              allTitles={props.allTitles}
-            />
-          );
-        })}
-      </div>
+            {content.map((r, index) => {
+              return (
+                <RTableRow
+                  key={index}
+                  mobile={false}
+                  row={r}
+                  title={props.title}
+                  allTitles={props.allTitles}
+                />
+              );
+            })}
+          </div>
 
-      <div css={mobileContainer}>
-        {content.map((r, index) => {
-          return (
-            <RTableRow key={index} mobile={true} row={r} title={props.title} />
-          );
-        })}
-      </div>
-      {pages()}
+          <div css={mobileContainer}>
+            {content.map((r, index) => {
+              return (
+                <RTableRow
+                  key={index}
+                  mobile={true}
+                  row={r}
+                  title={props.title}
+                />
+              );
+            })}
+          </div>
+          {pages()}
+        </Fragment>
+      )}
     </Fragment>
   );
 };

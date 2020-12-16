@@ -186,11 +186,11 @@ const SpinUp: React.FC<Props> = (props: Props) => {
 
           <SelectBox
             name={"region"}
-            label={"Pick the region"}
+            label={"Select the region"}
             onChange={handleChange}
             options={regions}
             value={region}
-            validate="minLength:3|message:Please choose a region"
+            validate="minLength:3|message:Please select a region"
             validation={validation}
           />
 

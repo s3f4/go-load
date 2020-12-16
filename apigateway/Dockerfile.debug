@@ -1,0 +1,22 @@
+FROM golang:1.15.2-alpine3.12
+
+RUN apk --update add openssh-client
+RUN apk --update add openssl
+
+WORKDIR /app/cmd
+COPY ./cmd/install-terraform.sh .
+COPY ./cmd/install-ansible.sh .
+
+RUN ./install-terraform.sh
+RUN ./install-ansible.sh
+
+ENV CGO_ENABLED 0
+
+WORKDIR /app/
+COPY . .
+
+RUN go build -gcflags "all=-N -l" -o apigateway ./cmd 
+RUN go get github.com/go-delve/delve/cmd/dlv
+
+EXPOSE 3001 2345
+CMD ["dlv", "--listen=:2345", "--headless=true",  "--api-version=2","--log=true","--log-output=debugger,debuglineerr,gdbwire,lldbout,rpc", "--accept-multiclient=true", "debug", "/app/cmd"]

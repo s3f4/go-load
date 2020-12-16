@@ -24,6 +24,16 @@ clean-dev: down-dev
 	docker system prune -f
 	docker volume prune -f
 
+up-debug: default
+	@echo "=============Compose Up============="
+	docker-compose -f docker-compose.debug.yml up -d  --build --remove-orphans
+
+down-debug:
+	rm -rf apigateway/infra/.terraform && \
+	rm -f apigateway/infra/.terraform* && \
+	rm -f apigateway/infra/terraform.tfstate* && \
+	docker-compose -f docker-compose.debug.yml down
+
 dev-logs:
 	docker-compose logs -f
 

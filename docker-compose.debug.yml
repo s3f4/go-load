@@ -1,0 +1,173 @@
+version: "3"
+services:
+  apigateway:
+    image: apigateway
+    container_name: apigateway
+    restart: always
+    build:
+      context: ./apigateway
+      dockerfile: Dockerfile.debug
+    ports:
+      - 3001:3001
+      - 2345:2345
+    security_opt:
+      - "seccomp:unconfined"
+    tty: true
+    stdin_open: true
+    volumes:
+      - ./apigateway:/app
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ~/.ssh/id_rsa_for_master:/root/.ssh/id_rsa
+      - ~/.ssh/id_rsa_for_master.pub:/root/.ssh/id_rsa.pub
+    depends_on:
+      - mysql
+      - eventhandler
+      - queue
+    environment:
+      - APP_ENV=development
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=go-load
+      - MYSQL_USER=goload
+      - MYSQL_PASSWORD=go-load12345
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=timescaledb_example
+      - POSTGRES_HOST=timeDB
+      - POSTGRES_PORT=5432
+      - POSTGRES_DATABASE=data
+      - RABBITMQ_USER=user
+      - RABBITMQ_PASSWORD=password
+      - RABBITMQ_HOST=queue
+      - RABBITMQ_PORT=5672
+      - AUTH_ACCESS_SECRET=abc13253
+      - AUTH_REFRESH_SECRET=abc13253
+      - REDIS_SERVER_PASSWORD=redisPass123
+      - CSRF_KEY=abc13253
+      - AT_EXPIRE_MINUTES=10
+      - RT_EXPIRE_MINUTES=10080
+    
+
+  eventhandler:
+    image: eventhandler
+    container_name: eventhandler
+    restart: always
+    build:
+      context: ./eventhandler
+      dockerfile: Dockerfile.debug
+    ports:
+      - 2346:2346
+    security_opt:
+      - "seccomp:unconfined"
+    tty: true
+    stdin_open: true
+    volumes:
+      - ./eventhandler:/app
+    environment:
+      - RABBITMQ_USER=user
+      - RABBITMQ_PASSWORD=password
+      - RABBITMQ_HOST=queue
+      - RABBITMQ_PORT=5672
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=timescaledb_example
+      - POSTGRES_HOST=timeDB
+      - POSTGRES_PORT=5432
+      - POSTGRES_DATABASE=data
+    depends_on:
+      - queue
+      - timeDB
+    
+  web:
+    image: web
+    container_name: web
+    restart: always
+    build:
+      context: ./web
+      dockerfile: Dockerfile.dev
+    ports:
+      - 3000:3000
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    volumes:
+      - "./web:/app"
+      - "/app/node_modules"
+    stdin_open: true
+    depends_on:
+      - apigateway
+      - mysql
+      - timeDB
+      - queue
+
+  worker:
+    image: worker
+    restart: always
+    build:
+      context: ./worker
+      dockerfile: Dockerfile.debug
+    ports:
+      - 2347:2347
+    security_opt:
+      - "seccomp:unconfined"
+    tty: true
+    stdin_open: true
+    volumes:
+      - ./worker:/app
+    environment:
+      - RABBITMQ_USER=user
+      - RABBITMQ_PASSWORD=password
+      - RABBITMQ_HOST=queue
+      - RABBITMQ_PORT=5672
+    depends_on:
+      - eventhandler
+      - queue
+
+  timeDB:
+    image: timescale/timescaledb:latest-pg12
+    container_name: timeDB
+    restart: always
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=timescaledb_example
+      - POSTGRES_DB=data
+    ports:
+      - 5432:5432
+
+  queue:
+    image: rabbitmq:3-management
+    container_name: queue
+    restart: always
+    ports:
+      - 8080:15672
+    environment:
+      - RABBITMQ_DEFAULT_USER=user
+      - RABBITMQ_DEFAULT_PASS=password
+
+  pgAdmin:
+    image: dpage/pgadmin4
+    container_name: pgAdmin
+    restart: always
+    ports:
+      - 8081:80
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=test@test.com
+      - PGADMIN_DEFAULT_PASSWORD=123456
+
+  mysql:
+    image: mysql
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: p123456
+      MYSQL_DATABASE: go-load
+      MYSQL_USER: goload
+      MYSQL_PASSWORD: go-load12345
+    ports:
+      - 3306:3306
+    cap_add:
+      - SYS_NICE  # CAP_SYS_NICE
+
+  redis:
+      image: redis
+      container_name: redis
+      restart: always
+      ports:
+        - 6379:6379

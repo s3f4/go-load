@@ -32,6 +32,8 @@ const CreateTest: React.FC<Props> = (props: Props) => {
       name: testGroupName,
     });
   };
+
+  
   const addNewTest = (test: Test) => {
     if (!testGroup.name) {
       setMessage("Please set test group name on the left menu.");
@@ -95,7 +97,7 @@ const CreateTest: React.FC<Props> = (props: Props) => {
 
     testGroup?.tests.map((test: Test) => {
       const row: any[] = [
-        test.url,
+        test.name,
         test.method,
         test.request_count,
         buttons("Edit", test),
@@ -231,7 +233,7 @@ const CreateTest: React.FC<Props> = (props: Props) => {
         {testGroup && testGroup.tests.length > 0 && (
           <Table
             title={[
-              "URL",
+              "Name",
               "Method",
               "Requests Count",
               "",

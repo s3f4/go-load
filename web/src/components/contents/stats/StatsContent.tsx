@@ -14,7 +14,7 @@ import RTable, { IRTableRow } from "../../basic/RTable";
 import { useParams } from "react-router-dom";
 import Paginator from "../../basic/Paginator";
 import Loader from "../../basic/Loader";
-
+import { nanoToMilli } from "../../basic/helper";
 interface Props {}
 
 const StatsContent: React.FC<Props> = (props: Props) => {
@@ -44,11 +44,11 @@ const StatsContent: React.FC<Props> = (props: Props) => {
     const total_time: number[] = [];
 
     r.map((response: Response, index: number) => {
-      first_byte_time.push(response.first_byte_time);
-      connect_time.push(response.connect_time);
-      dns_time.push(response.dns_time);
-      tls_time.push(response.tls_time);
-      total_time.push(response.total_time);
+      first_byte_time.push(nanoToMilli(response.first_byte_time));
+      connect_time.push(nanoToMilli(response.connect_time));
+      dns_time.push(nanoToMilli(response.dns_time));
+      tls_time.push(nanoToMilli(response.tls_time));
+      total_time.push(nanoToMilli(response.total_time));
 
       labels.push("request_" + index);
       return null;
@@ -81,23 +81,23 @@ const StatsContent: React.FC<Props> = (props: Props) => {
       datasets: [
         {
           data: graphData.data.first_byte_time,
-          label: "First Byte Time(ns)",
+          label: "First Byte Time(ms)",
         },
         {
           data: graphData.data.connect_time,
-          label: "Connect Time(ns)",
+          label: "Connect Time(ms)",
         },
         {
           data: graphData.data.dns_time,
-          label: "DNS Time(ns)",
+          label: "DNS Time(ms)",
         },
         {
           data: graphData.data.tls_time,
-          label: "TLS Time(ns)",
+          label: "TLS Time(ms)",
         },
         {
           data: graphData.data.total_time,
-          label: "Total Time(ns)",
+          label: "Total Time(ms)",
         },
       ],
       labels: graphData.labels,
@@ -211,13 +211,14 @@ const StatsContent: React.FC<Props> = (props: Props) => {
           },
         ],
         columns: [
-          { content: moment(response.first_byte).format(defaultFormat()) },
-          { content: response.first_byte_time },
-          { content: response.connect_time },
-          { content: response.dns_time },
-          { content: response.tls_time },
+          { content: moment(response.start_time).format(preciseFormat()) },
+          { content: moment(response.first_byte).format(preciseFormat()) },
+          { content: nanoToMilli(response.first_byte_time) },
+          { content: nanoToMilli(response.connect_time) },
+          { content: nanoToMilli(response.dns_time) },
+          { content: nanoToMilli(response.tls_time) },
           { content: response.status_code },
-          { content: response.total_time },
+          { content: nanoToMilli(response.total_time) },
         ],
       };
       rows.push(row);
@@ -256,46 +257,52 @@ const StatsContent: React.FC<Props> = (props: Props) => {
         ]}
         title={[
           {
+            header: "Start",
+            accessor: "start_time",
+            sortable: true,
+            width: "18%",
+          },
+          {
             header: "FirstByte",
             accessor: "first_byte",
             sortable: true,
-            width: "22.5%",
+            width: "18%",
           },
           {
             header: "FirstByteTime",
             accessor: "first_byte_time",
             sortable: true,
-            width: "15%",
+            width: "12%",
           },
           {
-            header: "Connect Time",
+            header: "Connect",
             accessor: "connect_time",
             sortable: true,
-            width: "15%",
+            width: "10%",
           },
           {
-            header: "DNSTime",
+            header: "DNS",
             accessor: "DNS_time",
             sortable: true,
-            width: "12.5%",
+            width: "10%",
           },
           {
-            header: "TLSTime",
+            header: "TLS",
             accessor: "TLS_time",
             sortable: true,
-            width: "12.5%",
+            width: "10%",
           },
           {
-            header: "StatusCode",
+            header: "Status",
             accessor: "status_code",
             sortable: true,
-            width: "12.5%",
+            width: "10%",
           },
           {
-            header: "TotalTime(ns)",
+            header: "Total(ms)",
             accessor: "total_time",
             sortable: true,
-            width: "15%",
+            width: "12%",
           },
         ]}
       />

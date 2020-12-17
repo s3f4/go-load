@@ -19,3 +19,6 @@ export const findInAOO = (arr: object[], key: string) => {
   }
   return false;
 };
+
+export const nanoToMilli = (nanoseconds: number): number =>
+  nanoseconds / 1000000;

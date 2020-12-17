@@ -73,10 +73,12 @@ const ShowTests: React.FC = () => {
 
   const onRunTestGroup = (testGroup: TestGroup) => (e: React.FormEvent) => {
     e.preventDefault();
+    setMessage(undefined);
     setTestGroupRun(testGroup);
   };
 
   const onRunTest = (test: Test) => {
+    setMessage(undefined);
     setSelectedTest(undefined);
     setAddNewTest(false);
     setTestRun(test);

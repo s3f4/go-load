@@ -131,7 +131,6 @@ const RunTests: React.FC<Props> = (props: Props) => {
         })
         .catch((error) => {
           setItems("run_configs", []);
-          console.log(error);
           setMessage({
             type: "error",
             message: error.message,

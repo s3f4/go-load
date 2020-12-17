@@ -203,8 +203,8 @@ const StatsContent: React.FC<Props> = (props: Props) => {
           {
             content: (
               <div>
-                {reasons.map((reason) => {
-                  return <div>{reason}</div>;
+                {reasons.map((reason, index) => {
+                  return <div key={index}>{reason}</div>;
                 })}
               </div>
             ),

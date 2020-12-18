@@ -80,6 +80,7 @@ func (h *testHandler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var newTest models.Test
+	newTest.ID = test.ID
 	if err := parse(r, &newTest); err != nil {
 		log.Debug(err)
 		res.R400(w, r, library.ErrBadRequest)
@@ -91,7 +92,7 @@ func (h *testHandler) Update(w http.ResponseWriter, r *http.Request) {
 		res.R500(w, r, library.ErrInternalServerError)
 		return
 	}
-	res.R200(w, r, test)
+	res.R200(w, r, newTest)
 }
 
 func (h *testHandler) Get(w http.ResponseWriter, r *http.Request) {

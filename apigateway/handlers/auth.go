@@ -17,13 +17,20 @@ import (
 	"github.com/s3f4/go-load/apigateway/services"
 )
 
-type authHandlerInterface interface {
+// AuthHandlerInterface interface
+type AuthHandlerInterface interface {
 	Signin(w http.ResponseWriter, r *http.Request)
 	Signup(w http.ResponseWriter, r *http.Request)
 	Signout(w http.ResponseWriter, r *http.Request)
 	RefreshToken(w http.ResponseWriter, r *http.Request)
 	CurrentUser(w http.ResponseWriter, r *http.Request)
-	ResponseWithCookie(http.ResponseWriter, *http.Request, *models.User, *models.AccessToken, *models.RefreshToken)
+	ResponseWithCookie(
+		http.ResponseWriter,
+		*http.Request,
+		*models.User,
+		*models.AccessToken,
+		*models.RefreshToken,
+	)
 }
 
 type authHandler struct {
@@ -32,14 +39,20 @@ type authHandler struct {
 	ts services.TokenService
 }
 
-var (
-	// AuthHandler is used for authentication
-	AuthHandler authHandlerInterface = &authHandler{
-		ur: repository.NewUserRepository(),
-		as: services.NewAuthService(),
-		ts: services.NewTokenService(),
+// NewAuthHandler creates handler
+func NewAuthHandler(
+	ur repository.UserRepository,
+	as services.AuthService,
+	ts services.TokenService,
+) AuthHandlerInterface {
+	return &authHandler{
+		ur: ur,
+		as: as,
+		ts: ts,
 	}
-)
+}
+
+
 
 func (h *authHandler) Signup(w http.ResponseWriter, r *http.Request) {
 	var user models.User

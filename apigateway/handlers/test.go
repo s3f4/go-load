@@ -14,7 +14,8 @@ import (
 	"gorm.io/gorm"
 )
 
-type testHandlerInterface interface {
+// TestHandlerInterface interface
+type TestHandlerInterface interface {
 	Create(w http.ResponseWriter, r *http.Request)
 	Delete(w http.ResponseWriter, r *http.Request)
 	Update(w http.ResponseWriter, r *http.Request)
@@ -25,16 +26,24 @@ type testHandlerInterface interface {
 }
 
 type testHandler struct {
-	service services.TestService
-	tr      repository.TestRepository
+	service    services.TestService
+	repository repository.TestRepository
+}
+
+// NewTestHandler returns a TestHandlerInterface object
+func NewTestHandler(service services.TestService, repository repository.TestRepository) TestHandlerInterface {
+	return &testHandler{
+		service:    service,
+		repository: repository,
+	}
 }
 
 var (
 	//TestHandler is handler.
-	TestHandler testHandlerInterface = &testHandler{
-		service: services.NewTestService(),
-		tr:      repository.NewTestRepository(),
-	}
+	TestHandler TestHandlerInterface = NewTestHandler(
+		services.NewTestService(),
+		repository.NewTestRepository(),
+	)
 )
 
 func (h *testHandler) Create(w http.ResponseWriter, r *http.Request) {
@@ -45,7 +54,7 @@ func (h *testHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := h.tr.Create(&test)
+	err := h.repository.Create(&test)
 	if err != nil {
 		log.Debug(err)
 		res.R500(w, r, library.ErrInternalServerError)
@@ -61,7 +70,7 @@ func (h *testHandler) Delete(w http.ResponseWriter, r *http.Request) {
 		res.R422(w, r, library.ErrUnprocessableEntity)
 		return
 	}
-	if err := h.tr.Delete(test); err != nil {
+	if err := h.repository.Delete(test); err != nil {
 		log.Debug(err)
 		res.R500(w, r, library.ErrInternalServerError)
 		return
@@ -85,7 +94,7 @@ func (h *testHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.tr.Update(&newTest); err != nil {
+	if err := h.repository.Update(&newTest); err != nil {
 		log.Debug(err)
 		res.R500(w, r, library.ErrInternalServerError)
 		return
@@ -111,7 +120,7 @@ func (h *testHandler) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tests, total, err := h.tr.List(query, "")
+	tests, total, err := h.repository.List(query, "")
 
 	if err != nil {
 		log.Debug(err)
@@ -142,7 +151,7 @@ func (h *testHandler) ListByTestGroupID(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	tests, total, err := h.tr.List(query, "test_group_id=?", testGroup.ID)
+	tests, total, err := h.repository.List(query, "test_group_id=?", testGroup.ID)
 	if err != nil {
 		log.Debug(err)
 		if errors.Is(err, gorm.ErrRecordNotFound) {

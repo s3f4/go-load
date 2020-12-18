@@ -65,15 +65,15 @@ func routeMap(*chi.Mux) {
 	})
 
 	router.Route("/auth", func(router chi.Router) {
-		router.Post("/signin", handlers.AuthHandler.Signin)
-		router.Post("/signup", handlers.AuthHandler.Signup)
-		router.Get("/signout", handlers.AuthHandler.Signout)
-		router.Post("/_rt", handlers.AuthHandler.RefreshToken)
+		router.Post("/signin", authHandler.Signin)
+		router.Post("/signup", authHandler.Signup)
+		router.Get("/signout", authHandler.Signout)
+		router.Post("/_rt", authHandler.RefreshToken)
 	})
 
 	router.Group(func(router chi.Router) {
 		router.Use(middlewares.AuthCtx)
-		router.Get("/user/current_user", handlers.AuthHandler.CurrentUser)
+		router.Get("/user/current_user", authHandler.CurrentUser)
 
 		router.Route("/instances", func(router chi.Router) {
 			router.Post("/", handlers.InstanceHandler.SpinUp)

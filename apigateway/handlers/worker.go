@@ -12,7 +12,8 @@ import (
 	"github.com/s3f4/go-load/apigateway/models"
 )
 
-type workerHandlerInterface interface {
+// WorkerHandler interface
+type WorkerHandler interface {
 	List(w http.ResponseWriter, r *http.Request)
 	Stop(w http.ResponseWriter, r *http.Request)
 }
@@ -20,11 +21,10 @@ type workerHandlerInterface interface {
 type workerHandler struct {
 }
 
-var (
-	// WorkerHandler is used to show containers/services
-	//and it can start and stop containers/services
-	WorkerHandler workerHandlerInterface = &workerHandler{}
-)
+// NewWorkerHandler returns new workerHandler object
+func NewWorkerHandler() WorkerHandler {
+	return &workerHandler{}
+}
 
 func (h *workerHandler) Stop(w http.ResponseWriter, r *http.Request) {
 	var worker models.Worker

@@ -17,6 +17,7 @@ var router *chi.Mux
 func Run() {
 	go Down()
 	router = chi.NewRouter()
+	initHandlers()
 	routeMap(router)
 
 	port := flag.String("port", "3001", " default port is 3001")

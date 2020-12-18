@@ -13,7 +13,8 @@ import (
 	"gorm.io/gorm"
 )
 
-type runTestHandlerInterface interface {
+// RunTestHandler interface
+type RunTestHandler interface {
 	Create(w http.ResponseWriter, r *http.Request)
 	Delete(w http.ResponseWriter, r *http.Request)
 	Get(w http.ResponseWriter, r *http.Request)
@@ -25,12 +26,10 @@ type runTestHandler struct {
 	repository repository.RunTestRepository
 }
 
-var (
-	//RunTestHandler .
-	RunTestHandler runTestHandlerInterface = &runTestHandler{
-		repository: repository.NewRunTestRepository(),
-	}
-)
+// NewRunTestHandler returns new runTestHandler object
+func NewRunTestHandler(repository repository.RunTestRepository) RunTestHandler {
+	return &runTestHandler{repository: repository}
+}
 
 func (h *runTestHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var runTest models.RunTest

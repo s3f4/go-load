@@ -12,7 +12,8 @@ import (
 	"gorm.io/gorm"
 )
 
-type statsHandlersInterface interface {
+// StatsHandler interface
+type StatsHandler interface {
 	List(w http.ResponseWriter, r *http.Request)
 }
 
@@ -20,12 +21,10 @@ type statsHandler struct {
 	repository repository.ResponseRepository
 }
 
-var (
-	// StatsHandler ...
-	StatsHandler statsHandlersInterface = &statsHandler{
-		repository: repository.NewResponseRepository(),
-	}
-)
+// NewStatsHandler returns new statsHandler object
+func NewStatsHandler(repository repository.ResponseRepository) StatsHandler {
+	return &statsHandler{repository: repository}
+}
 
 func (h *statsHandler) List(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()

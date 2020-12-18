@@ -10,18 +10,18 @@ import (
 	res "github.com/s3f4/go-load/apigateway/library/response"
 )
 
-type serviceHandlerInterface interface {
+// ServiceHandler interface
+type ServiceHandler interface {
 	List(w http.ResponseWriter, r *http.Request)
 }
 
 type serviceHandler struct {
 }
 
-var (
-	// ServiceHandler is used to show containers/services
-	//and it can start and stop containers/services
-	ServiceHandler serviceHandlerInterface = &serviceHandler{}
-)
+// NewServiceHandler returns new serviceHandler object
+func NewServiceHandler() ServiceHandler {
+	return &serviceHandler{}
+}
 
 func (h *serviceHandler) List(w http.ResponseWriter, r *http.Request) {
 	cli, err := client.NewEnvClient()

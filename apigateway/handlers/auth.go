@@ -17,8 +17,8 @@ import (
 	"github.com/s3f4/go-load/apigateway/services"
 )
 
-// AuthHandlerInterface interface
-type AuthHandlerInterface interface {
+// AuthHandler interface
+type AuthHandler interface {
 	Signin(w http.ResponseWriter, r *http.Request)
 	Signup(w http.ResponseWriter, r *http.Request)
 	Signout(w http.ResponseWriter, r *http.Request)
@@ -44,15 +44,13 @@ func NewAuthHandler(
 	ur repository.UserRepository,
 	as services.AuthService,
 	ts services.TokenService,
-) AuthHandlerInterface {
+) AuthHandler {
 	return &authHandler{
 		ur: ur,
 		as: as,
 		ts: ts,
 	}
 }
-
-
 
 func (h *authHandler) Signup(w http.ResponseWriter, r *http.Request) {
 	var user models.User

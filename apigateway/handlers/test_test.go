@@ -6,13 +6,14 @@ import (
 	"testing"
 
 	"github.com/s3f4/go-load/apigateway/mocks"
+	"github.com/s3f4/go-load/apigateway/models"
 	"github.com/stretchr/testify/assert"
 )
 
 func Test_TestCreate(t *testing.T) {
 	service := new(mocks.TestService)
 	repository := new(mocks.TestRepository)
-
+	service.On("Create", &models.Test{}).Return(nil)
 	testHandler := NewTestHandler(service, repository)
 
 	res, body := makeRequest("/test", http.MethodGet, testHandler.Create, strings.NewReader(`{"name":"test", "url":"url"}`))

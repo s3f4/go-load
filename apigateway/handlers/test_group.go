@@ -14,7 +14,8 @@ import (
 	"gorm.io/gorm"
 )
 
-type testGroupHandlerInterface interface {
+// TestGroupHandler interface
+type TestGroupHandler interface {
 	Create(w http.ResponseWriter, r *http.Request)
 	Update(w http.ResponseWriter, r *http.Request)
 	Delete(w http.ResponseWriter, r *http.Request)
@@ -26,12 +27,10 @@ type testGroupHandler struct {
 	repository repository.TestGroupRepository
 }
 
-var (
-	//TestGroupHandler .
-	TestGroupHandler testGroupHandlerInterface = &testGroupHandler{
-		repository: repository.NewTestGroupRepository(),
-	}
-)
+// NewTestGroupHandler returns new testGroupHandler object
+func NewTestGroupHandler(repository repository.TestGroupRepository) TestGroupHandler {
+	return &testGroupHandler{repository: repository}
+}
 
 func (h *testGroupHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var testConfig models.TestGroup

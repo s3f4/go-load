@@ -10,7 +10,6 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
 	"github.com/gorilla/csrf"
-	"github.com/s3f4/go-load/apigateway/handlers"
 	res "github.com/s3f4/go-load/apigateway/library/response"
 	"github.com/s3f4/go-load/apigateway/middlewares"
 )
@@ -76,57 +75,57 @@ func routeMap(*chi.Mux) {
 		router.Get("/user/current_user", authHandler.CurrentUser)
 
 		router.Route("/instances", func(router chi.Router) {
-			router.Post("/", handlers.InstanceHandler.SpinUp)
-			router.Get("/", handlers.InstanceHandler.GetInstanceInfo)
-			router.Get("/terraform", handlers.InstanceHandler.GetInstanceInfoFromTerraform)
-			router.Get("/regions", handlers.InstanceHandler.ShowRegions)
-			router.Get("/account", handlers.InstanceHandler.ShowAccount)
-			router.Get("/swarm-nodes", handlers.InstanceHandler.ShowSwarmNodes)
-			router.Delete("/", handlers.InstanceHandler.Destroy)
+			router.Post("/", instanceHandler.SpinUp)
+			router.Get("/", instanceHandler.GetInstanceInfo)
+			router.Get("/terraform", instanceHandler.GetInstanceInfoFromTerraform)
+			router.Get("/regions", instanceHandler.ShowRegions)
+			router.Get("/account", instanceHandler.ShowAccount)
+			router.Get("/swarm-nodes", instanceHandler.ShowSwarmNodes)
+			router.Delete("/", instanceHandler.Destroy)
 		})
 
-		router.Get("/workers", handlers.WorkerHandler.List)
-		router.Post("/workers", handlers.WorkerHandler.Stop)
-		router.Get("/services", handlers.ServiceHandler.List)
+		router.Get("/workers", workerHandler.List)
+		router.Post("/workers", workerHandler.Stop)
+		router.Get("/services", serviceHandler.List)
 
 		router.Route("/test_group", func(router chi.Router) {
-			router.Post("/", handlers.TestGroupHandler.Create)
+			router.Post("/", testGroupHandler.Create)
 
 			router.Route("/", func(router chi.Router) {
 				router.Use(middlewares.QueryCtx)
-				router.Get("/", handlers.TestGroupHandler.List)
+				router.Get("/", testGroupHandler.List)
 			})
 
 			router.Route("/{ID}", func(router chi.Router) {
 				router.Use(middlewares.TestGroupCtx)
-				router.Put("/", handlers.TestGroupHandler.Update)
-				router.Delete("/", handlers.TestGroupHandler.Delete)
+				router.Put("/", testGroupHandler.Update)
+				router.Delete("/", testGroupHandler.Delete)
 				router.Route("/tests", func(router chi.Router) {
 					router.Use(middlewares.QueryCtx)
-					router.Get("/", handlers.TestHandler.ListByTestGroupID)
+					router.Get("/", testHandler.ListByTestGroupID)
 				})
 			})
 		})
 
 		router.Route("/test", func(router chi.Router) {
-			router.Post("/", handlers.TestHandler.Create)
+			router.Post("/", testHandler.Create)
 			router.Route("/", func(router chi.Router) {
 				router.Use(middlewares.QueryCtx)
-				router.Get("/", handlers.TestHandler.List)
+				router.Get("/", testHandler.List)
 			})
 
 			router.Route("/{ID}", func(router chi.Router) {
 				router.Use(middlewares.TestCtx)
-				router.Get("/", handlers.TestHandler.Get)
-				router.Put("/", handlers.TestHandler.Update)
-				router.Delete("/", handlers.TestHandler.Delete)
+				router.Get("/", testHandler.Get)
+				router.Put("/", testHandler.Update)
+				router.Delete("/", testHandler.Delete)
 				router.Route("/", func(router chi.Router) {
 					router.Use(middleware.Timeout(20 * time.Second))
-					router.Post("/start", handlers.TestHandler.Start)
+					router.Post("/start", testHandler.Start)
 				})
 				router.Route("/run_tests", func(router chi.Router) {
 					router.Use(middlewares.QueryCtx)
-					router.Get("/", handlers.RunTestHandler.ListByTestID)
+					router.Get("/", runTestHandler.ListByTestID)
 				})
 			})
 		})
@@ -134,15 +133,15 @@ func routeMap(*chi.Mux) {
 		router.Route("/run_test", func(router chi.Router) {
 			router.Route("/{ID}", func(router chi.Router) {
 				router.Use(middlewares.RunTestCtx)
-				router.Get("/", handlers.RunTestHandler.Get)
-				router.Delete("/", handlers.RunTestHandler.Delete)
+				router.Get("/", runTestHandler.Get)
+				router.Delete("/", runTestHandler.Delete)
 
 				router.Route("/stats", func(router chi.Router) {
 					router.Use(middlewares.QueryCtx)
-					router.Get("/", handlers.StatsHandler.List)
+					router.Get("/", statsHandler.List)
 				})
 			})
-			router.Get("/", handlers.RunTestHandler.List)
+			router.Get("/", runTestHandler.List)
 		})
 	})
 

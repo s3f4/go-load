@@ -12,7 +12,8 @@ import (
 	"github.com/s3f4/go-load/apigateway/services"
 )
 
-type instanceHandlerInterface interface {
+// InstanceHandler interface
+type InstanceHandler interface {
 	SpinUp(w http.ResponseWriter, r *http.Request)
 	Destroy(w http.ResponseWriter, r *http.Request)
 	ShowRegions(w http.ResponseWriter, r *http.Request)
@@ -26,12 +27,12 @@ type instanceHandler struct {
 	service services.InstanceService
 }
 
-var (
-	// InstanceHandler to use methods of handler.
-	InstanceHandler instanceHandlerInterface = &instanceHandler{
-		services.NewInstanceService(),
+// NewInstanceHandler returns new instanceHandler object
+func NewInstanceHandler(service services.InstanceService) InstanceHandler {
+	return &instanceHandler{
+		service: service,
 	}
-)
+}
 
 func (h *instanceHandler) SpinUp(w http.ResponseWriter, r *http.Request) {
 	var instanceConfig models.InstanceConfig

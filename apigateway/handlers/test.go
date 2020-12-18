@@ -14,8 +14,8 @@ import (
 	"gorm.io/gorm"
 )
 
-// TestHandlerInterface interface
-type TestHandlerInterface interface {
+// TestHandler interface
+type TestHandler interface {
 	Create(w http.ResponseWriter, r *http.Request)
 	Delete(w http.ResponseWriter, r *http.Request)
 	Update(w http.ResponseWriter, r *http.Request)
@@ -30,21 +30,13 @@ type testHandler struct {
 	repository repository.TestRepository
 }
 
-// NewTestHandler returns a TestHandlerInterface object
-func NewTestHandler(service services.TestService, repository repository.TestRepository) TestHandlerInterface {
+// NewTestHandler returns a new testHandler object
+func NewTestHandler(service services.TestService, repository repository.TestRepository) TestHandler {
 	return &testHandler{
 		service:    service,
 		repository: repository,
 	}
 }
-
-var (
-	//TestHandler is handler.
-	TestHandler TestHandlerInterface = NewTestHandler(
-		services.NewTestService(),
-		repository.NewTestRepository(),
-	)
-)
 
 func (h *testHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var test models.Test

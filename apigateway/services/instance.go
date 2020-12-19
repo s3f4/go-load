@@ -33,7 +33,6 @@ type InstanceService interface {
 	ShowSwarmNodes() ([]swarm.Node, error)
 	GetInstanceInfo() (*models.InstanceConfig, error)
 	GetInstanceInfoFromTerraform() (string, error)
-	AddLabels() error
 }
 
 type instanceService struct {
@@ -107,6 +106,11 @@ func (s *instanceService) SpinUp() error {
 		}
 
 		if err := s.joinWNodesToSwarm(); err != nil {
+			log.Info(err)
+			return err
+		}
+
+		if err := s.addLabels(); err != nil {
 			log.Info(err)
 			return err
 		}
@@ -313,7 +317,7 @@ func (s *instanceService) ShowSwarmNodes() ([]swarm.Node, error) {
 }
 
 // Shows swarm nodes
-func (s *instanceService) AddLabels() error {
+func (s *instanceService) addLabels() error {
 	context := context.Background()
 	cli, err := client.NewEnvClient()
 	if err != nil {

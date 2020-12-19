@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 
@@ -64,9 +63,7 @@ func (h *instanceHandler) SpinUp(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	res.R200(w, r, map[string]interface{}{
-		"data": instanceConfig,
-	})
+	res.R200(w, r, instanceConfig)
 }
 
 func (h *instanceHandler) Destroy(w http.ResponseWriter, r *http.Request) {
@@ -102,8 +99,8 @@ func (h *instanceHandler) ShowAccount(w http.ResponseWriter, r *http.Request) {
 func (h *instanceHandler) ShowSwarmNodes(w http.ResponseWriter, r *http.Request) {
 	nodes, err := h.service.ShowSwarmNodes()
 	if err != nil {
-		log.Errorf("err: %v", err)
-		res.R500(w, r, err)
+		log.Errorf(err.Error())
+		res.R500(w, r, library.ErrInternalServerError)
 		return
 	}
 	res.R200(w, r, nodes)
@@ -120,16 +117,10 @@ func (h *instanceHandler) GetInstanceInfo(w http.ResponseWriter, r *http.Request
 
 func (h *instanceHandler) GetInstanceInfoFromTerraform(w http.ResponseWriter, r *http.Request) {
 	instanceConfStr, err := h.service.GetInstanceInfoFromTerraform()
-	fmt.Println(instanceConfStr, err)
-	res.R200(w, r, instanceConfStr)
-}
-
-func (h *instanceHandler) AddLabels(w http.ResponseWriter, r *http.Request) {
-	err := h.service.AddLabels()
 	if err != nil {
 		log.Errorf(err.Error())
-		res.R500(w, r, library.ErrInternalServerError)
+		res.R404(w, r, library.ErrNotFound)
 		return
 	}
-	res.R200(w, r, "Labels has been added to worker nodes")
+	res.R200(w, r, instanceConfStr)
 }

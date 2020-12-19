@@ -55,22 +55,6 @@ func (h *testHandler) Create(w http.ResponseWriter, r *http.Request) {
 	res.R200(w, r, test)
 }
 
-func (h *testHandler) Delete(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-	test, ok := ctx.Value(middlewares.TestCtxKey).(*models.Test)
-	if !ok {
-		res.R422(w, r, library.ErrUnprocessableEntity)
-		return
-	}
-	if err := h.repository.Delete(test); err != nil {
-		log.Debug(err)
-		res.R500(w, r, library.ErrInternalServerError)
-		return
-	}
-
-	res.R200(w, r, test)
-}
-
 func (h *testHandler) Update(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	test, ok := ctx.Value(middlewares.TestCtxKey).(*models.Test)
@@ -93,6 +77,22 @@ func (h *testHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	res.R200(w, r, newTest)
+}
+
+func (h *testHandler) Delete(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	test, ok := ctx.Value(middlewares.TestCtxKey).(*models.Test)
+	if !ok {
+		res.R422(w, r, library.ErrUnprocessableEntity)
+		return
+	}
+	if err := h.repository.Delete(test); err != nil {
+		log.Debug(err)
+		res.R500(w, r, library.ErrInternalServerError)
+		return
+	}
+
+	res.R200(w, r, test)
 }
 
 func (h *testHandler) Get(w http.ResponseWriter, r *http.Request) {

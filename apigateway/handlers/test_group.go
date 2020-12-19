@@ -33,36 +33,44 @@ func NewTestGroupHandler(repository repository.TestGroupRepository) TestGroupHan
 }
 
 func (h *testGroupHandler) Create(w http.ResponseWriter, r *http.Request) {
-	var testConfig models.TestGroup
-	if err := parse(r, &testConfig); err != nil {
+	var testGroup models.TestGroup
+	if err := parse(r, &testGroup); err != nil {
 		log.Debug(err)
 		res.R400(w, r, library.ErrBadRequest)
 		return
 	}
 
-	err := h.repository.Create(&testConfig)
+	err := h.repository.Create(&testGroup)
 	if err != nil {
 		log.Debug(err)
-		res.R500(w, r, library.ErrBadRequest)
+		res.R500(w, r, library.ErrInternalServerError)
 		return
 	}
-	res.R200(w, r, testConfig)
+	res.R200(w, r, testGroup)
 }
 
 func (h *testGroupHandler) Update(w http.ResponseWriter, r *http.Request) {
-	var testConfig models.TestGroup
-	if err := parse(r, &testConfig); err != nil {
+	ctx := r.Context()
+	testGroup, ok := ctx.Value(middlewares.TestGroupCtxKey).(*models.TestGroup)
+	if !ok {
+		res.R422(w, r, library.ErrUnprocessableEntity)
+		return
+	}
+
+	var newTestGroup models.TestGroup
+	newTestGroup.ID = testGroup.ID
+	if err := parse(r, &newTestGroup); err != nil {
 		log.Debug(err)
 		res.R400(w, r, library.ErrBadRequest)
 		return
 	}
-	err := h.repository.Update(&testConfig)
+	err := h.repository.Update(&newTestGroup)
 	if err != nil {
 		log.Debug(err)
 		res.R500(w, r, err)
 		return
 	}
-	res.R200(w, r, testConfig)
+	res.R200(w, r, newTestGroup)
 }
 
 func (h *testGroupHandler) Delete(w http.ResponseWriter, r *http.Request) {
@@ -107,7 +115,7 @@ func (h *testGroupHandler) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fmt.Printf("%#v", query)
-	testConfig, total, err := h.repository.List(query)
+	testGroups, total, err := h.repository.List(query)
 
 	if err != nil {
 		log.Debug(err)
@@ -120,6 +128,6 @@ func (h *testGroupHandler) List(w http.ResponseWriter, r *http.Request) {
 	}
 	res.R200(w, r, map[string]interface{}{
 		"total": total,
-		"data":  testConfig,
+		"data":  testGroups,
 	})
 }

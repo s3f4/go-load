@@ -19,7 +19,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func Test_TestCreate(t *testing.T) {
+func Test_Create(t *testing.T) {
 	service := new(mocks.TestService)
 	repository := new(mocks.TestRepository)
 	repository.On("Create", &models.Test{Name: "test", URL: "url"}).Return(nil)
@@ -30,7 +30,7 @@ func Test_TestCreate(t *testing.T) {
 	assert.Equal(t, res.StatusCode, http.StatusOK, "%d status is not equal to %d", res.StatusCode, http.StatusOK)
 }
 
-func Test_TestCreate_ParseError(t *testing.T) {
+func Test_Create_ParseError(t *testing.T) {
 	service := new(mocks.TestService)
 	repository := new(mocks.TestRepository)
 	testHandler := NewTestHandler(service, repository)
@@ -40,7 +40,7 @@ func Test_TestCreate_ParseError(t *testing.T) {
 	assert.Equal(t, http.StatusBadRequest, res.StatusCode, "%d status is not equal to %d", http.StatusBadRequest, res.StatusCode)
 }
 
-func Test_TestCreate_DBError(t *testing.T) {
+func Test_Create_DBError(t *testing.T) {
 	service := new(mocks.TestService)
 	repository := new(mocks.TestRepository)
 
@@ -53,62 +53,7 @@ func Test_TestCreate_DBError(t *testing.T) {
 	assert.Equal(t, http.StatusInternalServerError, res.StatusCode, "%d status is not equal to %d", http.StatusInternalServerError, res.StatusCode)
 }
 
-func Test_TestDelete(t *testing.T) {
-	service := new(mocks.TestService)
-	repository := new(mocks.TestRepository)
-
-	test := &models.Test{ID: 1}
-	repository.On("Delete", test).Return(nil)
-	testHandler := NewTestHandler(service, repository)
-
-	req := httptest.NewRequest(http.MethodDelete, "/test/1", nil)
-	ctx := context.WithValue(req.Context(), middlewares.TestCtxKey, test)
-	req = req.WithContext(ctx)
-
-	w := httptest.NewRecorder()
-	testHandler.Delete(w, req)
-	res := w.Result()
-	body, _ := ioutil.ReadAll(res.Body)
-
-	testStr, _ := json.Marshal(test)
-	assert.Equal(t, fmt.Sprintf(`{"status":true,"data":%s}`, string(testStr)), string(body))
-	assert.Equal(t, http.StatusOK, res.StatusCode, "%d status is not equal to %d", http.StatusOK, res.StatusCode)
-}
-
-func Test_TestDelete_NotFound(t *testing.T) {
-	service := new(mocks.TestService)
-	repository := new(mocks.TestRepository)
-
-	repository.On("Delete", &models.Test{}).Return(nil)
-	testHandler := NewTestHandler(service, repository)
-
-	res, body := makeRequest("/test/1", http.MethodDelete, testHandler.Delete, strings.NewReader(`{"":"test"}`))
-
-	assert.Equal(t, fmt.Sprintf(`{"status":false,"message":"%s"}`, library.ErrUnprocessableEntity), string(body))
-	assert.Equal(t, http.StatusUnprocessableEntity, res.StatusCode, "%d status is not equal to %d", http.StatusUnprocessableEntity, res.StatusCode)
-}
-
-func Test_TestDelete_DBError(t *testing.T) {
-	service := new(mocks.TestService)
-	repository := new(mocks.TestRepository)
-
-	repository.On("Delete", &models.Test{}).Return(gorm.ErrNotImplemented)
-	testHandler := NewTestHandler(service, repository)
-	test := &models.Test{}
-	req := httptest.NewRequest(http.MethodDelete, "/test/1", nil)
-	ctx := context.WithValue(req.Context(), middlewares.TestCtxKey, test)
-	req = req.WithContext(ctx)
-
-	w := httptest.NewRecorder()
-	testHandler.Delete(w, req)
-	res := w.Result()
-	body, _ := ioutil.ReadAll(res.Body)
-
-	assert.Equal(t, fmt.Sprintf(`{"status":false,"message":"%s"}`, library.ErrInternalServerError), string(body))
-	assert.Equal(t, http.StatusInternalServerError, res.StatusCode, "%d status is not equal to %d", http.StatusInternalServerError, res.StatusCode)
-}
-
-func Test_TestUpdate(t *testing.T) {
+func Test_Update(t *testing.T) {
 	service := new(mocks.TestService)
 	repository := new(mocks.TestRepository)
 
@@ -132,19 +77,18 @@ func Test_TestUpdate(t *testing.T) {
 	assert.Equal(t, http.StatusOK, res.StatusCode, "%d status is not equal to %d", http.StatusOK, res.StatusCode)
 }
 
-func Test_TestUpdate_NotFound(t *testing.T) {
+func Test_Update_TestCTXNotFound(t *testing.T) {
 	repository := new(mocks.TestRepository)
 	service := new(mocks.TestService)
 
 	testHandler := NewTestHandler(service, repository)
-	repository.On("Update", &models.Test{}).Return(nil)
 	res, body := makeRequest("/test/1", http.MethodPut, testHandler.Update, strings.NewReader(`{"id":1,"name":"test2"}`))
 
 	assert.Equal(t, fmt.Sprintf(`{"status":false,"message":"%s"}`, library.ErrUnprocessableEntity), string(body))
 	assert.Equal(t, http.StatusUnprocessableEntity, res.StatusCode, "%d status is not equal to %d", http.StatusUnprocessableEntity, res.StatusCode)
 }
 
-func Test_TestUpdate_ParseError(t *testing.T) {
+func Test_Update_ParseError(t *testing.T) {
 	service := new(mocks.TestService)
 	repository := new(mocks.TestRepository)
 
@@ -166,7 +110,7 @@ func Test_TestUpdate_ParseError(t *testing.T) {
 	assert.Equal(t, http.StatusBadRequest, res.StatusCode, "%d status is not equal to %d", res.StatusCode, http.StatusOK)
 }
 
-func Test_TestUpdate_DBError(t *testing.T) {
+func Test_Update_DBError(t *testing.T) {
 	service := new(mocks.TestService)
 	repository := new(mocks.TestRepository)
 
@@ -188,7 +132,60 @@ func Test_TestUpdate_DBError(t *testing.T) {
 	assert.Equal(t, http.StatusInternalServerError, res.StatusCode, "%d status is not equal to %d", http.StatusInternalServerError, res.StatusCode)
 }
 
-func Test_TestGet(t *testing.T) {
+func Test_Delete(t *testing.T) {
+	service := new(mocks.TestService)
+	repository := new(mocks.TestRepository)
+
+	test := &models.Test{ID: 1}
+	repository.On("Delete", test).Return(nil)
+	testHandler := NewTestHandler(service, repository)
+
+	req := httptest.NewRequest(http.MethodDelete, "/test/1", nil)
+	ctx := context.WithValue(req.Context(), middlewares.TestCtxKey, test)
+	req = req.WithContext(ctx)
+
+	w := httptest.NewRecorder()
+	testHandler.Delete(w, req)
+	res := w.Result()
+	body, _ := ioutil.ReadAll(res.Body)
+
+	testStr, _ := json.Marshal(test)
+	assert.Equal(t, fmt.Sprintf(`{"status":true,"data":%s}`, string(testStr)), string(body))
+	assert.Equal(t, http.StatusOK, res.StatusCode, "%d status is not equal to %d", http.StatusOK, res.StatusCode)
+}
+
+func Test_Delete_TestCTXNotFound(t *testing.T) {
+	service := new(mocks.TestService)
+	repository := new(mocks.TestRepository)
+
+	testHandler := NewTestHandler(service, repository)
+	res, body := makeRequest("/test/1", http.MethodDelete, testHandler.Delete, strings.NewReader(`{"":"test"}`))
+
+	assert.Equal(t, fmt.Sprintf(`{"status":false,"message":"%s"}`, library.ErrUnprocessableEntity), string(body))
+	assert.Equal(t, http.StatusUnprocessableEntity, res.StatusCode, "%d status is not equal to %d", http.StatusUnprocessableEntity, res.StatusCode)
+}
+
+func Test_Delete_DBError(t *testing.T) {
+	service := new(mocks.TestService)
+	repository := new(mocks.TestRepository)
+
+	repository.On("Delete", &models.Test{}).Return(gorm.ErrNotImplemented)
+	testHandler := NewTestHandler(service, repository)
+	test := &models.Test{}
+	req := httptest.NewRequest(http.MethodDelete, "/test/1", nil)
+	ctx := context.WithValue(req.Context(), middlewares.TestCtxKey, test)
+	req = req.WithContext(ctx)
+
+	w := httptest.NewRecorder()
+	testHandler.Delete(w, req)
+	res := w.Result()
+	body, _ := ioutil.ReadAll(res.Body)
+
+	assert.Equal(t, fmt.Sprintf(`{"status":false,"message":"%s"}`, library.ErrInternalServerError), string(body))
+	assert.Equal(t, http.StatusInternalServerError, res.StatusCode, "%d status is not equal to %d", http.StatusInternalServerError, res.StatusCode)
+}
+
+func Test_Get(t *testing.T) {
 	repository := new(mocks.TestRepository)
 	service := new(mocks.TestService)
 
@@ -208,7 +205,7 @@ func Test_TestGet(t *testing.T) {
 	assert.Equal(t, http.StatusOK, res.StatusCode, "%d status is not equal to %d", http.StatusOK, res.StatusCode)
 }
 
-func Test_TestGet_NotFound(t *testing.T) {
+func Test_Get_TestCTXNotFound(t *testing.T) {
 	repository := new(mocks.TestRepository)
 	service := new(mocks.TestService)
 
@@ -224,7 +221,7 @@ func Test_TestGet_NotFound(t *testing.T) {
 	assert.Equal(t, http.StatusUnprocessableEntity, res.StatusCode, "%d status is not equal to %d", http.StatusUnprocessableEntity, res.StatusCode)
 }
 
-func Test_TestList(t *testing.T) {
+func Test_List(t *testing.T) {
 	repository := new(mocks.TestRepository)
 	service := new(mocks.TestService)
 
@@ -247,7 +244,7 @@ func Test_TestList(t *testing.T) {
 	assert.Equal(t, http.StatusOK, res.StatusCode, "%d status is not equal to %d", http.StatusOK, res.StatusCode)
 }
 
-func Test_TestList_QBNotFound(t *testing.T) {
+func Test_List_QueryBuilderCTXNotFound(t *testing.T) {
 	repository := new(mocks.TestRepository)
 	service := new(mocks.TestService)
 
@@ -264,7 +261,7 @@ func Test_TestList_QBNotFound(t *testing.T) {
 	assert.Equal(t, http.StatusUnprocessableEntity, res.StatusCode, "%d status is not equal to %d", http.StatusUnprocessableEntity, res.StatusCode)
 }
 
-func Test_TestList_DBError(t *testing.T) {
+func Test_List_DBError(t *testing.T) {
 	repository := new(mocks.TestRepository)
 	service := new(mocks.TestService)
 
@@ -284,7 +281,7 @@ func Test_TestList_DBError(t *testing.T) {
 	assert.Equal(t, http.StatusInternalServerError, res.StatusCode, "%d status is not equal to %d", http.StatusInternalServerError, res.StatusCode)
 }
 
-func Test_TestList_DBRecordNotFound(t *testing.T) {
+func Test_List_DBRecordNotFound(t *testing.T) {
 	repository := new(mocks.TestRepository)
 	service := new(mocks.TestService)
 
@@ -331,7 +328,7 @@ func Test_ListByTestGroupID(t *testing.T) {
 
 }
 
-func Test_ListByTestGroupID_QBNotFound(t *testing.T) {
+func Test_ListByTestGroupID_QueryBuidlerCTXNotFound(t *testing.T) {
 	repository := new(mocks.TestRepository)
 	service := new(mocks.TestService)
 
@@ -355,7 +352,7 @@ func Test_ListByTestGroupID_QBNotFound(t *testing.T) {
 	assert.Equal(t, http.StatusUnprocessableEntity, res.StatusCode, "%d status is not equal to %d", http.StatusUnprocessableEntity, res.StatusCode)
 }
 
-func Test_ListByTestGroupID_TGNotFound(t *testing.T) {
+func Test_ListByTestGroupID_TestGroupCTXNotFound(t *testing.T) {
 	repository := new(mocks.TestRepository)
 	service := new(mocks.TestService)
 
@@ -379,7 +376,7 @@ func Test_ListByTestGroupID_TGNotFound(t *testing.T) {
 	assert.Equal(t, http.StatusUnprocessableEntity, res.StatusCode, "%d status is not equal to %d", http.StatusUnprocessableEntity, res.StatusCode)
 }
 
-func Test_ListByTestGroupID_DBRNotFound(t *testing.T) {
+func Test_ListByTestGroupID_DBRecordNotFound(t *testing.T) {
 	repository := new(mocks.TestRepository)
 	service := new(mocks.TestService)
 
@@ -449,7 +446,7 @@ func Test_Start(t *testing.T) {
 	assert.Equal(t, http.StatusOK, res.StatusCode, "%d status is not equal to %d", http.StatusOK, res.StatusCode)
 }
 
-func Test_Start_TCtxNotfound(t *testing.T) {
+func Test_Start_TestCTXNotfound(t *testing.T) {
 	repository := new(mocks.TestRepository)
 	service := new(mocks.TestService)
 

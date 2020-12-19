@@ -82,13 +82,16 @@ func (_m *TestGroupRepository) Get(id uint) (*models.TestGroup, error) {
 	return r0, r1
 }
 
-// List provides a mock function with given fields: _a0
-func (_m *TestGroupRepository) List(_a0 *library.QueryBuilder) ([]models.TestGroup, int64, error) {
-	ret := _m.Called(_a0)
+// List provides a mock function with given fields: _a0, _a1, _a2
+func (_m *TestGroupRepository) List(_a0 *library.QueryBuilder, _a1 string, _a2 ...interface{}) ([]models.TestGroup, int64, error) {
+	var _ca []interface{}
+	_ca = append(_ca, _a0, _a1)
+	_ca = append(_ca, _a2...)
+	ret := _m.Called(_ca...)
 
 	var r0 []models.TestGroup
-	if rf, ok := ret.Get(0).(func(*library.QueryBuilder) []models.TestGroup); ok {
-		r0 = rf(_a0)
+	if rf, ok := ret.Get(0).(func(*library.QueryBuilder, string, ...interface{}) []models.TestGroup); ok {
+		r0 = rf(_a0, _a1, _a2...)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]models.TestGroup)
@@ -96,15 +99,15 @@ func (_m *TestGroupRepository) List(_a0 *library.QueryBuilder) ([]models.TestGro
 	}
 
 	var r1 int64
-	if rf, ok := ret.Get(1).(func(*library.QueryBuilder) int64); ok {
-		r1 = rf(_a0)
+	if rf, ok := ret.Get(1).(func(*library.QueryBuilder, string, ...interface{}) int64); ok {
+		r1 = rf(_a0, _a1, _a2...)
 	} else {
 		r1 = ret.Get(1).(int64)
 	}
 
 	var r2 error
-	if rf, ok := ret.Get(2).(func(*library.QueryBuilder) error); ok {
-		r2 = rf(_a0)
+	if rf, ok := ret.Get(2).(func(*library.QueryBuilder, string, ...interface{}) error); ok {
+		r2 = rf(_a0, _a1, _a2...)
 	} else {
 		r2 = ret.Error(2)
 	}

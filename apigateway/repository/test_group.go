@@ -13,7 +13,7 @@ type TestGroupRepository interface {
 	Update(*models.TestGroup) error
 	Delete(*models.TestGroup) error
 	Get(id uint) (*models.TestGroup, error)
-	List(*library.QueryBuilder) ([]models.TestGroup, int64, error)
+	List(*library.QueryBuilder, string, ...interface{}) ([]models.TestGroup, int64, error)
 }
 
 type testGroupRepository struct {
@@ -56,16 +56,23 @@ func (r *testGroupRepository) Get(id uint) (*models.TestGroup, error) {
 	return &testReq, nil
 }
 
-func (r *testGroupRepository) List(query *library.QueryBuilder) ([]models.TestGroup, int64, error) {
-	var testReq []models.TestGroup
+func (r *testGroupRepository) List(query *library.QueryBuilder, conditionStr string, where ...interface{}) ([]models.TestGroup, int64, error) {
+	var testGroupReq []models.TestGroup
 	var total int64
-	r.DB().Model(&testReq).Count(&total)
+	if len(conditionStr) > 0 && where != nil {
+		r.DB().Where(conditionStr, where...).Model(&testGroupReq).Count(&total)
+	} else {
+		r.DB().Model(&testGroupReq).Count(&total)
+	}
+
 	if err := query.
 		SetDB(r.DB()).
 		SetModel(models.TestGroup{}).
 		SetPreloads("Tests", "Tests.Headers", "Tests.TransportConfig", "Tests.RunTests").
-		List(&testReq); err != nil {
+		SetWhere(conditionStr, where...).
+		List(&testGroupReq); err != nil {
 		return nil, 0, err
 	}
-	return testReq, total, nil
+
+	return testGroupReq, total, nil
 }

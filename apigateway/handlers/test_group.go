@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 
 	"github.com/s3f4/go-load/apigateway/library"
@@ -67,7 +66,7 @@ func (h *testGroupHandler) Update(w http.ResponseWriter, r *http.Request) {
 	err := h.repository.Update(&newTestGroup)
 	if err != nil {
 		log.Debug(err)
-		res.R500(w, r, err)
+		res.R500(w, r, library.ErrInternalServerError)
 		return
 	}
 	res.R200(w, r, newTestGroup)
@@ -84,7 +83,7 @@ func (h *testGroupHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	err := h.repository.Delete(testGroup)
 	if err != nil {
 		log.Debug(err)
-		res.R500(w, r, err)
+		res.R500(w, r, library.ErrInternalServerError)
 		return
 	}
 	res.R200(w, r, testGroup)
@@ -98,13 +97,7 @@ func (h *testGroupHandler) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tc, err := h.repository.Get(testGroup.ID)
-	if err != nil {
-		log.Debug(err)
-		res.R500(w, r, library.ErrInternalServerError)
-		return
-	}
-	res.R200(w, r, tc)
+	res.R200(w, r, testGroup)
 }
 
 func (h *testGroupHandler) List(w http.ResponseWriter, r *http.Request) {
@@ -114,8 +107,7 @@ func (h *testGroupHandler) List(w http.ResponseWriter, r *http.Request) {
 		res.R422(w, r, library.ErrUnprocessableEntity)
 		return
 	}
-	fmt.Printf("%#v", query)
-	testGroups, total, err := h.repository.List(query)
+	testGroups, total, err := h.repository.List(query, "")
 
 	if err != nil {
 		log.Debug(err)

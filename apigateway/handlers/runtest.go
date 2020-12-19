@@ -42,24 +42,24 @@ func (h *runTestHandler) Create(w http.ResponseWriter, r *http.Request) {
 	err := h.repository.Create(&runTest)
 	if err != nil {
 		log.Info(err)
-		res.R500(w, r, err)
+		res.R500(w, r, library.ErrInternalServerError)
 		return
 	}
 	res.R200(w, r, runTest)
 }
 
 func (h *runTestHandler) Delete(w http.ResponseWriter, r *http.Request) {
-	var runTest models.RunTest
-	if err := parse(r, &runTest); err != nil {
-		log.Info(err)
-		res.R400(w, r, library.ErrBadRequest)
+	ctx := r.Context()
+	runTest, ok := ctx.Value(middlewares.RunTestCtxKey).(*models.RunTest)
+	if !ok {
+		res.R422(w, r, library.ErrUnprocessableEntity)
 		return
 	}
 
-	err := h.repository.Delete(&runTest)
+	err := h.repository.Delete(runTest)
 	if err != nil {
 		log.Info(err)
-		res.R500(w, r, err)
+		res.R500(w, r, library.ErrInternalServerError)
 		return
 	}
 	res.R200(w, r, runTest)
@@ -76,17 +76,27 @@ func (h *runTestHandler) Get(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *runTestHandler) List(w http.ResponseWriter, r *http.Request) {
-	runTest, _, err := h.repository.List(nil, "")
+	ctx := r.Context()
+	query, ok := ctx.Value(middlewares.QueryCtxKey).(*library.QueryBuilder)
+	if !ok {
+		res.R422(w, r, library.ErrUnprocessableEntity)
+		return
+	}
+
+	runTest, total, err := h.repository.List(query, "")
 	if err != nil {
 		log.Info(err)
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			res.R404(w, r, library.ErrNotFound)
 			return
 		}
-		res.R500(w, r, err)
+		res.R500(w, r, library.ErrInternalServerError)
 		return
 	}
-	res.R200(w, r, runTest)
+	res.R200(w, r, map[string]interface{}{
+		"total": total,
+		"data":  runTest,
+	})
 }
 
 func (h *runTestHandler) ListByTestID(w http.ResponseWriter, r *http.Request) {

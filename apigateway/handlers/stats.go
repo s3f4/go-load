@@ -46,7 +46,7 @@ func (h *statsHandler) List(w http.ResponseWriter, r *http.Request) {
 			res.R404(w, r, library.ErrNotFound)
 			return
 		}
-		res.R500(w, r, err)
+		res.R500(w, r, library.ErrInternalServerError)
 		return
 	}
 

@@ -27,7 +27,7 @@ func Test_Create(t *testing.T) {
 
 	res, body := makeRequest("/test", http.MethodPost, testHandler.Create, strings.NewReader(`{"name":"test", "url":"url"}`))
 	assert.Equal(t, `{"status":true,"data":{"id":0,"name":"test","test_group_id":0,"url":"url","method":"","request_count":0,"goroutine_count":0,"expected_response_code":0,"expected_response_body":"","expected_first_byte_time":0,"expected_connection_time":0,"expected_dns_time":0,"expected_tls_time":0,"expected_total_time":0,"transport_config":{"test_id":0,"disable_keep_alives":false},"test_group":null,"run_tests":null,"headers":null}}`, string(body))
-	assert.Equal(t, res.StatusCode, http.StatusOK, "%d status is not equal to %d", res.StatusCode, http.StatusOK)
+	assert.Equal(t, http.StatusOK, res.StatusCode, "%d status is not equal to %d", http.StatusOK, res.StatusCode)
 }
 
 func Test_Create_ParseError(t *testing.T) {

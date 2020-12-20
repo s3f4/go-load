@@ -62,7 +62,7 @@ func (h *authHandler) Signup(w http.ResponseWriter, r *http.Request) {
 
 	if err := h.ur.Create(&user); err != nil {
 		log.Debug(err)
-		res.R500(w, r, err)
+		res.R500(w, r, library.ErrInternalServerError)
 		return
 	}
 
@@ -124,7 +124,7 @@ func (h *authHandler) Signout(w http.ResponseWriter, r *http.Request) {
 
 	if err = h.as.DeleteAuthCache(refresh.UUID); err != nil {
 		log.Debug(err)
-		res.R401(w, r, err.Error())
+		res.R401(w, r, library.ErrUnauthorized)
 		return
 	}
 

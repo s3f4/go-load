@@ -16,13 +16,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestAuth(t *testing.T) {
+func Test_Auth(t *testing.T) {
 	ts := new(mocks.TokenService)
 	as := new(mocks.AuthService)
-	tr := new(mocks.TestRepository)
-	tgr := new(mocks.TestGroupRepository)
-	rtr := new(mocks.RunTestRepository)
-	m := NewMiddleware(ts, as, tr, tgr, rtr)
+	m := NewMiddleware(ts, as, nil, nil, nil)
 
 	var next http.HandlerFunc
 	next = func(w http.ResponseWriter, r *http.Request) {
@@ -46,13 +43,10 @@ func TestAuth(t *testing.T) {
 	test.ServeHTTP(res, req)
 }
 
-func TestAuth_VerifyTokenError(t *testing.T) {
+func Test_Auth_VerifyTokenError(t *testing.T) {
 	ts := new(mocks.TokenService)
 	as := new(mocks.AuthService)
-	tr := new(mocks.TestRepository)
-	tgr := new(mocks.TestGroupRepository)
-	rtr := new(mocks.RunTestRepository)
-	m := NewMiddleware(ts, as, tr, tgr, rtr)
+	m := NewMiddleware(ts, as, nil, nil, nil)
 
 	var next http.HandlerFunc
 	next = func(w http.ResponseWriter, r *http.Request) {
@@ -76,13 +70,10 @@ func TestAuth_VerifyTokenError(t *testing.T) {
 	assert.Equal(t, http.StatusUnauthorized, res.StatusCode, "%d status is not equal to %d", http.StatusUnauthorized, res.StatusCode)
 }
 
-func TestAuth_GetDetailsFromToken_Error(t *testing.T) {
+func Test_Auth_GetDetailsFromToken_Error(t *testing.T) {
 	ts := new(mocks.TokenService)
 	as := new(mocks.AuthService)
-	tr := new(mocks.TestRepository)
-	tgr := new(mocks.TestGroupRepository)
-	rtr := new(mocks.RunTestRepository)
-	m := NewMiddleware(ts, as, tr, tgr, rtr)
+	m := NewMiddleware(ts, as, nil, nil, nil)
 
 	var next http.HandlerFunc
 	next = func(w http.ResponseWriter, r *http.Request) {
@@ -107,13 +98,10 @@ func TestAuth_GetDetailsFromToken_Error(t *testing.T) {
 	assert.Equal(t, http.StatusUnauthorized, res.StatusCode, "%d status is not equal to %d", http.StatusUnauthorized, res.StatusCode)
 }
 
-func TestAuth_GetAuthCache_Error(t *testing.T) {
+func Test_Auth_GetAuthCache_Error(t *testing.T) {
 	ts := new(mocks.TokenService)
 	as := new(mocks.AuthService)
-	tr := new(mocks.TestRepository)
-	tgr := new(mocks.TestGroupRepository)
-	rtr := new(mocks.RunTestRepository)
-	m := NewMiddleware(ts, as, tr, tgr, rtr)
+	m := NewMiddleware(ts, as, nil, nil, nil)
 
 	var next http.HandlerFunc
 	next = func(w http.ResponseWriter, r *http.Request) {
@@ -138,13 +126,10 @@ func TestAuth_GetAuthCache_Error(t *testing.T) {
 	assert.Equal(t, http.StatusUnauthorized, res.StatusCode, "%d status is not equal to %d", http.StatusUnauthorized, res.StatusCode)
 }
 
-func TestAuth_IP_DOMAIN_Error(t *testing.T) {
+func Test_Auth_IP_DOMAIN_Error(t *testing.T) {
 	ts := new(mocks.TokenService)
 	as := new(mocks.AuthService)
-	tr := new(mocks.TestRepository)
-	tgr := new(mocks.TestGroupRepository)
-	rtr := new(mocks.RunTestRepository)
-	m := NewMiddleware(ts, as, tr, tgr, rtr)
+	m := NewMiddleware(ts, as, nil, nil, nil)
 
 	var next http.HandlerFunc
 	next = func(w http.ResponseWriter, r *http.Request) {

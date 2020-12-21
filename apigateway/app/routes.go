@@ -11,7 +11,6 @@ import (
 	"github.com/go-chi/cors"
 	"github.com/gorilla/csrf"
 	res "github.com/s3f4/go-load/apigateway/library/response"
-	"github.com/s3f4/go-load/apigateway/middlewares"
 )
 
 func applyMiddlewares() {
@@ -92,7 +91,7 @@ func routeMap(*chi.Mux) {
 			router.Post("/", testGroupHandler.Create)
 
 			router.Route("/", func(router chi.Router) {
-				router.Use(middlewares.QueryCtx)
+				router.Use(m.QueryCtx)
 				router.Get("/", testGroupHandler.List)
 			})
 
@@ -101,7 +100,7 @@ func routeMap(*chi.Mux) {
 				router.Put("/", testGroupHandler.Update)
 				router.Delete("/", testGroupHandler.Delete)
 				router.Route("/tests", func(router chi.Router) {
-					router.Use(middlewares.QueryCtx)
+					router.Use(m.QueryCtx)
 					router.Get("/", testHandler.ListByTestGroupID)
 				})
 			})
@@ -110,7 +109,7 @@ func routeMap(*chi.Mux) {
 		router.Route("/test", func(router chi.Router) {
 			router.Post("/", testHandler.Create)
 			router.Route("/", func(router chi.Router) {
-				router.Use(middlewares.QueryCtx)
+				router.Use(m.QueryCtx)
 				router.Get("/", testHandler.List)
 			})
 
@@ -124,7 +123,7 @@ func routeMap(*chi.Mux) {
 					router.Post("/start", testHandler.Start)
 				})
 				router.Route("/run_tests", func(router chi.Router) {
-					router.Use(middlewares.QueryCtx)
+					router.Use(m.QueryCtx)
 					router.Get("/", runTestHandler.ListByTestID)
 				})
 			})
@@ -137,7 +136,7 @@ func routeMap(*chi.Mux) {
 				router.Delete("/", runTestHandler.Delete)
 
 				router.Route("/stats", func(router chi.Router) {
-					router.Use(middlewares.QueryCtx)
+					router.Use(m.QueryCtx)
 					router.Get("/", statsHandler.List)
 				})
 			})

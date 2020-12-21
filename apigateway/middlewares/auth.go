@@ -5,36 +5,33 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/s3f4/go-load/apigateway/library"
 	"github.com/s3f4/go-load/apigateway/library/log"
 	res "github.com/s3f4/go-load/apigateway/library/response"
-	"github.com/s3f4/go-load/apigateway/services"
 )
 
 // AuthCtx gets test with given id
-func AuthCtx(next http.Handler) http.Handler {
+func (m *Middleware) AuthCtx(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ts := services.NewTokenService()
-		as := services.NewAuthService()
-
-		jwtToken, err := ts.VerifyToken(r, "at")
+		jwtToken, err := m.tokenService.VerifyToken(r, "at")
 
 		if err != nil {
 			log.Debug(err)
-			res.R401(w, r, err)
+			res.R401(w, r, library.ErrUnauthorized)
 			return
 		}
 
-		access, err := ts.GetDetailsFromToken(r, "at")
+		access, err := m.tokenService.GetDetailsFromToken(r, "at")
 		if err != nil {
 			log.Debug(err)
-			res.R401(w, r, err)
+			res.R401(w, r, library.ErrUnauthorized)
 			return
 		}
 
-		accessToken, err := as.GetAuthCache(access.UUID)
+		accessToken, err := m.authService.GetAuthCache(access.UUID)
 		if err != nil || accessToken != jwtToken.Raw {
 			log.Debug(err)
-			res.R401(w, r, err)
+			res.R401(w, r, library.ErrUnauthorized)
 			return
 		}
 
@@ -42,7 +39,7 @@ func AuthCtx(next http.Handler) http.Handler {
 			if r.RemoteAddr != access.RemoteAddr || r.UserAgent() != access.UserAgent {
 				log.Infof("r.RemoteAddr:%s\naccess.RemoteAddr:%s\n", r.RemoteAddr, access.RemoteAddr)
 				log.Infof("r.UserAgent():%s\naccess.UserAgent:%s\n", r.UserAgent(), access.UserAgent)
-				res.R401(w, r, err)
+				res.R401(w, r, library.ErrUnauthorized)
 				return
 			}
 		}

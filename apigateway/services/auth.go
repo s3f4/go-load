@@ -23,10 +23,10 @@ type authService struct {
 var authServiceObject *authService
 
 // NewAuthService creates new AuthService object
-func NewAuthService() AuthService {
+func NewAuthService(repository repository.RedisRepository) AuthService {
 	if authServiceObject == nil {
 		return &authService{
-			r: repository.NewRedisRepository(),
+			r: repository,
 		}
 	}
 	return authServiceObject

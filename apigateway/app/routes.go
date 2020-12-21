@@ -71,7 +71,7 @@ func routeMap(*chi.Mux) {
 	})
 
 	router.Group(func(router chi.Router) {
-		router.Use(middlewares.AuthCtx)
+		router.Use(m.AuthCtx)
 		router.Get("/user/current_user", authHandler.CurrentUser)
 
 		router.Route("/instances", func(router chi.Router) {
@@ -97,7 +97,7 @@ func routeMap(*chi.Mux) {
 			})
 
 			router.Route("/{ID}", func(router chi.Router) {
-				router.Use(middlewares.TestGroupCtx)
+				router.Use(m.TestGroupCtx)
 				router.Put("/", testGroupHandler.Update)
 				router.Delete("/", testGroupHandler.Delete)
 				router.Route("/tests", func(router chi.Router) {
@@ -115,7 +115,7 @@ func routeMap(*chi.Mux) {
 			})
 
 			router.Route("/{ID}", func(router chi.Router) {
-				router.Use(middlewares.TestCtx)
+				router.Use(m.TestCtx)
 				router.Get("/", testHandler.Get)
 				router.Put("/", testHandler.Update)
 				router.Delete("/", testHandler.Delete)
@@ -132,7 +132,7 @@ func routeMap(*chi.Mux) {
 
 		router.Route("/run_test", func(router chi.Router) {
 			router.Route("/{ID}", func(router chi.Router) {
-				router.Use(middlewares.RunTestCtx)
+				router.Use(m.RunTestCtx)
 				router.Get("/", runTestHandler.Get)
 				router.Delete("/", runTestHandler.Delete)
 

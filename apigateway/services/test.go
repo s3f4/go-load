@@ -25,12 +25,16 @@ type testService struct {
 }
 
 // NewTestService returns a testService instance
-func NewTestService() TestService {
+func NewTestService(
+	ir repository.InstanceRepository,
+	tr repository.TestRepository,
+	rtr repository.RunTestRepository,
+	q QueueService) TestService {
 	return &testService{
-		ir:           repository.NewInstanceRepository(),
-		tr:           repository.NewTestRepository(),
-		rtr:          repository.NewRunTestRepository(),
-		queueService: NewRabbitMQService(),
+		ir:           ir,
+		tr:           tr,
+		rtr:          rtr,
+		queueService: q,
 	}
 }
 

@@ -40,9 +40,9 @@ type instanceService struct {
 }
 
 // NewInstanceService returns an InstanceService object
-func NewInstanceService() InstanceService {
+func NewInstanceService(r repository.InstanceRepository) InstanceService {
 	return &instanceService{
-		repository: repository.NewInstanceRepository(),
+		repository: r,
 	}
 }
 

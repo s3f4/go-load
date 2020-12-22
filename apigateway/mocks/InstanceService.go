@@ -14,20 +14,6 @@ type InstanceService struct {
 	mock.Mock
 }
 
-// AddLabels provides a mock function with given fields:
-func (_m *InstanceService) AddLabels() error {
-	ret := _m.Called()
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func() error); ok {
-		r0 = rf()
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
-}
-
 // BuildTemplate provides a mock function with given fields: iReq
 func (_m *InstanceService) BuildTemplate(iReq models.InstanceConfig) (int, error) {
 	ret := _m.Called(iReq)

@@ -20,22 +20,16 @@ type authService struct {
 	r repository.RedisRepository
 }
 
-var authServiceObject *authService
-
 // NewAuthService creates new AuthService object
 func NewAuthService(repository repository.RedisRepository) AuthService {
-	if authServiceObject == nil {
-		return &authService{
-			r: repository,
-		}
+	return &authService{
+		r: repository,
 	}
-	return authServiceObject
 }
 
 // CreateAuthCache creates auth object on cache database.
 func (s *authService) CreateAuthCache(at *models.AccessToken, rt *models.RefreshToken) error {
 	rtExpire := time.Unix(rt.Expire, 0)
-
 	now := time.Now()
 
 	if err := s.r.Set(rt.UUID, at.Token, rtExpire.Sub(now)); err != nil {

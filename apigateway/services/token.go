@@ -25,14 +25,9 @@ type TokenService interface {
 
 type tokenService struct{}
 
-var tokenServiceObject *tokenService
-
 // NewTokenService returns a token service object
 func NewTokenService() TokenService {
-	if tokenServiceObject == nil {
-		tokenServiceObject = &tokenService{}
-	}
-	return tokenServiceObject
+	return &tokenService{}
 }
 
 func (s *tokenService) CreateToken(r *http.Request, user *models.User) (*models.AccessToken, *models.RefreshToken, error) {

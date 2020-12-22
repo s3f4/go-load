@@ -32,28 +32,23 @@ type rabbitMQService struct {
 	conn *amqp.Connection
 }
 
-var rabbitMQServiceObject QueueService
-
 // NewRabbitMQService creates a new rabbitMQService instance
 func NewRabbitMQService() QueueService {
-	if rabbitMQServiceObject == nil {
-		uri := fmt.Sprintf("amqp://%s:%s@%s:%s/",
-			os.Getenv("RABBITMQ_USER"),
-			os.Getenv("RABBITMQ_PASSWORD"),
-			os.Getenv("RABBITMQ_HOST"),
-			os.Getenv("RABBITMQ_PORT"),
-		)
+	uri := fmt.Sprintf("amqp://%s:%s@%s:%s/",
+		os.Getenv("RABBITMQ_USER"),
+		os.Getenv("RABBITMQ_PASSWORD"),
+		os.Getenv("RABBITMQ_HOST"),
+		os.Getenv("RABBITMQ_PORT"),
+	)
 
-		conn, err := amqp.Dial(uri)
-		if err != nil {
-			log.Fatalf("%v failed to connect queue", err)
-		}
-
-		rabbitMQServiceObject = &rabbitMQService{
-			conn: conn,
-		}
+	conn, err := amqp.Dial(uri)
+	if err != nil {
+		log.Fatalf("%v failed to connect queue", err)
 	}
-	return rabbitMQServiceObject
+
+	return &rabbitMQService{
+		conn: conn,
+	}
 }
 
 func (r *rabbitMQService) Send(queue string, message interface{}) error {

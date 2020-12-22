@@ -5,6 +5,7 @@ import (
 	"github.com/s3f4/go-load/apigateway/services"
 )
 
+// Middleware holds dependencies of middlewares
 type Middleware struct {
 	tokenService        services.TokenService
 	authService         services.AuthService

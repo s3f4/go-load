@@ -58,3 +58,27 @@ func Test_Auth_GetAuthCache_Error(t *testing.T) {
 	str, _ := as.GetAuthCache("")
 	assert.Equal(t, "", str)
 }
+
+func Test_Auth_DeleteAuthCache(t *testing.T) {
+	r := new(mocks.RedisRepository)
+	r.On("Del", "").Return(int64(1), nil)
+	as := NewAuthService(r)
+	err := as.DeleteAuthCache("")
+	assert.Nil(t, err)
+}
+
+func Test_Auth_DeleteAuthCache_Error(t *testing.T) {
+	r := new(mocks.RedisRepository)
+	r.On("Del", "").Return(int64(0), errors.New(""))
+	as := NewAuthService(r)
+	err := as.DeleteAuthCache("")
+	assert.NotNil(t, err)
+}
+
+func Test_Auth_DeleteAuthCache_DeletedError(t *testing.T) {
+	r := new(mocks.RedisRepository)
+	r.On("Del", "").Return(int64(2), nil)
+	as := NewAuthService(r)
+	err := as.DeleteAuthCache("")
+	assert.NotNil(t, err)
+}

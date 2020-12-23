@@ -17,16 +17,11 @@ type userRepository struct {
 	db *gorm.DB
 }
 
-var userRepositoryObject UserRepository
-
 // NewUserRepository returns an testRepository object
 func NewUserRepository(db *gorm.DB) UserRepository {
-	if userRepositoryObject == nil {
-		userRepositoryObject = &userRepository{
-			db: db,
-		}
+	return &userRepository{
+		db: db,
 	}
-	return userRepositoryObject
 }
 
 func (r *userRepository) Create(user *models.User) error {

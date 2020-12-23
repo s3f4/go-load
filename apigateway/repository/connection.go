@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"log"
 	"os"
@@ -71,21 +72,22 @@ func Connect(dbType DBType) *gorm.DB {
 }
 
 // ConnectMock mock
-func ConnectMock() *gorm.DB {
-	sqlDB, _, err := sqlmock.New()
+func ConnectMock() (*sql.DB, sqlmock.Sqlmock, *gorm.DB) {
+	sqlDB, sqlMock, err := sqlmock.New()
 	if err != nil {
 		panic(err)
 	}
 
 	db, err := gorm.Open(mysql.New(mysql.Config{
-		Conn: sqlDB,
+		SkipInitializeWithVersion: true,
+		Conn:                      sqlDB,
 	}), &gorm.Config{})
 
 	if err != nil {
 		log.Panicf("failed to connect mock database: %s", err)
 	}
 
-	return db
+	return sqlDB, sqlMock, db
 }
 
 func getLogger() logger.Interface {

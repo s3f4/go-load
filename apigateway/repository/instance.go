@@ -24,17 +24,12 @@ type instanceRepository struct {
 	command library.Command
 }
 
-var instanceRepositoryObject InstanceRepository
-
 // NewInstanceRepository returns an instanceRepository object
 func NewInstanceRepository(db *gorm.DB, command library.Command) InstanceRepository {
-	if instanceRepositoryObject == nil {
-		instanceRepositoryObject = &instanceRepository{
-			db:      db,
-			command: command,
-		}
+	return &instanceRepository{
+		db:      db,
+		command: command,
 	}
-	return instanceRepositoryObject
 }
 
 func (r *instanceRepository) Create(instance *models.InstanceConfig) error {

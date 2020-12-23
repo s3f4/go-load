@@ -19,16 +19,11 @@ type runTestRepository struct {
 	db *gorm.DB
 }
 
-var runTestRepositoryObject RunTestRepository
-
 // NewRunTestRepository returns an testRepository object
 func NewRunTestRepository(db *gorm.DB) RunTestRepository {
-	if runTestRepositoryObject == nil {
-		runTestRepositoryObject = &runTestRepository{
-			db: db,
-		}
+	return &runTestRepository{
+		db: db,
 	}
-	return runTestRepositoryObject
 }
 
 func (r *runTestRepository) Create(runTest *models.RunTest) error {

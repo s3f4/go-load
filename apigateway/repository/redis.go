@@ -18,16 +18,11 @@ type redisRepository struct {
 	client *redis.Client
 }
 
-var redisRepositoryObject *redisRepository
-
 // NewRedisRepository ...
 func NewRedisRepository(client *redis.Client) RedisRepository {
-	if redisRepositoryObject == nil {
-		redisRepositoryObject = &redisRepository{
-			client: client,
-		}
+	return &redisRepository{
+		client: client,
 	}
-	return redisRepositoryObject
 }
 
 func (r *redisRepository) Set(key, value string, expire time.Duration) error {

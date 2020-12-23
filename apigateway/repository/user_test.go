@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_Create(t *testing.T) {
+func Test_User_Create(t *testing.T) {
 	_, sqlMock, conn := ConnectMock()
 	r := NewUserRepository(conn)
 	user := &models.User{Email: "email", Password: "Password"}
@@ -50,7 +50,7 @@ func Test_User_Get_Error(t *testing.T) {
 		WillReturnError(errors.New(""))
 
 	u, err := r.Get(1)
-	assert.Equal(t, user, u)
+	assert.NotEqual(t, user, u)
 	assert.NotNil(t, err)
 }
 
@@ -81,7 +81,7 @@ func Test_User_GetByEmailAndPassword_Error(t *testing.T) {
 		WillReturnError(errors.New(""))
 
 	u, err := r.GetByEmailAndPassword(user)
-	assert.Equal(t, user, u)
+	assert.NotEqual(t, user, u)
 	assert.NotNil(t, err)
 }
 

@@ -4,7 +4,6 @@ import (
 	"github.com/s3f4/go-load/apigateway/library"
 	"github.com/s3f4/go-load/apigateway/models"
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 )
 
 // TestRepository ..
@@ -20,16 +19,11 @@ type testRepository struct {
 	db *gorm.DB
 }
 
-var testRepositoryObject TestRepository
-
 // NewTestRepository returns an testRepository object
 func NewTestRepository(db *gorm.DB) TestRepository {
-	if testRepositoryObject == nil {
-		testRepositoryObject = &testRepository{
-			db: db,
-		}
+	return &testRepository{
+		db: db,
 	}
-	return testRepositoryObject
 }
 
 func (r *testRepository) Create(test *models.Test) error {
@@ -41,7 +35,10 @@ func (r *testRepository) Update(test *models.Test) error {
 }
 
 func (r *testRepository) Delete(test *models.Test) error {
-	return r.db.Select(clause.Associations).Delete(test).Error
+	return r.db.Select("Headers").
+		Select("TransportConfig").
+		Select("RunTests").
+		Delete(test).Error
 }
 
 func (r *testRepository) Get(id uint) (*models.Test, error) {

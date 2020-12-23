@@ -19,16 +19,11 @@ type testGroupRepository struct {
 	db *gorm.DB
 }
 
-var testGroupRepositoryObject TestGroupRepository
-
 // NewTestGroupRepository returns an testGroupRepository object
 func NewTestGroupRepository(db *gorm.DB) TestGroupRepository {
-	if testGroupRepositoryObject == nil {
-		testGroupRepositoryObject = &testGroupRepository{
-			db: db,
-		}
+	return &testGroupRepository{
+		db: db,
 	}
-	return testGroupRepositoryObject
 }
 
 func (r *testGroupRepository) Create(testGroup *models.TestGroup) error {

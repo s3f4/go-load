@@ -12,76 +12,7 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-// DBType database type for connection different types of databases
-type DBType int8
 
-const (
-	// MYSQL DBType
-	MYSQL DBType = iota
-	// POSTGRES DBType
-	POSTGRES
-)
-
-type connect struct {
-	PostgresDSN string
-	MySQLDSN    string
-}
-
-// newConnection config
-func newConnection() *connect {
-	return &connect{
-		PostgresDSN: "user=%s password=%s host=%s dbname=%s port=%s sslmode=disable TimeZone=UTC",
-		MySQLDSN:    "%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-	}
-}
-
-func (c *connect) getLogger() logger.Interface {
-	newLogger := logger.New(
-		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
-		logger.Config{
-			SlowThreshold: time.Second, // Slow SQL threshold
-			LogLevel:      logger.Info, // Log level
-			Colorful:      false,       // Disable color
-		},
-	)
-	return newLogger
-}
-
-func (c *connect) connectMYSQL(r *baseRepository) {
-	dsn := fmt.Sprintf(c.MySQLDSN,
-		os.Getenv("MYSQL_USER"),
-		os.Getenv("MYSQL_PASSWORD"),
-		os.Getenv("MYSQL_HOST"),
-		os.Getenv("MYSQL_PORT"),
-		os.Getenv("MYSQL_DATABASE"),
-	)
-
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
-		Logger: c.getLogger(),
-	})
-	r.DB = db
-	if err != nil {
-		log.Panicf("failed to connect database: %s", err)
-	}
-}
-
-func (c *connect) connectPOSTGRES(r *baseRepository) {
-	dsn := fmt.Sprintf(c.PostgresDSN,
-		os.Getenv("POSTGRES_USER"),
-		os.Getenv("POSTGRES_PASSWORD"),
-		os.Getenv("POSTGRES_HOST"),
-		os.Getenv("POSTGRES_DATABASE"),
-		os.Getenv("POSTGRES_PORT"),
-	)
-
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
-		Logger: c.getLogger(),
-	})
-	r.DB = db
-	if err != nil {
-		log.Panicf("failed to connect database: %s", err)
-	}
-}
 
 // BaseRepository an interface that uses sql
 type BaseRepository interface {

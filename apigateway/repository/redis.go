@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"os"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -22,31 +21,13 @@ type redisRepository struct {
 var redisRepositoryObject *redisRepository
 
 // NewRedisRepository ...
-func NewRedisRepository() RedisRepository {
+func NewRedisRepository(client *redis.Client) RedisRepository {
 	if redisRepositoryObject == nil {
 		redisRepositoryObject = &redisRepository{
-			client: ConnectRedis(),
+			client: client,
 		}
 	}
 	return redisRepositoryObject
-}
-
-// ConnectRedis connect redis
-func ConnectRedis() *redis.Client {
-	dsn := os.Getenv("REDIS_DSN")
-	if len(dsn) == 0 {
-		dsn = "redis:6379"
-	}
-
-	client := redis.NewClient(&redis.Options{
-		Addr: dsn,
-		DB:   0,
-	})
-
-	if _, err := client.Ping(context.Background()).Result(); err != nil {
-		panic(err)
-	}
-	return client
 }
 
 func (r *redisRepository) Set(key, value string, expire time.Duration) error {

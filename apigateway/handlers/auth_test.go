@@ -361,4 +361,3 @@ func Test_Auth_RefreshToken_TokenParseError(t *testing.T) {
 	assert.Equal(t, fmt.Sprintf(`{"status":false,"data":"%s"}`, "Refresh token expired"), string(body))
 	assert.Equal(t, http.StatusUnauthorized, res.StatusCode, "%d status is not equal to %d", http.StatusUnauthorized, res.StatusCode)
 }
-

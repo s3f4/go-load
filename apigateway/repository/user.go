@@ -7,7 +7,6 @@ import (
 
 // UserRepository for auth db
 type UserRepository interface {
-	DB() *gorm.DB
 	Create(*models.User) error
 	Get(ID uint) (*models.User, error)
 	GetByEmailAndPassword(*models.User) (*models.User, error)
@@ -15,32 +14,28 @@ type UserRepository interface {
 }
 
 type userRepository struct {
-	base BaseRepository
+	db *gorm.DB
 }
 
 var userRepositoryObject UserRepository
 
 // NewUserRepository returns an testRepository object
-func NewUserRepository() UserRepository {
+func NewUserRepository(db *gorm.DB) UserRepository {
 	if userRepositoryObject == nil {
 		userRepositoryObject = &userRepository{
-			base: NewBaseRepository(MYSQL),
+			db: db,
 		}
 	}
 	return userRepositoryObject
 }
 
-func (r *userRepository) DB() *gorm.DB {
-	return r.base.GetDB()
-}
-
 func (r *userRepository) Create(user *models.User) error {
-	return r.DB().Create(user).Error
+	return r.db.Create(user).Error
 }
 
 func (r *userRepository) Get(ID uint) (*models.User, error) {
 	var dbUser models.User
-	if err := r.DB().First(&dbUser, ID).Error; err != nil {
+	if err := r.db.First(&dbUser, ID).Error; err != nil {
 		return nil, err
 	}
 	return &dbUser, nil
@@ -48,7 +43,7 @@ func (r *userRepository) Get(ID uint) (*models.User, error) {
 
 func (r *userRepository) GetByEmailAndPassword(user *models.User) (*models.User, error) {
 	var dbUser models.User
-	if err := r.DB().Where("email=? AND password=?", user.Email, user.Password).Take(&dbUser).Error; err != nil {
+	if err := r.db.Where("email=? AND password=?", user.Email, user.Password).Take(&dbUser).Error; err != nil {
 		return nil, err
 	}
 	return &dbUser, nil
@@ -56,7 +51,7 @@ func (r *userRepository) GetByEmailAndPassword(user *models.User) (*models.User,
 
 func (r *userRepository) List() ([]*models.User, error) {
 	var users []*models.User
-	if err := r.DB().Find(&users).Error; err != nil {
+	if err := r.db.Find(&users).Error; err != nil {
 		return nil, err
 	}
 	return users, nil

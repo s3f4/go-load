@@ -20,13 +20,17 @@ var m *middlewares.Middleware
 
 func initHandlers() {
 	command := library.NewCommand()
-	userRepository := repository.NewUserRepository()
-	runTestRepository := repository.NewRunTestRepository()
-	testRepository := repository.NewTestRepository()
-	testGroupRepository := repository.NewTestGroupRepository()
-	responseRepository := repository.NewResponseRepository()
-	redisRepository := repository.NewRedisRepository()
-	instanceRepository := repository.NewInstanceRepository(command)
+	mysqlConn := repository.Connect(repository.MYSQL)
+	postgresConn := repository.Connect(repository.POSTGRES)
+	redisClient := repository.ConnectRedis()
+
+	userRepository := repository.NewUserRepository(mysqlConn)
+	runTestRepository := repository.NewRunTestRepository(mysqlConn)
+	testRepository := repository.NewTestRepository(mysqlConn)
+	testGroupRepository := repository.NewTestGroupRepository(mysqlConn)
+	responseRepository := repository.NewResponseRepository(postgresConn)
+	redisRepository := repository.NewRedisRepository(redisClient)
+	instanceRepository := repository.NewInstanceRepository(mysqlConn, command)
 
 	queue := services.NewRabbitMQService()
 	authService := services.NewAuthService(redisRepository)

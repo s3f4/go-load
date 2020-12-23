@@ -8,7 +8,6 @@ import (
 	"os/signal"
 
 	"github.com/go-chi/chi"
-	"github.com/s3f4/go-load/apigateway/repository"
 )
 
 var router *chi.Mux
@@ -22,9 +21,6 @@ func Run() {
 
 	port := flag.String("port", "3001", " default port is 3001")
 	flag.Parse()
-
-	baseRepo := repository.NewBaseRepository(repository.MYSQL)
-	baseRepo.Migrate()
 
 	if err := http.ListenAndServe(":"+*port, router); err != nil {
 		panic(err)

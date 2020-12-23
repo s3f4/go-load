@@ -9,7 +9,6 @@ import (
 
 // TestRepository ..
 type TestRepository interface {
-	DB() *gorm.DB
 	Create(*models.Test) error
 	Update(*models.Test) error
 	Delete(*models.Test) error
@@ -18,40 +17,36 @@ type TestRepository interface {
 }
 
 type testRepository struct {
-	base BaseRepository
+	db *gorm.DB
 }
 
 var testRepositoryObject TestRepository
 
 // NewTestRepository returns an testRepository object
-func NewTestRepository() TestRepository {
+func NewTestRepository(db *gorm.DB) TestRepository {
 	if testRepositoryObject == nil {
 		testRepositoryObject = &testRepository{
-			base: NewBaseRepository(MYSQL),
+			db: db,
 		}
 	}
 	return testRepositoryObject
 }
 
-func (r *testRepository) DB() *gorm.DB {
-	return r.base.GetDB()
-}
-
 func (r *testRepository) Create(test *models.Test) error {
-	return r.DB().Create(test).Error
+	return r.db.Create(test).Error
 }
 
 func (r *testRepository) Update(test *models.Test) error {
-	return r.DB().Session(&gorm.Session{FullSaveAssociations: true}).Updates(test).Error
+	return r.db.Session(&gorm.Session{FullSaveAssociations: true}).Updates(test).Error
 }
 
 func (r *testRepository) Delete(test *models.Test) error {
-	return r.DB().Select(clause.Associations).Delete(test).Error
+	return r.db.Select(clause.Associations).Delete(test).Error
 }
 
 func (r *testRepository) Get(id uint) (*models.Test, error) {
 	var testReq models.Test
-	if err := r.DB().
+	if err := r.db.
 		Preload("Headers").
 		Preload("TestGroup").
 		Preload("RunTests").
@@ -66,12 +61,12 @@ func (r *testRepository) List(query *library.QueryBuilder, conditionStr string, 
 	var testReq []models.Test
 	var total int64
 	if len(conditionStr) > 0 && where != nil {
-		r.DB().Where(conditionStr, where...).Model(&testReq).Count(&total)
+		r.db.Where(conditionStr, where...).Model(&testReq).Count(&total)
 	} else {
-		r.DB().Model(&testReq).Count(&total)
+		r.db.Model(&testReq).Count(&total)
 	}
 
-	if err := query.SetDB(r.DB()).
+	if err := query.SetDB(r.db).
 		SetPreloads("Headers", "RunTests", "TransportConfig", "TestGroup").
 		SetModel(models.Test{}).
 		SetWhere(conditionStr, where...).

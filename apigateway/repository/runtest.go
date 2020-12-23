@@ -8,7 +8,6 @@ import (
 
 // RunTestRepository ..
 type RunTestRepository interface {
-	DB() *gorm.DB
 	Create(*models.RunTest) error
 	Delete(*models.RunTest) error
 	Update(*models.RunTest) error
@@ -17,40 +16,36 @@ type RunTestRepository interface {
 }
 
 type runTestRepository struct {
-	base BaseRepository
+	db *gorm.DB
 }
 
 var runTestRepositoryObject RunTestRepository
 
 // NewRunTestRepository returns an testRepository object
-func NewRunTestRepository() RunTestRepository {
+func NewRunTestRepository(db *gorm.DB) RunTestRepository {
 	if runTestRepositoryObject == nil {
 		runTestRepositoryObject = &runTestRepository{
-			base: NewBaseRepository(MYSQL),
+			db: db,
 		}
 	}
 	return runTestRepositoryObject
 }
 
-func (r *runTestRepository) DB() *gorm.DB {
-	return r.base.GetDB()
-}
-
 func (r *runTestRepository) Create(runTest *models.RunTest) error {
-	return r.DB().Create(runTest).Error
+	return r.db.Create(runTest).Error
 }
 
 func (r *runTestRepository) Delete(runTest *models.RunTest) error {
-	return r.DB().Model(runTest).Delete(runTest).Error
+	return r.db.Model(runTest).Delete(runTest).Error
 }
 
 func (r *runTestRepository) Update(rt *models.RunTest) error {
-	return r.DB().Session(&gorm.Session{FullSaveAssociations: true}).Updates(rt).Error
+	return r.db.Session(&gorm.Session{FullSaveAssociations: true}).Updates(rt).Error
 }
 
 func (r *runTestRepository) Get(id uint) (*models.RunTest, error) {
 	var testReq models.RunTest
-	if err := r.DB().First(&testReq, id).Error; err != nil {
+	if err := r.db.First(&testReq, id).Error; err != nil {
 		return nil, err
 	}
 	return &testReq, nil
@@ -60,12 +55,12 @@ func (r *runTestRepository) List(query *library.QueryBuilder, conditionStr strin
 	var runTestReq []models.RunTest
 	var total int64
 	if len(conditionStr) > 0 && where != nil {
-		r.DB().Where(conditionStr, where...).Model(&runTestReq).Count(&total)
+		r.db.Where(conditionStr, where...).Model(&runTestReq).Count(&total)
 	} else {
-		r.DB().Model(&runTestReq).Count(&total)
+		r.db.Model(&runTestReq).Count(&total)
 	}
 
-	if err := query.SetDB(r.DB()).
+	if err := query.SetDB(r.db).
 		SetModel(models.RunTest{}).
 		SetWhere(conditionStr, where...).
 		List(&runTestReq); err != nil {

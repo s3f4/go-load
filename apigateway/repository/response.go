@@ -13,23 +13,23 @@ type ResponseRepository interface {
 }
 
 type responseRepository struct {
-	base BaseRepository
+	db *gorm.DB
 }
 
 var responseRepositoryObject ResponseRepository
 
 // NewResponseRepository returns new ResponseRepository instance
-func NewResponseRepository() ResponseRepository {
+func NewResponseRepository(db *gorm.DB) ResponseRepository {
 	if responseRepositoryObject == nil {
 		responseRepositoryObject = &responseRepository{
-			base: NewBaseRepository(POSTGRES),
+			db: db,
 		}
 	}
 	return responseRepositoryObject
 }
 
 func (r *responseRepository) DB() *gorm.DB {
-	return r.base.GetDB()
+	return r.db
 }
 
 func (r *responseRepository) List(query *library.QueryBuilder, conditionStr string, where ...interface{}) ([]models.Response, int64, error) {

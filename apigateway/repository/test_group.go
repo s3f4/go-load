@@ -8,7 +8,6 @@ import (
 
 // TestGroupRepository ..
 type TestGroupRepository interface {
-	DB() *gorm.DB
 	Create(*models.TestGroup) error
 	Update(*models.TestGroup) error
 	Delete(*models.TestGroup) error
@@ -17,40 +16,36 @@ type TestGroupRepository interface {
 }
 
 type testGroupRepository struct {
-	base BaseRepository
+	db *gorm.DB
 }
 
 var testGroupRepositoryObject TestGroupRepository
 
 // NewTestGroupRepository returns an testGroupRepository object
-func NewTestGroupRepository() TestGroupRepository {
+func NewTestGroupRepository(db *gorm.DB) TestGroupRepository {
 	if testGroupRepositoryObject == nil {
 		testGroupRepositoryObject = &testGroupRepository{
-			base: NewBaseRepository(MYSQL),
+			db: db,
 		}
 	}
 	return testGroupRepositoryObject
 }
 
-func (r *testGroupRepository) DB() *gorm.DB {
-	return r.base.GetDB()
-}
-
 func (r *testGroupRepository) Create(testGroup *models.TestGroup) error {
-	return r.DB().Create(testGroup).Error
+	return r.db.Create(testGroup).Error
 }
 
 func (r *testGroupRepository) Update(testGroup *models.TestGroup) error {
-	return r.DB().Model(testGroup).Updates(testGroup).Error
+	return r.db.Model(testGroup).Updates(testGroup).Error
 }
 
 func (r *testGroupRepository) Delete(testGroup *models.TestGroup) error {
-	return r.DB().Model(testGroup).Delete(testGroup).Error
+	return r.db.Model(testGroup).Delete(testGroup).Error
 }
 
 func (r *testGroupRepository) Get(id uint) (*models.TestGroup, error) {
 	var testReq models.TestGroup
-	if err := r.DB().First(&testReq, id).Error; err != nil {
+	if err := r.db.First(&testReq, id).Error; err != nil {
 		return nil, err
 	}
 	return &testReq, nil
@@ -60,13 +55,13 @@ func (r *testGroupRepository) List(query *library.QueryBuilder, conditionStr str
 	var testGroupReq []models.TestGroup
 	var total int64
 	if len(conditionStr) > 0 && where != nil {
-		r.DB().Where(conditionStr, where...).Model(&testGroupReq).Count(&total)
+		r.db.Where(conditionStr, where...).Model(&testGroupReq).Count(&total)
 	} else {
-		r.DB().Model(&testGroupReq).Count(&total)
+		r.db.Model(&testGroupReq).Count(&total)
 	}
 
 	if err := query.
-		SetDB(r.DB()).
+		SetDB(r.db).
 		SetModel(models.TestGroup{}).
 		SetPreloads("Tests", "Tests.Headers", "Tests.TransportConfig", "Tests.RunTests").
 		SetWhere(conditionStr, where...).

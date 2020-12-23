@@ -2,6 +2,7 @@ package app
 
 import (
 	"github.com/s3f4/go-load/apigateway/handlers"
+	"github.com/s3f4/go-load/apigateway/library"
 	"github.com/s3f4/go-load/apigateway/middlewares"
 	"github.com/s3f4/go-load/apigateway/repository"
 	"github.com/s3f4/go-load/apigateway/services"
@@ -18,18 +19,19 @@ var workerHandler handlers.WorkerHandler
 var m *middlewares.Middleware
 
 func initHandlers() {
+	command := library.NewCommand()
 	userRepository := repository.NewUserRepository()
 	runTestRepository := repository.NewRunTestRepository()
 	testRepository := repository.NewTestRepository()
 	testGroupRepository := repository.NewTestGroupRepository()
 	responseRepository := repository.NewResponseRepository()
 	redisRepository := repository.NewRedisRepository()
-	instanceRepository := repository.NewInstanceRepository()
+	instanceRepository := repository.NewInstanceRepository(command)
 
 	queue := services.NewRabbitMQService()
 	authService := services.NewAuthService(redisRepository)
 	tokenService := services.NewTokenService()
-	instanceService := services.NewInstanceService(instanceRepository)
+	instanceService := services.NewInstanceService(instanceRepository, command)
 	testService := services.NewTestService(
 		instanceRepository,
 		testRepository,

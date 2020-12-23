@@ -5,25 +5,17 @@ import (
 	"os"
 
 	"github.com/s3f4/go-load/apigateway/library/log"
+	"github.com/s3f4/go-load/apigateway/library/specs"
 
 	"github.com/streadway/amqp"
 )
-
-type processFunc func(d *amqp.Delivery, exit chan<- struct{}) error
-
-// ListenSpec ...
-type ListenSpec struct {
-	Consumer    string
-	Queue       string
-	ProcessFunc processFunc
-}
 
 // QueueService is a Queue Client service
 // that connects to RabbitMQ takes messages and process
 // those messages.
 type QueueService interface {
 	Send(queue string, message interface{}) error
-	Listen(listenSpec *ListenSpec)
+	Listen(listenSpec *specs.ListenSpec)
 	Declare(queue string) error
 	Delete(queue string) error
 }
@@ -85,7 +77,7 @@ func (r *rabbitMQService) Send(queue string, message interface{}) error {
 	return err
 }
 
-func (r *rabbitMQService) Listen(spec *ListenSpec) {
+func (r *rabbitMQService) Listen(spec *specs.ListenSpec) {
 	ch, err := r.conn.Channel()
 	defer ch.Close()
 

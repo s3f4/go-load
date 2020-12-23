@@ -21,16 +21,18 @@ type InstanceRepository interface {
 }
 
 type instanceRepository struct {
-	base BaseRepository
+	base    BaseRepository
+	command library.Command
 }
 
 var instanceRepositoryObject InstanceRepository
 
 // NewInstanceRepository returns an instanceRepository object
-func NewInstanceRepository() InstanceRepository {
+func NewInstanceRepository(command library.Command) InstanceRepository {
 	if instanceRepositoryObject == nil {
 		instanceRepositoryObject = &instanceRepository{
-			base: NewBaseRepository(MYSQL),
+			base:    NewBaseRepository(MYSQL),
+			command: command,
 		}
 	}
 	return instanceRepositoryObject
@@ -66,7 +68,7 @@ func (r *instanceRepository) Get() (*models.InstanceConfig, error) {
 
 // GetFromTerraform
 func (r *instanceRepository) GetFromTerraform() ([]models.InstanceTerraform, error) {
-	output, err := library.RunCommands("cd infra;terraform output -json workers")
+	output, err := r.command.Run("cd infra;terraform output -json workers")
 	if err != nil {
 		return nil, err
 	}

@@ -7,6 +7,7 @@ import (
 
 	"github.com/s3f4/go-load/apigateway/library"
 	"github.com/s3f4/go-load/apigateway/library/log"
+	"github.com/s3f4/go-load/apigateway/library/specs"
 	"github.com/s3f4/go-load/apigateway/models"
 	"github.com/s3f4/go-load/apigateway/repository"
 	"github.com/streadway/amqp"
@@ -29,7 +30,8 @@ func NewTestService(
 	ir repository.InstanceRepository,
 	tr repository.TestRepository,
 	rtr repository.RunTestRepository,
-	q QueueService) TestService {
+	q QueueService,
+) TestService {
 	return &testService{
 		ir:           ir,
 		tr:           tr,
@@ -96,7 +98,7 @@ func (s *testService) waitQueue(runTest *models.RunTest, requestCount, instanceC
 	}
 
 	var payloads []*models.CollectPayload
-	s.queueService.Listen(&ListenSpec{
+	s.queueService.Listen(&specs.ListenSpec{
 		Queue:    queue,
 		Consumer: fmt.Sprintf("apigateway_test_%d", runTest.Test.ID),
 		ProcessFunc: func(d *amqp.Delivery, exit chan<- struct{}) error {

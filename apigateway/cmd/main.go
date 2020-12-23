@@ -17,16 +17,18 @@ func main() {
 		map[string]interface{}{"env": os.Getenv("APP_ENV")},
 	)
 
+	command := library.NewCommand()
+
 	if err := t.Write(); err != nil {
 		log.Errorf("error: ", err)
 		return
 	}
 
 	if os.Getenv("APP_ENV") == "development" {
-		_, _ = library.RunCommands("cd infra;terraform init;terraform destroy -auto-approve;")
+		command.Run("cd infra;terraform init;terraform destroy -auto-approve;")
 	}
 
-	_, err := library.RunCommands("cd infra;terraform init;terraform apply -auto-approve;")
+	_, err := command.Run("cd infra;terraform init;terraform apply -auto-approve;")
 	if err != nil {
 		log.Errorf("error: %v", err)
 		return

@@ -36,13 +36,18 @@ type InstanceService interface {
 }
 
 type instanceService struct {
+	command    library.Command
 	repository repository.InstanceRepository
 }
 
 // NewInstanceService returns an InstanceService object
-func NewInstanceService(r repository.InstanceRepository) InstanceService {
+func NewInstanceService(
+	r repository.InstanceRepository,
+	command library.Command,
+) InstanceService {
 	return &instanceService{
 		repository: r,
+		command:    command,
 	}
 }
 
@@ -84,12 +89,12 @@ func (s *instanceService) BuildTemplate(iReq models.InstanceConfig) (int, error)
 
 // Spin Up instances
 func (s *instanceService) SpinUp() error {
-	if _, err := library.RunCommands("cd infra;terraform apply -auto-approve;"); err != nil {
+	if _, err := s.command.Run("cd infra;terraform apply -auto-approve;"); err != nil {
 		log.Info(err)
 		return err
 	}
 
-	library.RunCommands("echo 'sleeping 20 secs for initializing'; sleep 20;")
+	s.command.Run("echo 'sleeping 20 secs for initializing'; sleep 20;")
 
 	// don't try to join worker nodes to swarm
 	// if env is development
@@ -121,7 +126,7 @@ func (s *instanceService) SpinUp() error {
 
 // installDockerToWNodes installs docker to worker nodes to join swarm
 func (s *instanceService) installDockerToWNodes() error {
-	output, err := library.RunCommands(buildAnsibleCommand("docker-playbook.yml", ""))
+	output, err := s.command.Run(buildAnsibleCommand("docker-playbook.yml", ""))
 	log.Info(string(output))
 	return err
 }
@@ -208,7 +213,7 @@ func (s *instanceService) joinWNodesToSwarm() error {
 		return nil
 	}
 
-	output, err := library.RunCommands(buildAnsibleCommand("swarm-join.yml", fmt.Sprintf("--extra-vars '{\"token\":\"%s\",\"addr\": \"%s\"}'", token, addr)))
+	output, err := s.command.Run(buildAnsibleCommand("swarm-join.yml", fmt.Sprintf("--extra-vars '{\"token\":\"%s\",\"addr\": \"%s\"}'", token, addr)))
 	log.Info(err)
 	log.Info(string(output))
 	return err
@@ -217,7 +222,7 @@ func (s *instanceService) joinWNodesToSwarm() error {
 // runAnsibleCommands cert copies cert file to worker nodes to registry service
 // hosts adds registry domain to /etc/hosts file
 func (s *instanceService) runAnsibleCommands() error {
-	output, err := library.RunCommands(buildAnsibleCommand("cert.yml", ""))
+	output, err := s.command.Run(buildAnsibleCommand("cert.yml", ""))
 	log.Debug(string(output))
 	if err != nil {
 		log.Info(err)
@@ -235,7 +240,7 @@ func (s *instanceService) runAnsibleCommands() error {
 		return err
 	}
 
-	output, err = library.RunCommands(buildAnsibleCommand("hosts.yml", fmt.Sprintf("--extra-vars '{\"addr\": \"%s\"}'", addr)))
+	output, err = s.command.Run(buildAnsibleCommand("hosts.yml", fmt.Sprintf("--extra-vars '{\"addr\": \"%s\"}'", addr)))
 	if err != nil {
 		log.Info(err)
 		return err
@@ -246,9 +251,9 @@ func (s *instanceService) runAnsibleCommands() error {
 
 // Destroy destroys worker instances
 func (s *instanceService) Destroy() error {
-	library.RunCommands("cd infra;terraform destroy -auto-approve")
-	library.RunCommands("cd infra;rm -rf .terraform")
-	library.RunCommands("cd infra;rm -f terraform.tfstate*")
+	s.command.Run("cd infra;terraform destroy -auto-approve")
+	s.command.Run("cd infra;rm -rf .terraform")
+	s.command.Run("cd infra;rm -f terraform.tfstate*")
 	t := template.NewInfraBuilder(
 		"template/workers.tpl",
 		"infra/workers.tf",
@@ -263,7 +268,7 @@ func (s *instanceService) Destroy() error {
 		return err
 	}
 
-	library.RunCommands("cd infra;terraform init;terraform apply -auto-approve")
+	s.command.Run("cd infra;terraform init;terraform apply -auto-approve")
 
 	if err := s.repository.Delete(&models.InstanceConfig{}); err != nil {
 		log.Info(err)
@@ -287,14 +292,14 @@ func (s *instanceService) parseInventoryFile() (string, error) {
 
 // Terraform shows available regions
 func (s *instanceService) ShowRegions() (string, error) {
-	output, err := library.RunCommands("cd infra;terraform output -json regions")
+	output, err := s.command.Run("cd infra;terraform output -json regions")
 	log.Info(string(output))
 	return string(output), err
 }
 
 // Terraform shows total droplet limit
 func (s *instanceService) ShowAccount() (string, error) {
-	output, err := library.RunCommands("cd infra;terraform output -json account")
+	output, err := s.command.Run("cd infra;terraform output -json account")
 	log.Info(string(output))
 	return string(output), err
 }
@@ -355,7 +360,7 @@ func (s *instanceService) GetInstanceInfo() (*models.InstanceConfig, error) {
 }
 
 func (s *instanceService) GetInstanceInfoFromTerraform() (string, error) {
-	output, err := library.RunCommands("cd infra;terraform output -json workers")
+	output, err := s.command.Run("cd infra;terraform output -json workers")
 	log.Info(string(output))
 	return string(output), err
 }

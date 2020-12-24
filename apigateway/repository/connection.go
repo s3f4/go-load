@@ -72,16 +72,25 @@ func Connect(dbType DBType) *gorm.DB {
 }
 
 // ConnectMock mock
-func ConnectMock() (*sql.DB, sqlmock.Sqlmock, *gorm.DB) {
+func ConnectMock(dbType DBType) (*sql.DB, sqlmock.Sqlmock, *gorm.DB) {
 	sqlDB, sqlMock, err := sqlmock.New()
 	if err != nil {
 		panic(err)
 	}
 
-	db, err := gorm.Open(mysql.New(mysql.Config{
-		SkipInitializeWithVersion: true,
-		Conn:                      sqlDB,
-	}), &gorm.Config{
+	var dialector gorm.Dialector
+	if dbType == MYSQL {
+		dialector = mysql.New(mysql.Config{
+			SkipInitializeWithVersion: true,
+			Conn:                      sqlDB,
+		})
+	} else if dbType == POSTGRES {
+		dialector = postgres.New(postgres.Config{
+			Conn: sqlDB,
+		})
+	}
+
+	db, err := gorm.Open(dialector, &gorm.Config{
 		Logger: getLogger(),
 	})
 

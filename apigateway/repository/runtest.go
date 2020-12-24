@@ -34,8 +34,8 @@ func (r *runTestRepository) Delete(runTest *models.RunTest) error {
 	return r.db.Model(runTest).Delete(runTest).Error
 }
 
-func (r *runTestRepository) Update(rt *models.RunTest) error {
-	return r.db.Session(&gorm.Session{FullSaveAssociations: true}).Updates(rt).Error
+func (r *runTestRepository) Update(runTest *models.RunTest) error {
+	return r.db.Model(runTest).Updates(runTest).Error
 }
 
 func (r *runTestRepository) Get(id uint) (*models.RunTest, error) {

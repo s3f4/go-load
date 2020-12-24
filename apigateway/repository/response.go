@@ -8,7 +8,6 @@ import (
 
 // ResponseRepository is used for processes on timescaledB
 type ResponseRepository interface {
-	DB() *gorm.DB
 	List(*library.QueryBuilder, string, ...interface{}) ([]models.Response, int64, error)
 }
 
@@ -23,21 +22,16 @@ func NewResponseRepository(db *gorm.DB) ResponseRepository {
 	}
 }
 
-func (r *responseRepository) DB() *gorm.DB {
-	return r.db
-}
-
 func (r *responseRepository) List(query *library.QueryBuilder, conditionStr string, where ...interface{}) ([]models.Response, int64, error) {
-
 	var responses []models.Response
 	var total int64
 	if len(conditionStr) > 0 && where != nil {
-		r.DB().Where(conditionStr, where...).Model(&responses).Count(&total)
+		r.db.Where(conditionStr, where...).Model(&responses).Count(&total)
 	} else {
-		r.DB().Model(&responses).Count(&total)
+		r.db.Model(&responses).Count(&total)
 	}
 
-	if err := query.SetDB(r.DB()).
+	if err := query.SetDB(r.db).
 		SetModel(models.Response{}).
 		SetWhere(conditionStr, where...).
 		List(&responses); err != nil {

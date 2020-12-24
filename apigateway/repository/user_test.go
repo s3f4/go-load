@@ -11,7 +11,7 @@ import (
 )
 
 func Test_User_Create(t *testing.T) {
-	_, sqlMock, conn := ConnectMock()
+	_, sqlMock, conn := ConnectMock(MYSQL)
 	r := NewUserRepository(conn)
 	user := &models.User{Email: "email", Password: "Password"}
 
@@ -24,7 +24,7 @@ func Test_User_Create(t *testing.T) {
 }
 
 func Test_User_Get(t *testing.T) {
-	_, sqlMock, conn := ConnectMock()
+	_, sqlMock, conn := ConnectMock(MYSQL)
 	r := NewUserRepository(conn)
 	u := &models.User{ID: 1, Email: "email", Password: "Password"}
 
@@ -41,7 +41,7 @@ func Test_User_Get(t *testing.T) {
 }
 
 func Test_User_Get_Error(t *testing.T) {
-	_, sqlMock, conn := ConnectMock()
+	_, sqlMock, conn := ConnectMock(MYSQL)
 	r := NewUserRepository(conn)
 	user := &models.User{ID: 1, Email: "email", Password: "Password"}
 
@@ -55,7 +55,7 @@ func Test_User_Get_Error(t *testing.T) {
 }
 
 func Test_User_GetByEmailAndPassword(t *testing.T) {
-	_, sqlMock, conn := ConnectMock()
+	_, sqlMock, conn := ConnectMock(MYSQL)
 	r := NewUserRepository(conn)
 	user := &models.User{ID: 1, Email: "email", Password: "Password"}
 
@@ -72,7 +72,7 @@ func Test_User_GetByEmailAndPassword(t *testing.T) {
 }
 
 func Test_User_GetByEmailAndPassword_Error(t *testing.T) {
-	_, sqlMock, conn := ConnectMock()
+	_, sqlMock, conn := ConnectMock(MYSQL)
 	r := NewUserRepository(conn)
 	user := &models.User{ID: 1, Email: "email", Password: "Password"}
 
@@ -86,7 +86,7 @@ func Test_User_GetByEmailAndPassword_Error(t *testing.T) {
 }
 
 func Test_User_List(t *testing.T) {
-	_, sqlMock, conn := ConnectMock()
+	_, sqlMock, conn := ConnectMock(MYSQL)
 	r := NewUserRepository(conn)
 	allUsers := []*models.User{{ID: 1, Email: "email", Password: "Password"}}
 	rows := sqlmock.NewRows([]string{"id", "email", "password"}).
@@ -101,7 +101,7 @@ func Test_User_List(t *testing.T) {
 }
 
 func Test_User_List_Error(t *testing.T) {
-	_, sqlMock, conn := ConnectMock()
+	_, sqlMock, conn := ConnectMock(MYSQL)
 	r := NewUserRepository(conn)
 
 	sqlMock.ExpectQuery(regexp.QuoteMeta("SELECT * FROM `users`")).

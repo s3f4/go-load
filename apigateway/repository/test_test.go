@@ -12,7 +12,7 @@ import (
 )
 
 func Test_Test_Create(t *testing.T) {
-	_, sqlMock, conn := ConnectMock()
+	_, sqlMock, conn := ConnectMock(MYSQL)
 	r := NewTestRepository(conn)
 	test := &models.Test{Name: "test"}
 
@@ -40,7 +40,7 @@ func Test_Test_Create(t *testing.T) {
 }
 
 func Test_Test_Get(t *testing.T) {
-	_, sqlMock, conn := ConnectMock()
+	_, sqlMock, conn := ConnectMock(MYSQL)
 	r := NewTestRepository(conn)
 	test := &models.Test{
 		ID:   1,
@@ -91,7 +91,7 @@ func Test_Test_Get(t *testing.T) {
 }
 
 func Test_Test_Get_Error(t *testing.T) {
-	_, sqlMock, conn := ConnectMock()
+	_, sqlMock, conn := ConnectMock(MYSQL)
 	r := NewTestRepository(conn)
 	test := &models.Test{ID: 1, Name: "test"}
 
@@ -105,7 +105,7 @@ func Test_Test_Get_Error(t *testing.T) {
 }
 
 func Test_Test_Update(t *testing.T) {
-	_, sqlMock, conn := ConnectMock()
+	_, sqlMock, conn := ConnectMock(MYSQL)
 	r := NewTestRepository(conn)
 	test := &models.Test{ID: 1, Name: "test"}
 
@@ -117,7 +117,7 @@ func Test_Test_Update(t *testing.T) {
 	assert.Nil(t, err)
 }
 func Test_Test_Delete(t *testing.T) {
-	_, sqlMock, conn := ConnectMock()
+	_, sqlMock, conn := ConnectMock(MYSQL)
 	r := NewTestRepository(conn)
 	test := &models.Test{
 		ID:   1,
@@ -151,7 +151,7 @@ func Test_Test_Delete(t *testing.T) {
 }
 
 func Test_Test_List(t *testing.T) {
-	_, sqlMock, conn := ConnectMock()
+	_, sqlMock, conn := ConnectMock(MYSQL)
 	r := NewTestRepository(conn)
 	test := &models.Test{
 		ID:   1,
@@ -207,7 +207,7 @@ func Test_Test_List(t *testing.T) {
 }
 
 func Test_Test_List_Where(t *testing.T) {
-	_, sqlMock, conn := ConnectMock()
+	_, sqlMock, conn := ConnectMock(MYSQL)
 	r := NewTestRepository(conn)
 	test := &models.Test{ID: 1,
 		Name: "test",
@@ -245,7 +245,7 @@ func Test_Test_List_Where(t *testing.T) {
 }
 
 func Test_Test_List_Error(t *testing.T) {
-	_, sqlMock, conn := ConnectMock()
+	_, sqlMock, conn := ConnectMock(MYSQL)
 	r := NewTestRepository(conn)
 
 	countRow := sqlmock.NewRows([]string{"count(1)"}).

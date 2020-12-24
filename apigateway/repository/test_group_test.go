@@ -12,7 +12,7 @@ import (
 )
 
 func Test_TestGroup_Create(t *testing.T) {
-	_, sqlMock, conn := ConnectMock()
+	_, sqlMock, conn := ConnectMock(MYSQL)
 	r := NewTestGroupRepository(conn)
 	testGroup := &models.TestGroup{Name: "test"}
 
@@ -27,7 +27,7 @@ func Test_TestGroup_Create(t *testing.T) {
 }
 
 func Test_TestGroup_Get(t *testing.T) {
-	_, sqlMock, conn := ConnectMock()
+	_, sqlMock, conn := ConnectMock(MYSQL)
 	r := NewTestGroupRepository(conn)
 	testGroup := &models.TestGroup{ID: 1, Name: "test"}
 
@@ -44,7 +44,7 @@ func Test_TestGroup_Get(t *testing.T) {
 }
 
 func Test_TestGroup_Get_Error(t *testing.T) {
-	_, sqlMock, conn := ConnectMock()
+	_, sqlMock, conn := ConnectMock(MYSQL)
 	r := NewTestGroupRepository(conn)
 	testGroup := &models.TestGroup{ID: 1, Name: "test"}
 
@@ -58,7 +58,7 @@ func Test_TestGroup_Get_Error(t *testing.T) {
 }
 
 func Test_TestGroup_Update(t *testing.T) {
-	_, sqlMock, conn := ConnectMock()
+	_, sqlMock, conn := ConnectMock(MYSQL)
 	r := NewTestGroupRepository(conn)
 	testGroup := &models.TestGroup{ID: 1, Name: "test"}
 
@@ -70,7 +70,7 @@ func Test_TestGroup_Update(t *testing.T) {
 	assert.Nil(t, err)
 }
 func Test_TestGroup_Delete(t *testing.T) {
-	_, sqlMock, conn := ConnectMock()
+	_, sqlMock, conn := ConnectMock(MYSQL)
 	r := NewTestGroupRepository(conn)
 	testGroup := &models.TestGroup{
 		ID:   1,
@@ -86,7 +86,7 @@ func Test_TestGroup_Delete(t *testing.T) {
 }
 
 func Test_TestGroup_List(t *testing.T) {
-	_, sqlMock, conn := ConnectMock()
+	_, sqlMock, conn := ConnectMock(MYSQL)
 	r := NewTestGroupRepository(conn)
 	testGroup := &models.TestGroup{ID: 1,
 		Name: "test",
@@ -156,7 +156,7 @@ func Test_TestGroup_List(t *testing.T) {
 }
 
 func Test_TestGroup_List_Where(t *testing.T) {
-	_, sqlMock, conn := ConnectMock()
+	_, sqlMock, conn := ConnectMock(MYSQL)
 	r := NewTestGroupRepository(conn)
 	testGroup := &models.TestGroup{ID: 1,
 		Name: "test",
@@ -227,7 +227,7 @@ func Test_TestGroup_List_Where(t *testing.T) {
 }
 
 func Test_TestGroup_List_Error(t *testing.T) {
-	_, sqlMock, conn := ConnectMock()
+	_, sqlMock, conn := ConnectMock(MYSQL)
 	r := NewTestGroupRepository(conn)
 
 	countRow := sqlmock.NewRows([]string{"count(1)"}).

@@ -8,6 +8,7 @@ import (
 	"github.com/s3f4/go-load/eventhandler/models"
 	"github.com/s3f4/go-load/eventhandler/repository"
 	"github.com/s3f4/mu/log"
+	"gorm.io/gorm"
 
 	"github.com/streadway/amqp"
 )
@@ -22,13 +23,14 @@ type QueueService interface {
 }
 
 type rabbitMQService struct {
+	db   *gorm.DB
 	conn *amqp.Connection
 }
 
 var rabbitMQServiceObject QueueService
 
 // NewRabbitMQService creates a new rabbitMQService instance
-func NewRabbitMQService() QueueService {
+func NewRabbitMQService(db *gorm.DB) QueueService {
 	if rabbitMQServiceObject == nil {
 		uri := fmt.Sprintf("amqp://%s:%s@%s:%s/",
 			os.Getenv("RABBITMQ_USER"),
@@ -44,6 +46,7 @@ func NewRabbitMQService() QueueService {
 
 		rabbitMQServiceObject = &rabbitMQService{
 			conn: conn,
+			db:   db,
 		}
 	}
 	return rabbitMQServiceObject
@@ -102,7 +105,7 @@ func (r *rabbitMQService) Listen(queue string) {
 	}
 
 	block := make(chan struct{})
-	responseRepository := repository.NewResponseRepository()
+	responseRepository := repository.NewResponseRepository(r.db)
 	go func() {
 		for d := range msgs {
 			log.Infof("Received a message: %s", d.Body)
@@ -110,7 +113,7 @@ func (r *rabbitMQService) Listen(queue string) {
 			if err := json.Unmarshal(d.Body, &resp); err != nil {
 				log.Error(err)
 			}
-			responseRepository.Insert(&resp)
+			responseRepository.Create(&resp)
 			ch.Ack(d.DeliveryTag, d.Redelivered)
 		}
 	}()

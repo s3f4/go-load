@@ -7,35 +7,20 @@ import (
 
 // ResponseRepository is used for processes on timescaledB
 type ResponseRepository interface {
-	DB() *gorm.DB
-	Insert(*models.Response) error
-	Delete(*models.Response) error
-	List(query interface{}) ([]*models.Response, error)
+	Create(*models.Response) error
 }
 
 type responseRepository struct {
-	base BaseRepository
+	db *gorm.DB
 }
 
 // NewResponseRepository returns new ResponseRepository instance
-func NewResponseRepository() ResponseRepository {
+func NewResponseRepository(conn *gorm.DB) ResponseRepository {
 	return &responseRepository{
-		base: NewBaseRepository(POSTGRES),
+		db: conn,
 	}
 }
 
-func (r *responseRepository) DB() *gorm.DB {
-	return r.base.GetDB()
-}
-func (r *responseRepository) Insert(response *models.Response) error {
-	if err := r.DB().Create(response).Error; err != nil {
-		return err
-	}
-	return nil
-}
-
-func (r *responseRepository) Delete(response *models.Response) error { return nil }
-
-func (r *responseRepository) List(query interface{}) ([]*models.Response, error) {
-	return nil, nil
+func (r *responseRepository) Create(response *models.Response) error {
+	return r.db.Create(response).Error
 }

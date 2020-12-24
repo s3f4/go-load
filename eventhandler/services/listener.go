@@ -1,5 +1,7 @@
 package services
 
+import "gorm.io/gorm"
+
 // ListenerService is used to listen all queues
 type ListenerService interface {
 	Start(queues ...string)
@@ -11,8 +13,8 @@ type listener struct {
 }
 
 // NewListener returns new listener
-func NewListener() ListenerService {
-	return &listener{service: NewRabbitMQService().(*rabbitMQService)}
+func NewListener(db *gorm.DB) ListenerService {
+	return &listener{service: NewRabbitMQService(db).(*rabbitMQService)}
 }
 
 // Start starts listening all queues.

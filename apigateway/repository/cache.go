@@ -7,32 +7,32 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
-// RedisRepository is using for redis
-type RedisRepository interface {
+// CacheRepository is using for redis
+type CacheRepository interface {
 	Set(key, value string, expire time.Duration) error
 	Get(key string) (string, error)
 	Del(key string) (int64, error)
 }
 
-type redisRepository struct {
+type cacheRepository struct {
 	client *redis.Client
 }
 
 // NewRedisRepository ...
-func NewRedisRepository(client *redis.Client) RedisRepository {
-	return &redisRepository{
+func NewRedisRepository(client *redis.Client) CacheRepository {
+	return &cacheRepository{
 		client: client,
 	}
 }
 
-func (r *redisRepository) Set(key, value string, expire time.Duration) error {
+func (r *cacheRepository) Set(key, value string, expire time.Duration) error {
 	return r.client.Set(context.Background(), key, value, expire).Err()
 }
 
-func (r *redisRepository) Get(key string) (string, error) {
+func (r *cacheRepository) Get(key string) (string, error) {
 	return r.client.Get(context.Background(), key).Result()
 }
 
-func (r *redisRepository) Del(key string) (int64, error) {
+func (r *cacheRepository) Del(key string) (int64, error) {
 	return r.client.Del(context.Background(), key).Result()
 }

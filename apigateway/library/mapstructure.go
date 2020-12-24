@@ -43,12 +43,12 @@ func DecodeMap(source, result interface{}) error {
 
 	decoder, err := mapstructure.NewDecoder(cfg)
 	if err != nil {
-		log.Errorf("mapstructrure.decode", err)
+		log.Errorf("mapstructrure.decode.NewDecoder", err)
 		return err
 	}
 
 	if err := decoder.Decode(source); err != nil {
-		log.Errorf("worker.start", err)
+		log.Errorf("mapstructrure.decode.Decode", err)
 		return err
 	}
 

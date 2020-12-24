@@ -17,11 +17,11 @@ type AuthService interface {
 }
 
 type authService struct {
-	r repository.RedisRepository
+	r repository.CacheRepository
 }
 
 // NewAuthService creates new AuthService object
-func NewAuthService(repository repository.RedisRepository) AuthService {
+func NewAuthService(repository repository.CacheRepository) AuthService {
 	return &authService{
 		r: repository,
 	}

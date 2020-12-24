@@ -4,9 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 
-	"github.com/mitchellh/mapstructure"
 	"github.com/s3f4/go-load/apigateway/library"
-	"github.com/s3f4/go-load/apigateway/library/log"
 	"github.com/s3f4/go-load/apigateway/models"
 	"gorm.io/gorm"
 )
@@ -74,23 +72,8 @@ func (r *instanceRepository) GetFromTerraform() ([]models.InstanceTerraform, err
 
 	var instances []models.InstanceTerraform
 	for _, instance := range result {
-
 		var instanceObj models.InstanceTerraform
-		decoder, err := mapstructure.NewDecoder(&mapstructure.DecoderConfig{
-			Metadata: nil,
-			Result:   &instanceObj,
-			TagName:  "json",
-		})
-		if err != nil {
-			log.Errorf("mapstructrure.decode", err)
-			return nil, err
-		}
-
-		if err := decoder.Decode(instance); err != nil {
-			log.Errorf("worker.start", err)
-			return nil, err
-		}
-
+		library.DecodeMap(instance, &instanceObj)
 		instances = append(instances, instanceObj)
 	}
 

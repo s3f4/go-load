@@ -43,7 +43,7 @@ func Test_Response_List_Where(t *testing.T) {
 	countRow := sqlmock.NewRows([]string{"count(1)"}).
 		AddRow(1)
 
-	sqlMock.ExpectQuery(regexp.QuoteMeta("SELECT * FROM \"responses\"")).
+	sqlMock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "responses"`)).
 		WillReturnRows(responses)
 
 	sqlMock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "responses" WHERE run_test_id=?`)).

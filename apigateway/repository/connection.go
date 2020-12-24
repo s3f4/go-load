@@ -45,11 +45,11 @@ func Connect(dbType DBType) *gorm.DB {
 	}
 
 	dsn := fmt.Sprintf(dsnStr,
-		os.Getenv(dsnStr+"_USER"),
-		os.Getenv(dsnStr+"_PASSWORD"),
-		os.Getenv(dsnStr+"_HOST"),
-		os.Getenv(dsnStr+"_PORT"),
-		os.Getenv(dsnStr+"_DATABASE"),
+		os.Getenv(string(dbType)+"_USER"),
+		os.Getenv(string(dbType)+"_PASSWORD"),
+		os.Getenv(string(dbType)+"_HOST"),
+		os.Getenv(string(dbType)+"_PORT"),
+		os.Getenv(string(dbType)+"_DATABASE"),
 	)
 
 	var dialector gorm.Dialector
@@ -65,6 +65,7 @@ func Connect(dbType DBType) *gorm.DB {
 	})
 
 	if err != nil {
+		fmt.Println(dsn)
 		log.Panicf("failed to connect database: %s", err)
 	}
 

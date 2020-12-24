@@ -8,16 +8,30 @@ import (
 	"os/signal"
 
 	"github.com/go-chi/chi"
+	"github.com/s3f4/go-load/apigateway/models"
 )
 
 var router *chi.Mux
+
+func migrate() {
+	mysqlConn.AutoMigrate(&models.Instance{})
+	mysqlConn.AutoMigrate(&models.InstanceConfig{})
+	mysqlConn.AutoMigrate(&models.TestGroup{})
+	mysqlConn.AutoMigrate(&models.Test{})
+	mysqlConn.AutoMigrate(&models.RunTest{})
+	mysqlConn.AutoMigrate(&models.TransportConfig{})
+	mysqlConn.AutoMigrate(&models.Header{})
+	mysqlConn.AutoMigrate(&models.User{})
+}
 
 // Run apigateway Service
 func Run() {
 	go Down()
 	router = chi.NewRouter()
+	
 	initHandlers()
 	routeMap(router)
+	migrate()
 
 	port := flag.String("port", "3001", " default port is 3001")
 	flag.Parse()

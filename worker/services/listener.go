@@ -1,25 +1,29 @@
 package services
 
+import (
+	"github.com/s3f4/go-load/worker/library/specs"
+)
+
 // ListenerService is used to listen all queues
 type ListenerService interface {
-	Start(queues ...string)
+	Start(specs []*specs.ListenSpec)
 }
 
 // Listener listens all queues
 type listener struct {
-	service *rabbitMQService
+	service *queueService
 }
 
 // NewListener returns new listener
 func NewListener() ListenerService {
-	return &listener{service: NewRabbitMQService().(*rabbitMQService)}
+	return &listener{service: NewQueueService().(*queueService)}
 }
 
 // Start starts listening all queues.
-func (l *listener) Start(queues ...string) {
+func (l *listener) Start(specs []*specs.ListenSpec) {
 	block := make(chan struct{})
-	for _, queue := range queues {
-		go l.service.Listen(queue)
+	for _, spec := range specs {
+		go l.service.Listen(spec)
 	}
 	<-block
 }

@@ -22,16 +22,11 @@ type workerService struct {
 	qs QueueService
 }
 
-var workerServiceObj WorkerService
-
 // NewWorkerService returns new workerService instance
 func NewWorkerService() WorkerService {
-	if workerServiceObj == nil {
-		workerServiceObj = &workerService{
-			qs: NewRabbitMQService(),
+		return &workerService{
+			qs: NewQueueService(),
 		}
-	}
-	return workerServiceObj
 }
 
 // start gets started making requests.

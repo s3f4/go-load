@@ -1,15 +1,11 @@
 package services
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 
-	"github.com/s3f4/go-load/eventhandler/models"
-	"github.com/s3f4/go-load/eventhandler/repository"
+	"github.com/s3f4/go-load/eventhandler/library/specs"
 	"github.com/s3f4/mu/log"
-	"gorm.io/gorm"
-
 	"github.com/streadway/amqp"
 )
 
@@ -18,41 +14,34 @@ import (
 // those messages.
 type QueueService interface {
 	Send(queue string, message interface{}) error
-	Listen(queue string)
+	Listen(spec *specs.ListenSpec)
 	QueueDeclare(queue string) error
 }
 
-type rabbitMQService struct {
-	db   *gorm.DB
+type queueService struct {
 	conn *amqp.Connection
 }
 
-var rabbitMQServiceObject QueueService
+// NewQueueService creates a new queueService instance
+func NewQueueService() QueueService {
+	uri := fmt.Sprintf("amqp://%s:%s@%s:%s/",
+		os.Getenv("RABBITMQ_USER"),
+		os.Getenv("RABBITMQ_PASSWORD"),
+		os.Getenv("RABBITMQ_HOST"),
+		os.Getenv("RABBITMQ_PORT"),
+	)
 
-// NewRabbitMQService creates a new rabbitMQService instance
-func NewRabbitMQService(db *gorm.DB) QueueService {
-	if rabbitMQServiceObject == nil {
-		uri := fmt.Sprintf("amqp://%s:%s@%s:%s/",
-			os.Getenv("RABBITMQ_USER"),
-			os.Getenv("RABBITMQ_PASSWORD"),
-			os.Getenv("RABBITMQ_HOST"),
-			os.Getenv("RABBITMQ_PORT"),
-		)
-
-		conn, err := amqp.Dial(uri)
-		if err != nil {
-			log.Fatalf("%v failed to connect queue", err)
-		}
-
-		rabbitMQServiceObject = &rabbitMQService{
-			conn: conn,
-			db:   db,
-		}
+	conn, err := amqp.Dial(uri)
+	if err != nil {
+		log.Fatalf("%v failed to connect queue", err)
 	}
-	return rabbitMQServiceObject
+
+	return &queueService{
+		conn: conn,
+	}
 }
 
-func (r *rabbitMQService) Send(queue string, message interface{}) error {
+func (r *queueService) Send(queue string, message interface{}) error {
 	ch, err := r.conn.Channel()
 	if err != nil {
 		return err
@@ -86,18 +75,18 @@ func (r *rabbitMQService) Send(queue string, message interface{}) error {
 	return err
 }
 
-func (r *rabbitMQService) Listen(queue string) {
+func (r *queueService) Listen(spec *specs.ListenSpec) {
 	ch, err := r.conn.Channel()
 	defer ch.Close()
 
 	msgs, err := ch.Consume(
-		queue, // queue
-		"",    // consumer
-		false, // auto-ack
-		false, // exclusive
-		false, // no-local
-		false, // no-wait
-		nil,   // args
+		spec.Queue,    // queue
+		spec.Consumer, // consumer
+		false,         // auto-ack
+		false,         // exclusive
+		false,         // no-local
+		false,         // no-wait
+		nil,           // args
 	)
 
 	if err != nil {
@@ -105,23 +94,19 @@ func (r *rabbitMQService) Listen(queue string) {
 	}
 
 	block := make(chan struct{})
-	responseRepository := repository.NewResponseRepository(r.db)
 	go func() {
 		for d := range msgs {
-			log.Infof("Received a message: %s", d.Body)
-			var resp models.Response
-			if err := json.Unmarshal(d.Body, &resp); err != nil {
+			if err := spec.ProcessFunc(&d, block); err != nil {
 				log.Error(err)
 			}
-			responseRepository.Create(&resp)
 			ch.Ack(d.DeliveryTag, d.Redelivered)
 		}
+		log.Info("exit.")
 	}()
 	<-block
-	log.Infof("finished listening the queue of %s")
 }
 
-func (r *rabbitMQService) QueueDeclare(queue string) error {
+func (r *queueService) QueueDeclare(queue string) error {
 	ch, err := r.conn.Channel()
 	if err != nil {
 		log.Debugf("QueueDeclare: conn.Channel: %s", err)

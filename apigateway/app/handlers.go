@@ -37,7 +37,7 @@ func initHandlers() {
 	redisRepository := repository.NewRedisRepository(redisClient)
 	instanceRepository := repository.NewInstanceRepository(mysqlConn, command)
 
-	queue := services.NewRabbitMQService()
+	queue := services.NewQueueService()
 	authService := services.NewAuthService(redisRepository)
 	tokenService := services.NewTokenService()
 	instanceService := services.NewInstanceService(instanceRepository, command)

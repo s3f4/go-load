@@ -1,13 +1,11 @@
 package app
 
 import (
-	"github.com/go-redis/redis/v8"
 	"github.com/s3f4/go-load/apigateway/handlers"
 	"github.com/s3f4/go-load/apigateway/library"
 	"github.com/s3f4/go-load/apigateway/middlewares"
 	"github.com/s3f4/go-load/apigateway/repository"
 	"github.com/s3f4/go-load/apigateway/services"
-	"gorm.io/gorm"
 )
 
 var authHandler handlers.AuthHandler
@@ -19,16 +17,9 @@ var testGroupHandler handlers.TestGroupHandler
 var testHandler handlers.TestHandler
 var workerHandler handlers.WorkerHandler
 var m *middlewares.Middleware
-var mysqlConn *gorm.DB
-var postgresConn *gorm.DB
-var redisClient *redis.Client
 
 func initHandlers() {
 	command := library.NewCommand()
-	mysqlConn = repository.Connect(repository.MYSQL)
-	postgresConn = repository.Connect(repository.POSTGRES)
-	redisClient = repository.ConnectRedis()
-
 	userRepository := repository.NewUserRepository(mysqlConn)
 	runTestRepository := repository.NewRunTestRepository(mysqlConn)
 	testRepository := repository.NewTestRepository(mysqlConn)

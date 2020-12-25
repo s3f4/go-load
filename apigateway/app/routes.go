@@ -21,7 +21,7 @@ func applyMiddlewares() {
 
 	csrfMiddleware := csrf.Protect(
 		[]byte(os.Getenv("CSRF_KEY")),
-		csrf.TrustedOrigins([]string{""localhost:3000", "localhost:3001""}),
+		csrf.TrustedOrigins([]string{"localhost:3000", "localhost:3001"}),
 		csrf.Secure(secure),
 		csrf.Path("/"),
 		csrf.ErrorHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

@@ -20,6 +20,6 @@ resource "digitalocean_droplet" "workers" {
   image    = "ubuntu-18-04-x64"
 
   ssh_keys = [
-	  {{ if ne .Env "development" }}data.{{ end }}digitalocean_ssh_key.for_master.id
+	  {{ if ne .env "development" }}data.{{ end }}digitalocean_ssh_key.for_master.id
   ]
 }

@@ -259,7 +259,7 @@ func (s *instanceService) Destroy() error {
 		"infra/workers.tf",
 		map[string]interface{}{
 			"Instances": nil,
-			"Env":       os.Getenv("APP_ENV"),
+			"env":       os.Getenv("APP_ENV"),
 		},
 	)
 

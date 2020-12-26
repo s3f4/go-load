@@ -22,6 +22,8 @@ export enum Colors {
 
   buttonTextColor = "#fff",
   buttonColor = "#007d9c",
+  passed = "#87b666",
+  notPassed = "#ff6961",
 }
 
 export enum Sizes {

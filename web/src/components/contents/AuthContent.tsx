@@ -87,14 +87,14 @@ const AuthContent: React.FC<Props> = (props: Props) => {
       );
     }
     return (
-      <React.Fragment>
+      <div css={buttonsDiv}>
         <Button
           text={buttonText}
           onClick={buttonFunc}
           disabled={!validateAll(isValid)}
         />
         <span css={buttonRightText}>{text}</span>
-      </React.Fragment>
+      </div>
     );
   };
 
@@ -165,6 +165,13 @@ const buttons = css`
 
 const buttonRightText = css`
   font-size: 1.5rem;
+  margin-top: 1rem;
+  margin-left: 2rem;
+`;
+
+const buttonsDiv = css`
+  display: flex;
+  justify-content: center;
 `;
 
 export default AuthContent;

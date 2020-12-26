@@ -100,7 +100,7 @@ func (h *instanceHandler) ShowSwarmNodes(w http.ResponseWriter, r *http.Request)
 	nodes, err := h.service.ShowSwarmNodes()
 	if err != nil {
 		log.Errorf(err.Error())
-		res.R500(w, r, library.ErrInternalServerError)
+		res.R500(w, r, err)
 		return
 	}
 	res.R200(w, r, nodes)

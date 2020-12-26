@@ -7,7 +7,7 @@ import { Line } from "react-chartjs-2";
 import { defaultFormat, preciseFormat } from "../../basic/helper";
 import { getTest, Test } from "../../../api/entity/test";
 import { listRunTestsOfTest } from "../../../api/entity/runtest";
-import { Borders, MediaQuery, Box, Sizes } from "../../style";
+import { Borders, MediaQuery, Box, Sizes, Colors } from "../../style";
 import { RunTest } from "../../../api/entity/runtest";
 import { FiArrowRightCircle } from "react-icons/fi";
 import RTable, { IRTableRow } from "../../basic/RTable";
@@ -151,7 +151,9 @@ const StatsContent: React.FC<Props> = (props: Props) => {
                       <div css={runTestRowLeft}>
                         <FiArrowRightCircle
                           size="2.1rem"
-                          color={runTest.passed ? "#87b666" : "#ff6961"}
+                          color={
+                            runTest.passed ? Colors.passed : Colors.notPassed
+                          }
                         />
                       </div>
                       <div>
@@ -185,8 +187,8 @@ const StatsContent: React.FC<Props> = (props: Props) => {
 
       const row: IRTableRow = {
         rowStyle: response.passed
-          ? "background-color:#87b666;"
-          : "background-color:#ff6961;",
+          ? `background-color:${Colors.passed};`
+          : "background-color:${Colors.notPassed};",
         allColumns: [
           { content: moment(response.start_time).format(preciseFormat()) },
           { content: moment(response.first_byte).format(preciseFormat()) },
@@ -197,7 +199,7 @@ const StatsContent: React.FC<Props> = (props: Props) => {
           { content: moment(response.tls_start).format(preciseFormat()) },
           { content: moment(response.tls_done).format(preciseFormat()) },
           { content: response.status_code },
-          { content: response.total_time },
+          { content: nanoToMilli(response.total_time) },
           { content: response.body },
           { content: response.passed.toString() },
           {
@@ -260,19 +262,19 @@ const StatsContent: React.FC<Props> = (props: Props) => {
             header: "Start",
             accessor: "start_time",
             sortable: true,
-            width: "18%",
+            width: "19%",
           },
           {
             header: "FirstByte",
             accessor: "first_byte",
             sortable: true,
-            width: "18%",
+            width: "19%",
           },
           {
             header: "FirstByteTime",
             accessor: "first_byte_time",
             sortable: true,
-            width: "12%",
+            width: "14%",
           },
           {
             header: "Connect",
@@ -284,13 +286,13 @@ const StatsContent: React.FC<Props> = (props: Props) => {
             header: "DNS",
             accessor: "DNS_time",
             sortable: true,
-            width: "10%",
+            width: "9%",
           },
           {
             header: "TLS",
             accessor: "TLS_time",
             sortable: true,
-            width: "10%",
+            width: "9%",
           },
           {
             header: "Status",
@@ -299,10 +301,10 @@ const StatsContent: React.FC<Props> = (props: Props) => {
             width: "10%",
           },
           {
-            header: "Total(ms)",
+            header: "Total",
             accessor: "total_time",
             sortable: true,
-            width: "12%",
+            width: "11%",
           },
         ]}
       />

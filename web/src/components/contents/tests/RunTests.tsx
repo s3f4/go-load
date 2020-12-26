@@ -7,7 +7,7 @@ import Button, { ButtonColorType, ButtonType } from "../../basic/Button";
 import { FiActivity, FiArrowRightCircle } from "react-icons/fi";
 import { useHistory } from "react-router-dom";
 import { TestGroup } from "../../../api/entity/test_group";
-import { Borders, Sizes } from "../../style";
+import { Borders, Colors, Sizes } from "../../style";
 import {
   setItems,
   getItems,
@@ -181,7 +181,7 @@ const RunTests: React.FC<Props> = (props: Props) => {
               <div css={testLine} key={runConfig.test.id}>
                 {runConfig.loading && (
                   <div css={item(5)}>
-                    <Loader inlineLoading fill={"#87b666"} />
+                    <Loader inlineLoading fill={Colors.passed} />
                   </div>
                 )}
                 {!runConfig.loading && (
@@ -189,7 +189,9 @@ const RunTests: React.FC<Props> = (props: Props) => {
                     {runConfig.passed}
                     <FiArrowRightCircle
                       size="2.1rem"
-                      color={runConfig.passed ? "#87b666" : "#ff6961"}
+                      color={
+                        runConfig.passed ? Colors.passed : Colors.notPassed
+                      }
                     />
                   </div>
                 )}

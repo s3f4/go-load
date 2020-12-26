@@ -41,7 +41,7 @@ function registry() {
     echo "cert files are being created"
     openssl req -newkey rsa:4096 -nodes -sha256 \
     -keyout registry.key -x509 -days 365 \
-    -out registry.crt -subj '/C=TR/ST=TR/L=Malatya/O=registry/CN=registry.dev'
+    -out registry.crt -subj '/C=TR/ST=TR/L=LLL/O=registry/CN=registry.dev'
     
     echo "files are being moved to nodes"
     
@@ -65,8 +65,8 @@ function registry() {
     -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/registry.crt \
     -e REGISTRY_HTTP_TLS_KEY=/certs/registry.key \
     registry:latest
-
-    docker-machine ssh node1 "ssh-keygen -t rsa -b 4096 -N '' -C "sefa@dehaa.com" -f ~/.ssh/id_rsa_for_master"
+    
+    docker-machine ssh node1 "ssh-keygen -t rsa -b 4096 -N '' -C "mail@example.com" -f ~/.ssh/id_rsa_for_master"
     
     docker-machine ssh node1 docker build -t registry.dev:5000/apigateway /app/apigateway -f /app/apigateway/Dockerfile.dev
     docker-machine ssh node1 docker push registry.dev:5000/apigateway

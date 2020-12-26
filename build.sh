@@ -3,7 +3,7 @@
 echo "cert files are being created"
 openssl req -newkey rsa:4096 -nodes -sha256 \
 -keyout /root/app/registry.key -x509 -days 365 \
--out /root/app/registry.crt -subj '/C=TR/ST=TR/L=Malatya/O=registry/CN=registry.dev'
+-out /root/app/registry.crt -subj '/C=TR/ST=TR/L=LLL/O=registry/CN=registry.dev'
 
 export ANSIBLE_HOST_KEY_CHECKING=False && ansible-playbook -i /etc/ansible/inventory.txt /etc/ansible/cert.yml
 

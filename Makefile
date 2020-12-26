@@ -4,6 +4,33 @@ default:
 	@echo "=============Building============="
 	#docker build -f worker/Dockerfile.dev -t worker .
 
+create_ssh_for_master:
+	ssh-keygen -t rsa -b 4096 -N '' -C "mail@example.com" -f ~/.ssh/id_rsa_for_master 
+
+dev-logs:
+	docker-compose logs -f
+
+rm-files:
+	rm -f apigateway/cmd/apigateway && \
+	rm -rf apigateway/infra/.terraform && \
+	rm -f apigateway/infra/terraform.tfstate* && \
+	rm -f worker/cmd/worker && \
+	rm -f eventhandler/cmd/eventhandler && \
+	rm -rf web/node_modules && \
+	rm -f infra/base/inventory.txt && \
+	rm -f apigateway/log && \
+	rm -f worker/log && \
+	rm -f eventhandler/log  \
+
+gotest:
+	cd apigateway && go test -v  -cover ./...
+
+init :create_ssh_for_master
+	cd infra/base && terraform init
+
+apply:
+	cd infra/base && export TF_LOG=true && terraform apply -auto-approve
+
 up-dev: default
 	@echo "=============Compose Up============="
 	docker-compose -f docker-compose.yml up -d  --build --remove-orphans
@@ -34,9 +61,6 @@ down-debug:
 	rm -f apigateway/infra/terraform.tfstate* && \
 	docker-compose -f docker-compose.debug.yml down
 
-dev-logs:
-	docker-compose logs -f
-
 up-swarm-dev:
 	@echo "=============Initializing local docker swarm============="
 	docker swarm init 
@@ -45,30 +69,6 @@ up-swarm-dev:
 
 down-swarm-dev:
 	docker swarm leave --force
-
-test:
-	go test -v -cover ./...
-
-create_ssh_for_master:
-	ssh-keygen -t rsa -b 4096 -N '' -C "sefa@dehaa.com" -f ~/.ssh/id_rsa_for_master 
-
-rm-files:
-	rm -f apigateway/cmd/apigateway && \
-	rm -rf apigateway/infra/.terraform && \
-	rm -f apigateway/infra/terraform.tfstate* && \
-	rm -f worker/cmd/worker && \
-	rm -f eventhandler/cmd/eventhandler && \
-	rm -rf web/node_modules && \
-	rm -f infra/base/inventory.txt && \
-	rm -f apigateway/log && \
-	rm -f worker/log && \
-	rm -f eventhandler/log  \
-
-init :create_ssh_for_master
-	cd infra/base && terraform init
-
-apply:
-	cd infra/base && export TF_LOG=true && terraform apply -auto-approve
 
 cpInventory:
 	cd infra/base && cp inventory.txt ../../apigateway/infra/ansible/inventory.tmpl \

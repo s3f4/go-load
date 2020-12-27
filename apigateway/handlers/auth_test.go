@@ -22,13 +22,14 @@ func Test_Auth_Signup(t *testing.T) {
 	userRepository := new(mocks.UserRepository)
 	authService := new(mocks.AuthService)
 	tokenService := new(mocks.TokenService)
+	settingsRepository := new(mocks.SettingsRepository)
 	user := &models.User{Email: "email@email.com", Password: "123456"}
 	userStr, _ := json.Marshal(user)
 
 	userRepository.On("Create", user).Return(nil)
 	authService.On("CreateAuthCache", &models.AccessToken{}, &models.RefreshToken{}).Return(nil)
 
-	authHandler := NewAuthHandler(userRepository, authService, tokenService)
+	authHandler := NewAuthHandler(userRepository, settingsRepository, authService, tokenService)
 
 	req := httptest.NewRequest(http.MethodPost, "/auth/signup", strings.NewReader(`{"email":"email@email.com","password":"123456"}`))
 	tokenService.On("CreateToken", req, user).Return(&models.AccessToken{}, &models.RefreshToken{}, nil)
@@ -45,12 +46,13 @@ func Test_Auth_Signup_ParseError(t *testing.T) {
 	userRepository := new(mocks.UserRepository)
 	authService := new(mocks.AuthService)
 	tokenService := new(mocks.TokenService)
+	settingsRepository := new(mocks.SettingsRepository)
 	user := &models.User{Email: "email@email.com", Password: "123456"}
 
 	userRepository.On("Create", user).Return(nil)
 	authService.On("CreateAuthCache", &models.AccessToken{}, &models.RefreshToken{}).Return(nil)
 
-	authHandler := NewAuthHandler(userRepository, authService, tokenService)
+	authHandler := NewAuthHandler(userRepository, settingsRepository, authService, tokenService)
 
 	req := httptest.NewRequest(http.MethodPost, "/auth/signup", strings.NewReader(`{"email":"email@email.com","password":"123456"`))
 	tokenService.On("CreateToken", req, user).Return(&models.AccessToken{}, &models.RefreshToken{}, nil)
@@ -68,12 +70,13 @@ func Test_Auth_Signup_DBError(t *testing.T) {
 	userRepository := new(mocks.UserRepository)
 	authService := new(mocks.AuthService)
 	tokenService := new(mocks.TokenService)
+	settingsRepository := new(mocks.SettingsRepository)
 
 	user := &models.User{Email: "email@email.com", Password: "123456"}
 	userRepository.On("Create", user).Return(errors.New(""))
 	authService.On("CreateAuthCache", &models.AccessToken{}, &models.RefreshToken{}).Return(nil)
 
-	authHandler := NewAuthHandler(userRepository, authService, tokenService)
+	authHandler := NewAuthHandler(userRepository, settingsRepository, authService, tokenService)
 
 	req := httptest.NewRequest(http.MethodPost, "/auth/signup", strings.NewReader(`{"email":"email@email.com","password":"123456"}`))
 	tokenService.On("CreateToken", req, user).Return(&models.AccessToken{}, &models.RefreshToken{}, nil)
@@ -91,12 +94,13 @@ func Test_Auth_Signup_CreateTokenError(t *testing.T) {
 	userRepository := new(mocks.UserRepository)
 	authService := new(mocks.AuthService)
 	tokenService := new(mocks.TokenService)
+	settingsRepository := new(mocks.SettingsRepository)
 
 	user := &models.User{Email: "email@email.com", Password: "123456"}
 	userRepository.On("Create", user).Return(nil)
 	authService.On("CreateAuthCache", &models.AccessToken{}, &models.RefreshToken{}).Return(nil)
 
-	authHandler := NewAuthHandler(userRepository, authService, tokenService)
+	authHandler := NewAuthHandler(userRepository, settingsRepository, authService, tokenService)
 
 	req := httptest.NewRequest(http.MethodPost, "/auth/signup", strings.NewReader(`{"email":"email@email.com","password":"123456"}`))
 	tokenService.On("CreateToken", req, user).Return(nil, nil, errors.New(""))
@@ -114,12 +118,13 @@ func Test_Auth_Signup_CreateAuthCacheError(t *testing.T) {
 	userRepository := new(mocks.UserRepository)
 	authService := new(mocks.AuthService)
 	tokenService := new(mocks.TokenService)
+	settingsRepository := new(mocks.SettingsRepository)
 
 	user := &models.User{Email: "email@email.com", Password: "123456"}
 	userRepository.On("Create", user).Return(nil)
 	authService.On("CreateAuthCache", &models.AccessToken{}, &models.RefreshToken{}).Return(errors.New(""))
 
-	authHandler := NewAuthHandler(userRepository, authService, tokenService)
+	authHandler := NewAuthHandler(userRepository, settingsRepository, authService, tokenService)
 
 	req := httptest.NewRequest(http.MethodPost, "/auth/signup", strings.NewReader(`{"email":"email@email.com","password":"123456"}`))
 	tokenService.On("CreateToken", req, user).Return(&models.AccessToken{}, &models.RefreshToken{}, nil)
@@ -135,6 +140,7 @@ func Test_Auth_Signup_CreateAuthCacheError(t *testing.T) {
 
 func Test_Auth_Signin(t *testing.T) {
 	userRepository := new(mocks.UserRepository)
+	settingsRepository := new(mocks.SettingsRepository)
 	authService := new(mocks.AuthService)
 	tokenService := new(mocks.TokenService)
 	user := &models.User{Email: "email@email.com", Password: "123456"}
@@ -143,7 +149,7 @@ func Test_Auth_Signin(t *testing.T) {
 	userRepository.On("GetByEmailAndPassword", user).Return(user, nil)
 	authService.On("CreateAuthCache", &models.AccessToken{}, &models.RefreshToken{}).Return(nil)
 
-	authHandler := NewAuthHandler(userRepository, authService, tokenService)
+	authHandler := NewAuthHandler(userRepository, settingsRepository, authService, tokenService)
 
 	req := httptest.NewRequest(http.MethodPost, "/auth/signin", strings.NewReader(`{"email":"email@email.com","password":"123456"}`))
 	tokenService.On("CreateToken", req, user).Return(&models.AccessToken{}, &models.RefreshToken{}, nil)
@@ -161,12 +167,13 @@ func Test_Auth_Signin_ParseError(t *testing.T) {
 	userRepository := new(mocks.UserRepository)
 	authService := new(mocks.AuthService)
 	tokenService := new(mocks.TokenService)
+	settingsRepository := new(mocks.SettingsRepository)
 	user := &models.User{Email: "email@email.com", Password: "123456"}
 
 	userRepository.On("GetByEmailAndPassword", user).Return(user, nil)
 	authService.On("CreateAuthCache", &models.AccessToken{}, &models.RefreshToken{}).Return(nil)
 
-	authHandler := NewAuthHandler(userRepository, authService, tokenService)
+	authHandler := NewAuthHandler(userRepository, settingsRepository, authService, tokenService)
 
 	req := httptest.NewRequest(http.MethodPost, "/auth/signin", strings.NewReader(`{"email":"email@email.com","password":"123456"`))
 	tokenService.On("CreateToken", req, user).Return(&models.AccessToken{}, &models.RefreshToken{}, nil)
@@ -184,12 +191,13 @@ func Test_Auth_Signin_GetByEmailAndPasswordError(t *testing.T) {
 	userRepository := new(mocks.UserRepository)
 	authService := new(mocks.AuthService)
 	tokenService := new(mocks.TokenService)
+	settingsRepository := new(mocks.SettingsRepository)
 	user := &models.User{Email: "email@email.com", Password: "123456"}
 
 	userRepository.On("GetByEmailAndPassword", user).Return(nil, errors.New(""))
 	authService.On("CreateAuthCache", &models.AccessToken{}, &models.RefreshToken{}).Return(nil)
 
-	authHandler := NewAuthHandler(userRepository, authService, tokenService)
+	authHandler := NewAuthHandler(userRepository, settingsRepository, authService, tokenService)
 
 	req := httptest.NewRequest(http.MethodPost, "/auth/signin", strings.NewReader(`{"email":"email@email.com","password":"123456"}`))
 	tokenService.On("CreateToken", req, user).Return(&models.AccessToken{}, &models.RefreshToken{}, nil)
@@ -207,12 +215,13 @@ func Test_Auth_Signin_CreateTokenError(t *testing.T) {
 	userRepository := new(mocks.UserRepository)
 	authService := new(mocks.AuthService)
 	tokenService := new(mocks.TokenService)
+	settingsRepository := new(mocks.SettingsRepository)
 	user := &models.User{Email: "email@email.com", Password: "123456"}
 
 	userRepository.On("GetByEmailAndPassword", user).Return(user, nil)
 	authService.On("CreateAuthCache", &models.AccessToken{}, &models.RefreshToken{}).Return(nil)
 
-	authHandler := NewAuthHandler(userRepository, authService, tokenService)
+	authHandler := NewAuthHandler(userRepository, settingsRepository, authService, tokenService)
 
 	req := httptest.NewRequest(http.MethodPost, "/auth/signin", strings.NewReader(`{"email":"email@email.com","password":"123456"}`))
 	tokenService.On("CreateToken", req, user).Return(nil, nil, errors.New(""))
@@ -228,6 +237,7 @@ func Test_Auth_Signin_CreateTokenError(t *testing.T) {
 
 func Test_Auth_Signin_CreateAuthCacheError(t *testing.T) {
 	userRepository := new(mocks.UserRepository)
+	settingsRepository := new(mocks.SettingsRepository)
 	authService := new(mocks.AuthService)
 	tokenService := new(mocks.TokenService)
 	user := &models.User{Email: "email@email.com", Password: "123456"}
@@ -235,7 +245,7 @@ func Test_Auth_Signin_CreateAuthCacheError(t *testing.T) {
 	userRepository.On("GetByEmailAndPassword", user).Return(user, nil)
 	authService.On("CreateAuthCache", &models.AccessToken{}, &models.RefreshToken{}).Return(errors.New(""))
 
-	authHandler := NewAuthHandler(userRepository, authService, tokenService)
+	authHandler := NewAuthHandler(userRepository, settingsRepository, authService, tokenService)
 
 	req := httptest.NewRequest(http.MethodPost, "/auth/signin", strings.NewReader(`{"email":"email@email.com","password":"123456"}`))
 	tokenService.On("CreateToken", req, user).Return(&models.AccessToken{}, &models.RefreshToken{}, nil)
@@ -253,9 +263,10 @@ func Test_Auth_Signout(t *testing.T) {
 	userRepository := new(mocks.UserRepository)
 	authService := new(mocks.AuthService)
 	tokenService := new(mocks.TokenService)
+	settingsRepository := new(mocks.SettingsRepository)
 
 	authService.On("DeleteAuthCache", "").Return(nil)
-	authHandler := NewAuthHandler(userRepository, authService, tokenService)
+	authHandler := NewAuthHandler(userRepository, settingsRepository, authService, tokenService)
 	req := httptest.NewRequest(http.MethodPost, "/auth/signout", strings.NewReader(`{"email":"email@email.com","password":"123456"}`))
 	tokenService.On("GetDetailsFromToken", req, "rt").Return(&models.Details{}, nil)
 
@@ -270,11 +281,12 @@ func Test_Auth_Signout(t *testing.T) {
 
 func Test_Auth_Signout_RefreshTokenError(t *testing.T) {
 	userRepository := new(mocks.UserRepository)
+	settingsRepository := new(mocks.SettingsRepository)
 	authService := new(mocks.AuthService)
 	tokenService := new(mocks.TokenService)
 
 	authService.On("DeleteAuthCache", "").Return(nil)
-	authHandler := NewAuthHandler(userRepository, authService, tokenService)
+	authHandler := NewAuthHandler(userRepository, settingsRepository, authService, tokenService)
 	req := httptest.NewRequest(http.MethodPost, "/auth/signout", strings.NewReader(`{"email":"email@email.com","password":"123456"}`))
 	tokenService.On("GetDetailsFromToken", req, "rt").Return(nil, errors.New(""))
 
@@ -289,11 +301,12 @@ func Test_Auth_Signout_RefreshTokenError(t *testing.T) {
 
 func Test_Auth_Signout_DeleteAuthCacheError(t *testing.T) {
 	userRepository := new(mocks.UserRepository)
+	settingsRepository := new(mocks.SettingsRepository)
 	authService := new(mocks.AuthService)
 	tokenService := new(mocks.TokenService)
 
 	authService.On("DeleteAuthCache", "").Return(errors.New(""))
-	authHandler := NewAuthHandler(userRepository, authService, tokenService)
+	authHandler := NewAuthHandler(userRepository, settingsRepository, authService, tokenService)
 	req := httptest.NewRequest(http.MethodPost, "/auth/signout", strings.NewReader(`{"email":"email@email.com","password":"123456"}`))
 	tokenService.On("GetDetailsFromToken", req, "rt").Return(&models.Details{}, nil)
 
@@ -319,13 +332,14 @@ func Test_Auth_RefreshToken(t *testing.T) {
 	w := httptest.NewRecorder()
 
 	userRepository := new(mocks.UserRepository)
+	settingsRepository := new(mocks.SettingsRepository)
 	authService := new(mocks.AuthService)
 	tokenService := new(mocks.TokenService)
 
 	tokenService.On("TokenFromCookie", req, "rt").Return(rt.Token)
 
 	authService.On("DeleteAuthCache", rt.UUID).Return(nil)
-	authHandler := NewAuthHandler(userRepository, authService, tokenService)
+	authHandler := NewAuthHandler(userRepository, settingsRepository, authService, tokenService)
 
 	tokenService.On("GetDetailsFromToken", req, "rt").Return(&models.Details{}, nil)
 	at := &models.AccessToken{}
@@ -349,10 +363,10 @@ func Test_Auth_RefreshToken_TokenParseError(t *testing.T) {
 	userRepository := new(mocks.UserRepository)
 	authService := new(mocks.AuthService)
 	tokenService := new(mocks.TokenService)
-
+	settingsRepository := new(mocks.SettingsRepository)
 	tokenService.On("TokenFromCookie", req, "rt").Return("")
 	authService.On("DeleteAuthCache", "abc").Return(nil)
-	authHandler := NewAuthHandler(userRepository, authService, tokenService)
+	authHandler := NewAuthHandler(userRepository, settingsRepository, authService, tokenService)
 
 	authHandler.RefreshToken(w, req)
 	res := w.Result()

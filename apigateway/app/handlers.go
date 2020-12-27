@@ -27,6 +27,7 @@ func initHandlers() {
 	responseRepository := repository.NewResponseRepository(postgresConn)
 	redisRepository := repository.NewRedisRepository(redisClient)
 	instanceRepository := repository.NewInstanceRepository(mysqlConn, command)
+	settingsRepository := repository.NewSettingsRepository(mysqlConn)
 
 	queue := services.NewQueueService()
 	authService := services.NewAuthService(redisRepository)
@@ -49,9 +50,11 @@ func initHandlers() {
 
 	authHandler = handlers.NewAuthHandler(
 		userRepository,
+		settingsRepository,
 		authService,
 		tokenService,
 	)
+
 	instanceHandler = handlers.NewInstanceHandler(instanceService)
 	runTestHandler = handlers.NewRunTestHandler(runTestRepository)
 	serviceHandler = handlers.NewServiceHandler()

@@ -26,4 +26,5 @@ func migrate() {
 	mysqlConn.AutoMigrate(&models.TransportConfig{})
 	mysqlConn.AutoMigrate(&models.Header{})
 	mysqlConn.AutoMigrate(&models.User{})
+	mysqlConn.AutoMigrate(&models.Settings{})
 }

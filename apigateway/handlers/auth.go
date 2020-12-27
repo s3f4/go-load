@@ -35,6 +35,7 @@ type AuthHandler interface {
 
 type authHandler struct {
 	ur repository.UserRepository
+	sr repository.SettingsRepository
 	as services.AuthService
 	ts services.TokenService
 }
@@ -42,11 +43,13 @@ type authHandler struct {
 // NewAuthHandler creates handler
 func NewAuthHandler(
 	ur repository.UserRepository,
+	sr repository.SettingsRepository,
 	as services.AuthService,
 	ts services.TokenService,
 ) AuthHandler {
 	return &authHandler{
 		ur: ur,
+		sr: sr,
 		as: as,
 		ts: ts,
 	}

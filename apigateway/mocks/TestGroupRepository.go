@@ -5,7 +5,6 @@ package mocks
 import (
 	library "github.com/s3f4/go-load/apigateway/library"
 	mock "github.com/stretchr/testify/mock"
-	gorm "gorm.io/gorm"
 
 	models "github.com/s3f4/go-load/apigateway/models"
 )
@@ -24,22 +23,6 @@ func (_m *TestGroupRepository) Create(_a0 *models.TestGroup) error {
 		r0 = rf(_a0)
 	} else {
 		r0 = ret.Error(0)
-	}
-
-	return r0
-}
-
-// DB provides a mock function with given fields:
-func (_m *TestGroupRepository) DB() *gorm.DB {
-	ret := _m.Called()
-
-	var r0 *gorm.DB
-	if rf, ok := ret.Get(0).(func() *gorm.DB); ok {
-		r0 = rf()
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*gorm.DB)
-		}
 	}
 
 	return r0

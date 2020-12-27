@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -15,6 +16,7 @@ import (
 	"github.com/s3f4/go-load/apigateway/models"
 	"github.com/s3f4/go-load/apigateway/repository"
 	"github.com/s3f4/go-load/apigateway/services"
+	"gorm.io/gorm"
 )
 
 // AuthHandler interface
@@ -60,6 +62,31 @@ func (h *authHandler) Signup(w http.ResponseWriter, r *http.Request) {
 	if err := parse(r, &user); err != nil {
 		log.Debug(err)
 		res.R400(w, r, library.ErrBadRequest)
+		return
+	}
+
+	settings, err := h.sr.Get(string(models.SIGNUP))
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		log.Debug(err)
+		res.R500(w, r, library.ErrInternalServerError)
+		return
+	}
+
+	if settings == nil {
+		settings = &models.Settings{
+			Key:   string(models.SIGNUP),
+			Value: "Forbidden",
+		}
+
+		if err := h.sr.Create(settings); err != nil {
+			log.Debug(err)
+			res.R500(w, r, library.ErrInternalServerError)
+			return
+		}
+	} else if settings.Key == string(models.SIGNUP) &&
+		settings.Value == "Forbidden" {
+		log.Debug(err)
+		res.R403(w, r, library.ErrForbidden)
 		return
 	}
 

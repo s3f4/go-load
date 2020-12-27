@@ -6,3 +6,10 @@ type Settings struct {
 	Key   string `json:"key" gorm:"key"`
 	Value string `json:"value" gorm:"value"`
 }
+
+type settingsKey string
+
+const (
+	// SIGNUP settings key
+	SIGNUP settingsKey = "SIGNUP"
+)

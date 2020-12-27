@@ -17,4 +17,6 @@ var (
 	ErrRefreshTokenExpire = errors.New("Refresh token is expired")
 	// ErrInternalServerError internal errors
 	ErrInternalServerError = errors.New("Internal server error")
+	// ErrForbidden forbidden error
+	ErrForbidden = errors.New("Forbidden")
 )

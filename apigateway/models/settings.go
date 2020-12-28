@@ -7,9 +7,10 @@ type Settings struct {
 	Value string `json:"value" gorm:"value"`
 }
 
-type settingsKey string
+// SettingsKey for settings table
+type SettingsKey string
 
 const (
 	// SIGNUP settings key
-	SIGNUP settingsKey = "SIGNUP"
+	SIGNUP SettingsKey = "SIGNUP"
 )

@@ -65,7 +65,7 @@ func (h *authHandler) Signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	settings, err := h.sr.Get(string(models.SIGNUP))
+	settings, err := h.sr.Get(models.SIGNUP)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		log.Debug(err)
 		res.R500(w, r, library.ErrInternalServerError)

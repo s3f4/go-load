@@ -10,7 +10,7 @@ type SettingsRepository interface {
 	Create(*models.Settings) error
 	Delete(*models.Settings) error
 	Update(*models.Settings) error
-	Get(key string) (*models.Settings, error)
+	Get(key models.SettingsKey) (*models.Settings, error)
 }
 
 type setttingsRepository struct {
@@ -36,7 +36,7 @@ func (r *setttingsRepository) Update(settings *models.Settings) error {
 	return r.db.Model(settings).Updates(settings).Error
 }
 
-func (r *setttingsRepository) Get(key string) (*models.Settings, error) {
+func (r *setttingsRepository) Get(key models.SettingsKey) (*models.Settings, error) {
 	var settings models.Settings
 	if err := r.db.Where("key=?", models.SIGNUP).First(&settings).Error; err != nil {
 		return nil, err

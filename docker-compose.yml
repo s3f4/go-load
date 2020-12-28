@@ -6,7 +6,8 @@ services:
     restart: always
     build:
       context: ./apigateway
-      dockerfile: Dockerfile.dev
+      target: dev
+      dockerfile: Dockerfile
     ports:
       - 3001:3001
     volumes:
@@ -49,7 +50,8 @@ services:
     restart: always
     build:
       context: ./eventhandler
-      dockerfile: Dockerfile.dev
+      target: dev
+      dockerfile: Dockerfile
     volumes:
       - ./eventhandler:/app
     environment:
@@ -74,7 +76,8 @@ services:
     restart: always
     build:
       context: ./web
-      dockerfile: Dockerfile.dev
+      target: dev
+      dockerfile: Dockerfile
     ports:
       - 3000:3000
     environment:
@@ -95,7 +98,8 @@ services:
     restart: always
     build:
       context: ./worker
-      dockerfile: Dockerfile.dev
+      target: dev
+      dockerfile: Dockerfile
     volumes:
       - ./worker:/app
     environment:

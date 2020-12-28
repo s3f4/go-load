@@ -1,3 +1,17 @@
+#dev config
+FROM node:alpine as dev
+RUN apk --no-cache add curl
+WORKDIR /app
+ENV PATH /app/node_modules/.bin:$PATH
+COPY package*.json ./
+RUN npm install 
+COPY . ./
+EXPOSE 3000
+ADD https://github.com/ufoscout/docker-compose-wait/releases/download/2.7.3/wait /wait
+RUN chmod +x /wait
+CMD /wait && npm start
+
+#prod config
 FROM node:alpine as build
 WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH

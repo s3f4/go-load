@@ -41,11 +41,11 @@ func (_m *SettingsRepository) Delete(_a0 *models.Settings) error {
 }
 
 // Get provides a mock function with given fields: key
-func (_m *SettingsRepository) Get(key string) (*models.Settings, error) {
+func (_m *SettingsRepository) Get(key models.SettingsKey) (*models.Settings, error) {
 	ret := _m.Called(key)
 
 	var r0 *models.Settings
-	if rf, ok := ret.Get(0).(func(string) *models.Settings); ok {
+	if rf, ok := ret.Get(0).(func(models.SettingsKey) *models.Settings); ok {
 		r0 = rf(key)
 	} else {
 		if ret.Get(0) != nil {
@@ -54,7 +54,7 @@ func (_m *SettingsRepository) Get(key string) (*models.Settings, error) {
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(string) error); ok {
+	if rf, ok := ret.Get(1).(func(models.SettingsKey) error); ok {
 		r1 = rf(key)
 	} else {
 		r1 = ret.Error(1)

@@ -7,7 +7,7 @@ services:
     build:
       context: ./apigateway
       target: debug
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     ports:
       - 3001:3001
       - 2345:2345
@@ -54,7 +54,7 @@ services:
     restart: always
     build:
       context: ./eventhandler
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
       target: debug
     ports:
       - 2346:2346
@@ -85,7 +85,7 @@ services:
     build:
       context: ./web
       target: dev
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     ports:
       - 3000:3000
     environment:
@@ -106,7 +106,7 @@ services:
     build:
       context: ./worker
       target: debug
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     ports:
       - 2347:2347
     security_opt:

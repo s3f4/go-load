@@ -7,7 +7,7 @@ services:
     build:
       context: ./apigateway
       target: dev
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     ports:
       - 3001:3001
     volumes:
@@ -51,7 +51,7 @@ services:
     build:
       context: ./eventhandler
       target: dev
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     volumes:
       - ./eventhandler:/app
     environment:
@@ -77,7 +77,7 @@ services:
     build:
       context: ./web
       target: dev
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     ports:
       - 3000:3000
     environment:
@@ -99,7 +99,7 @@ services:
     build:
       context: ./worker
       target: dev
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     volumes:
       - ./worker:/app
     environment:

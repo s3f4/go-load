@@ -1,4 +1,4 @@
-Dockerfile.debug
 Dockerfile.dev
-Dockerfile.prod
+Dockerfile
 .vscode
+__debug_bin

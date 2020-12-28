@@ -5,7 +5,7 @@ docker node update --label-add role=master $(docker node ls -f "role=manager" --
 echo "cert files are being created"
 openssl req -newkey rsa:4096 -nodes -sha256 \
 -keyout registry.key -x509 -days 365 \
--out registry.crt -subj '/C=TR/ST=TR/L=Malatya/O=registry/CN=registry.dev'
+-out registry.crt -subj '/C=TR/ST=TR/L=LLL/O=registry/CN=registry.dev'
 
 
 docker service create -d --name registry --publish=5000:5000 \
@@ -20,10 +20,10 @@ echo "You must add ' 127.0.0.1 registry.dev ' to /etc/hosts"
 echo "Wait for starting registry service..."
 sleep 5
 
-docker build -t registry.dev:5000/apigateway ./apigateway -f ./apigateway/Dockerfile.dev
-docker build -t registry.dev:5000/worker ./worker -f ./worker/Dockerfile.dev
-docker build -t registry.dev:5000/web ./web -f ./web/Dockerfile.dev
-docker build -t registry.dev:5000/eventhandler ./eventhandler -f ./eventhandler/Dockerfile.dev
+docker build -t registry.dev:5000/apigateway ./apigateway --target=dev -f ./apigateway/Dockerfile
+docker build -t registry.dev:5000/worker ./worker --target=dev -f ./worker/Dockerfile
+docker build -t registry.dev:5000/web ./web --target=dev -f ./web/Dockerfile
+docker build -t registry.dev:5000/eventhandler ./eventhandler --target=dev -f ./eventhandler/Dockerfile
 
 docker push registry.dev:5000/apigateway
 docker push registry.dev:5000/worker

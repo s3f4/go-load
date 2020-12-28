@@ -4,7 +4,7 @@ services:
     image: registry.dev:5000/apigateway
     build:
       context: ./apigateway
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     ports:
       - 3001:3001
     volumes:
@@ -48,7 +48,7 @@ services:
     image: registry.dev:5000/eventhandler
     build:
       context: ./eventhandler
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     environment:
       - APP_ENV=production
       - RABBITMQ_USER=user
@@ -72,7 +72,7 @@ services:
     image: registry.dev:5000/web
     build:
       context: ./web
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     ports:
       - 80:80
     environment:
@@ -91,7 +91,7 @@ services:
     image: registry.dev:5000/worker
     build:
       context: ./worker
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     volumes:
       - /etc/hostname:/etc/hostname
     environment:

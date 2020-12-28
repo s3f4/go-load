@@ -1,22 +1,3 @@
-#debug config
-FROM golang:1.15.2-alpine3.12 as debug
-ENV CGO_ENABLED 0
-WORKDIR /app/
-COPY . .
-RUN go build -gcflags "all=-N -l" -o eventhandler ./cmd 
-RUN go get github.com/go-delve/delve/cmd/dlv
-EXPOSE 2346
-CMD ["dlv", "--listen=:2346", "--headless=true",  "--api-version=2","--log=true","--log-output=debugger,debuglineerr,gdbwire,lldbout,rpc", "--accept-multiclient", "debug", "/app/cmd"]
-
-#dev config
-FROM golang:1.15.2-alpine3.12 as dev
-WORKDIR /app/
-COPY . .
-RUN ["go", "get", "github.com/githubnemo/CompileDaemon"]
-ADD https://github.com/ufoscout/docker-compose-wait/releases/download/2.7.3/wait /wait
-RUN chmod +x /wait
-CMD /wait && CompileDaemon -directory=cmd/.  -build="go build -o eventhandler" -command="./cmd/eventhandler"
-
 #prod config
 FROM golang:1.15.2-alpine3.12 as builder
 RUN apk update && apk add --no-cache git ca-certificates && update-ca-certificates

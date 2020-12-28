@@ -16,11 +16,11 @@ docker service create -d --name registry --publish=5000:5000 \
 registry:latest
 
 
-docker build -t registry.dev:5000/apigateway /root/app/apigateway -f /root/app/apigateway/Dockerfile.prod
+docker build -t registry.dev:5000/apigateway /root/app/apigateway -f /root/app/apigateway/Dockerfile
 docker push registry.dev:5000/apigateway
-docker build -t registry.dev:5000/worker /root/app/worker -f /root/app/worker/Dockerfile.prod
+docker build -t registry.dev:5000/worker /root/app/worker -f /root/app/worker/Dockerfile
 docker push registry.dev:5000/worker
-docker build -t registry.dev:5000/web /root/app/web -f /root/app/web/Dockerfile.prod
+docker build -t registry.dev:5000/web /root/app/web -f /root/app/web/Dockerfile
 docker push registry.dev:5000/web
-docker build -t registry.dev:5000/eventhandler /root/app/eventhandler -f /root/app/eventhandler/Dockerfile.prod
+docker build -t registry.dev:5000/eventhandler /root/app/eventhandler -f /root/app/eventhandler/Dockerfile
 docker push registry.dev:5000/eventhandler

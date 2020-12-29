@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -16,7 +15,7 @@ import (
 	"github.com/s3f4/go-load/apigateway/models"
 	"github.com/s3f4/go-load/apigateway/repository"
 	"github.com/s3f4/go-load/apigateway/services"
-	"gorm.io/gorm"
+	"golang.org/x/crypto/bcrypt"
 )
 
 // AuthHandler interface
@@ -65,28 +64,14 @@ func (h *authHandler) Signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	settings, err := h.sr.Get(models.SIGNUP)
-	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		log.Debug(err)
-		res.R500(w, r, library.ErrInternalServerError)
+	if h.forbidden() {
+		res.R403(w, r, library.ErrForbidden)
 		return
 	}
 
-	if settings == nil {
-		settings = &models.Settings{
-			Setting: string(models.SIGNUP),
-			Value:   "Forbidden",
-		}
-
-		if err := h.sr.Create(settings); err != nil {
-			log.Debug(err)
-			res.R500(w, r, library.ErrInternalServerError)
-			return
-		}
-	} else if settings.Setting == string(models.SIGNUP) &&
-		settings.Value == "Forbidden" {
+	if err := h.createPassword(&user); err != nil {
 		log.Debug(err)
-		res.R403(w, r, library.ErrForbidden)
+		res.R500(w, r, library.ErrInternalServerError)
 		return
 	}
 
@@ -120,10 +105,15 @@ func (h *authHandler) Signin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	dbUser, err := h.ur.GetByEmailAndPassword(&user)
+	dbUser, err := h.ur.GetByEmail(&user)
 	if err != nil {
 		log.Debug(err)
 		res.R404(w, r, library.ErrNotFound)
+		return
+	}
+
+	if !checkPasswordHash(user.Password, dbUser.Salt, dbUser.Password) {
+		res.R401(w, r, library.ErrUnauthorized)
 		return
 	}
 
@@ -265,8 +255,55 @@ func (h *authHandler) ResponseWithCookie(w http.ResponseWriter, r *http.Request,
 		log.Debug(err)
 	}
 
+	// Don't write password
+	user.Password = "-"
+
 	res.R200(w, r, map[string]interface{}{
 		"token": at.Token,
 		"user":  user,
 	})
+}
+
+func (h *authHandler) createPassword(user *models.User) error {
+	salt, err := library.RandomBytes(32)
+	if err != nil {
+		log.Error(err)
+		return err
+	}
+	user.Salt = string(salt)
+	user.Password, err = hashPassword(user.Password, user.Salt)
+	fmt.Println(user.Salt)
+	if err != nil {
+		log.Error(err)
+		return err
+	}
+	return nil
+}
+
+func hashPassword(password, salt string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password+salt), 14)
+	return string(bytes), err
+}
+
+func checkPasswordHash(password, salt, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password+salt))
+	return err == nil
+}
+
+func (h *authHandler) forbidden() bool {
+	settings, _ := h.sr.Get(models.SIGNUP)
+	if settings == nil {
+		settings = &models.Settings{
+			Setting: string(models.SIGNUP),
+			Value:   "Forbidden",
+		}
+
+		if err := h.sr.Create(settings); err != nil {
+			return true
+		}
+	} else if settings.Setting == string(models.SIGNUP) &&
+		settings.Value == "Forbidden" {
+		return true
+	}
+	return false
 }

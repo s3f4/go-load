@@ -66,7 +66,7 @@ func Test_User_GetByEmailAndPassword(t *testing.T) {
 		WithArgs(user.Email, user.Password).
 		WillReturnRows(rows)
 
-	u, err := r.GetByEmailAndPassword(user)
+	u, err := r.GetByEmail(user)
 	assert.Equal(t, user, u)
 	assert.Nil(t, err)
 }
@@ -80,7 +80,7 @@ func Test_User_GetByEmailAndPassword_Error(t *testing.T) {
 		WithArgs(user.Email, user.Password).
 		WillReturnError(errors.New(""))
 
-	u, err := r.GetByEmailAndPassword(user)
+	u, err := r.GetByEmail(user)
 	assert.NotEqual(t, user, u)
 	assert.NotNil(t, err)
 }

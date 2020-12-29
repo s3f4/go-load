@@ -9,7 +9,7 @@ import (
 type UserRepository interface {
 	Create(*models.User) error
 	Get(ID uint) (*models.User, error)
-	GetByEmailAndPassword(*models.User) (*models.User, error)
+	GetByEmail(*models.User) (*models.User, error)
 	List() ([]*models.User, error)
 }
 
@@ -36,9 +36,9 @@ func (r *userRepository) Get(ID uint) (*models.User, error) {
 	return &dbUser, nil
 }
 
-func (r *userRepository) GetByEmailAndPassword(user *models.User) (*models.User, error) {
+func (r *userRepository) GetByEmail(user *models.User) (*models.User, error) {
 	var dbUser models.User
-	if err := r.db.Where("email=? AND password=?", user.Email, user.Password).Take(&dbUser).Error; err != nil {
+	if err := r.db.Where("email=?", user.Email).Take(&dbUser).Error; err != nil {
 		return nil, err
 	}
 	return &dbUser, nil

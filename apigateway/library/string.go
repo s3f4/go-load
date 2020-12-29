@@ -4,7 +4,8 @@ import "crypto/rand"
 
 const chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-func random(length int) ([]byte, error) {
+// RandomBytes creates random string with given length
+func RandomBytes(length int) ([]byte, error) {
 	bytes := make([]byte, length)
 
 	if _, err := rand.Read(bytes); err != nil {

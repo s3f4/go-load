@@ -26,6 +26,7 @@ require (
 	github.com/stretchr/testify v1.6.1
 	github.com/twinj/uuid v1.0.0
 	go.uber.org/zap v1.16.0
+	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
 	gopkg.in/stretchr/testify.v1 v1.2.2 // indirect
 	gorm.io/driver/mysql v1.0.3
 	gorm.io/driver/postgres v1.0.5

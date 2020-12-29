@@ -4,11 +4,12 @@ import { jsx, css } from "@emotion/core";
 import TextInput from "../basic/TextInput";
 import Button from "../basic/Button";
 import { MediaQuery } from "../style";
-import { setUserStorage, signIn, signUp } from "../../api/entity/user";
+import { setUserStorage, signIn, signUp, User } from "../../api/entity/user";
 import Message from "../basic/Message";
 import { Link, useHistory } from "react-router-dom";
 import { setToken } from "../../api/entity/jwt";
 import { validateAll } from "../basic/BaseForm";
+import { sha256 } from "js-sha256";
 
 const initialUserState = {
   email: "",
@@ -21,7 +22,7 @@ interface Props {
 }
 
 const AuthContent: React.FC<Props> = (props: Props) => {
-  const [user, setUser] = useState(initialUserState);
+  const [user, setUser] = useState<User>(initialUserState);
   const [error, setError] = useState<string>("");
   const [isValid, setIsValid] = useState<any>({
     email: true,
@@ -44,8 +45,15 @@ const AuthContent: React.FC<Props> = (props: Props) => {
       [name]: value,
     });
 
+  const prepareUserRequest = (user: User): User => {
+    return {
+      ...user,
+      password: sha256(user.password!),
+    };
+  };
+
   const onSignIn = () => {
-    signIn(user)
+    signIn(prepareUserRequest(user))
       .then((response) => {
         setToken(response.data.token);
         setUserStorage(response.data);
@@ -57,7 +65,7 @@ const AuthContent: React.FC<Props> = (props: Props) => {
   };
 
   const onSignUp = () => {
-    signUp(user)
+    signUp(prepareUserRequest(user))
       .then((response) => {
         setToken(response.data.token);
         setUserStorage(response.data);

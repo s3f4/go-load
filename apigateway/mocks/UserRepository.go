@@ -49,8 +49,8 @@ func (_m *UserRepository) Get(ID uint) (*models.User, error) {
 	return r0, r1
 }
 
-// GetByEmailAndPassword provides a mock function with given fields: _a0
-func (_m *UserRepository) GetByEmailAndPassword(_a0 *models.User) (*models.User, error) {
+// GetByEmail provides a mock function with given fields: _a0
+func (_m *UserRepository) GetByEmail(_a0 *models.User) (*models.User, error) {
 	ret := _m.Called(_a0)
 
 	var r0 *models.User

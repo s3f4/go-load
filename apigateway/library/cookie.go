@@ -7,8 +7,8 @@ import (
 	"github.com/s3f4/go-load/apigateway/library/log"
 )
 
-var hashKey, _ = random(32)
-var blockKey, _ = random(32)
+var hashKey, _ = RandomBytes(32)
+var blockKey, _ = RandomBytes(32)
 
 var s = securecookie.New(hashKey, blockKey)
 

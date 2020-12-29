@@ -15,7 +15,6 @@ import (
 	"github.com/s3f4/go-load/apigateway/models"
 	"github.com/s3f4/go-load/apigateway/repository"
 	"github.com/s3f4/go-load/apigateway/services"
-	"golang.org/x/crypto/bcrypt"
 )
 
 // AuthHandler interface
@@ -69,7 +68,7 @@ func (h *authHandler) Signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.createPassword(&user); err != nil {
+	if err := h.as.CreatePassword(&user); err != nil {
 		log.Debug(err)
 		res.R500(w, r, library.ErrInternalServerError)
 		return
@@ -112,7 +111,7 @@ func (h *authHandler) Signin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !checkPasswordHash(user.Password, dbUser.Salt, dbUser.Password) {
+	if !h.as.CheckPassword(user.Password, dbUser.Salt, dbUser.Password) {
 		res.R401(w, r, library.ErrUnauthorized)
 		return
 	}
@@ -262,32 +261,6 @@ func (h *authHandler) ResponseWithCookie(w http.ResponseWriter, r *http.Request,
 		"token": at.Token,
 		"user":  user,
 	})
-}
-
-func (h *authHandler) createPassword(user *models.User) error {
-	salt, err := library.RandomBytes(32)
-	if err != nil {
-		log.Error(err)
-		return err
-	}
-	user.Salt = string(salt)
-	user.Password, err = hashPassword(user.Password, user.Salt)
-	fmt.Println(user.Salt)
-	if err != nil {
-		log.Error(err)
-		return err
-	}
-	return nil
-}
-
-func hashPassword(password, salt string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password+salt), 14)
-	return string(bytes), err
-}
-
-func checkPasswordHash(password, salt, hash string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password+salt))
-	return err == nil
 }
 
 func (h *authHandler) forbidden() bool {

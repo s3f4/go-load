@@ -12,6 +12,20 @@ type AuthService struct {
 	mock.Mock
 }
 
+// CheckPassword provides a mock function with given fields: password, salt, hash
+func (_m *AuthService) CheckPassword(password string, salt string, hash string) bool {
+	ret := _m.Called(password, salt, hash)
+
+	var r0 bool
+	if rf, ok := ret.Get(0).(func(string, string, string) bool); ok {
+		r0 = rf(password, salt, hash)
+	} else {
+		r0 = ret.Get(0).(bool)
+	}
+
+	return r0
+}
+
 // CreateAuthCache provides a mock function with given fields: at, rt
 func (_m *AuthService) CreateAuthCache(at *models.AccessToken, rt *models.RefreshToken) error {
 	ret := _m.Called(at, rt)
@@ -19,6 +33,20 @@ func (_m *AuthService) CreateAuthCache(at *models.AccessToken, rt *models.Refres
 	var r0 error
 	if rf, ok := ret.Get(0).(func(*models.AccessToken, *models.RefreshToken) error); ok {
 		r0 = rf(at, rt)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// CreatePassword provides a mock function with given fields: user
+func (_m *AuthService) CreatePassword(user *models.User) error {
+	ret := _m.Called(user)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(*models.User) error); ok {
+		r0 = rf(user)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -54,6 +82,27 @@ func (_m *AuthService) GetAuthCache(UUID string) (string, error) {
 	var r1 error
 	if rf, ok := ret.Get(1).(func(string) error); ok {
 		r1 = rf(UUID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// HashPassword provides a mock function with given fields: password, salt
+func (_m *AuthService) HashPassword(password string, salt string) (string, error) {
+	ret := _m.Called(password, salt)
+
+	var r0 string
+	if rf, ok := ret.Get(0).(func(string, string) string); ok {
+		r0 = rf(password, salt)
+	} else {
+		r0 = ret.Get(0).(string)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string, string) error); ok {
+		r1 = rf(password, salt)
 	} else {
 		r1 = ret.Error(1)
 	}

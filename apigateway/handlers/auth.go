@@ -74,8 +74,8 @@ func (h *authHandler) Signup(w http.ResponseWriter, r *http.Request) {
 
 	if settings == nil {
 		settings = &models.Settings{
-			Key:   string(models.SIGNUP),
-			Value: "Forbidden",
+			Setting: string(models.SIGNUP),
+			Value:   "Forbidden",
 		}
 
 		if err := h.sr.Create(settings); err != nil {
@@ -83,7 +83,7 @@ func (h *authHandler) Signup(w http.ResponseWriter, r *http.Request) {
 			res.R500(w, r, library.ErrInternalServerError)
 			return
 		}
-	} else if settings.Key == string(models.SIGNUP) &&
+	} else if settings.Setting == string(models.SIGNUP) &&
 		settings.Value == "Forbidden" {
 		log.Debug(err)
 		res.R403(w, r, library.ErrForbidden)

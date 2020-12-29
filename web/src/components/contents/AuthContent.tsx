@@ -17,6 +17,7 @@ const initialUserState = {
 
 interface Props {
   type: string;
+  signupDisable: boolean;
 }
 
 const AuthContent: React.FC<Props> = (props: Props) => {
@@ -86,6 +87,11 @@ const AuthContent: React.FC<Props> = (props: Props) => {
         </React.Fragment>
       );
     }
+
+    if (props.signupDisable) {
+      text = <React.Fragment />;
+    }
+
     return (
       <div css={buttonsDiv}>
         <Button

@@ -69,6 +69,8 @@ func routeMap(*chi.Mux) {
 		router.Post("/_rt", authHandler.RefreshToken)
 	})
 
+	router.Get("/settings/{setting}", settingsHandler.Get)
+
 	router.Group(func(router chi.Router) {
 		router.Use(m.AuthCtx)
 		router.Get("/user/current_user", authHandler.CurrentUser)

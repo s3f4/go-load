@@ -2,9 +2,9 @@ package models
 
 // Settings holds settinsg
 type Settings struct {
-	ID    uint   `json:"id" gorm:"primaryKey;column:id"`
-	Key   string `json:"key" gorm:"key"`
-	Value string `json:"value" gorm:"value"`
+	ID      uint   `json:"id" gorm:"primaryKey;column:id"`
+	Setting string `json:"setting" gorm:"column:setting;type:varchar(100)"`
+	Value   string `json:"value" gorm:"column:value;type:varchar(100)"`
 }
 
 // SettingsKey for settings table

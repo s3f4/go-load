@@ -16,6 +16,7 @@ var statsHandler handlers.StatsHandler
 var testGroupHandler handlers.TestGroupHandler
 var testHandler handlers.TestHandler
 var workerHandler handlers.WorkerHandler
+var settingsHandler handlers.SettingsHandler
 var m *middlewares.Middleware
 
 func initHandlers() {
@@ -62,4 +63,5 @@ func initHandlers() {
 	testGroupHandler = handlers.NewTestGroupHandler(testGroupRepository)
 	testHandler = handlers.NewTestHandler(testService, testRepository)
 	workerHandler = handlers.NewWorkerHandler()
+	settingsHandler = handlers.NewSettingsHandler(settingsRepository)
 }

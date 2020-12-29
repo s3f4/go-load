@@ -38,7 +38,7 @@ func (r *setttingsRepository) Update(settings *models.Settings) error {
 
 func (r *setttingsRepository) Get(key models.SettingsKey) (*models.Settings, error) {
 	var settings models.Settings
-	if err := r.db.Where("key=?", string(models.SIGNUP)).First(&settings).Error; err != nil {
+	if err := r.db.Where("setting = ?", key).First(&settings).Error; err != nil {
 		return nil, err
 	}
 	return &settings, nil

@@ -24,11 +24,12 @@ func Test_Auth_Signup(t *testing.T) {
 	tokenService := new(mocks.TokenService)
 	settingsRepository := new(mocks.SettingsRepository)
 	user := &models.User{Email: "email@email.com", Password: "123456"}
-	userStr, _ := json.Marshal(user)
 
+	settingsRepository.On("Get", models.SIGNUP).Return(&models.Settings{}, nil)
+	settingsRepository.On("Create", &models.Settings{}).Return(nil)
 	userRepository.On("Create", user).Return(nil)
 	authService.On("CreateAuthCache", &models.AccessToken{}, &models.RefreshToken{}).Return(nil)
-
+	authService.On("CreatePassword", user).Return(nil)
 	authHandler := NewAuthHandler(userRepository, settingsRepository, authService, tokenService)
 
 	req := httptest.NewRequest(http.MethodPost, "/auth/signup", strings.NewReader(`{"email":"email@email.com","password":"123456"}`))
@@ -39,6 +40,9 @@ func Test_Auth_Signup(t *testing.T) {
 	res := w.Result()
 	body, _ := ioutil.ReadAll(res.Body)
 
+	user.Password = "-"
+	user.Salt = "-"
+	userStr, _ := json.Marshal(user)
 	assert.Equal(t, fmt.Sprintf(`{"status":true,"data":{"token":"","user":%s}}`, userStr), string(body))
 	assert.Equal(t, http.StatusOK, res.StatusCode, "%d status is not equal to %d", http.StatusOK, res.StatusCode)
 }
@@ -75,6 +79,9 @@ func Test_Auth_Signup_DBError(t *testing.T) {
 	user := &models.User{Email: "email@email.com", Password: "123456"}
 	userRepository.On("Create", user).Return(errors.New(""))
 	authService.On("CreateAuthCache", &models.AccessToken{}, &models.RefreshToken{}).Return(nil)
+	authService.On("CreatePassword", user).Return(nil)
+	settingsRepository.On("Get", models.SIGNUP).Return(&models.Settings{}, nil)
+	settingsRepository.On("Create", &models.Settings{}).Return(nil)
 
 	authHandler := NewAuthHandler(userRepository, settingsRepository, authService, tokenService)
 
@@ -99,7 +106,9 @@ func Test_Auth_Signup_CreateTokenError(t *testing.T) {
 	user := &models.User{Email: "email@email.com", Password: "123456"}
 	userRepository.On("Create", user).Return(nil)
 	authService.On("CreateAuthCache", &models.AccessToken{}, &models.RefreshToken{}).Return(nil)
-
+	authService.On("CreatePassword", user).Return(nil)
+	settingsRepository.On("Get", models.SIGNUP).Return(&models.Settings{}, nil)
+	settingsRepository.On("Create", &models.Settings{}).Return(nil)
 	authHandler := NewAuthHandler(userRepository, settingsRepository, authService, tokenService)
 
 	req := httptest.NewRequest(http.MethodPost, "/auth/signup", strings.NewReader(`{"email":"email@email.com","password":"123456"}`))
@@ -123,7 +132,9 @@ func Test_Auth_Signup_CreateAuthCacheError(t *testing.T) {
 	user := &models.User{Email: "email@email.com", Password: "123456"}
 	userRepository.On("Create", user).Return(nil)
 	authService.On("CreateAuthCache", &models.AccessToken{}, &models.RefreshToken{}).Return(errors.New(""))
-
+	authService.On("CreatePassword", user).Return(nil)
+	settingsRepository.On("Get", models.SIGNUP).Return(&models.Settings{}, nil)
+	settingsRepository.On("Create", &models.Settings{}).Return(nil)
 	authHandler := NewAuthHandler(userRepository, settingsRepository, authService, tokenService)
 
 	req := httptest.NewRequest(http.MethodPost, "/auth/signup", strings.NewReader(`{"email":"email@email.com","password":"123456"}`))
@@ -144,21 +155,23 @@ func Test_Auth_Signin(t *testing.T) {
 	authService := new(mocks.AuthService)
 	tokenService := new(mocks.TokenService)
 	user := &models.User{Email: "email@email.com", Password: "123456"}
-	userStr, _ := json.Marshal(user)
 
-	userRepository.On("GetByEmailAndPassword", user).Return(user, nil)
+	userRepository.On("GetByEmail", user).Return(user, nil)
 	authService.On("CreateAuthCache", &models.AccessToken{}, &models.RefreshToken{}).Return(nil)
 
 	authHandler := NewAuthHandler(userRepository, settingsRepository, authService, tokenService)
 
 	req := httptest.NewRequest(http.MethodPost, "/auth/signin", strings.NewReader(`{"email":"email@email.com","password":"123456"}`))
 	tokenService.On("CreateToken", req, user).Return(&models.AccessToken{}, &models.RefreshToken{}, nil)
-
+	authService.On("CheckPassword", user.Password, user.Salt, user.Password).Return(true)
 	w := httptest.NewRecorder()
 	authHandler.Signin(w, req)
 	res := w.Result()
 	body, _ := ioutil.ReadAll(res.Body)
 
+	user.Password = "-"
+	user.Salt = "-"
+	userStr, _ := json.Marshal(user)
 	assert.Equal(t, fmt.Sprintf(`{"status":true,"data":{"token":"","user":%s}}`, userStr), string(body))
 	assert.Equal(t, http.StatusOK, res.StatusCode, "%d status is not equal to %d", http.StatusOK, res.StatusCode)
 }
@@ -194,7 +207,7 @@ func Test_Auth_Signin_GetByEmailAndPasswordError(t *testing.T) {
 	settingsRepository := new(mocks.SettingsRepository)
 	user := &models.User{Email: "email@email.com", Password: "123456"}
 
-	userRepository.On("GetByEmailAndPassword", user).Return(nil, errors.New(""))
+	userRepository.On("GetByEmail", user).Return(nil, errors.New(""))
 	authService.On("CreateAuthCache", &models.AccessToken{}, &models.RefreshToken{}).Return(nil)
 
 	authHandler := NewAuthHandler(userRepository, settingsRepository, authService, tokenService)
@@ -218,9 +231,9 @@ func Test_Auth_Signin_CreateTokenError(t *testing.T) {
 	settingsRepository := new(mocks.SettingsRepository)
 	user := &models.User{Email: "email@email.com", Password: "123456"}
 
-	userRepository.On("GetByEmailAndPassword", user).Return(user, nil)
+	userRepository.On("GetByEmail", user).Return(user, nil)
 	authService.On("CreateAuthCache", &models.AccessToken{}, &models.RefreshToken{}).Return(nil)
-
+	authService.On("CheckPassword", user.Password, user.Salt, user.Password).Return(true)
 	authHandler := NewAuthHandler(userRepository, settingsRepository, authService, tokenService)
 
 	req := httptest.NewRequest(http.MethodPost, "/auth/signin", strings.NewReader(`{"email":"email@email.com","password":"123456"}`))
@@ -242,9 +255,9 @@ func Test_Auth_Signin_CreateAuthCacheError(t *testing.T) {
 	tokenService := new(mocks.TokenService)
 	user := &models.User{Email: "email@email.com", Password: "123456"}
 
-	userRepository.On("GetByEmailAndPassword", user).Return(user, nil)
+	userRepository.On("GetByEmail", user).Return(user, nil)
 	authService.On("CreateAuthCache", &models.AccessToken{}, &models.RefreshToken{}).Return(errors.New(""))
-
+	authService.On("CheckPassword", user.Password, user.Salt, user.Password).Return(true)
 	authHandler := NewAuthHandler(userRepository, settingsRepository, authService, tokenService)
 
 	req := httptest.NewRequest(http.MethodPost, "/auth/signin", strings.NewReader(`{"email":"email@email.com","password":"123456"}`))

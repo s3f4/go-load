@@ -252,10 +252,13 @@ func (h *authHandler) ResponseWithCookie(w http.ResponseWriter, r *http.Request,
 
 	if err := library.SetCookie(w, &rtCookie, map[string]string{"rt": rt.Token}); err != nil {
 		log.Debug(err)
+		res.R500(w, r, library.ErrInternalServerError)
+		return
 	}
 
-	// Don't write password
+	// Don't write password and salt
 	user.Password = "-"
+	user.Salt = "-"
 
 	res.R200(w, r, map[string]interface{}{
 		"token": at.Token,

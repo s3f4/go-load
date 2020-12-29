@@ -190,7 +190,7 @@ func Test_Instance_ShowSwarmNodes_Error(t *testing.T) {
 
 	res, body := makeRequest("/instances/swarm-nodes", http.MethodGet, instanceHandler.ShowSwarmNodes, nil)
 
-	assert.Equal(t, fmt.Sprintf(`{"status":false,"message":"%s"}`, library.ErrInternalServerError), string(body))
+	assert.Equal(t, `{"status":false}`, string(body))
 	assert.Equal(t, http.StatusInternalServerError, res.StatusCode, "%d status is not equal to %d", http.StatusInternalServerError, res.StatusCode)
 }
 

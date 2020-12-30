@@ -81,6 +81,7 @@ func routeMap(*chi.Mux) {
 			router.Get("/terraform", instanceHandler.GetInstanceInfoFromTerraform)
 			router.Get("/regions", instanceHandler.ShowRegions)
 			router.Get("/account", instanceHandler.ShowAccount)
+			router.Get("/droplets", instanceHandler.ShowAllDroplets)
 			router.Get("/swarm-nodes", instanceHandler.ShowSwarmNodes)
 			router.Delete("/", instanceHandler.Destroy)
 		})

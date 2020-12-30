@@ -28,8 +28,7 @@ type InstanceService interface {
 	SpinUp() error
 	Destroy() error
 	ScaleWorkers(workerCount int) error
-	ShowRegions() (string, error)
-	ShowAccount() (string, error)
+	Show(string) (string, error)
 	ShowSwarmNodes() ([]swarm.Node, error)
 	GetInstanceInfo() (*models.InstanceConfig, error)
 	GetInstanceInfoFromTerraform() (string, error)
@@ -71,7 +70,7 @@ func (s *instanceService) BuildTemplate(iReq models.InstanceConfig) (int, error)
 		"infra/workers.tf",
 		map[string]interface{}{
 			"Instances": instances,
-			"Env":       os.Getenv("APP_ENV"),
+			"env":       os.Getenv("APP_ENV"),
 		},
 	)
 
@@ -290,18 +289,12 @@ func (s *instanceService) parseInventoryFile() (string, error) {
 	return datas[1], err
 }
 
-// Terraform shows available regions
-func (s *instanceService) ShowRegions() (string, error) {
-	output, err := s.command.Run("cd infra;terraform output -json regions")
+// Show shows terraform outputs
+func (s *instanceService) Show(output string) (string, error) {
+	str := fmt.Sprintf("cd infra;terraform output -json %s", output)
+	data, err := s.command.Run(str)
 	log.Info(string(output))
-	return string(output), err
-}
-
-// Terraform shows total droplet limit
-func (s *instanceService) ShowAccount() (string, error) {
-	output, err := s.command.Run("cd infra;terraform output -json account")
-	log.Info(string(output))
-	return string(output), err
+	return string(data), err
 }
 
 // Shows swarm nodes

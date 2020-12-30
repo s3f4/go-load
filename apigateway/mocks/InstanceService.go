@@ -107,41 +107,20 @@ func (_m *InstanceService) ScaleWorkers(workerCount int) error {
 	return r0
 }
 
-// ShowAccount provides a mock function with given fields:
-func (_m *InstanceService) ShowAccount() (string, error) {
-	ret := _m.Called()
+// Show provides a mock function with given fields: _a0
+func (_m *InstanceService) Show(_a0 string) (string, error) {
+	ret := _m.Called(_a0)
 
 	var r0 string
-	if rf, ok := ret.Get(0).(func() string); ok {
-		r0 = rf()
+	if rf, ok := ret.Get(0).(func(string) string); ok {
+		r0 = rf(_a0)
 	} else {
 		r0 = ret.Get(0).(string)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func() error); ok {
-		r1 = rf()
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
-// ShowRegions provides a mock function with given fields:
-func (_m *InstanceService) ShowRegions() (string, error) {
-	ret := _m.Called()
-
-	var r0 string
-	if rf, ok := ret.Get(0).(func() string); ok {
-		r0 = rf()
-	} else {
-		r0 = ret.Get(0).(string)
-	}
-
-	var r1 error
-	if rf, ok := ret.Get(1).(func() error); ok {
-		r1 = rf()
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(_a0)
 	} else {
 		r1 = ret.Error(1)
 	}

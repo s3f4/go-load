@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import React, { useState } from "react";
+import React, { Fragment, useState } from "react";
 import { jsx, css } from "@emotion/core";
 import TextInput from "../../basic/TextInput";
 import Button from "../../basic/Button";
@@ -13,6 +13,7 @@ import {
   InstanceConfig,
   showAccount,
   Instance,
+  showDroplets,
 } from "../../../api/entity/instance";
 import InstanceConfigCards from "./InstanceConfigCards";
 import { MediaQuery } from "../../style";
@@ -27,6 +28,7 @@ const SpinUp: React.FC<Props> = (props: Props) => {
   const [regionsLoading, setRegionsLoading] = useState<boolean>(false);
   const [configs, setConfigs] = useState<any[]>([]);
   const [instanceLimit, setInstanceLimit] = useState<number>(0);
+  const [usedDroplets, setUsedDroplets] = useState<number>(0);
   const [isValid, setIsValid] = useState<any>({
     count: true,
     region: false,
@@ -36,6 +38,7 @@ const SpinUp: React.FC<Props> = (props: Props) => {
     let mount = true;
     regionsRequest(mount);
     accountRequest(mount);
+    showUsedDroplets(mount);
     return () => {
       mount = false;
     };
@@ -123,11 +126,24 @@ const SpinUp: React.FC<Props> = (props: Props) => {
       .then((response) => {
         if (isMounted) {
           const data = JSON.parse(response.data);
-          setInstanceLimit(data.droplet_limit - 2);
+          setInstanceLimit(data.droplet_limit);
         }
       })
       .catch((error) => {
         console.log(error);
+      });
+  };
+
+  const showUsedDroplets = (isMounted: boolean) => {
+    showDroplets()
+      .then((response) => {
+        if (response.data && isMounted) {
+          const data = JSON.parse(response.data);
+          setUsedDroplets(data.droplets.length);
+        }
+      })
+      .catch(() => {
+        setUsedDroplets(0);
       });
   };
 
@@ -171,8 +187,16 @@ const SpinUp: React.FC<Props> = (props: Props) => {
         <div css={formDiv}>
           <h2 css={formTitle}>Set up Testing Infrastructure</h2>
           <div css={title}>
-            Your droplet limit is <b>{instanceLimit + 2}</b> and already used{" "}
-            <b>2</b>, you can increase this on digitalocean.
+            Your droplet limit is <b>{instanceLimit}</b>
+            {usedDroplets ? (
+              <Fragment>
+                {" "}
+                and already used <b>{usedDroplets}</b>
+              </Fragment>
+            ) : (
+              ""
+            )}
+            , you can increase this on digitalocean.
           </div>
           <TextInput
             name="count"
@@ -180,7 +204,11 @@ const SpinUp: React.FC<Props> = (props: Props) => {
             type="text"
             onChange={handleChange}
             value={count}
-            validate={`min:1|max:${instanceLimit}|message:You can create ${instanceLimit} instances.`}
+            validate={`min:1|max:${
+              instanceLimit - usedDroplets
+            }|message:You can create ${
+              instanceLimit - usedDroplets
+            } instances.`}
             validation={validation}
           />
 

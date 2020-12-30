@@ -12,7 +12,7 @@ func Test_Instance_Show(t *testing.T) {
 	command.On("Run", "cd infra;terraform output -json account").Return([]byte("abc"), nil)
 	ir := new(mocks.InstanceRepository)
 	instanceService := NewInstanceService(ir, command)
-	instanceService.ShowAccount()
+	instanceService.Show("account")
 }
 
 func Test_Instance_BuildTemplate(t *testing.T) {

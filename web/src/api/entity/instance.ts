@@ -49,6 +49,10 @@ export const showAccount = async () => {
   return await makeReq(`/instances/account`);
 };
 
+export const showDroplets = async () => {
+  return await makeReq(`/instances/droplets`);
+};
+
 export const showSwarmNodes = async () => {
   return await makeReq("/instances/swarm-nodes");
 };

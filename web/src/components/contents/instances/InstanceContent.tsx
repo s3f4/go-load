@@ -23,6 +23,7 @@ const InstanceContent: React.FC = () => {
 
   useEffect(() => {
     let mount = true;
+
     onGetInstances(mount);
     return () => {
       mount = false;

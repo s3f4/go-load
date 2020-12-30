@@ -1,7 +1,7 @@
 import { getCsrfToken } from "./entity/csrf";
 import { setToken, token } from "./entity/jwt";
 
-const URL = `http://${process.env.REACT_APP_API_BASE_URL}`;
+const URL = `http://${process.env.REACT_APP_API_BASE_URL}/api`;
 
 export interface ServerResponse {
   status: boolean;
@@ -39,6 +39,7 @@ export const makeReq = async (url: string, method?: any, body?: any) => {
   }
 
   if (["POST", "PUT", "DELETE", "PATCH"].includes(request.config.method)) {
+    debugger;
     const csrf: string = await getCsrfToken();
     request.config.headers["X-CSRF-Token"] = csrf;
   }

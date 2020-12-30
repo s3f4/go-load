@@ -165,3 +165,14 @@ services:
       restart: always
       ports:
         - 6379:6379
+        
+  nginx:
+    container_name: nginx
+    build: 
+      context: ./web/nginx
+      target: dev
+    ports:
+      - 80:80
+    environment:
+      - WAIT_HOSTS=apigateway:3001,web:3000
+      - WAIT_HOSTS_TIMEOUT=120

@@ -21,7 +21,7 @@ func applyMiddlewares() {
 
 	csrfMiddleware := csrf.Protect(
 		[]byte(os.Getenv("CSRF_KEY")),
-		csrf.TrustedOrigins([]string{"localhost:3000", "localhost:3001"}),
+		csrf.TrustedOrigins([]string{"localhost", "localhost:3000", "localhost:3001"}),
 		csrf.Secure(secure),
 		csrf.Path("/"),
 		csrf.ErrorHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -43,7 +43,7 @@ func applyMiddlewares() {
 	router.Use(middleware.Recoverer)
 
 	cors := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3000", "http://localhost:3001"},
+		AllowedOrigins:   []string{"localhost", "http://localhost:3000", "http://localhost:3001"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		ExposedHeaders:   []string{"Link", "X-CSRF-Token"},

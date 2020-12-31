@@ -39,7 +39,6 @@ export const makeReq = async (url: string, method?: any, body?: any) => {
   }
 
   if (["POST", "PUT", "DELETE", "PATCH"].includes(request.config.method)) {
-    debugger;
     const csrf: string = await getCsrfToken();
     request.config.headers["X-CSRF-Token"] = csrf;
   }

@@ -87,7 +87,7 @@ ansible-ping:
 
 swarm-prepare:
 	cd infra/base && master=$$(terraform output master_ipv4_address) && \
-	ssh -t root@$$master "echo 'REACT_APP_API_BASE_URL=$$master:3001' >> /root/app/web/.env && \
+	ssh -t root@$$master "echo 'REACT_APP_API_BASE_URL=$$master' >> /root/app/web/.env && \
 	cd /etc/ansible && \
 	export ANSIBLE_HOST_KEY_CHECKING=False && \
 	ansible-playbook -i inventory.txt known_hosts.yml && \

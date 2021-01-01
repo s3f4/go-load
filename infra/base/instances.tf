@@ -54,7 +54,7 @@ resource "digitalocean_droplet" "master" {
     destination = "/etc/ansible/known_hosts.yml"
   }
 
-   provisioner "file" {
+  provisioner "file" {
     source      = "ansible/label.yml"
     destination = "/etc/ansible/label.yml"
   }
@@ -95,7 +95,8 @@ resource "digitalocean_droplet" "master" {
     inline = [
       "chmod 600 ~/.ssh/id_rsa",
       "chmod 644 ~/.ssh/id_rsa.pub",
-      "mkdir ~/app"
+      "mkdir ~/app",
+      "mkdir ~/app/apigateway/log",
     ]
   }
 

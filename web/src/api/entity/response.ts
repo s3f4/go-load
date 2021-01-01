@@ -3,6 +3,7 @@ import { makeReq, QueryString } from "../api";
 
 export interface Response {
   run_test_id: number;
+  worker_host_name: string;
   start_time: number;
   total_time: number;
   first_byte: Date;

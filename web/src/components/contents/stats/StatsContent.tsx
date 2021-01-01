@@ -213,8 +213,7 @@ const StatsContent: React.FC<Props> = (props: Props) => {
           },
         ],
         columns: [
-          { content: moment(response.start_time).format(preciseFormat()) },
-          { content: moment(response.first_byte).format(preciseFormat()) },
+          { content: response.worker_host_name },
           { content: nanoToMilli(response.first_byte_time) },
           { content: nanoToMilli(response.connect_time) },
           { content: nanoToMilli(response.dns_time) },
@@ -259,14 +258,8 @@ const StatsContent: React.FC<Props> = (props: Props) => {
         ]}
         title={[
           {
-            header: "Start",
-            accessor: "start_time",
-            sortable: true,
-            width: "19%",
-          },
-          {
-            header: "FirstByte",
-            accessor: "first_byte",
+            header: "Worker",
+            accessor: "hostname",
             sortable: true,
             width: "19%",
           },

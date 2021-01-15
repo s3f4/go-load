@@ -95,8 +95,7 @@ resource "digitalocean_droplet" "master" {
     inline = [
       "chmod 600 ~/.ssh/id_rsa",
       "chmod 644 ~/.ssh/id_rsa.pub",
-      "mkdir ~/app",
-      "mkdir ~/app/apigateway/log",
+      "mkdir -p ~/app/apigateway/log",
     ]
   }
 

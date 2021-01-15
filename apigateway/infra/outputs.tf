@@ -7,7 +7,7 @@ output "account" {
 }
 
 output "workers" {
-  value = "${digitalocean_droplet.workers}"
+  value = digitalocean_droplet.workers
 }
 
 output "all" {

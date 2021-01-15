@@ -20,6 +20,7 @@ apigateway/infra/ansible/inventory.tmpl
 apigateway/infra/ansible/inventory.txt
 infra/base/inventory.txt
 
+.terraform*
 *.tfvars
 *.tfstate
 *vendor

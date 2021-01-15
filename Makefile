@@ -76,17 +76,17 @@ cpInventory:
 
 up-instances: rm-files init apply cpInventory
 	@echo "=============instances spinning up============="
-	cd infra/base && master=$$(terraform output master_ipv4_address) && \
+	cd infra/base && master=$$(terraform output -raw master_ipv4_address) && \
 	ssh-keyscan -H $$master >> ~/.ssh/known_hosts 
 
 upload-inventory:
-	cd infra/base && master=$$(terraform output master_ipv4_address) && scp inventory.txt root@$$master:/etc/ansible/inventory.txt
+	cd infra/base && master=$$(terraform output -raw master_ipv4_address) && scp inventory.txt root@$$master:/etc/ansible/inventory.txt
 
 ansible-ping: 
-	cd infra/base && master=$$(terraform output master_ipv4_address) && ssh -t root@$$master 'cd /etc/ansible && ansible all -i inventory.txt -m ping'
+	cd infra/base && master=$$(terraform output -raw master_ipv4_address) && ssh -t root@$$master 'cd /etc/ansible && ansible all -i inventory.txt -m ping'
 
 swarm-prepare:
-	cd infra/base && master=$$(terraform output master_ipv4_address) && \
+	cd infra/base && master=$$(terraform output -raw master_ipv4_address) && \
 	ssh -t root@$$master "echo 'REACT_APP_API_BASE_URL=$$master' >> /root/app/web/.env && \
 	cd /etc/ansible && \
 	export ANSIBLE_HOST_KEY_CHECKING=False && \
@@ -103,7 +103,7 @@ up: destroy up-instances upload-inventory swarm-prepare
 	
 ssh-copy:
 	@echo this command creates ssh key and copy the key other instances
-	cd infra/base && master=$$(terraform output master_ipv4_address) && ssh -t root@$$master 'ssh-keygen' 
+	cd infra/base && master=$$(terraform output -raw master_ipv4_address) && ssh -t root@$$master 'ssh-keygen' 
 
 destroy:
 	cd infra/base && terraform destroy -auto-approve 

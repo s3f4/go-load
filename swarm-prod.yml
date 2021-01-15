@@ -8,7 +8,7 @@ services:
     ports:
       - 3001:3001
     volumes:
-      - ~/app/apigateway/template/workers.tpl:/app/template/workers.tpl
+      - ~/app/apigateway/template:/app/template
       - ~/app/apigateway/infra:/app/infra
       - ~/app/apigateway/log:/app/log
       - /var/run/docker.sock:/var/run/docker.sock
@@ -60,6 +60,8 @@ services:
       - POSTGRES_HOST=timeDB
       - POSTGRES_PORT=5432
       - POSTGRES_DATABASE=data
+    volumes:
+      - ~/app/eventhandler/log:/app/log
     deploy:
       replicas: 1
       placement:
@@ -94,6 +96,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - /etc/hostname:/etc/hostname
+      - ~/app/worker/log:/app/log
     environment:
       - APP_ENV=production
       - RABBITMQ_USER=user
@@ -186,3 +189,10 @@ services:
       timeout: 120s
       interval: 10s
       retries: 10
+      
+  redis:
+      image: redis
+      container_name: redis
+      restart: always
+      ports:
+        - 6379:6379

@@ -14,11 +14,7 @@ import (
 )
 
 func applyMiddlewares() {
-	secure := true
-	if os.Getenv("APP_ENV") == "development" {
-		secure = false
-	}
-
+	secure := false
 	csrfMiddleware := csrf.Protect(
 		[]byte(os.Getenv("CSRF_KEY")),
 		csrf.TrustedOrigins([]string{"localhost", "localhost:3000", "localhost:3001"}),

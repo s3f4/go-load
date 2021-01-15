@@ -104,6 +104,12 @@ resource "digitalocean_droplet" "master" {
     destination = "~/app/apigateway"
   }
 
+  provisioner "remote-exec" {
+    inline = [
+      "mkdir -p ~/app/apigateway/log",
+    ]
+  }
+
   provisioner "file" {
     source      = abspath("../../eventhandler")
     destination = "~/app/eventhandler"
@@ -145,4 +151,18 @@ resource "digitalocean_droplet" "data" {
     digitalocean_ssh_key.ssh.fingerprint,
     digitalocean_ssh_key.for_master.fingerprint
   ]
+
+  connection {
+    host        = self.ipv4_address
+    user        = "root"
+    type        = "ssh"
+    private_key = file("~/.ssh/id_rsa")
+    timeout     = "2m"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "mkdir -p ~/app/eventhandler/log",
+    ]
+  }
 }

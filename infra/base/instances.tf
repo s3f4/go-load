@@ -95,7 +95,6 @@ resource "digitalocean_droplet" "master" {
     inline = [
       "chmod 600 ~/.ssh/id_rsa",
       "chmod 644 ~/.ssh/id_rsa.pub",
-      "mkdir -p ~/app/apigateway/log",
     ]
   }
 
@@ -106,7 +105,7 @@ resource "digitalocean_droplet" "master" {
 
   provisioner "remote-exec" {
     inline = [
-      "mkdir -p ~/app/apigateway/log",
+      "mkdir ~/app/apigateway/log",
     ]
   }
 

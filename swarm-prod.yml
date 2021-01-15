@@ -8,6 +8,7 @@ services:
     ports:
       - 3001:3001
     volumes:
+      - ~/app/registry.crt:/app/registry.crt
       - ~/app/apigateway/template:/app/template
       - ~/app/apigateway/infra:/app/infra
       - ~/app/apigateway/log:/app/log

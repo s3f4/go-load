@@ -22,4 +22,18 @@ resource "digitalocean_droplet" "workers" {
   ssh_keys = [
 	  {{ if ne .env "development" }}data.{{ end }}digitalocean_ssh_key.for_master.id
   ]
+
+  connection {
+    host        = self.ipv4_address
+    user        = "root"
+    type        = "ssh"
+    private_key = file("~/.ssh/id_rsa")
+    timeout     = "2m"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "mkdir -p ~/app/worker/log",
+    ]
+  }
 }

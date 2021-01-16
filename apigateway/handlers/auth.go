@@ -245,10 +245,10 @@ func (h *authHandler) ResponseWithCookie(w http.ResponseWriter, r *http.Request,
 		Expires:  time.Unix(rt.Expire, 0),
 	}
 
-	if os.Getenv("APP_ENV") == "production" {
-		rtCookie.Domain = os.Getenv("DOMAIN")
-		rtCookie.Secure = true
-	}
+	// if os.Getenv("APP_ENV") == "production" {
+	// 	rtCookie.Domain = os.Getenv("DOMAIN")
+	// 	rtCookie.Secure = true
+	// }
 
 	if err := library.SetCookie(w, &rtCookie, map[string]string{"rt": rt.Token}); err != nil {
 		log.Debug(err)

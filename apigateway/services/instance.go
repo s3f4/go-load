@@ -329,17 +329,13 @@ func (s *instanceService) addLabels() error {
 		return err
 	}
 
-	swarm, err := cli.SwarmInspect(context)
-	if err != nil {
-		log.Info(err)
-		return err
-	}
-
 	// Loop all nodes.
 	for _, node := range nodes {
-		if strings.HasPrefix(node.Description.Hostname, "worker") {
-			node.Spec.Annotations.Labels["role"] = "worker"
-			if err := cli.NodeUpdate(context, node.ID, swarm.Version, node.Spec); err != nil {
+		fmt.Printf("%#v\n", node)
+		if strings.HasPrefix(node.Description.Hostname, "worker") && node.Status.State == "ready" {
+			output, err := s.command.Run(buildAnsibleCommand("label.yml", fmt.Sprintf("--extra-vars '{\"node_id\": \"%s\"}'", node.ID)))
+			log.Infof("%s\n", output)
+			if err != nil {
 				log.Info(err)
 				return err
 			}

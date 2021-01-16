@@ -98,9 +98,15 @@ resource "digitalocean_droplet" "master" {
     ]
   }
 
+  provisioner "remote-exec" {
+    inline = [
+      "mkdir ~/app",
+    ]
+  }
+
   provisioner "file" {
     source      = abspath("../../apigateway")
-    destination = "~/app/apigateway"
+    destination = "~/app"
   }
 
   provisioner "remote-exec" {
@@ -111,19 +117,19 @@ resource "digitalocean_droplet" "master" {
 
   provisioner "file" {
     source      = abspath("../../eventhandler")
-    destination = "~/app/eventhandler"
+    destination = "~/app"
   }
 
 
   provisioner "file" {
     source      = abspath("../../web")
-    destination = "~/app/web"
+    destination = "~/app"
   }
 
 
   provisioner "file" {
     source      = abspath("../../worker")
-    destination = "~/app/worker"
+    destination = "~/app"
   }
 
   provisioner "file" {

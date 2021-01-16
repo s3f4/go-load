@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/s3f4/go-load/worker/models"
-	"github.com/s3f4/mu"
 	"github.com/s3f4/mu/log"
 )
 
@@ -115,6 +114,9 @@ func (c *Client) setRequestWithContext(request *http.Request, trace *httptrace.C
 
 // getHostname is used for finding out which worker making this requests.
 func getHostname() string {
-	output, _ := mu.RunCommands("hostname")
-	return string(output)
+	data, err := ioutil.ReadFile("/etc/hostname")
+	if err != nil {
+		log.Error(err)
+	}
+	return string(data)
 }

@@ -13,6 +13,7 @@ dev-logs:
 rm-files:
 	rm -f apigateway/cmd/apigateway && \
 	rm -rf apigateway/infra/.terraform && \
+	rm -f apigateway/infra/ansible/inventory.tmpl && \
 	rm -f apigateway/infra/terraform.tfstate* && \
 	rm -f worker/cmd/worker && \
 	rm -f eventhandler/cmd/eventhandler && \
@@ -80,7 +81,8 @@ up-instances: rm-files init apply cpInventory
 	ssh-keyscan -H $$master >> ~/.ssh/known_hosts 
 
 upload-inventory:
-	cd infra/base && master=$$(terraform output -raw master_ipv4_address) && scp inventory.txt root@$$master:/etc/ansible/inventory.txt
+	cd infra/base && master=$$(terraform output -raw master_ipv4_address) && scp inventory.txt root@$$master:/etc/ansible/inventory.txt && \
+	scp ../../apigateway/infra/ansible/inventory.tmpl root@$$master:/app/apigateway/infra/ansible/inventory.tmpl
 
 ansible-ping: 
 	cd infra/base && master=$$(terraform output -raw master_ipv4_address) && ssh -t root@$$master 'cd /etc/ansible && ansible all -i inventory.txt -m ping'

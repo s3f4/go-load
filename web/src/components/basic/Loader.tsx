@@ -2,6 +2,7 @@
 import React from "react";
 import { jsx, css } from "@emotion/core";
 import LoaderSvg from "./LoaderSvg";
+import { ReactComponent as LoaderComp } from "../img/loader.svg";
 
 interface Props {
   message?: string;
@@ -17,7 +18,7 @@ const Loader: React.FC<Props> = (props: Props) => {
   ) : (
     <div css={loaderContainer}>
       <div css={loaderCss}>
-        <img alt={"loader"} src={require("../img/loader.svg")} />
+        <LoaderComp />
         <span>{props.message ? props.message : ""}</span>
       </div>
     </div>

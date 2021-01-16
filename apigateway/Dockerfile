@@ -1,6 +1,6 @@
 #prod config
-FROM golang:1.15.2 as builder
-RUN apt update && apt install git ca-certificates && update-ca-certificates
+FROM golang:1.15.6-alpine3.12 as builder
+RUN apk update && apk add --no-cache git ca-certificates && update-ca-certificates
 RUN mkdir /build
 COPY . /build/
 WORKDIR /build/cmd

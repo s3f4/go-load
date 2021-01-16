@@ -1,5 +1,5 @@
 #dev config
-FROM golang:1.15.2-alpine3.12 as dev
+FROM golang:1.15.6-alpine3.12 as dev
 WORKDIR /app/
 COPY . .
 RUN ["go", "get", "github.com/githubnemo/CompileDaemon"]
@@ -8,7 +8,7 @@ RUN chmod +x /wait
 CMD /wait && CompileDaemon -directory=cmd/.  -build="go build -o eventhandler" -command="./cmd/eventhandler"
 
 #debug config
-FROM golang:1.15.2-alpine3.12 as debug
+FROM golang:1.15.6-alpine3.12 as debug
 ENV CGO_ENABLED 0
 WORKDIR /app/
 COPY . .

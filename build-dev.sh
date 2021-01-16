@@ -20,10 +20,10 @@ echo "You must add ' 127.0.0.1 registry.dev ' to /etc/hosts"
 echo "Wait for starting registry service..."
 sleep 5
 
-docker build -t registry.dev:5000/apigateway ./apigateway --target=dev -f ./apigateway/Dockerfile
-docker build -t registry.dev:5000/worker ./worker --target=dev -f ./worker/Dockerfile
-docker build -t registry.dev:5000/web ./web --target=dev -f ./web/Dockerfile
-docker build -t registry.dev:5000/eventhandler ./eventhandler --target=dev -f ./eventhandler/Dockerfile
+docker build -t registry.dev:5000/apigateway ./apigateway --target=dev -f ./apigateway/Dockerfile.dev
+docker build -t registry.dev:5000/worker ./worker --target=dev -f ./worker/Dockerfile.dev
+docker build -t registry.dev:5000/web ./web -f ./web/Dockerfile
+docker build -t registry.dev:5000/eventhandler ./eventhandler --target=dev -f ./eventhandler/Dockerfile.dev
 
 docker push registry.dev:5000/apigateway
 docker push registry.dev:5000/worker

@@ -36,7 +36,7 @@ apply:
 
 up-dev: default
 	@echo "=============Compose Up============="
-	docker-compose -f docker-compose.yml up -d  --build --remove-orphans
+	COMPOSE_HTTP_TIMEOUT=200 docker-compose -f docker-compose.yml up -d  --build --remove-orphans
 
 down-dev:
 	rm -rf apigateway/infra/.terraform && \

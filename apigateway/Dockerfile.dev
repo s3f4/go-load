@@ -1,5 +1,5 @@
 #dev config
-FROM golang:1.15.2-alpine3.12 as dev
+FROM golang:1.15.6-alpine as dev
 RUN apk --update add openssh-client
 RUN apk --update add openssl
 WORKDIR /app/cmd

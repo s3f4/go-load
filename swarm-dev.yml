@@ -1,4 +1,4 @@
-version: "3.8"
+version: "3.9"
 services:
   apigateway:
     image: registry.dev:5000/apigateway
@@ -6,6 +6,7 @@ services:
       - 3001:3001
     volumes:
       - ./apigateway:/app
+      - ./apigateway/log:/app/log
       - ./registry.crt:/app/registry.crt
       - ./registry.key:/app/registry.key
       - /var/run/docker.sock:/var/run/docker.sock
@@ -27,7 +28,6 @@ services:
       - RABBITMQ_PASSWORD=password
       - RABBITMQ_HOST=queue
       - RABBITMQ_PORT=5672
-      - WAIT_HOSTS_TIMEOUT=120
       - AUTH_ACCESS_SECRET=abc13253
       - AUTH_REFRESH_SECRET=abc13253
       - REDIS_SERVER_PASSWORD=redisPass123
@@ -65,8 +65,11 @@ services:
 
   web:
     image: registry.dev:5000/web
+    build:
+      context: ./web
+      dockerfile: Dockerfile
     ports:
-      - 3000:3000
+      - 80:80
     environment:
       - CHOKIDAR_USEPOLLING=true
       - env_file=.env

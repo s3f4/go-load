@@ -21,7 +21,9 @@ rm-files:
 	rm -f infra/base/inventory.txt && \
 	rm -f apigateway/log && \
 	rm -f worker/log && \
-	rm -f eventhandler/log  \
+	rm -f eventhandler/log  && \
+	rm -f ~/.ssh/id_rsa_for_master && \
+	rm -f ~/.ssh/id_rsa_for_master.pub
 
 gotest:
 	cd apigateway && go test -v  -cover ./...
@@ -82,7 +84,7 @@ up-instances: rm-files init apply cpInventory
 
 upload-inventory:
 	cd infra/base && master=$$(terraform output -raw master_ipv4_address) && scp inventory.txt root@$$master:/etc/ansible/inventory.txt && \
-	scp ../../apigateway/infra/ansible/inventory.tmpl root@$$master:/app/apigateway/infra/ansible/inventory.tmpl
+	scp ../../apigateway/infra/ansible/inventory.tmpl root@$$master:/root/app/apigateway/infra/ansible/inventory.tmpl
 
 ansible-ping: 
 	cd infra/base && master=$$(terraform output -raw master_ipv4_address) && ssh -t root@$$master 'cd /etc/ansible && ansible all -i inventory.txt -m ping'
@@ -101,15 +103,17 @@ swarm-prepare:
 	ansible-playbook -i inventory.txt swarm-join.yml --extra-vars 'token=$$token addr=$$master' && \
 	ansible-playbook -i inventory.txt label.yml"
 
-up: destroy up-instances upload-inventory swarm-prepare
+up: up-instances upload-inventory swarm-prepare
 	
 ssh-copy:
 	@echo this command creates ssh key and copy the key other instances
 	cd infra/base && master=$$(terraform output -raw master_ipv4_address) && ssh -t root@$$master 'ssh-keygen' 
 
-destroy:
+destroy-terraform:
 	cd infra/base && terraform destroy -auto-approve 
 
+destroy: destroy-terraform rm-files
+	
 plan:
 	cd infra/base && terraform plan 
 
@@ -119,4 +123,6 @@ finger:
 output:
 	cd infra/base && terraform output regions
 
+ip:
+	cd infra/base && terraform output -raw master_ipv4_address
 	

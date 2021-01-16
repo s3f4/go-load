@@ -19,9 +19,9 @@ rm-files:
 	rm -f eventhandler/cmd/eventhandler && \
 	rm -rf web/node_modules && \
 	rm -f infra/base/inventory.txt && \
-	rm -f apigateway/log && \
-	rm -f worker/log && \
-	rm -f eventhandler/log  && \
+	rm -rf apigateway/log && \
+	rm -rf worker/log && \
+	rm -rf eventhandler/log  && \
 	rm -f ~/.ssh/id_rsa_for_master && \
 	rm -f ~/.ssh/id_rsa_for_master.pub
 

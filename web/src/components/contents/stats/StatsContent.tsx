@@ -190,6 +190,7 @@ const StatsContent: React.FC<Props> = (props: Props) => {
           ? `background-color:${Colors.passed};`
           : "background-color:${Colors.notPassed};",
         allColumns: [
+          { content: response.worker_host_name },
           { content: moment(response.start_time).format(preciseFormat()) },
           { content: moment(response.first_byte).format(preciseFormat()) },
           { content: moment(response.connect_start).format(preciseFormat()) },
@@ -242,6 +243,7 @@ const StatsContent: React.FC<Props> = (props: Props) => {
         builder={buildTable}
         trigger={selectedRunTest}
         allTitles={[
+          { header: "Worker" },
           { header: "StartTime" },
           { header: "FirstByte" },
           { header: "ConnectStart" },
@@ -259,7 +261,7 @@ const StatsContent: React.FC<Props> = (props: Props) => {
         title={[
           {
             header: "Worker",
-            accessor: "hostname",
+            accessor: "worker_host_name",
             sortable: true,
             width: "19%",
           },

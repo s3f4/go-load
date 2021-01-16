@@ -1,7 +1,6 @@
 /** @jsx jsx */
 import React from "react";
 import { jsx, css } from "@emotion/core";
-import loaderSrc from "../img/loader.svg";
 import LoaderSvg from "./LoaderSvg";
 
 interface Props {
@@ -18,7 +17,7 @@ const Loader: React.FC<Props> = (props: Props) => {
   ) : (
     <div css={loaderContainer}>
       <div css={loaderCss}>
-        <img alt={"loader"} src={loaderSrc} />
+        <img alt={"loader"} src={require("../img/loader.svg")} />
         <span>{props.message ? props.message : ""}</span>
       </div>
     </div>

@@ -167,6 +167,7 @@ services:
         
   nginx:
     container_name: nginx
+    restart: always
     build: 
       context: ./web/nginx
       target: dev

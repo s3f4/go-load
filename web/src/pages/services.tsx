@@ -13,7 +13,7 @@ const Services: React.FC = () => {
     setLoader(true);
     list()
       .then((response) => {
-        setServices(response.data.containers);
+        setServices(response.data);
         setLoader(false);
       })
       .catch((err) => {

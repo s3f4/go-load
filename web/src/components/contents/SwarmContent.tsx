@@ -41,7 +41,7 @@ const SwarmContent: React.FC = () => {
 
     return (
       <div>
-        <div css={title}>Swarm Service List</div>
+        <div css={title}>Swarm Node List</div>
         <div css={cardContainer}>
           {nodes &&
             nodes.map((node: Node) => {

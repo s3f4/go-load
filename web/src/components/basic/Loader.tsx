@@ -27,17 +27,18 @@ const Loader: React.FC<Props> = (props: Props) => {
 
 const loaderContainer = css`
   display: block;
+  position: relative;
   min-width: 10rem;
   min-height: 10rem;
-  position: relative;
   width: 100%;
   height: 100%;
 `;
 
 const loaderCss = css`
-  position: absolute;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);

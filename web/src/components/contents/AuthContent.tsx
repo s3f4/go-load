@@ -136,7 +136,7 @@ const AuthContent: React.FC<Props> = (props: Props) => {
             type="password"
             onChange={handleChange}
             value={user.password}
-            validate="minLength:4|maxLength:9|message:Please provide a valid passowrd"
+            validate="minLength:4|maxLength:9|message:Please provide a valid password"
             validation={validation}
           />
 
